@@ -1,6 +1,26 @@
 .w16 {
     width: 16px;
 }
+.ver {
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    font-size: x-small;
+    padding: 2px;
+}
+.err-msg {
+    text-align: center;
+    padding-top: 16px;
+    font-size: large;
+}
+
+.bookTitle {
+    text-align: center;
+}
+
+.bookPath {
+    text-align: center;
+}
 
 .logo {
     padding-top: 100px;
@@ -21,3 +41,136 @@
     -moz-box-shadow: inset 0 1px 1px rgba(0,0,0,0.05);
     box-shadow: inset 0 1px 1px rgba(0,0,0,0.05);
 }
+
+.bookIcon {
+    position: absolute;
+    bottom: 32px;
+    font-size: 40px; !important;
+    text-align: center;
+    width: 100%;
+}
+
+.cover-img-holder {
+    position: absolute;
+    bottom: 6px;
+    overflow: hidden;
+    text-align: center;
+}
+
+.cover-img {
+    width: 90%;
+    height: auto;
+    border: 1px solid #AAA;
+    border-radius: 200px;
+    height: 80px;
+}
+
+.bookCoverHeader {
+    font-family: arial;
+    font-size: 8pt;
+    text-align: center;
+    background: rgb(53,107,141);
+    color: #F0F0F0;
+    z-index: 10;
+    overflow: hidden;
+    height: 16px;
+}
+
+.cursor-move {
+    cursor: move;
+}
+
+.bookCover {
+    position: relative;
+    float: left;
+    font-size: 10px;
+    font-family: arial;
+
+
+    border-radius: 4px;
+    border: 1px solid #9d9d9d;
+
+    width: 134px;
+    height: 190px;
+    margin: 4px;
+    overflow: hidden;
+    cursor: pointer;
+
+    background: #ffffff; /* Old browsers */
+    background: -moz-linear-gradient(top,  #ffffff 0%, #f3f3f3 50%, #ededed 51%, #ffffff 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ffffff), color-stop(50%,#f3f3f3), color-stop(51%,#ededed), color-stop(100%,#ffffff)); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top,  #ffffff 0%,#f3f3f3 50%,#ededed 51%,#ffffff 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top,  #ffffff 0%,#f3f3f3 50%,#ededed 51%,#ffffff 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(top,  #ffffff 0%,#f3f3f3 50%,#ededed 51%,#ffffff 100%); /* IE10+ */
+    background: linear-gradient(to bottom,  #ffffff 0%,#f3f3f3 50%,#ededed 51%,#ffffff 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#ffffff',GradientType=0 ); /* IE6-9 */
+
+    -webkit-box-shadow: 5px 3px 5px rgba(0, 0, 0, 0.3);
+    -moz-box-shadow:    5px 3px 5px rgba(0, 0, 0, 0.3);
+    box-shadow:         3px 3px 2px rgba(0, 0, 0, 0.3);
+}
+
+.bookCover:hover {
+    background: #ebf1f6;
+    background: -moz-linear-gradient(top, #ebf1f6 0%, #abd3ee 50%, #89c3eb 51%, #d5ebfb 100%);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ebf1f6), color-stop(50%,#abd3ee), color-stop(51%,#89c3eb), color-stop(100%,#d5ebfb));
+    background: -webkit-linear-gradient(top, #ebf1f6 0%,#abd3ee 50%,#89c3eb 51%,#d5ebfb 100%);
+    background: -o-linear-gradient(top, #ebf1f6 0%,#abd3ee 50%,#89c3eb 51%,#d5ebfb 100%);
+    background: -ms-linear-gradient(top, #ebf1f6 0%,#abd3ee 50%,#89c3eb 51%,#d5ebfb 100%);
+    background: linear-gradient(to bottom, #ebf1f6 0%,#abd3ee 50%,#89c3eb 51%,#d5ebfb 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ebf1f6', endColorstr='#d5ebfb',GradientType=0 );
+}
+
+.navbar {
+    margin-bottom: 10px; !important;
+}
+
+.temp {
+    background-color: #9acfea;
+}
+
+.widget-holder {
+    position: relative;
+    border: 1px solid #356B8D;
+    border-radius: 4px;
+    background-color: #f8f8f8;
+}
+
+.widget-toolbar {
+    background-color: #F0F0F0;
+}
+
+.widget-error {
+    position: absolute;
+    width: 100%;
+    /* bottom: 0px; */
+    text-align: center;
+    background-color: #FAA;
+    font-size: 12px;
+    font-family: arial;
+    font-weight: bold;
+    top: 50%;
+    /* margin-left: 10px; */
+    /* margin-right: -230px; */
+    padding: 4px;
+    /* border: 10px solid rgb(248, 248, 248); */
+    -webkit-box-shadow: 0px 4px 3px 0px rgba(0,0,0,0.55);
+    -moz-box-shadow: 0px 4px 3px 0px rgba(0,0,0,0.55);
+    box-shadow: 0px 4px 3px 0px rgba(0,0,0,0.55);
+}
+
+.gridster-preview-holder {
+    opacity: 1;
+    border: 2px dashed #AAAAAA;
+    background-color: #fff;
+}
+
+.noselect {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+

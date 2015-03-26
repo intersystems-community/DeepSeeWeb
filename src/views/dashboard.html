@@ -1,0 +1,25 @@
+<div ng-cloak>
+    <div gridster>
+        <ul>
+            <li class="widget-holder noselect" gridster-item="item" ng-repeat="item in model.items">
+                <div class="bookCoverHeader cursor-move">
+                    {{item.title}}
+                </div>
+
+
+                <div class="widget" ng-controller="widget">
+                    <div class="widget-toolbar" ng-show="item.isToolbar">
+                        <button class="btn btn-default btn-sm"><i class="fa fa-filter"></i></button>
+                        <button class="btn btn-default btn-sm" ng-click="requestData()"><i class="fa fa-refresh"></i></button>
+                        <button class="btn btn-default btn-sm pull-right"><i class="fa fa-wrench"></i></button>
+                    </div>
+
+                    <highchart ng-show="item.isChart" id="{{'chart' + item.key}}" config="chartConfig"></highchart>
+
+                    <div class="widget-error" ng-show="model.isError">{{model.error}}</div>
+                </div>
+
+            </li>
+        </ul>
+    </div>
+</div>

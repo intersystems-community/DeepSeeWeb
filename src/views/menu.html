@@ -1,0 +1,18 @@
+<nav class="navbar navbar-default" ng-controller="menu" ng-show="model.isSigned" ng-cloak>
+    <div class="container-fluid">
+
+        <div class="navbar-header" style="color:blue">
+            <a class="navbar-brand" href="#/">
+                InterSystems DeepSee™ {{path ? " - " + path : ""}}
+            </a>
+        </div>
+        <div class="collapse navbar-collapse">
+            <div class="nav navbar-nav navbar-right">
+                <p class="navbar-text">
+                    <span class="label label-default"><i class="fa fa-user"></i>&nbsp;{{model.username}}</span>
+                </p>
+                <button type="button" class="btn btn-default navbar-btn pull-left" ng-click="onSingoutClick()">{{'signout' | lang}}</button>
+            </div>
+        </div>
+    </div>
+</nav>

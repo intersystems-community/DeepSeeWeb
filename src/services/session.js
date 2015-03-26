@@ -1,21 +1,22 @@
 (function() {
     'use strict';
 
-    function SessionSvc($rootScope, $location) {
+    function SessionSvc(Connector, $rootScope, $location) {
         this.username = "Mobile";
-        this.isSigned = false;
+        this.isSigned = true;
         this.auth = 'Basic bW9iaWxlOmRzbW9iaWxl';
 
         this.checkSigned = function() {
             if (!this.isSigned) $location.path("/login");
         };
 
-        this.signIn = function(login, password) {
+        this.signIn = function(login, password, namespace) {
             if (!login || !password) return;
-            this.username = login;
-            this.isSigned = true;
-            $rootScope.$broadcast('signin', "");
-            $location.path("/");
+
+            Connector
+                .signIn(login, password, namespace)
+                .error(this.onSignInError)
+                .success(this.onSignInSucces);
         };
 
         this.signOut = function () {
@@ -25,8 +26,17 @@
             $rootScope.$broadcast('signout', "");
             $location.path("/login");
         };
+
+        this.onSignInError = function(data, status, headers, config) {
+            $rootScope.$broadcast('signinerror', status);
+        };
+
+        this.onSignInSucces = function(data, status, headers, config) {
+            $rootScope.$broadcast('signin', "");
+            $location.path("/");
+        };
     }
 
     angular.module('app')
-        .service('Session', ['$rootScope', '$location', SessionSvc]);
+        .service('Session', ['Connector', '$rootScope', '$location', SessionSvc]);
 })();
