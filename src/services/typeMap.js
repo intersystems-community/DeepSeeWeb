@@ -7,6 +7,7 @@
             areachart: AreaChart,
             barchart: BarChart,
             linechart: LineChart,
+            combochart: LineChart,
             columnchart: ColumnChart,
             xychart: XyChart,
             timechart: TimeChart

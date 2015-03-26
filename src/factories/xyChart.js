@@ -24,7 +24,7 @@
                 var tempData = [];
 
                 if (data.Cols[0].tuples[0].children) {
-                    this.showError("Data converter for this xy chart not implemented!")
+                    this.showError("Data converter for this xy chart not implemented!");
                 } else {
                     tempData = [];
                     for (var i = 0; i < data.Cols[1].tuples.length; i++) {

@@ -63,6 +63,7 @@
 
             for (var attr in opt) { $scope.chartConfig[attr] = opt[attr]; }
 
+
             this.parseData = function(data) {
                 $scope.chartConfig.yAxis.min = _this.getMinValue(data.Data);
                 //config.yAxis.max = ChartBase.getMaxValue(data.Data);
@@ -72,6 +73,8 @@
                 var tempData = [];
                 var minDate = Number.POSITIVE_INFINITY;
                 var maxDate = Number.NEGATIVE_INFINITY;
+                var da;
+                var i;
 
                 if (data.Cols[0].tuples[0].children) {
                     var k = 0;
@@ -81,12 +84,12 @@
                             minDate = Number.POSITIVE_INFINITY;
                             maxDate = Number.NEGATIVE_INFINITY;
                             for (var d = 0; d < data.Cols[1].tuples.length; d++) {
-                                var da = convertDateFromCache(extractValue(data.Cols[1].tuples[i].path));//this.getDate(data.Cols[1].tuples[i].caption);
+                                da = convertDateFromCache(extractValue(data.Cols[1].tuples[i].path));//this.getDate(data.Cols[1].tuples[i].caption);
                                 tempData.push([
                                     da,
                                     data.Data[data.Cols[0].tuples.length * data.Cols[0].tuples[t].children.length * d + t * data.Cols[0].tuples[t].children.length + c]
                                 ]);
-                                if (tempData[tempData.length - 1][1] == "") tempData[tempData.length - 1][1] = null;
+                                if (tempData[tempData.length - 1][1] === "") tempData[tempData.length - 1][1] = null;
                                 k++;
                             }
                             _this.addSeries({
@@ -101,8 +104,8 @@
                         tempData = [];
                         minDate = Number.POSITIVE_INFINITY;
                         maxDate = Number.NEGATIVE_INFINITY;
-                        for (var i = 0; i < data.Cols[1].tuples.length; i++) {
-                            var da = convertDateFromCache(extractValue(data.Cols[1].tuples[i].path));//this.getDate(data.Cols[1].tuples[i].caption);
+                        for (i = 0; i < data.Cols[1].tuples.length; i++) {
+                            da = convertDateFromCache(extractValue(data.Cols[1].tuples[i].path));//this.getDate(data.Cols[1].tuples[i].caption);
                             tempData.push(
                                 [da, data.Data[i * data.Cols[0].tuples.length + j]]
                             );
@@ -115,11 +118,13 @@
                     }
                 }
 
-                var minDate = +Infinity;
-                var maxDate = -Infinity;
-                for (var i = 0; i <  $scope.chartConfig.series.length; i++) {
-                    var minValue = $scope.chartConfig.series[i].data[0][0];
-                    var maxValue = $scope.chartConfig.series[i].data[$scope.chartConfig.series[i].data.length - 1][0];
+                minDate = +Infinity;
+                maxDate = -Infinity;
+                var minValue;
+                var maxValue;
+                for (i = 0; i <  $scope.chartConfig.series.length; i++) {
+                    minValue = $scope.chartConfig.series[i].data[0][0];
+                    maxValue = $scope.chartConfig.series[i].data[$scope.chartConfig.series[i].data.length - 1][0];
 
                     if (minValue < minDate) minDate = minValue;
                     if (maxValue > maxDate) maxDate = maxValue;
@@ -228,7 +233,7 @@
             }
 
             function convertDateFromCache(s) {
-                if (s == "" && s == undefined || s == null) return null;
+                if (s === "" && s === undefined || s === null) return null;
                 var str = s.toString();
                 if (str.length == 4) return getDate(s);
                 if (str.indexOf("-") != -1) return getDate(s);
@@ -247,7 +252,7 @@
                     base = addDays(base, parseInt(d));
                     if (t) base.setSeconds(t);
                     return Date.parse(base);
-                } else return this.getDate(s);
+                } else return getDate(s);
             }
 
             function daysBetween(first, second) {

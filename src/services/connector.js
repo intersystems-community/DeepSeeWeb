@@ -3,7 +3,7 @@
 
     function ConnectorSvc($http, $location, $rootScope) {
         var self = this;
-        this.isSigned = true;
+        this.isSigned = false;
         this.username = "";
         this.namespace = "samples";
         this.url = "http://146.185.143.59/MDX2JSON/";
