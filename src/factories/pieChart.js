@@ -5,9 +5,11 @@
 
         function PieChart($scope) {
             BaseChart.apply(this, [$scope]);
+
+            $scope.chartConfig.plotOptions = {series: {allowPointSelect: true,                 stickyTracking: false}};
             this.setType('pie');
 
-            this.parseData = function(data) {
+           /* this.parseData = function(data) {
                 var values = [];
 
                 $scope.chartConfig.series = [];
@@ -20,7 +22,7 @@
                 $scope.chartConfig.series[0].data = values;
                 $scope.chartConfig.series[0].name = data.Cols[0].tuples[0].caption;
                 $scope.chartConfig.series[0].format = data.Cols[0].tuples[0].format;
-            };
+            };*/
 
             this.requestData();
         }
