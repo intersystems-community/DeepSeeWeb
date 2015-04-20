@@ -1,18 +1,52 @@
-<nav class="navbar navbar-default" ng-controller="menu" ng-show="model.isSigned" ng-cloak>
-    <div class="container-fluid">
+<nav class="navbar navbar-default" ng-controller="menu" ng-show="model.visible" ng-cloak>
+    <div class="ver">{{model.ver}}</div>
 
-        <div class="navbar-header" style="color:blue">
-            <a class="navbar-brand" href="#/">
-                InterSystems DeepSee™ {{path ? " - " + path : ""}}
-            </a>
-        </div>
-        <div class="collapse navbar-collapse">
-            <div class="nav navbar-nav navbar-right">
-                <p class="navbar-text">
-                    <span class="label label-default"><i class="fa fa-user"></i>&nbsp;{{model.username}}</span>
-                </p>
-                <button type="button" class="btn btn-default navbar-btn pull-left" ng-click="onSingoutClick()">{{'signout' | lang}}</button>
+    <div class="navbar-collapse">
+        <span class="navbar-brand" href="#/">
+            InterSystems DeepSee™
+        </span>
+        <form class="navbar-btn navbar-left">
+            <div class="btn-group">
+                <a href="#/" type="button" class="btn btn-default">{{'home' | lang}}</a>
             </div>
-        </div>
+
+            <div class="btn-group" ng-show="model.favs.length != 0 || model.onDashboard">
+                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                    <i class="fa" ng-class="model.canAdd ? 'fa-star-o':'fa-star'"></i>
+                </button>
+                <ul class="dropdown-menu" role="menu" style="cursor: pointer">
+                    <li><a hreaf="" ng-click="addToFavorites()" ng-show="model.canAdd && model.onDashboard">{{'addToFavorites' | lang}}</a></li>
+                    <li><a hreaf="" ng-click="removeFromFav()" ng-show="!model.canAdd && model.onDashboard">{{'removeFromFav' | lang}}</a></li>
+                    <li class="divider" ng-show="model.favs.length != 0 && model.onDashboard"></li>
+                    <li ng-repeat="fav in model.favs"><a hreaf="" ng-click="navigateFav(fav)">{{fav.label}}</a></li>
+                </ul>
+            </div>
+            <div class="btn-group">
+                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                    <i class="fa fa-gear"></i>
+                </button>
+                <ul class="dropdown-menu" role="menu" style="cursor: pointer">
+                    <li><a hreaf="" ng-click="toogleFolders()"><i class="fa fa-check menu-icon" ng-show="!model.hideFolders"></i>{{'showFolders' | lang}}</a></li>
+                    <li role="presentation" class="divider"></li>
+                    <li><a hreaf="" ng-click="resetWidgets()">{{'resetWidgets' | lang}}</a></li>
+                </ul>
+            </div>
+        </form>
+        <!--
+        <form class="navbar-form navbar-left" role="search" ng-show="!model.onDashboard">
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="{{'search' | lang}}" ng-model="model.searchText" ng-change="search(model.searchText)">
+                <span class="input-group-btn">
+                    <button class="btn btn-default" type="button" ng-click="model.searchText='';search('')"><i class="fa fa-eraser"></i></button>
+                </span>
+            </div>
+        </form>-->
+
+        <form class="navbar-form navbar-right">
+            <span class="label label-default"><i class="fa fa-user"></i>&nbsp;{{model.username}}</span>
+            <div class="btn-group">
+                <button type="button" class="btn btn-default" ng-click="onSingoutClick()">{{'signout' | lang}}</button>
+            </div>
+        </form>
     </div>
 </nav>
