@@ -38,6 +38,17 @@
                 password: "Password",
                 namespace: "Namespace",
                 loading: "Loading...",
+                search: "Search",
+                accept: "Accept",
+                close: "Close",
+                dismiss: "Dismiss",
+                home: "Home",
+                resetWidgets: "Reset widgets",
+                addToFavorites: "Add to favorites",
+                removeFromFav: "Remove from favorites",
+                refresh: "Refresh",
+                showFolders: "Show folders",
+                viewAs: "View as",
                 err: "Error",
                 errWidgetRequest: "Unable to load widget data",
                 errLoginRequired: "Please enter login",
@@ -45,7 +56,9 @@
                 errUnauth: "Incorrect username or password",
                 errNotFound: "Requested url not fount on server",
                 errTimeout: "Request timeout",
-                errWidgetNotSupported: "Widget is not supported"
+                errWidgetNotSupported: "Widget is not supported",
+                errNoWidgets: "No widgets received from server",
+                shortMonths: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
             },
             ru: {
                 dashboard: "Индикаторная панель",
@@ -56,6 +69,17 @@
                 password: "Пароль",
                 namespace: "Область",
                 loading: "Загрузка...",
+                search: "Поиск",
+                accept: "Принять",
+                close: "Закрыть",
+                dismiss: "Сбросить",
+                home: "Домой",
+                refresh: "Обновить",
+                resetWidgets: "Сбросить виджеты",
+                addToFavorites: "Добавить в избраное",
+                removeFromFav: "Удалить из избраного",
+                showFolders: "Отображать папки",
+                viewAs: "Отобразить как",
                 err: "Ошибка",
                 errWidgetRequest: "Невозможо получить данные виджета",
                 errLoginRequired: "Пожалуйста введите логин",
@@ -63,7 +87,9 @@
                 errUnauth: "Неверный логин или пароль",
                 errNotFound: "Заданый адрес не найден на сервере",
                 errTimeout: "Превышен интервал ожидания запроса",
-                errWidgetNotSupported: "Виджет не поддерживается"
+                errWidgetNotSupported: "Виджет не поддерживается",
+                errNoWidgets: "Сервер вернул пустой список виджетов",
+                shortMonths: ["Янв", "Фев", "Мар", "Апр", "Май", "Июн", "Июл", "Авг", "Сен", "Окт", "Ноя", "Дек"]
             },
             de: {}
         });
