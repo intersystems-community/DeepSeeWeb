@@ -1,13 +1,11 @@
 <div ng-cloak>
-    <div class="bookCover" ng-repeat="item in dashboards" ng-click="onItemClick(item)">
-        <div class="bookCoverHeader" ng-show="{{item.title != '..'}}">{{item.isFolder ? "folder" : "dashboard" | lang}}</div>
-        <h4 class="bookTitle">{{item.title}}</h4>
-        <!--<div class="bookPath">{{item.path}}</div>-->
-        <div class="bookIcon" ng-show="!item.Cover">
-            <span class="fa {{item.title == '..' ? 'fa-angle-left' : item.isFolder ? 'fa-folder-o' : 'fa-dashboard'}}"></span>
-        </div>
-        <div class="cover-img-holder"  ng-show="item.Cover">
-            <img class="cover-img" ng-src="{{item.Cover ? ('http://37.139.4.54/csp/samples/' + item.Cover) : ''}}">
+    <div class="pull-left panel dash-item" ng-class="item.isFolder ? 'panel-success':'panel-info'" ng-repeat="item in dashboards" ng-click="onItemClick(item)">
+        <div class="panel-heading dash-item-header" >{{item.isFolder ? "folder" : "dashboard" | lang}}</div>
+        <div class="panel-body dash-item-content" style="{{item.Cover ? ('background-image: url(http://37.139.4.54/csp/samples/' + item.Cover+')') : ''}}">
+            <h4>{{item.title}}</h4>
+            <div class="dash-item-icon" ng-show="!item.Cover">
+                <span class="fa {{item.title == '' ? 'fa-angle-left' : item.isFolder ? 'fa-folder-o' : 'fa-dashboard'}}"></span>
+            </div>
         </div>
     </div>
 </div>
