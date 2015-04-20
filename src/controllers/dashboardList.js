@@ -1,9 +1,17 @@
 (function() {
     'use strict';
 
-    function DashboardListCtrl($scope, $location, $routeParams, Connector) {
+    function DashboardListCtrl($scope, $location, $routeParams, Connector, Error, CONST) {
         var _this = this;
-        this.firstRun = true;
+        _this.search = "";
+
+        $scope.$on("search:dashboard", onSearchDashboard);
+
+        function onSearchDashboard(sc, txt) {
+            _this.search = txt;
+            if (!sessionStorage.dashboarList) return;
+            $scope.dashboards = _this.getFolderItems(JSON.parse(sessionStorage.dashboarList), _this.curFolder);
+        }
 
         // Get current folder from address hash
         this.getCurrentFolder = function() {
@@ -17,7 +25,7 @@
         // Redirect when item clicked
         this.onItemClicked = function(item) {
             if (item.isFolder) {
-                if (item.title == "..") {
+                if (item.title === "") {
                     var parts = _this.curFolder.split("/");
                     parts.splice(parts.length - 2, 2);
                     if (parts.length === 0) $location.path("/"); else
@@ -33,11 +41,8 @@
 
         // Request dashboard list
         this.requestData = function() {
-            //Connector.getDashboards().then(this.retrieveData);
-
             // Request server only first time
-            if (!sessionStorage.dashboarList || _this.firstRun) {
-                _this.firstRun = false;
+            if (!sessionStorage.dashboarList || Connector.firstRun) {
                 Connector.getDashboards().then(this.retrieveData);
             } else {
                 $scope.dashboards = this.getFolderItems(JSON.parse(sessionStorage.dashboarList), _this.curFolder);
@@ -46,6 +51,10 @@
 
         // Process retrieved dashboard list
         this.retrieveData = function(result) {
+            if (result.Error) {
+                Error.show(result.Error);
+                return;
+            }
             if (result.data) {
                 sessionStorage.dashboarList = JSON.stringify(result.data);
                 $scope.dashboards = _this.getFolderItems(result.data, _this.curFolder);
@@ -54,16 +63,36 @@
 
         // Get items for specified folder
         this.getFolderItems = function(data, folder) {
+            var dashboards = [];
+            var i;
+            var item;
+            var path;
+
+            if (CONST.hideFolders || _this.search) {
+                for (i = 0; i < data.children.length; i++) {
+                    item = data.children[i];
+                    if (item.path.toLocaleLowerCase().indexOf(_this.search.toLocaleLowerCase()) === -1) continue;
+                    path = item.path;
+                    if (path.substr(0, folder.length).toLowerCase() != folder.toLowerCase()) continue;
+                    path = path.substr(folder.length, path.length);
+                    parts = path.split("/");
+                    if (parts.length === 0) continue;
+                    item.title = parts[parts.length - 1];
+                    item.title = item.title.replace(".dashboard", "");
+                    dashboards.push(item);
+                }
+                return dashboards;
+            }
             var parts;
             function filter(a) {
                 if (a.title == parts[0]) return true;
                 return false;
             }
 
-            var dashboards = [];
-            for (var i = 0; i < data.children.length; i++) {
-                var item = data.children[i];
-                var path = item.path;
+
+            for (i = 0; i < data.children.length; i++) {
+                item = data.children[i];
+                path = item.path;
                 if (path.substr(0, folder.length).toLowerCase() != folder.toLowerCase()) continue;
                 path = path.substr(folder.length, path.length);
                 parts = path.split("/");
@@ -78,7 +107,7 @@
                     }
                 }
             }
-            if (_this.curFolder !== "") dashboards.push({title: "..", path: "", isFolder: true, isBack: true, Cover: ""});
+            if (_this.curFolder !== "") dashboards.push({title: "", path: "", isFolder: true, isBack: true, Cover: ""});
             /*for (var i = 0; i < dashboards.length; i++) {
                 if (dashboards[i].bookCover) if (dashboards[i].bookCover !== "") {
                     //dashboards[i].bookCover = JSON.parse(dashboards[i].bookCover);
@@ -93,11 +122,12 @@
 
         this.getCurrentFolder();
         $scope.onItemClick = this.onItemClicked;
+        $scope.$on("refresh", function() {_this.requestData();});
 
         this.requestData();
     }
 
     var dashboard = angular.module('dashboard');
-    dashboard.controller('dashboardList', ['$scope', '$location', '$routeParams', 'Connector', DashboardListCtrl]);
+    dashboard.controller('dashboardList', ['$scope', '$location', '$routeParams', 'Connector', 'Error', 'CONST', DashboardListCtrl]);
 
 })();
