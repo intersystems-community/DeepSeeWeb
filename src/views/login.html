@@ -1,22 +1,22 @@
-<span class="ver">v. 0.02</span>
+<span class="ver">{{model.ver}}</span>
 <div class="container" ng-cloak>
     <div class="row logo">
         <div class="col-md-4 col-md-offset-4 center">
-            <img src="/img/logo.svg" height="100px" alt="logo">
+            <img src="img/logo.svg" height="100px" alt="logo">
         </div>
     </div>
     <div class="row">
-        <div class="col-md-4 col-md-offset-4">
+        <form class="col-md-4 col-md-offset-4" ng-submit="onLoginClick()">
                 <div class="form-group">
                     <div class="input-group">
                         <span class="input-group-addon"><i class="w16 fa fa-user"></i></span>
-                        <input type="text" class="form-control" ng-model="model.login" placeholder="{{'login' | lang}}" auto-focus focus-next="pass" required>
+                        <input type="text" name="username" class="form-control" ng-model="model.login" placeholder="{{'login' | lang}}" auto-focus focus-next="pass" required>
                     </div>
                 </div>
                 <div class="form-group">
                     <div class="input-group">
                         <span class="input-group-addon"><i class="w16 fa fa-lock"></i></span>
-                        <input id="pass" type="password" class="form-control" ng-model="model.password" placeholder="{{'password' | lang}}" focus-next="ns" required>
+                        <input id="pass" name="password" type="password" class="form-control" ng-model="model.password" placeholder="{{'password' | lang}}" focus-next="ns" required>
                     </div>
                 </div>
                 <div class="form-group">
@@ -25,8 +25,8 @@
                         <input id="ns" type="text" class="form-control" ng-model="model.namespace" placeholder="{{'namespace' | lang}}" focus-next="btnLogin" required>
                     </div>
                 </div>
-                <button id="btnLogin" class="btn btn-large btn-block btn-primary" ng-click="onLoginClick()">{{'signin' | lang}}</button>
-        </div>
+                <button id="btnLogin" class="btn btn-large btn-block btn-primary">{{'signin' | lang}}</button>
+        </form>
     </div>
     <div class="row">
         <div class="err-msg">
