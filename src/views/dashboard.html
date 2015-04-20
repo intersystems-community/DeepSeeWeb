@@ -1,24 +1,52 @@
 <div ng-cloak>
     <div gridster>
         <ul>
-            <li class="widget-holder noselect" gridster-item="item" ng-repeat="item in model.items">
-                <div class="bookCoverHeader cursor-move">
+            <li class="panel panel-default widget-holder noselect" gridster-item="item" ng-repeat="item in model.items">
+                <div class="panel-heading widget-title">
                     {{item.title}}
                 </div>
-
-
                 <div class="widget" ng-controller="widget">
-                    <div class="widget-toolbar" ng-show="item.isToolbar">
-                        <button class="btn btn-default btn-sm"><i class="fa fa-filter"></i></button>
-                        <button class="btn btn-default btn-sm" ng-click="requestData()"><i class="fa fa-refresh"></i></button>
-                        <button class="btn btn-default btn-sm pull-right"><i class="fa fa-wrench"></i></button>
+                    <div class="widget-toolbar" ng-show="item.toolbar">
+                        <span ng-repeat="flt in model.filters" class="pull-left flt-holder">
+                            <label>{{flt.label}}</label>
+                            <div class="input-group">
+                                <input readonly type="text" class="form-control input-sm" value="{{flt.text}}" title="{{flt.text}}" style="background-color: #FFF; cursor: default">
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default btn-sm" type="button" ng-click="toogleFilter(flt.idx,$event)"><i class="fa fa-search"></i></button>
+                                </span>
+                            </div>
+                        </span>
                     </div>
 
-                    <highchart ng-show="item.isChart" id="{{'chart' + item.key}}" config="chartConfig"></highchart>
+                    <!-- widget content -->
+                    <div context-menu="onCtxMenuShow(item)" data-target="ctx-item-menu" ng-class="{ 'highlight': highlight, 'expanded' : expanded }">
+                        <div widget-content="getDesc(item.idx).type" class="widget-content" style="top:{{item.toolbar?52:16}}px"></div>
+                    </div>
+                    <!-------------------->
 
-                    <div class="widget-error" ng-show="model.isError">{{model.error}}</div>
+                    <div class="widget-error" ng-show="model.error">{{model.error}}</div>
+
                 </div>
+            </li>
+        </ul>
+    </div>
 
+    <div class="dropdown position-fixed" id="ctx-item-menu">
+        <ul class="dropdown-menu" role="menu">
+            <li>
+                <a class="pointer" role="menuitem" tabindex="1" ng-click="refreshItem()">
+                    {{'refresh' | lang}}
+                </a>
+            </li>
+            <li class="dropdown-submenu">
+                <a tabindex="-1">{{'viewAs' | lang}}</a>
+                <ul class="dropdown-menu">
+                    <li><a tabindex="-1" ng-click="setType('areachart')">Area chart</a></li>
+                    <li><a ng-click="setType('barchart')">Bar chart</a></li>
+                    <li><a ng-click="setType('columnchart')">Column chart</a></li>
+                    <li><a ng-click="setType('linechart')">Line chart</a></li>
+                    <li><a ng-click="setType('piechart')">Pie chart</a></li>
+                </ul>
             </li>
         </ul>
     </div>
