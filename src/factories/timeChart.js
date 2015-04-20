@@ -10,52 +10,58 @@
                 tooltip: {
                     // formatter: cb.defaultTimechartTooltipFormatter
                 },
-                rangeSelector: {
-                    inputEnabled: false,
-                    buttons: [{
-                        type: 'hour',
-                        count: 1,
-                        text: '1h'
-                    }, {
-                        type: 'day',
-                        count: 1,
-                        text: '1D'
-                    }, {
-                        type: 'all',
-                        count: 1,
-                        text: 'All'
-                    }],
-                    selected: 1
-                },
-                scrollbar: {
-                    enabled: false
+                options: {
+                    navigator: {
+                        enabled: true
+                    },
+                    rangeSelector: {
+                        inputEnabled: true,
+                        buttons: [{
+                            type: 'hour',
+                            count: 1,
+                            text: '1h'
+                        }, {
+                            type: 'day',
+                            count: 1,
+                            text: '1D'
+                        }, {
+                            type: 'all',
+                            count: 1,
+                            text: 'All'
+                        }],
+                        selected: 1
+                    },
+                    scrollbar: {
+                        enabled: false
+                    },
+                    xAxis: {
+                        type: 'datetime',
+                        title: {
+                            text: ''
+                        }
+                    },
+                    yAxis: {
+                        min: 0,
+                        title: {
+                            text: ''
+                        }
+                    },
+                    plotOptions: {
+                        series: {
+                            lineWidth: 3,
+                            marker: {
+                                enabled: false
+                            }
+                        }
+                    },
+                    legend: {
+                        enabled: true
+                    }
                 },
                 title: {
                     text: ''
                 },
-                xAxis: {
-                    type: 'datetime',
-                    title: {
-                        text: ''
-                    }
-                },
-                yAxis: {
-                    min: 0,
-                    title: {
-                        text: ''
-                    }
-                },
-                plotOptions: {
-                    series: {
-                        lineWidth: 3,
-                        marker: {
-                            enabled: false
-                        }
-                    }
-                },
-                legend: {
-                    enabled: true
-                },
+
                 series: [],
                 useHighStocks: true,
                 loading: true
@@ -69,7 +75,6 @@
                 //config.yAxis.max = ChartBase.getMaxValue(data.Data);
                 $scope.chartConfig.series = [];
                 $scope.chartConfig.xAxis.categories = [];
-                $scope.chartConfig.series = [];
                 var tempData = [];
                 var minDate = Number.POSITIVE_INFINITY;
                 var maxDate = Number.NEGATIVE_INFINITY;
@@ -131,7 +136,7 @@
                 }
                 var days = daysBetween(new Date(minValue), new Date(maxValue));
                 if (days <= 2) {
-                    $scope.chartConfig.rangeSelector.buttons =
+                    $scope.chartConfig.options.rangeSelector.buttons =
                         [{
                             type : 'minute',
                             count : 1,
@@ -146,7 +151,7 @@
                             text : 'All'
                         }];
                 } else if (days <= 30) {
-                    $scope.chartConfig.rangeSelector.buttons =
+                    $scope.chartConfig.options.rangeSelector.buttons =
                         [{
                             type : 'hour',
                             count : 1,
@@ -161,7 +166,7 @@
                             text : 'All'
                         }];
                 } else if (days <= 360) {
-                    $scope.chartConfig.rangeSelector.buttons =
+                    $scope.chartConfig.options.rangeSelector.buttons =
                         [{
                             type : 'day',
                             count : 1,
@@ -177,7 +182,7 @@
                         }];
 
                 } else {
-                    $scope.chartConfig.rangeSelector.buttons =
+                    $scope.chartConfig.options.rangeSelector.buttons =
                         [{
                             type : 'day',
                             count : 1,
@@ -195,7 +200,7 @@
                             count : 1,
                             text : 'All'
                         }];
-                    $scope.chartConfig.rangeSelector.selected = 3;
+                    $scope.chartConfig.options.rangeSelector.selected = 3;
                 }
             };
 
