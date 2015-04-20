@@ -1,17 +1,19 @@
 (function (){
     'use strict';
 
-    function LoginCtrl(Connector, Lang, $scope, $location, $rootScope) {
+    function LoginCtrl(Connector, Lang, $scope, $location, $rootScope, CONST) {
         var startTime = new Date().getTime();
 
         $scope.model = {
+            ver: CONST.ver,
             login: "",
             password: "",
-            namespace: "Samples",
+            namespace: Connector.namespace,
             error: ""
         };
 
         $scope.$on('signinerror', this.onError);
+        $rootScope.$broadcast('toogleMenu', false);
 
         $scope.onLoginClick = function() {
             clearError();
@@ -26,9 +28,15 @@
         };
 
         function onSuccess() {
-            Connector.isSigned = true;
-            $rootScope.$broadcast('signin', "");
-            $location.path("/");
+            Connector.namespace = $scope.model.namespace;
+
+            localStorage.userName = Connector.username;
+            localStorage.namespace = Connector.namespace;
+
+            $rootScope.$broadcast('toogleMenu', true);
+            var from = $location.search().from;
+            if (from) from = decodeURI(from); else from = "/";
+            $location.path(from).search({});
         }
 
         function onError(data, status, headers, config) {
@@ -69,6 +77,6 @@
     }
 
     angular.module('app')
-        .controller('login', ['Connector', 'Lang', '$scope', '$location', '$rootScope', LoginCtrl]);
+        .controller('login', ['Connector', 'Lang', '$scope', '$location', '$rootScope', 'CONST', LoginCtrl]);
 
 })();
