@@ -1,0 +1,22 @@
+<div class="flt-modal">
+<div class="flt-toolbar">
+    <div class="form-horizontal" style="width: 100%">
+        <input style="width: 120px;height: 20px; margin-top: 5px; margin-right: 2px" class="form-control input-sm pull-left" type="search" placeholder="{{'search' | lang}}" ng-model="model.search" ng-change="onSearch()" auto-focus>
+        <div class="btn-group pull-right">
+            <button class="btn btn-default btn-sm" ng-click="acceptFilter()"><i class="fa fa-check"> {{'accept' | lang}}</i></button>
+            <button class="btn btn-default btn-sm" ng-click="removeFilter()"><i class="fa fa-eraser"> {{'dismiss' | lang}}</i></button>
+            <button class="btn btn-default btn-sm" ng-click="closeThisDialog()"><i class="fa fa-remove"></i></button>
+        </div>
+    </div>
+</div>
+<div style='overflow-y: scroll; max-height: 280px'>
+    <table class="table table-striped table-hover table-small">
+        <tbody>
+            <tr ng-repeat="v in model.values">
+                <td style="width:24px;padding-left: 6px"><input type="checkbox" ng-model="v.checked"></td>
+                <td ng-click="toogleRow(v)" ng-class="v.default ? 'bold' : ''">{{v.name}}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+</div>
