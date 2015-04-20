@@ -1,27 +1,22 @@
 (function() {
     'use strict';
 
-    function BaseChartFact(Lang, Connector) {
+    function BaseChartFact(Lang, gridsterConfig, $element) {
 
         function BaseChart($scope) {
-            this.desc = $scope.item;
-
-            this.requestData = requestData;
             this.addSeries = addSeries;
             this.setType = setType;
             this.getMinValue = getMinValue;
             this.enableStacking = enableStacking;
-            this.clearError = clearError;
-            this.showError = showError;
-
+            this.baseRequestData = this.requestData;
+            this.requestData = reqestData;
             this.parseData = parseMultivalueData;
+            this.onResize = onResize;
             this._retrieveData = retrieveData;
-            this._onRequestError = onRequestError;
 
             var _this = this;
+            var firstRun = true;
 
-            $scope.item.isChart = true;
-            $scope.requestData = this.requestData;
             $scope.chartConfig = {
                 options: {
                     chart: {
@@ -42,36 +37,32 @@
                 title: {
                     text: ''
                 },
-                size: {
-                    width: 296,
-                    height: 250
-                },
-                lang: {
-                    loading: "dd"
-                },
+              /*  size: {
+                    width: $scope.item.sizeX * gridsterConfig.itemSize + ($scope.item.sizeX - 1)*12,
+                    height: $scope.item.sizeY * gridsterConfig.itemSize + ($scope.item.sizeY - 1)*12 - 50
+                },*/
                 //useHighStocks: true
+                func: function (chart) {
+                    _this.chart = chart;
+                    //_this.onResize();
+                },
                 loading: true
             };
 
-            function requestData() {
+            function reqestData() {
                 $scope.chartConfig.loading = true;
-                _this.clearError();
-                Connector.execMDX(_this.desc.basemdx).error(_this._onRequestError).success(_this._retrieveData);
+                _this.baseRequestData();
             }
 
             function retrieveData(result) {
                 $scope.chartConfig.loading = false;
-                if (result) _this.parseData(result);
-            }
-
-            function onRequestError(e, status) {
-                $scope.chartConfig.loading = false;
-                var msg = Lang.get("errWidgetRequest");
-                switch (status) {
-                    case 401: msg = Lang.get('errUnauth'); break;
-                    case 404: msg = Lang.get('errNotFound'); break;
+                if (result) {
+                    _this.parseData(result);
+                    if (firstRun) {
+                        firstRun = false;
+                        _this.onResize();
+                    }
                 }
-                _this.showError(msg);
             }
 
             function addSeries(data) {
@@ -100,17 +91,6 @@
                 $scope.chartConfig.options.chart.type = type;
             }
 
-            function clearError() {
-                $scope.model.isError = false;
-                $scope.model.error = "";
-            }
-
-            function showError(txt) {
-                $scope.model.error = /*Lang.get("err") + ": " +*/ txt;
-                $scope.model.isError = true;
-            }
-
-
             function fixData(tempData) {
                 for (var g = 0; g < tempData.length; g++) {
                     if (!tempData[g].y) tempData[g].y = null;
@@ -130,15 +110,15 @@
                 var data = d;
                 var i;
                 $scope.chartConfig.yAxis.min = getMinValue(data.Data);
-
                 $scope.chartConfig.series = [];
                 $scope.chartConfig.xAxis.categories = [];
                 for (i = 0; i < data.Cols[1].tuples.length; i++) {
                     $scope.chartConfig.xAxis.categories.push(data.Cols[1].tuples[i].caption.toString());
                 }
                 var tempData = [];
-
-                if (data.Cols[0].tuples[0].children) {
+                var hasChildren = false;
+                if (data.Cols[0].tuples.length !== 0) if (data.Cols[0].tuples[0].children) hasChildren = true;
+                if (hasChildren) {
                     var k = 0;
                     for(var t = 0; t < data.Cols[0].tuples.length; t++) {
                         for (var c = 0; c < data.Cols[0].tuples[t].children.length; c++) {
@@ -155,29 +135,42 @@
                             _this.addSeries({
                                 data: tempData,
                                 name: data.Cols[0].tuples[t].caption + "/" + data.Cols[0].tuples[t].children[c].caption,
-                                format: data.Cols[0].tuples[t].children[c].format
+                                format: data.Cols[0].tuples[t].children[c].format,
                             });
                         }
                     }
                 } else {
-                    for(var j = 0; j < data.Cols[0].tuples.length; j++) {
+                    //for(var j = 0; j < data.Cols[0].tuples.length; j++) {
+                    for(var j = data.Cols[0].tuples.length - 1; j>=0; j--) {
                         tempData = [];
                         for (i = 0; i < data.Cols[1].tuples.length; i++) {
                             tempData.push({
                                 y: data.Data[i * data.Cols[0].tuples.length + j],
                                 drilldown: true,
                                 cube: data.Info.cubeName,
-                                path: data.Cols[1].tuples[i].path
+                                path: data.Cols[1].tuples[i].path,
+                                name: data.Cols[1].tuples[i].caption
                             });
                         }
                         fixData(tempData);
+                        var name = "Count";
+                        var format = "";
+                        if (data.Cols[0].tuples[j]) {
+                            name = data.Cols[0].tuples[j].caption;
+                            format = data.Cols[0].tuples[j].format;
+                        }
+
                         _this.addSeries({
                             data: tempData,
-                            name: data.Cols[0].tuples[j].caption,
-                            format: data.Cols[0].tuples[j].format
+                            name: name,
+                            format: format,
                         });
                     }
                 }
+            }
+
+            function onResize() {
+                if (_this.chart) if (_this.chart.container) if (_this.chart.container.parentNode) _this.chart.setSize(_this.chart.container.parentNode.offsetWidth, _this.chart.container.parentNode.offsetHeight, false);
             }
         }
 
@@ -185,6 +178,6 @@
     }
 
     angular.module('widgets')
-        .factory('BaseChart', ['Lang', 'Connector', BaseChartFact]);
+        .factory('BaseChart', ['Lang', 'gridsterConfig', BaseChartFact]);
 
 })();
