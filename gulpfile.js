@@ -3,6 +3,7 @@ var gulp   = require('gulp'),
     jshint = require('gulp-jshint'),
     concat = require('gulp-concat'),
     cssmin = require('gulp-cssmin'),
+    //jscs = require('gulp-jscs'),
     htmlreplace = require('gulp-html-replace'),
     templateCache = require('gulp-angular-templatecache'),
     del = require('del');
@@ -10,33 +11,19 @@ var gulp   = require('gulp'),
 gulp.task('minify', ['templates'], function () {
     var scripts = [
         "src/app.js",
+        "src/directives/widgetContent.js",
+        "src/services/error.js",
+        "src/services/filters.js",
+        "src/controllers/filter.js",
         "src/directives/focus.js",
+        "src/directives/pivot.js",
         "src/controllers/login.js",
-        "src/services/session.js",
         "src/services/interseptor.js",
         "src/services/connector.js",
         "src/controllers/menu.js",
         "src/controllers/dashboard.js",
         "src/controllers/dashboardList.js",
-        "src/factories/baseChart.js",
-        "src/factories/lineChart.js",
-        "src/factories/areaChart.js",
-        "src/factories/barChart.js",
-        "src/controllers/widget.js",
-        "src/services/lang.js",
-        "build/src/templates.js"
-    ];
-
-    var scripts = [
-        "src/app.js",
-        "src/directives/focus.js",
-        "src/controllers/login.js",
-        "src/services/session.js",
-        "src/services/interseptor.js",
-        "src/services/connector.js",
-        "src/controllers/menu.js",
-        "src/controllers/dashboard.js",
-        "src/controllers/dashboardList.js",
+        "src/factories/baseWidget.js",
         "src/factories/baseChart.js",
         "src/factories/lineChart.js",
         "src/factories/areaChart.js",
@@ -45,6 +32,9 @@ gulp.task('minify', ['templates'], function () {
         "src/factories/pieChart.js",
         "src/factories/xyChart.js",
         "src/factories/timeChart.js",
+        "src/factories/pivotWidget.js",
+        "src/directives/textWidget.js",
+        "src/factories/textWidget.js",
         "src/services/typeMap.js",
         "src/controllers/widget.js",
         "src/services/lang.js",
@@ -52,6 +42,7 @@ gulp.task('minify', ['templates'], function () {
     ];
 
     return gulp.src(scripts)
+        //.pipe(jscs())
         .pipe(jshint())
         .pipe(jshint.reporter('default'))
         //.pipe(uglify())
@@ -82,11 +73,16 @@ gulp.task('copyindex', function () {
     var scripts = [
         "src/lib/angular.min.js",
         "src/lib/angular-route.min.js",
+        "src/lib/angular-cookies.min.js",
+        "src/lib/angular-notify.min.js",
+        "src/lib/ng-context-menu.min.js",
+        "src/lib/ngDialog.min.js",
         "src/lib/jquery-2.1.3.min.js",
         "src/lib/bootstrap.min.js",
         "src/lib/angular-gridster.min.js",
         "src/lib/highstock.js",
         "src/lib/highcharts-ng.min.js",
+        "src/lib/lightPivotTable.js",
         "src/app.js"
     ];
     gulp.src(['index.html'])
