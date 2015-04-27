@@ -9,7 +9,7 @@
 
     .constant('CONST', {
         timeout: 10000,
-        ver: "0.3a",
+        ver: "1.0",
         hideFolders: localStorage.hideFolders == "true" ? true : false
     })
 
