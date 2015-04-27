@@ -19,7 +19,7 @@ Supported widgets:
 * Bullseye chart
 * Speedometer
 * Fuel gauge
-* 
+
 #Build
 Project uses Gulp as build system. Install Gulp with following command:
 ```
