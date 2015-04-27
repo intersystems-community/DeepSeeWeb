@@ -25,7 +25,8 @@
         function getDashboards() {
             _this.firstRun = false;
             return $http({
-                method: 'GET',
+                method: 'POST',
+                data: {Folder: ""},
                 url: _this.url + 'Dashboards?Namespace=' + _this.namespace,
                 withCredentials: true
             });
