@@ -1,7 +1,7 @@
 (function(){
     'use strict';
 
-    function DashboardCtrl($scope, $routeParams, Connector, Error, Filters, Lang) {
+    function DashboardCtrl($scope, $routeParams, Connector, Error, Filters, Lang, Utils) {
         var _this = this;
         this.desc = []; // stores widget definition received from server
         this.ctxItem = undefined;
@@ -55,16 +55,11 @@
                     toolbar: true
                 };
                 if (result.widgets[i].key) setWidgetSizeAndPos(item, result.widgets[i].key.toString());
-                /*if (localStorage["pos" + result.widgets[i].key + "x"] === undefined) {
-                    if ((item.sizeX != 2) || (item.sizeY != 2)) {
-                        item.row = parseInt(i / 6) * item.sizeX;
-                    }
-                }*/
                 $scope.model.items.push(item);
 
                 // Create item for description
                 item = {};
-                for (var attr in result.widgets[i]) { item[attr] = result.widgets[i][attr]; }
+                Utils.merge(item, result.widgets[i]);
                 _this.desc.push(item);
             }
         }
@@ -85,6 +80,6 @@
     }
 
     angular.module('dashboard')
-        .controller('dashboard', ['$scope', '$routeParams', 'Connector', 'Error', 'Filters', 'Lang', DashboardCtrl]);
+        .controller('dashboard', ['$scope', '$routeParams', 'Connector', 'Error', 'Filters', 'Lang', 'Utils', DashboardCtrl]);
 
 })();
