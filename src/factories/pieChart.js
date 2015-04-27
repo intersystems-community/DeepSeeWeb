@@ -6,7 +6,7 @@
         function PieChart($scope) {
             BaseChart.apply(this, [$scope]);
 
-            $scope.chartConfig.plotOptions = {series: {allowPointSelect: true,                 stickyTracking: false}};
+            $scope.chartConfig.options.plotOptions = {series: {allowPointSelect: true, stickyTracking: false}};
             this.setType('pie');
 
            /* this.parseData = function(data) {

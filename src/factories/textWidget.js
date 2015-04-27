@@ -15,7 +15,10 @@
                 $scope.model.textData = [];
                 if (result) {
                     for (var i = 0; i < result.Cols[0].tuples.length; i++) {
-                        $scope.model.textData.push({ label: result.Cols[0].tuples[i].caption, value: result.Data[i] });
+                        var v = result.Data[i];
+                        var fmt = result.Cols[0].tuples[i].format;
+                        if (fmt) v = numeral(v).format(fmt);
+                        $scope.model.textData.push({ label: result.Cols[0].tuples[i].caption, value: v });
                     }
                 }
             }
