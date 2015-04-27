@@ -17,9 +17,30 @@
                 }
             };
 
+            $scope.chartConfig.options.tooltip = {
+                formatter: function () {
+                    var fmt1 = this.series.userOptions.format1;
+                    var fmt2 = this.series.userOptions.format2;
+                    var v1 = this.y;
+                    var v2 = this.x;
+                    if (fmt1) v1 = numeral(v1).format(fmt1);
+                    if (fmt2) v2 = numeral(v2).format(fmt2);
+                    return $scope.chartConfig.yAxis.title.text + ':<b>' + v1 + '</b><br/>' + $scope.chartConfig.xAxis.title.text + ':<b>' + v2 + '</b>';
+                }
+            };
+
             this.parseData = function(data) {
-                if (data.Cols[0].tuples.length >= 1) $scope.chartConfig.xAxis.title.text = data.Cols[0].tuples[0].caption;
-                if (data.Cols[0].tuples.length >= 2) $scope.chartConfig.yAxis.title.text = data.Cols[0].tuples[1].caption;
+                var fmt1 = "";
+                var fmt2 = "";
+
+                if (data.Cols[0].tuples.length >= 1) {
+                    $scope.chartConfig.xAxis.title.text = data.Cols[0].tuples[0].caption;
+                    fmt1 = data.Cols[0].tuples[0].format;
+                }
+                if (data.Cols[0].tuples.length >= 2) {
+                    $scope.chartConfig.yAxis.title.text = data.Cols[0].tuples[1].caption;
+                    fmt1 = data.Cols[0].tuples[1].format;
+                }
                 $scope.chartConfig.series = [];
                 var tempData = [];
 
@@ -32,7 +53,9 @@
                     }
                     this.addSeries({
                         data: tempData,
-                        name: ""
+                        name: "",
+                        format1: fmt1,
+                        fotmat2: fmt2
                     });
 
                     $scope.chartConfig.xAxis.tickInterval = Math.round((tempData[tempData.length - 1][0] - tempData[0][0]) / 10);
