@@ -16,6 +16,7 @@
                             namespace: Connector.namespace,
                             sendCookies: true
                         },
+                        columnResizeAnimation: true,
                         showSummary: true,
                         //loadingMessageHTML: '<div class="loader"></div>',
                         locale: Lang.current,
