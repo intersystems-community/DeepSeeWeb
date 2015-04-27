@@ -2,7 +2,7 @@
 Renderer for DeepSee Dashboards in Browser with MDX2JSON as a Serverside and JS web-client.<br>
 Developed using AngularJS and Bootstrap.<br><br>
 ![DeepSeeWeb screenshot](/screenshot.png?raw=true "DeepSeeWeb screenshot")<br>
-Supported widgets:
+#Supported widgets
 * Area chart
 * Line chart
 * Chart with markers
