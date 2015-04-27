@@ -11,6 +11,7 @@ var gulp   = require('gulp'),
 gulp.task('minify', ['templates'], function () {
     var scripts = [
         "src/app.js",
+        "src/services/utils.js",
         "src/directives/widgetContent.js",
         "src/services/error.js",
         "src/services/filters.js",
@@ -32,6 +33,13 @@ gulp.task('minify', ['templates'], function () {
         "src/factories/pieChart.js",
         "src/factories/xyChart.js",
         "src/factories/timeChart.js",
+        "src/factories/timeChart.js",
+        "src/factories/hiLowChart.js",
+        "src/factories/treeMapChart.js",
+        "src/factories/bubbleChart.js",
+        "src/factories/bullseyeChart.js",
+        "src/factories/speedometerChart.js",
+        "src/factories/fuelGaugeChart.js",
         "src/factories/pivotWidget.js",
         "src/directives/textWidget.js",
         "src/factories/textWidget.js",
@@ -71,16 +79,20 @@ gulp.task('copyfiles', function () {
 
 gulp.task('copyindex', function () {
     var scripts = [
+        "src/lib/numeral.min.js",
         "src/lib/angular.min.js",
         "src/lib/angular-route.min.js",
         "src/lib/angular-cookies.min.js",
         "src/lib/angular-notify.min.js",
         "src/lib/ng-context-menu.min.js",
-        "src/lib/ngDialog.min.js",
+        "src/lib/ngDialog.js",
         "src/lib/jquery-2.1.3.min.js",
         "src/lib/bootstrap.min.js",
         "src/lib/angular-gridster.min.js",
         "src/lib/highstock.js",
+        "src/lib/highcharts-more.js",
+        "src/lib/heatmap.src.js",
+        "src/lib/treemap.src.js",
         "src/lib/highcharts-ng.min.js",
         "src/lib/lightPivotTable.js",
         "src/app.js"
