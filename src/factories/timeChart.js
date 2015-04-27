@@ -1,16 +1,16 @@
 (function() {
     'use strict';
 
-    function TimeChartFact(BaseChart) {
+    function TimeChartFact(BaseChart, Utils) {
 
         function TimeChart($scope) {
             BaseChart.apply(this, [$scope]);
             var _this = this;
             var opt = {
-                tooltip: {
-                    // formatter: cb.defaultTimechartTooltipFormatter
-                },
                 options: {
+                    tooltip: {
+                        formatter: defaultTimechartTooltipFormatter
+                    },
                     navigator: {
                         enabled: true
                     },
@@ -67,8 +67,7 @@
                 loading: true
             };
 
-            for (var attr in opt) { $scope.chartConfig[attr] = opt[attr]; }
-
+            Utils.merge($scope.chartConfig, opt);
 
             this.parseData = function(data) {
                 $scope.chartConfig.yAxis.min = _this.getMinValue(data.Data);
@@ -204,6 +203,32 @@
                 }
             };
 
+
+            function defaultTimechartTooltipFormatter() {
+                var a;
+                var fmt;
+                var val;
+                /* jshint ignore:start */
+                var t = this;
+                /* jshint ignore:end */
+                if (t.series) {
+                    fmt = t.series.options.format;
+                    val = t.y;
+                    if (fmt) val = numeral(val).format(fmt);
+                    a = '<span style="color:' + t.series.color + '">\u25CF</span>' + t.series.name + ':<b> ' + val;
+                    return a;
+                } else {
+                    a = "";
+                    for (var i = t.points.length - 1; i > -1; i--) {
+                        fmt = t.points[i].series.options.format;
+                        val = t.points[i].y;
+                        if (fmt) val = numeral(val).format(fmt);
+                        a += '<span style="color:' + t.points[i].series.color + '">\u25CF</span>' + t.points[i].series.name + ':<b> ' + val + '<br>';
+                    }
+                    return a;
+                }
+            }
+
             function addDays(date, days) {
                 var result = new Date(date);
                 result.setDate(date.getDate() + days);
@@ -278,6 +303,6 @@
     }
 
     angular.module('widgets')
-        .factory('TimeChart', ['BaseChart', TimeChartFact]);
+        .factory('TimeChart', ['BaseChart', 'Utils', TimeChartFact]);
 
 })();
