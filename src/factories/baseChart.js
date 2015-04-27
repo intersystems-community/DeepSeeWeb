@@ -8,6 +8,7 @@
             this.setType = setType;
             this.getMinValue = getMinValue;
             this.enableStacking = enableStacking;
+            this.fixData = fixData;
             this.baseRequestData = this.requestData;
             this.requestData = reqestData;
             this.parseData = parseMultivalueData;
@@ -21,6 +22,12 @@
                 options: {
                     chart: {
                         type: 'line'
+                    },
+                    credits: {
+                        enabled: false
+                    },
+                    tooltip: {
+                        formatter: defaultFormatter
                     }
                 },
                 yAxis: {
@@ -49,6 +56,18 @@
                 loading: true
             };
 
+            function defaultFormatter() {
+                /* jshint ignore:start */
+                var t = this;
+                /* jshint ignore:end */
+                var fmt = t.series.options.format;
+                var val = t.y;
+                if (fmt) val = numeral(val).format(fmt.replace(/;/g, ""));
+                var a = t.point.name + '<br>' + t.series.name + ': <b>' + val + "</b><br>";
+                if (t.point.percentage) a += parseFloat(t.point.percentage).toFixed(2).toString() + "%";
+                return a;
+            }
+
             function reqestData() {
                 $scope.chartConfig.loading = true;
                 _this.baseRequestData();
@@ -58,6 +77,20 @@
                 $scope.chartConfig.loading = false;
                 if (result) {
                     _this.parseData(result);
+                    if (_this.desc.type.toLowerCase() === "combochart") {
+                        $scope.chartConfig.yAxis = [{},{ opposite: true}];
+                        $scope.chartConfig.options.yAxis = [{},{}];
+                        for (var i = 0; i < $scope.chartConfig.series.length; i++) {
+                            switch (i % 3) {
+                                case 0: $scope.chartConfig.series[i].type="line";$scope.chartConfig.series[i].zIndex = 2; $scope.chartConfig.series[i].color ="#000000"; break;
+                                case 1: $scope.chartConfig.series[i].type="bar"; $scope.chartConfig.series[i].yAxis = 1;$scope.chartConfig.series[i].color = 'rgb(124, 181, 236)';$scope.chartConfig.series[i].zIndex = 0; break;
+                                case 2: $scope.chartConfig.series[i].type="area"; break;
+                            }
+                            $scope.chartConfig.yAxis[i].title = {
+                                text: $scope.chartConfig.series[i].name
+                            };
+                        }
+                    }
                     if (firstRun) {
                         firstRun = false;
                         _this.onResize();
