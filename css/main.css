@@ -110,6 +110,10 @@
 .widget-toolbar {
     background-color: #F0F0F0;
     padding: 2px 2px 3px;
+    display: -webkit-box;      /* OLD - iOS 6-, Safari 3.1-6 */
+    display: -moz-box;         /* OLD - Firefox 19- (buggy but mostly works) */
+    display: -ms-flexbox;      /* TWEENER - IE 10 */
+    display: -webkit-flex;     /* NEW - Chrome */
     display: flex;
 }
 
@@ -249,10 +253,15 @@
     -webkit-box-shadow: 2px 2px 2px 1px rgba(0,0,0,0.21);
     -moz-box-shadow: 2px 2px 2px 1px rgba(0,0,0,0.21);
     box-shadow: 2px 2px 2px 1px rgba(0,0,0,0.21);
+    z-index: 1111;
 }
 .flt-toolbar {
     background-color: #F0F0F0;
     padding: 2px 2px 3px;
+    display: -webkit-box;      /* OLD - iOS 6-, Safari 3.1-6 */
+    display: -moz-box;         /* OLD - Firefox 19- (buggy but mostly works) */
+    display: -ms-flexbox;      /* TWEENER - IE 10 */
+    display: -webkit-flex;     /* NEW - Chrome */
     display: flex;
     width: 100%;
 }
