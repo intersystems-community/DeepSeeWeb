@@ -51,8 +51,8 @@
 
         // Process retrieved dashboard list
         this.retrieveData = function(result) {
-            if (result.Error) {
-                Error.show(result.Error);
+            if (result.data) if (result.data.Error) {
+                Error.show(result.data.Error);
                 return;
             }
             if (result.data) {
