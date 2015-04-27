@@ -12,7 +12,14 @@ Supported widgets:
 * Time chart
 * Pivot table
 * Text widget
-
+* Combo chart
+* Bubble chart
+* Hi-Low chart
+* Quadtree chart
+* Bullseye chart
+* Speedometer
+* Fuel gauge
+* 
 #Build
 Project uses Gulp as build system. Install Gulp with following command:
 ```
