@@ -14,6 +14,7 @@
                     },
                     area: {
                         //stacking: 'percent',
+                        stacking: 'normal',
                         marker: {
                             enabled: false
                         }
