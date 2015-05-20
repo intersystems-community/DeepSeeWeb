@@ -1,7 +1,7 @@
 (function() {
     'use strict';
 
-    function DashboardListCtrl($scope, $location, $routeParams, Connector, Error, CONST) {
+    function DashboardListCtrl($scope, $location, $routeParams, Connector, Error, CONST, Lang) {
         var _this = this;
         _this.search = "";
 
@@ -35,7 +35,7 @@
                     $location.path("/f/" + _this.curFolder);
                 }
             } else {
-                $location.path("/dashboard/" + item.path);
+                $location.path("/d/" + item.path);
             }
         };
 
@@ -56,6 +56,7 @@
                 return;
             }
             if (result.data) {
+                if (result.data.children.length === 0) Error.show(Lang.get("errNoDashboards"));
                 sessionStorage.dashboarList = JSON.stringify(result.data);
                 $scope.dashboards = _this.getFolderItems(result.data, _this.curFolder);
             }
@@ -81,6 +82,7 @@
                     item.title = item.title.replace(".dashboard", "");
                     dashboards.push(item);
                 }
+
                 return dashboards;
             }
             var parts;
@@ -98,8 +100,10 @@
                 parts = path.split("/");
                 if (parts.length === 0) continue;
                 if (parts.length === 1) {
-                    item.title = parts[0];
-                    item.title = item.title.replace(".dashboard", "");
+                    if (item.title === "") {
+                        item.title = parts[0];
+                        item.title = item.title.replace(".dashboard", "");
+                    }
                     dashboards.push(item);
                 } else {
                     if (dashboards.filter(filter).length === 0) {
@@ -113,6 +117,7 @@
                     //dashboards[i].bookCover = JSON.parse(dashboards[i].bookCover);
                 }
             }*/
+
             return dashboards.sort(function (a, b) {
                 if (a.isFolder && !b.isFolder) return -1;
                 if (b.isFolder && !a.isFolder) return 1;
@@ -128,6 +133,6 @@
     }
 
     var dashboard = angular.module('dashboard');
-    dashboard.controller('dashboardList', ['$scope', '$location', '$routeParams', 'Connector', 'Error', 'CONST', DashboardListCtrl]);
+    dashboard.controller('dashboardList', ['$scope', '$location', '$routeParams', 'Connector', 'Error', 'CONST', 'Lang', DashboardListCtrl]);
 
 })();
