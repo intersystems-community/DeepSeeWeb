@@ -4,9 +4,10 @@
     function WidgetCtrl($scope, Lang, TypeMap, gridsterConfig, ngDialog, Filters, BaseWidget) {
         var _this = this;
         BaseWidget.apply(this, [$scope]);
+        //this.changeType = function(newType) { changeType(null, newType); };
         $scope.model = {
             error: "",
-            filters: Filters.getWidgetFilters(this.desc.name)
+            filters: Filters.getWidgetModelFilters(this.desc.name)
         };
         var type = TypeMap.getClass(_this.desc.type);
         if (type) type.apply(this, [$scope]); else {
@@ -19,7 +20,7 @@
         $scope.onInit = this.onInit;
         //$scope.onSizeChange = onSizeChange;
         $scope.requestData = this.requestData;
-        $scope.toogleFilter = toggleFilter;
+        $scope.toggleFilter = toggleFilter;
 
         $scope.$on("refresh:" + $scope.item.$$hashKey, function(){_this.requestData();});
         $scope.$on("filter" + _this.desc.name, applyFilter);
@@ -70,7 +71,7 @@
         function toggleFilter(idx, e) {
             var flt = Filters.getFilter(idx);
             if (!flt) return;
-            var obj = e.currentTarget.offsetParent.offsetParent;
+            var obj = e.currentTarget.tagName.toUpperCase() === "INPUT" ? e.currentTarget.nextElementSibling.offsetParent : e.currentTarget.offsetParent.offsetParent;
             if (obj) {
                 var rect = obj.getBoundingClientRect();
                 changeStyle(".ngdialog.ngdialog-theme-plain .ngdialog-content", "margin-left", rect.left + "px");
