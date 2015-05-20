@@ -1,7 +1,7 @@
 (function() {
     'use strict';
 
-    function PivotWidgetFact(BaseChart) {
+    function PivotWidgetFact() {
 
         function PivotWidget($scope) {
             var _this = this;
@@ -9,6 +9,8 @@
             this.onInit = onInit;
             this.requestData = requestData;
             this.onResize = onResize;
+
+            $scope.item.pivotMdx = _this.getMDX();
 
             function onInit(lpt) {
                 _this.lpt = lpt;
@@ -31,6 +33,6 @@
     }
 
     angular.module('widgets')
-        .factory('PivotWidget', ['BaseChart', PivotWidgetFact]);
+        .factory('PivotWidget', PivotWidgetFact);
 
 })();
