@@ -3,6 +3,8 @@
 
     function LineChartFact(BaseChart) {
 
+
+
         function LineChart($scope) {
             BaseChart.apply(this, [$scope]);
             this.setType('line');
@@ -12,6 +14,16 @@
                         lineWidth: 3,
                         marker: {
                             enabled: false
+                        }
+                    }
+                };
+            }
+
+            if (this.desc.type.toLowerCase() === "linechartmarkers") {
+                $scope.chartConfig.options.plotOptions = {
+                    series: {
+                        marker: {
+                            enabled: true
                         }
                     }
                 };
