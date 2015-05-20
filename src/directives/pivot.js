@@ -12,8 +12,8 @@
                         dataSource: {
                             pivot: desc.dataSource,
                             MDX2JSONSource: Connector.url.substring(0, Connector.url.length - 1),
-                            basicMDX: desc.basemdx,
-                            namespace: Connector.namespace,
+                            basicMDX: scope.item.pivotMdx,
+                            namespace: Connector.getNamespace(),
                             sendCookies: true
                         },
                         columnResizeAnimation: true,
@@ -22,6 +22,7 @@
                         locale: Lang.current,
                         formatNumbers: "#,###.##"
                     };
+                    delete scope.model.pivotMdx;
 
                     var lpt = new LightPivotTable(setup);
                     if (scope.onInit) scope.onInit(lpt);
