@@ -1,11 +1,16 @@
 (function() {
     'use strict';
 
-    function BaseWidgetFact(Lang, Connector, Filters) {
+    function BaseWidgetFact(Lang, Connector, Filters, Utils) {
 
         function BaseWidget($scope) {
             var _this = this;
             this.supported = true;
+            if ($scope.tile) {
+                $scope.item = {};
+                Utils.merge($scope.item, $scope.tile);
+            }
+
             this.desc = $scope.getDesc($scope.item.idx);
             this._onRequestError = onRequestError;
             this._retrieveData = function(){};
@@ -19,9 +24,16 @@
             this.updateFiltersText = updateFiltersText;
             this.getFilter = getFilter;
             this.onResize = function(){};
-            Object.defineProperty(this, "filterCount", {
-                get: function() { return $scope.model.filters.length; }
-            });
+
+            $scope.item.toolbarView = 'src/views/filters.html';
+
+            if (this.filterCount === undefined) {
+                Object.defineProperty(this, "filterCount", {
+                    get: function () {
+                        return $scope.model.filters.length;
+                    }
+                });
+            }
 
             function getFilter(idx) {
                 return Filters.getFilter($scope.model.filters[idx].idx);
@@ -47,18 +59,19 @@
                 var filterActive = false;
                 var i;
                 var flt;
-                for (i = 0; i < _this.filterCount; i++) {
-                    flt = _this.getFilter(i);
+                var filters = Filters.getWidgetFilters(_this.desc.name);
+                for (i = 0; i < filters.length; i++) {
+                    flt = filters[i];
                     if (flt.value !== "") {
                         filterActive = true;
                         break;
                     }
                 }
-                var mdx = _this.desc.basemdx;
+                var mdx = /*useBasic == true ? _this.desc.basemdx :*/ _this.desc.mdx;
                 if (!filterActive) return mdx;
 
-                for (i = 0; i < _this.filterCount; i++) {
-                    flt = _this.getFilter(i);
+                for (i = 0; i < filters.length; i++) {
+                    flt = filters[i];
                     if (flt.value !== "") {
                         var values = flt.value.split(",");
                         var path = flt.targetProperty;
@@ -99,6 +112,6 @@
     }
 
     angular.module('widgets')
-        .factory('BaseWidget', ['Lang', 'Connector', 'Filters', BaseWidgetFact]);
+        .factory('BaseWidget', ['Lang', 'Connector', 'Filters', 'Utils', BaseWidgetFact]);
 
 })();
