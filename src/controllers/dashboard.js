@@ -1,7 +1,7 @@
 (function(){
     'use strict';
 
-    function DashboardCtrl($scope, $routeParams, Connector, Error, Filters, Lang, Utils) {
+    function DashboardCtrl($scope, $rootScope, $routeParams, Connector, Error, Filters, Lang, Utils) {
         var _this = this;
         this.desc = []; // stores widget definition received from server
         this.ctxItem = undefined;
@@ -11,6 +11,7 @@
         $scope.getDesc = getDesc;
         $scope.onCtxMenuShow = onCtxMenuShow;
         $scope.refreshItem = refreshItem;
+        $scope.printItem = printItem;
         $scope.setType = setType;
         $scope.$on("resetWidgets", function() { window.location.reload(); });
 
@@ -21,6 +22,12 @@
 
         function onCtxMenuShow(item) {
             _this.ctxItem = item.$$hashKey;
+        }
+
+        function printItem() {
+            if (!_this.ctxItem) return;
+            $scope.$broadcast('print:' + _this.ctxItem);
+            _this.ctxItem = undefined;
         }
 
         function refreshItem() {
@@ -40,7 +47,7 @@
                 return;
             }
             if (result.filters) Filters.init(result.filters);
-
+            if (result.info) $rootScope.$broadcast("search:dashboard", result.info.title);
             $scope.model.items = [];
             _this.desc = [];
             for (var i = 0; i < result.widgets.length; i++) {
@@ -54,6 +61,20 @@
                     title: result.widgets[i].title,
                     toolbar: true
                 };
+                if (result.widgets[i].displayInfo) {
+                    var tc = 1;
+                    var tr = 1;
+                    if (result.displayInfo) {
+                        tc = Math.floor(12 / result.displayInfo.gridCols);
+                        if (tc < 1) tc = 1;
+                        tr = Math.floor(8 / result.displayInfo.gridRows);
+                        if (tr < 1) tr = 1;
+                    }
+                    item.col = result.widgets[i].displayInfo.topCol * tc;
+                    item.row = result.widgets[i].displayInfo.leftRow * tr;
+                    item.sizeX = result.widgets[i].displayInfo.colWidth * tc;
+                    item.sizeY = result.widgets[i].displayInfo.rowHeight * tr;
+                }
                 if (result.widgets[i].key) setWidgetSizeAndPos(item, result.widgets[i].key.toString());
                 $scope.model.items.push(item);
 
@@ -65,10 +86,10 @@
         }
 
         function setWidgetSizeAndPos(item, k) {
-            if (localStorage["sizes" + k + "x"])  item.sizeX = parseInt(localStorage["sizes" + k + "x"]);
-            if (localStorage["sizes" + k + "y"])  item.sizeY = parseInt(localStorage["sizes" + k + "y"]);
-            if (localStorage["pos" + k + "x"])  item.col = parseInt(localStorage["pos" + k + "x"]);
-            if (localStorage["pos" + k + "y"])  item.row = parseInt(localStorage["pos" + k + "y"]);
+            if (localStorage["sizes" + k + "x"] !== undefined)  item.sizeX = parseInt(localStorage["sizes" + k + "x"]);
+            if (localStorage["sizes" + k + "y"] !== undefined)  item.sizeY = parseInt(localStorage["sizes" + k + "y"]);
+            if (localStorage["pos" + k + "x"] !== undefined)  item.col = parseInt(localStorage["pos" + k + "x"]);
+            if (localStorage["pos" + k + "y"] !== undefined)  item.row = parseInt(localStorage["pos" + k + "y"]);
         }
 
         function getDesc(idx) {
@@ -80,6 +101,6 @@
     }
 
     angular.module('dashboard')
-        .controller('dashboard', ['$scope', '$routeParams', 'Connector', 'Error', 'Filters', 'Lang', 'Utils', DashboardCtrl]);
+        .controller('dashboard', ['$scope', '$rootScope', '$routeParams', 'Connector', 'Error', 'Filters', 'Lang', 'Utils', DashboardCtrl]);
 
 })();
