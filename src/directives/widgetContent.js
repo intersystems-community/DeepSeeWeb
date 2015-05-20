@@ -15,21 +15,23 @@
 
                         // set directives depending on widget type
                         switch (type) {
-                            case "chart":
-                            {
+                            case "chart": {
                                 element.attr("highchart", '');
                                 element.attr("id", '{{"chart" + item.key}}');
                                 element.attr("config", "chartConfig");
                                 break;
                             }
-                            case "pivot":
-                            {
+                            case "pivot": {
                                 element.attr("pivot", '');
                                 break;
                             }
-                            case "text":
-                            {
+                            case "text": {
                                 element.attr("text-widget", '');
+                                break;
+                            }
+                            case "empty": {
+                                //element.attr("ng-include", 'src/views/filters.html');
+                                element.append("<div class='empty-widget' ng-include=\"'src/views/emptyWidgetContent.html'\"></div>");
                                 break;
                             }
                         }
