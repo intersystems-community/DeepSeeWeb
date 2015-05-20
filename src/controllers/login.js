@@ -8,7 +8,7 @@
             ver: CONST.ver,
             login: "",
             password: "",
-            namespace: Connector.namespace,
+            namespace:  localStorage.namespace || "Samples",
             error: ""
         };
 
@@ -28,15 +28,28 @@
         };
 
         function onSuccess() {
-            Connector.namespace = $scope.model.namespace;
-
+            localStorage.namespace = $scope.model.namespace;
             localStorage.userName = Connector.username;
-            localStorage.namespace = Connector.namespace;
 
             $rootScope.$broadcast('toogleMenu', true);
             var from = $location.search().from;
-            if (from) from = decodeURI(from); else from = "/";
-            $location.path(from).search({});
+            var search = {};
+            if (from) {
+                from = decodeURI(from);
+                if (~from.indexOf("?")) {
+                    var parts = from.split("?");
+                    from = parts[0];
+                    parts = parts[1].split("&");
+                    for (var i = 0; i < parts.length; i++) {
+                        var p = parts[i].split("=");
+                        if (p.length === 2) {
+                            search[p[0]] = p[1];
+                        }
+                    }
+                }
+                $location.path(from).search(search);
+            }
+            else $location.path("/").search({ns: $scope.model.namespace});
         }
 
         function onError(data, status, headers, config) {
