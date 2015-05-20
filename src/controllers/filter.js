@@ -30,9 +30,9 @@
         };
 
         $scope.toogleRow = function(f) {
-            f.checked = !f.checked;
-            /*for (var i = 0; i < _this.source.values.length; i++) _this.source.values[i].checked = false;
-            f.checked = true;*/
+            //f.checked = !f.checked;
+            for (var i = 0; i < _this.source.values.length; i++) _this.source.values[i].checked = false;
+            f.checked = true;
         };
 
         function removeFilter() {
