@@ -1,20 +1,23 @@
 (function() {
     'use strict';
 
-    function TypeMapSvc(AreaChart, BarChart, LineChart, ColumnChart, PieChart, XyChart, TimeChart, PivotWidget,
+    function TypeMapSvc(CONST, AreaChart, BarChart, LineChart, ColumnChart, PieChart, XyChart, TimeChart, PivotWidget,
                         TextWidget, HiLowChart, TreeMapChart, BubbleChart, BullseyeChart, SpeedometerChart,
-                        FuelGaugeChart) {
+                        FuelGaugeChart, EmptyWidget) {
         var types = {
             fuelgauge: {
                 class: FuelGaugeChart,
                 type: "chart"
-            }, bullseyechart: {
+            },
+            bullseyechart: {
                 class: BullseyeChart,
                 type: "chart"
-            }, speedometer: {
+            },
+            speedometer: {
                 class: SpeedometerChart,
                 type: "chart"
-            }, bubblechart: {
+            },
+            bubblechart: {
                 class: BubbleChart,
                 type: "chart"
             },
@@ -24,6 +27,18 @@
             },
             hilowchart: {
                 class: HiLowChart,
+                type: "chart"
+            },
+            piechart3d: {
+                class: PieChart,
+                type: "chart"
+            },
+            donutchart3d: {
+                class: PieChart,
+                type: "chart"
+            },
+            donutchart: {
+                class: PieChart,
                 type: "chart"
             },
             piechart: {
@@ -46,11 +61,19 @@
                 class: LineChart,
                 type: "chart"
             },
+            linechartmarkers: {
+                class: LineChart,
+                type: "chart"
+            },
             combochart: {
                 class: LineChart,
                 type: "chart"
             },
             columnchart: {
+                class: ColumnChart,
+                type: "chart"
+            },
+            columnchartstacked: {
                 class: ColumnChart,
                 type: "chart"
             },
@@ -72,6 +95,13 @@
             }
         };
 
+        types[CONST.emptyWidgetClass] = {
+            class: EmptyWidget,
+            type: "empty"
+        };
+
+        //types.linechart = types[CONST.emptyWidgetClass];
+
         this.getClass = function(name) {
             if (!types[name.toLowerCase()]) return undefined;
             return types[name.toLowerCase()].class;
@@ -84,8 +114,8 @@
     }
 
     angular.module('widgets')
-        .service('TypeMap', ['AreaChart', 'BarChart', 'LineChart', 'ColumnChart', 'PieChart', 'XyChart', 'TimeChart',
+        .service('TypeMap', ['CONST', 'AreaChart', 'BarChart', 'LineChart', 'ColumnChart', 'PieChart', 'XyChart', 'TimeChart',
             'PivotWidget', 'TextWidget', 'HiLowChart', 'TreeMapChart', 'BubbleChart', 'BullseyeChart', 'SpeedometerChart',
-            'FuelGaugeChart', TypeMapSvc]);
+            'FuelGaugeChart', 'EmptyWidget', TypeMapSvc]);
 
 })();
