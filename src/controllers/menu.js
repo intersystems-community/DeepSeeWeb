@@ -14,19 +14,40 @@
             visible: true,
             favs: getFavs(),
             onDashboard: isOnDashboard(),
-            hideFolders: CONST.hideFolders
+            hideFolders: CONST.hideFolders,
+            namespace: $routeParams.ns || "Samples",
+            title: $routeParams.folder
         };
         $scope.search = search;
+        $scope.gotoDeepSee = gotoDeepSee;
         $scope.resetWidgets = resetWidgets;
+        $scope.onHomeClick = onHomeClick;
         $scope.onSingoutClick = onSingoutClick;
         $scope.addToFavorites = addToFavorites;
         $scope.removeFromFav = removeFromFav;
         $scope.navigateFav = navigateFav;
         $scope.toogleFolders = toogleFolders;
         $rootScope.$on('toogleMenu', toggleMenu);
+        $rootScope.$on('menu:changeTitle', changeTitle);
+
+        function changeTitle(title) {
+            if (title) $scope.model.title = title;
+        }
+
+        function gotoDeepSee() {
+            if (!isOnDashboard()) return;
+            var host = "";
+            if ($location.$$host === "test.deepsee.com") host = "http://146.185.143.59";
+            var url = "/csp/" + Connector.getNamespace() + "/_DeepSee.UserPortal.DashboardViewer.zen?DASHBOARD=" + $routeParams.path;
+            window.open(host + url);
+        }
 
         function search(txt) {
             $rootScope.$broadcast("search:dashboard", txt);
+        }
+
+        function onHomeClick() {
+            $location.path("/");
         }
 
         function toogleFolders() {
@@ -81,7 +102,7 @@
 
         function navigateFav(fav) {
             if (!_this.favs[fav.idx]) return;
-            $location.path("/dashboard/" + _this.favs[fav.idx]);
+            $location.path("/d/" + _this.favs[fav.idx]);
         }
 
         function favExists(path) {
@@ -109,7 +130,14 @@
 
         $scope.$on('$routeChangeSuccess', function () {
             $scope.model.onDashboard = isOnDashboard();
+            $scope.model.searchText = "";
             $scope.model.canAdd = !favExists($routeParams.path);
+            $scope.model.title = $routeParams.path || "InterSystems DeepSee™";
+            $scope.model.namespace = $routeParams.ns || "Samples";
+            if (localStorage.namespace.toLowerCase() !== $scope.model.namespace) {
+                localStorage.namespace = $scope.model.namespace;
+                Connector.firstRun = true;
+            }
         });
     }
 
