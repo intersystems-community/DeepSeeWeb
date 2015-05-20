@@ -14,6 +14,10 @@
         }*/
 
         function responseError(e) {
+            /*if (e.status === 503) {
+                Error.show("503. Service unavailable.");
+                return false;
+            }*/
             if (e.status === 401) {
                 var url = $location.$$url;
                 $location.path("/login").search({from: url});
