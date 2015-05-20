@@ -3,20 +3,11 @@
         <ul>
             <li class="panel panel-default widget-holder noselect" gridster-item="item" ng-repeat="item in model.items">
                 <div class="panel-heading widget-title">
-                    {{item.title}}
+                    <div class="widget-title-btn" ng-show="item.isChart" ng-click="item.displayAsPivot()" ng-class="item.pivotMdx ? 'active' : ''"><i class="fa fa-table"></i></div>
+                    <div class="widget-title-drag"><span>{{item.title}}</span></div>
                 </div>
                 <div class="widget" ng-controller="widget">
-                    <div class="widget-toolbar" ng-show="item.toolbar">
-                        <span ng-repeat="flt in model.filters" class="pull-left flt-holder">
-                            <label>{{flt.label}}</label>
-                            <div class="input-group">
-                                <input readonly type="text" class="form-control input-sm" value="{{flt.text}}" title="{{flt.text}}" style="background-color: #FFF; cursor: default">
-                                <span class="input-group-btn">
-                                    <button class="btn btn-default btn-sm" type="button" ng-click="toogleFilter(flt.idx,$event)"><i class="fa fa-search"></i></button>
-                                </span>
-                            </div>
-                        </span>
-                    </div>
+                    <div class="widget-toolbar" ng-show="item.toolbar" ng-include="item.toolbarView"></div>
 
                     <!-- widget content -->
                     <div context-menu="onCtxMenuShow(item)" data-target="ctx-item-menu" ng-class="{ 'highlight': highlight, 'expanded' : expanded }">
@@ -38,6 +29,12 @@
                     {{'refresh' | lang}}
                 </a>
             </li>
+            <li>
+                <a class="pointer" role="menuitem" tabindex="2" ng-click="printItem()">
+                    {{'print' | lang}}
+                </a>
+            </li>
+            <li role="presentation" class="divider"></li>
             <li class="dropdown-submenu">
                 <a tabindex="-1">{{'viewAs' | lang}}</a>
                 <ul class="dropdown-menu">
