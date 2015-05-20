@@ -1,11 +1,14 @@
 (function() {
     'use strict';
 
-    function BarChartFact(BaseChart) {
+    function BarChartFact(BaseChart, Utils) {
 
         function BarChart($scope) {
             BaseChart.apply(this, [$scope]);
+            var _this = this;
             this.setType('bar');
+            if (this.desc.type.toLowerCase() === "barchartstacked") this.enableStacking();
+
             this.requestData();
         }
 
@@ -13,6 +16,6 @@
     }
 
     angular.module('widgets')
-        .factory('BarChart', ['BaseChart', BarChartFact]);
+        .factory('BarChart', ['BaseChart', 'Utils', BarChartFact]);
 
 })();
