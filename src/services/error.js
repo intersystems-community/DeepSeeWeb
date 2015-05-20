@@ -3,7 +3,8 @@
 
     function ErrorSvc(notify) {
         notify.config({
-            //startTop: 10
+            startTop: 56,
+            position: "center"
         });
 
         this.show = function(txt) {
