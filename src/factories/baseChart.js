@@ -1,7 +1,7 @@
 (function() {
     'use strict';
 
-    function BaseChartFact(Lang, gridsterConfig, $element) {
+    function BaseChartFact(Lang, Utils) {
 
         function BaseChart($scope) {
             this.addSeries = addSeries;
@@ -15,9 +15,13 @@
             this.onResize = onResize;
             this._retrieveData = retrieveData;
 
+
             var _this = this;
             var firstRun = true;
 
+            $scope.item.isChart = true;
+            $scope.item.displayAsPivot = displayAsPivot;
+            $scope.$on("print:" + $scope.item.$$hashKey, function(){ if (_this.chart) _this.chart.print();});
             $scope.chartConfig = {
                 options: {
                     chart: {
@@ -28,33 +32,56 @@
                     },
                     tooltip: {
                         formatter: defaultFormatter
+                    },
+                    exporting: {
+                        enabled: false
                     }
                 },
                 yAxis: {
-                    title:{
-                        text:""
+                    title: {
+                        text: ""
                     }
                 },
                 xAxis: {
-                    title:{
-                        text:""
+                    title: {
+                        text: ""
                     }
                 },
                 series: [],
                 title: {
                     text: ''
                 },
-              /*  size: {
-                    width: $scope.item.sizeX * gridsterConfig.itemSize + ($scope.item.sizeX - 1)*12,
-                    height: $scope.item.sizeY * gridsterConfig.itemSize + ($scope.item.sizeY - 1)*12 - 50
-                },*/
-                //useHighStocks: true
                 func: function (chart) {
                     _this.chart = chart;
-                    //_this.onResize();
                 },
+
                 loading: true
             };
+
+            if (_this.desc.inline) {
+                $scope.chartConfig.options.chart.backgroundColor = null;
+                $scope.chartConfig.options.plotOptions ={
+                    series: {
+                        enableMouseTracking: false
+                    }
+                };
+                $scope.chartConfig.options.legend = {
+                    enabled: false
+                };
+            }
+
+            function displayAsPivot() {
+                if (_this.desc.type === "pivot") {
+                    delete $scope.item.pivotMdx;
+                    _this.desc.type = _this.desc.oldType;
+                    $scope.$broadcast("typeChanged");
+                } else {
+                    _this.desc.oldType = _this.desc.type;
+                    _this.desc.type = "pivot";
+                    $scope.item.pivotMdx = _this.getMDX();
+                    $scope.$broadcast("typeChanged");
+                }
+            }
 
             function defaultFormatter() {
                 /* jshint ignore:start */
@@ -75,7 +102,24 @@
 
             function retrieveData(result) {
                 $scope.chartConfig.loading = false;
+                if (result.Error) {
+                    _this.showError(result.Error);
+                    return;
+                }
                 if (result) {
+                    /*
+                     this is fix for incorrect minimum value calculation in bar chart
+                     if minimum is 1, highcharts will set it to y axis and values are not visible
+                     we must set it to zero, to fix this issue
+                     */
+                    //var min = _this.getMinValue(result.Data);
+                    //if (min > 0 && min <= 1) $scope.chartConfig.yAxis.currentMin = 0;
+
+
+                    if (result.Cols[0].tuples.length === 0) {
+                        // cerate default count parameter
+                        if (result.Data.length !== 0) result.Cols[0].tuples.push({caption: Lang.get("count")});
+                    }
                     _this.parseData(result);
                     if (_this.desc.type.toLowerCase() === "combochart") {
                         $scope.chartConfig.yAxis = [{},{ opposite: true}];
@@ -103,21 +147,15 @@
             }
 
             function enableStacking() {
-                if (!$scope.chartConfig.plotOptions) {
-                    $scope.chartConfig.plotOptions = {
+                var ex = {
+                    plotOptions: {
                         series: {
                             stacking: 'normal'
                         }
-                    };
-                    return;
-                }
-                if (!$scope.chartConfig.plotOptions.series) {
-                    $scope.chartConfig.plotOptions.series = {
-                        stacking: 'normal'
-                    };
-                    return;
-                }
-                $scope.chartConfig.plotOptions.series.stacking = 'normal';
+                    }
+                };
+
+                Utils.merge($scope.chartConfig.options, ex);
             }
 
             function setType(type) {
@@ -211,6 +249,6 @@
     }
 
     angular.module('widgets')
-        .factory('BaseChart', ['Lang', 'gridsterConfig', BaseChartFact]);
+        .factory('BaseChart', ['Lang', 'Utils', BaseChartFact]);
 
 })();
