@@ -4,27 +4,33 @@
     angular.module('dashboard', []);
     angular.module('widgets', []);
     angular.module('templates', []);
+    angular.module('utils', []);
 
-    angular.module('app', ['ngRoute', 'ngCookies', 'cgNotify', 'gridster', 'highcharts-ng', 'ng-context-menu', 'ngDialog', 'dashboard', 'widgets', 'templates'])
+    angular.module('app', ['ngRoute', 'ngCookies', 'cgNotify', 'gridster', 'highcharts-ng', 'ng-context-menu', 'ngDialog', 'utils', 'dashboard', 'widgets', 'templates'])
 
     .constant('CONST', {
         timeout: 10000,
-        ver: "1.0",
-        hideFolders: localStorage.hideFolders == "true" ? true : false
+        ver: "1.0.5",
+        hideFolders: localStorage.hideFolders == "true" ? true : false,
+        emptyWidgetClass: "MDX2JSON.EmptyPortlet".toLowerCase()
     })
 
     .config(['$routeProvider', function ($routeProvider) {
         $routeProvider
             .when('/', {
                 templateUrl: 'src/views/dashboardList.html',
+                //templateUrl: 'src/views/home.html',
+                //controller: 'home'
                 controller: 'dashboardList'
             })
-            .when('/dashboard/:path*', {
+            .when('/d/:path*', {
                 templateUrl: 'src/views/dashboard.html',
                 controller: 'dashboard'
             })
             .when('/f/:folder*', {
                 templateUrl: 'src/views/dashboardList.html',
+                //templateUrl: 'src/views/home.html',
+                //controller: 'home'
                 controller: 'dashboardList'
             })
             .when('/login', {
@@ -42,7 +48,7 @@
             localStorage.cleared = true;
         }
 
-        gridsterConfig.draggable.handle = ".widget-title";
+        gridsterConfig.draggable.handle = ".widget-title-drag";
         gridsterConfig.resizable.handles = ['se'];
         gridsterConfig.columns = 12;
         gridsterConfig.floating = true;
@@ -51,6 +57,7 @@
         gridsterConfig.defaultSizeY = 2;
         gridsterConfig.isResizing = false;
         gridsterConfig.isDragging = false;
+        gridsterConfig.margins = [5, 5];
 
         gridsterConfig.resizable.start = function() {
             gridsterConfig.isResizing = true;
@@ -82,7 +89,8 @@
                 loading: Lang.get("loading"),
                 //months: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
                 //weekdays: ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'],
-                shortMonths: Lang.get("shortMonths")
+                shortMonths: Lang.get("shortMonths"),
+                noData: Lang.get("noData")
                 /*exportButtonTitle: "Exportar",
                 printButtonTitle: "Imprimir",
                 rangeSelectorFrom: "De",
