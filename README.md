@@ -2,7 +2,7 @@
 Renderer for DeepSee Dashboards in Browser with MDX2JSON as a Serverside and JS web-client.<br>
 Developed using AngularJS and Bootstrap.<br><br>
 ![DeepSeeWeb screenshot](/screenshot.png?raw=true "DeepSeeWeb screenshot")<br>
-Supported widgets:
+#Supported widgets
 * Area chart
 * Line chart
 * Chart with markers
@@ -12,6 +12,13 @@ Supported widgets:
 * Time chart
 * Pivot table
 * Text widget
+* Combo chart
+* Bubble chart
+* Hi-Low chart
+* Quadtree chart
+* Bullseye chart
+* Speedometer
+* Fuel gauge
 
 #Build
 Project uses Gulp as build system. Install Gulp with following command:
