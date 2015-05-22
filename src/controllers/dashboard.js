@@ -1,7 +1,7 @@
 (function(){
     'use strict';
 
-    function DashboardCtrl($scope, $rootScope, $routeParams, Connector, Error, Filters, Lang, Utils) {
+    function DashboardCtrl($scope, $rootScope, $routeParams, Connector, Error, Filters, Lang, Utils, CONST) {
         var _this = this;
         this.desc = []; // stores widget definition received from server
         this.ctxItem = undefined;
@@ -37,6 +37,7 @@
         }
 
         function retrieveData(result) {
+            var i;
             if (!result) return;
             if (result.Error) {
                 Error.show(result.Error);
@@ -47,10 +48,18 @@
                 return;
             }
             if (result.filters) Filters.init(result.filters);
+            if (Filters.isFiltersOnToolbarExists) {
+                // Check if there empty widget exists, if no - we should create it
+                var isExists = false;
+                for (i = 0; i < result.widgets.length; i++) if (result.widgets[i].type.toLowerCase() === CONST.emptyWidgetClass) isExists = true;
+                if (!isExists) {
+                    result.widgets.push({autocreated: true, name: "emptyWidget", type: CONST.emptyWidgetClass, key: "emptyWidgetFor" + $routeParams.path});
+                }
+            }
             if (result.info) $rootScope.$broadcast("search:dashboard", result.info.title);
             $scope.model.items = [];
             _this.desc = [];
-            for (var i = 0; i < result.widgets.length; i++) {
+            for (i = 0; i < result.widgets.length; i++) {
                 // Create item for model
                 var item = {
                     idx: i,
@@ -59,7 +68,8 @@
                     row: parseInt(i / 6) * 2,
                     col: (i * 2) % 12,
                     title: result.widgets[i].title,
-                    toolbar: true
+                    toolbar: true,
+                    backButton: false
                 };
                 if (result.widgets[i].displayInfo) {
                     var tc = 1;
@@ -74,6 +84,10 @@
                     item.row = result.widgets[i].displayInfo.leftRow * tr;
                     item.sizeX = result.widgets[i].displayInfo.colWidth * tc;
                     item.sizeY = result.widgets[i].displayInfo.rowHeight * tr;
+                }
+                if (result.widgets[i].autocreated) {
+                    delete item.row;
+                    delete item.col;
                 }
                 if (result.widgets[i].key) setWidgetSizeAndPos(item, result.widgets[i].key.toString());
                 $scope.model.items.push(item);
@@ -101,6 +115,6 @@
     }
 
     angular.module('dashboard')
-        .controller('dashboard', ['$scope', '$rootScope', '$routeParams', 'Connector', 'Error', 'Filters', 'Lang', 'Utils', DashboardCtrl]);
+        .controller('dashboard', ['$scope', '$rootScope', '$routeParams', 'Connector', 'Error', 'Filters', 'Lang', 'Utils', 'CONST', DashboardCtrl]);
 
 })();
