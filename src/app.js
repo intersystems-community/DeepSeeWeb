@@ -10,7 +10,7 @@
 
     .constant('CONST', {
         timeout: 10000,
-        ver: "1.0.5",
+        ver: "1.0.6",
         hideFolders: localStorage.hideFolders == "true" ? true : false,
         emptyWidgetClass: "MDX2JSON.EmptyPortlet".toLowerCase()
     })
