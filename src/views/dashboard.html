@@ -3,6 +3,9 @@
         <ul>
             <li class="panel panel-default widget-holder noselect" gridster-item="item" ng-repeat="item in model.items">
                 <div class="panel-heading widget-title">
+                    <div class="widget-title-btn-left" ng-show="item.backButton" ng-click="item.drillUp()">
+                        <i class="fa fa-chevron-left">&nbsp;Back</i>
+                    </div>
                     <div class="widget-title-btn" ng-show="item.isChart" ng-click="item.displayAsPivot()" ng-class="item.pivotMdx ? 'active' : ''"><i class="fa fa-table"></i></div>
                     <div class="widget-title-drag"><span>{{item.title}}</span></div>
                 </div>
