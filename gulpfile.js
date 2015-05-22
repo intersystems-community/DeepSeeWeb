@@ -80,6 +80,8 @@ gulp.task('copyfiles', function () {
 
 gulp.task('copyindex', function () {
     var scripts = [
+        "src/lib/pdfmake.min.js",
+        "src/lib/vfs_fonts.js",
         "src/lib/numeral.min.js",
         "src/lib/angular.min.js",
         "src/lib/angular-route.min.js",
