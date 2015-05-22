@@ -4,6 +4,7 @@
     function FiltersSvc($rootScope) {
         var _this = this;
         this.items = [];
+        this.isFiltersOnToolbarExists = false;
         this.init = init;
         this.getWidgetModelFilters = getWidgetModelFilters;
         this.getWidgetFilters = getWidgetFilters;
@@ -12,6 +13,7 @@
 
         function init(filterArray) {
             _this.items = [];
+            _this.isFiltersOnToolbarExists = false;
             for (var i = 0; i < filterArray.length; i++) {
                 _this.items.push(filterArray[i]);
                 var flt =  _this.items[_this.items.length - 1];
@@ -19,6 +21,7 @@
                 if ((flt.target !== "*") && (flt.target !== "")) flt.targetArray = flt.target.split(",");
                 flt.sourceArray = [];
                 if ((flt.source !== "*") && (flt.source !== "")) flt.sourceArray = flt.source.split(",");
+                if (flt.source === "") _this.isFiltersOnToolbarExists = true;
                 flt.valueDisplay = findDisplayText(flt);
             }
         }
@@ -38,7 +41,13 @@
             var res = [];
             for (var i = 0; i < _this.items.length; i++) {
                 //if ((_this.items[i].target === "*") || (_this.items[i].targetArray.indexOf(widgetName) !== -1)) {
-                if (((_this.items[i].source === "*") || (_this.items[i].source === "")) || (_this.items[i].sourceArray.indexOf(widgetName) !== -1)) {
+                if (widgetName === "emptyWidget") {
+                    if (_this.items[i].source === "") {
+                        res.push({ idx: i, label: _this.items[i].label, text: _this.items[i].valueDisplay });
+                        continue;
+                    }
+                }
+                if ((_this.items[i].source === "*") || (_this.items[i].sourceArray.indexOf(widgetName) !== -1)) {
                     res.push({ idx: i, label: _this.items[i].label, text: _this.items[i].valueDisplay });
                     continue;
                 }
