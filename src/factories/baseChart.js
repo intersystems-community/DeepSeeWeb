@@ -1,9 +1,10 @@
 (function() {
     'use strict';
 
-    function BaseChartFact(Lang, Utils) {
+    function BaseChartFact(Lang, Utils, Connector) {
 
         function BaseChart($scope) {
+            this.storedData = [];
             this.addSeries = addSeries;
             this.setType = setType;
             this.getMinValue = getMinValue;
@@ -14,6 +15,8 @@
             this.parseData = parseMultivalueData;
             this.onResize = onResize;
             this._retrieveData = retrieveData;
+            this.onDrilldownReceived = onDrilldownReceived;
+            this.getDrillMDX = getDrillMDX;
 
 
             var _this = this;
@@ -21,9 +24,15 @@
 
             $scope.item.isChart = true;
             $scope.item.displayAsPivot = displayAsPivot;
+            $scope.item.drillUp = drillUp;
             $scope.$on("print:" + $scope.item.$$hashKey, function(){ if (_this.chart) _this.chart.print();});
             $scope.chartConfig = {
                 options: {
+                    navigation: {
+                        buttonOptions: {
+                            align: 'center'
+                        }
+                    },
                     chart: {
                         type: 'line'
                     },
@@ -35,6 +44,16 @@
                     },
                     exporting: {
                         enabled: false
+                    },
+                    plotOptions: {
+                        series: {
+                            cursor: "pointer",
+                            point: {
+                                events: {
+                                    click: onPointClick
+                                }
+                            }
+                        }
                     }
                 },
                 yAxis: {
@@ -68,6 +87,66 @@
                 $scope.chartConfig.options.legend = {
                     enabled: false
                 };
+            }
+
+            function onPointClick(e) {
+                if (!e.point) return;
+                $scope.chartConfig.loading = true;
+                Connector.execMDX(_this.getDrillMDX(e.point.path)).error(_this._onRequestError).success(_this.onDrilldownReceived);
+            }
+
+            function onDrilldownReceived(result) {
+                if (!result) return;
+                $scope.chartConfig.loading = false;
+                if (result.Error) {
+                    _this.showError(result.Error);
+                    return;
+                }
+
+                if (result.Data.length === 0) return;
+                var hasValue = false;
+                for (var i = 0; i < result.Data.length; i++) if (result.Data[i]) {
+                    hasValue = true;
+                    break;
+                }
+                if (!hasValue) return;
+
+                $scope.item.backButton = true;
+                _this._retrieveData(result);
+            }
+
+            function drillUp() {
+                _this.storedData.pop();
+                var data = _this.storedData.pop();
+                $scope.item.backButton = _this.storedData.length !== 0;
+                _this._retrieveData(data);
+            }
+
+            function getDrillMDX(path) {
+                var str = _this.getMDX();
+                var pos = str.indexOf(" ON 0,");
+                if (pos == -1) pos = 1;
+                var row = str.substring(pos + 6, str.indexOf(" ON 1"));
+                var customDrill = "";
+                /*if (widget) {
+                    var drilldownSpec = "";
+                    if (widget.pivotData) if (widget.pivotData.rowAxisOptions) if (widget.pivotData.rowAxisOptions.drilldownSpec) drilldownSpec = widget.pivotData.rowAxisOptions.drilldownSpec;
+                    if (drilldownSpec) {
+                        var drills = drilldownSpec.split("^");
+                        if (drills.length != 0) {
+                            if (drills[widget.drillLevel]) customDrill = drills[widget.drillLevel];
+                            for (var i = 0; i < widget.drills.length; i++) {
+                                if (drills[i]) str += " %Filter " + widget.drills[i];
+                            }
+                        }
+                    }
+                }
+                if (customDrill) {
+                    str = str.replace(row, customDrill);
+                    str += " %Filter " + path;
+                } else*/ str = str.replace(row, path + ".Children");
+
+                return str;
             }
 
             function displayAsPivot() {
@@ -106,6 +185,7 @@
                     _this.showError(result.Error);
                     return;
                 }
+                _this.storedData.push(result);
                 if (result) {
                     /*
                      this is fix for incorrect minimum value calculation in bar chart
@@ -249,6 +329,6 @@
     }
 
     angular.module('widgets')
-        .factory('BaseChart', ['Lang', 'Utils', BaseChartFact]);
+        .factory('BaseChart', ['Lang', 'Utils', 'Connector', BaseChartFact]);
 
 })();
