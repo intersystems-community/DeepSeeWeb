@@ -11,6 +11,16 @@
             this.requestData();
 
             var ex = {
+                plotOptions: {
+                    series: {
+                        cursor: null,
+                        point: {
+                            events: {
+                                click: null
+                            }
+                        }
+                    }
+                },
                 chart: {
                     zoomType: 'xy'
                 },

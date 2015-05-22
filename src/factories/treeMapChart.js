@@ -15,6 +15,14 @@
                     enabled: false
                 },
                 plotOptions: {
+                    series: {
+                        cursor: null,
+                        point: {
+                            events: {
+                                click: null
+                            }
+                        }
+                    },
                     treemap: {
                         colorByPoint: true
                     }

@@ -11,6 +11,14 @@
 
             var ex = {
                 plotOptions: {
+                    series: {
+                        cursor: null,
+                        point: {
+                            events: {
+                                click: null
+                            }
+                        }
+                    },
                     pie: {
                         allowPointSelect: false,
                         dataLabels: {
