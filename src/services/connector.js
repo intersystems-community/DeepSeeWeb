@@ -58,6 +58,30 @@
             });
         }
 
+        /*
+        function getDrilldown(cube, path) {
+            var MDX = "SELECT NON EMPTY " + path + ".children ON 1 FROM [" + cube + "]";
+            if (widget) {
+                MDX = this.drillMDX(widget.datasource.data.MDX, path, widget);
+            }
+            args.target = "drilldown1";
+            args.data = {
+                data: {
+                    MDX: MDX
+                }
+            };
+            this.acquireData(args);
+
+            return $http({
+                method: 'POST',
+                url: _this.url + 'Dashboard?Namespace=' + getNamespace(),// + "&Debug",
+                data: JSON.stringify({Dashboard: dashboard}),
+                timeout: CONST.timeout,
+                withCredentials: true,
+                headers: {'Content-Type': 'application/json'}
+            });
+        }*/
+
         function signIn(login, password, namespace) {
             _this.username = login;
             return $http({
