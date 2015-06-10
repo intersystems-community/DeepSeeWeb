@@ -12,13 +12,21 @@
 
             $scope.item.pivotMdx = _this.getMDX();
             $scope.$on("print:" + $scope.item.$$hashKey, print);
+            $scope.item.onDrillDown = onDrillDown;
+
             function onInit(lpt) {
                 _this.lpt = lpt;
+            }
+
+            function onDrillDown(p) {
+                _this.broadcastDependents(p.mdx);
             }
 
             function requestData() {
                 if (_this.lpt) {
                     var newMdx = _this.getMDX();
+                    if (newMdx === "") return;
+                    _this.broadcastDependents();
                     if (_this.lpt.getActualMDX() != newMdx) _this.lpt.changeBasicMDX(newMdx);
                     _this.lpt.refresh();
                 }
