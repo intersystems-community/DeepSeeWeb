@@ -5,6 +5,9 @@
 
         function PieChart($scope) {
             BaseChart.apply(this, [$scope]);
+            var _this = this;
+
+            $scope.item.toggleLegend = toggleLegend;
 
             var opt = {series: {allowPointSelect: true, stickyTracking: false}};
             if (!$scope.chartConfig.options.plotOptions) $scope.chartConfig.options.plotOptions = {};
@@ -40,8 +43,33 @@
                 Utils.merge($scope.chartConfig.options, opt);
 
             }
+
+
+            var po = {
+                plotOptions: {
+                    pie: {
+                        allowPointSelect: true,
+                        cursor: 'pointer',
+                        dataLabels: {
+                            enabled: localStorage["widget:" + _this.desc.key + ":legend"] === "true"
+                        }
+                    }
+                }
+            };
+            Utils.merge($scope.chartConfig.options, po);
+
             this.setType('pie');
             this.requestData();
+
+
+            function toggleLegend() {
+                $scope.item.isLegend = !$scope.item.isLegend;
+                localStorage["widget:" + _this.desc.key + ":legend"] = $scope.item.isLegend;
+                if (_this.chart) {
+                    $scope.chartConfig.options.plotOptions.pie.dataLabels.enabled = $scope.item.isLegend;
+                }
+            }
+
         }
 
         return PieChart;
