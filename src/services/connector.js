@@ -12,9 +12,14 @@
         this.signIn = signIn;
         this.signOut = signOut;
         this.getNamespace = getNamespace;
+        this.getFavorites = getFavorites;
+        this.addFavorite = addFavorite;
+        this.deleteFavorite = deleteFavorite;
+        this.searchFilters = searchFilters;
 
         // for localtesting
         if ($location.$$host === "test.deepsee.com") this.url = "http://146.185.143.59/MDX2JSON/";
+        //if ($location.$$host === "test.deepsee.com") this.url = "http://82.196.12.237:57772/MDX2JSON/"; // vportal
         //if ($location.$$host === "test.deepsee.com") this.url = "http://classroom.intersystems.ru/MDX2JSON/";
         //if ($location.$$host === "test.deepsee.com") this.url = "http://37.139.6.156/MDX2JSON/";
         else {
@@ -38,9 +43,22 @@
         }
 
         function execMDX(mdx) {
+            var parts = mdx.split(" ");
+            if (parts) if (parts.length !== 0) if (parts[0].toUpperCase() === "DRILLTHROUGH") return execMDXDrillthrough(mdx);
+
             return $http({
                 method: 'POST',
                 url: _this.url + 'MDX?Namespace=' + getNamespace(),
+                data: {MDX: mdx},
+                timeout: CONST.timeout,
+                withCredentials: true
+            });
+        }
+
+        function execMDXDrillthrough(mdx) {
+            return $http({
+                method: 'POST',
+                url: _this.url + 'MDXDrillthrough?Namespace=' + getNamespace(),
                 data: {MDX: mdx},
                 timeout: CONST.timeout,
                 withCredentials: true
@@ -58,29 +76,48 @@
             });
         }
 
-        /*
-        function getDrilldown(cube, path) {
-            var MDX = "SELECT NON EMPTY " + path + ".children ON 1 FROM [" + cube + "]";
-            if (widget) {
-                MDX = this.drillMDX(widget.datasource.data.MDX, path, widget);
-            }
-            args.target = "drilldown1";
-            args.data = {
-                data: {
-                    MDX: MDX
-                }
-            };
-            this.acquireData(args);
-
+        function searchFilters(searchStr, dataSource) {
             return $http({
                 method: 'POST',
-                url: _this.url + 'Dashboard?Namespace=' + getNamespace(),// + "&Debug",
-                data: JSON.stringify({Dashboard: dashboard}),
-                timeout: CONST.timeout,
-                withCredentials: true,
-                headers: {'Content-Type': 'application/json'}
+                data: {
+                    DataSource: dataSource,
+                    Values: 1,
+                    Search: searchStr
+                },
+                url: _this.url + 'Filters?Namespace=' + getNamespace(),
+                withCredentials: true
             });
-        }*/
+        }
+
+        function getFavorites() {
+            return $http({
+                method: 'GET',
+                data: {},
+                url: _this.url + 'Favorites?Namespace=' + getNamespace(),
+                withCredentials: true
+            });
+        }
+
+        function addFavorite(path) {
+          /*  var p = path.split("/");
+            if (p.length > 1) p.splice(0, 1);
+            p = p.join("/");*/
+            return $http({
+                method: 'POST',
+                data: {},
+                url: _this.url + 'Favorites/'+ encodeURIComponent(path) + '?Namespace=' + getNamespace(),
+                withCredentials: true
+            });
+        }
+
+        function deleteFavorite(path) {
+            return $http({
+                method: 'DELETE',
+                data: {},
+                url: _this.url + 'Favorites/'+ encodeURIComponent(path) + '?Namespace=' + getNamespace(),
+                withCredentials: true
+            });
+        }
 
         function signIn(login, password, namespace) {
             _this.username = login;
