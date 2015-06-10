@@ -30,8 +30,8 @@
         $rootScope.$on('toogleMenu', toggleMenu);
         $rootScope.$on('menu:changeTitle', changeTitle);
 
-        function changeTitle(title) {
-            if (title) $scope.model.title = title;
+        function changeTitle(sc, title) {
+            if (title) $scope.model.title = title.replace(".dashboard", "");
         }
 
         function gotoDeepSee() {
@@ -81,6 +81,7 @@
         function addToFavorites() {
             var favPath = $routeParams.path;
             if (favExists(favPath)) return;
+            Connector.addFavorite(favPath);
             _this.favs.push(favPath);
             $scope.model.favs = getFavs();
 
@@ -93,6 +94,7 @@
             if (!favExists(favPath)) return;
             var idx = _this.favs.indexOf(favPath);
             if (idx == -1) return;
+            Connector.deleteFavorite(favPath);
             _this.favs.splice(idx, 1);
             $scope.model.favs = getFavs();
 
@@ -133,6 +135,9 @@
             $scope.model.searchText = "";
             $scope.model.canAdd = !favExists($routeParams.path);
             $scope.model.title = $routeParams.path || "InterSystems DeepSee™";
+            $scope.model.title = $scope.model.title.replace(".dashboard", "");
+            //var parts = $scope.model.title.split("/");
+            //if (parts.length != "")
             $scope.model.namespace = $routeParams.ns || "Samples";
             if (localStorage.namespace.toLowerCase() !== $scope.model.namespace) {
                 localStorage.namespace = $scope.model.namespace;
