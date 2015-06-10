@@ -24,9 +24,9 @@
                 chart: {
                     zoomType: 'xy'
                 },
-                legend: {
+                /*legend: {
                     enabled: false
-                },
+                },*/
                 xAxis: {
                     tickWidth: 10
                 },
