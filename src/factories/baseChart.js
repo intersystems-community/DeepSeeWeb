@@ -23,11 +23,17 @@
             var firstRun = true;
 
             $scope.item.isChart = true;
+            if (localStorage["widget:" + _this.desc.key + ":legend"] !== undefined) $scope.item.isLegend = localStorage["widget:" + _this.desc.key + ":legend"] === "true"; else $scope.item.isLegend = true;
+
             $scope.item.displayAsPivot = displayAsPivot;
+            $scope.item.toggleLegend = toggleLegend;
             $scope.item.drillUp = drillUp;
             $scope.$on("print:" + $scope.item.$$hashKey, function(){ if (_this.chart) _this.chart.print();});
             $scope.chartConfig = {
                 options: {
+                    legend: {
+                        enabled: $scope.item.isLegend
+                    },
                     navigation: {
                         buttonOptions: {
                             align: 'center'
@@ -92,7 +98,9 @@
             function onPointClick(e) {
                 if (!e.point) return;
                 $scope.chartConfig.loading = true;
-                Connector.execMDX(_this.getDrillMDX(e.point.path)).error(_this._onRequestError).success(_this.onDrilldownReceived);
+                var mdx = _this.getDrillMDX(e.point.path);
+                _this.broadcastDependents(mdx);
+                Connector.execMDX(mdx).error(_this._onRequestError).success(_this.onDrilldownReceived);
             }
 
             function onDrilldownReceived(result) {
@@ -149,6 +157,15 @@
                 return str;
             }
 
+            function toggleLegend() {
+                $scope.item.isLegend = !$scope.item.isLegend;
+                localStorage["widget:" + _this.desc.key + ":legend"] = $scope.item.isLegend;
+                if (_this.chart) {
+                    if ($scope.item.isLegend) _this.chart.legendShow(); else _this.chart.legendHide();
+                }
+                $scope.chartConfig.legend = {enabled: $scope.item.isLegend};
+            }
+
             function displayAsPivot() {
                 if (_this.desc.type === "pivot") {
                     delete $scope.item.pivotMdx;
@@ -189,12 +206,12 @@
                 if (result) {
                     /*
                      this is fix for incorrect minimum value calculation in bar chart
-                     if minimum is 1, highcharts will set it to y axis and values are not visible
+                     if minimum is 1, highcharts will set it and values are not visible
                      we must set it to zero, to fix this issue
                      */
-                    //var min = _this.getMinValue(result.Data);
-                    //if (min > 0 && min <= 1) $scope.chartConfig.yAxis.currentMin = 0;
-
+                    var min = _this.getMinValue(result.Data);
+                    if (min > 0 && min <= 10) $scope.chartConfig.yAxis.currentMin = 0;
+                    if (!result.Cols) return;
 
                     if (result.Cols[0].tuples.length === 0) {
                         // cerate default count parameter
@@ -223,6 +240,8 @@
             }
 
             function addSeries(data) {
+                var cols = Highcharts.getOptions().colors;
+                data.color = cols[$scope.chartConfig.series.length % cols.length];
                 $scope.chartConfig.series.push(data);
             }
 
@@ -263,6 +282,10 @@
                 $scope.chartConfig.yAxis.min = getMinValue(data.Data);
                 $scope.chartConfig.series = [];
                 $scope.chartConfig.xAxis.categories = [];
+                if (data.Cols[1].tuples.length === 0) {
+                    //TODO: lang
+                    data.Cols[1].tuples.push({caption: Lang.get("count")});
+                }
                 for (i = 0; i < data.Cols[1].tuples.length; i++) {
                     $scope.chartConfig.xAxis.categories.push(data.Cols[1].tuples[i].caption.toString());
                 }
@@ -304,7 +327,8 @@
                             });
                         }
                         fixData(tempData);
-                        var name = "Count";
+                        //TODO: lang
+                        var name = Lang.get("count");
                         var format = "";
                         if (data.Cols[0].tuples[j]) {
                             name = data.Cols[0].tuples[j].caption;
