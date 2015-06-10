@@ -10,7 +10,7 @@
 
     .constant('CONST', {
         timeout: 10000,
-        ver: "1.0.6",
+        ver: "1.1",
         hideFolders: localStorage.hideFolders == "true" ? true : false,
         emptyWidgetClass: "MDX2JSON.EmptyPortlet".toLowerCase()
     })
@@ -40,9 +40,9 @@
             .otherwise({ redirectTo: '/' });
     }])
 
-    .run(['gridsterConfig', 'Lang', '$rootScope', '$window', start]);
+    .run(['gridsterConfig', 'Lang', '$rootScope', 'Connector', start]);
 
-    function start(gridsterConfig, Lang, $rootScope, $window) {
+    function start(gridsterConfig, Lang, $rootScope, Connector) {
         if (!localStorage.cleared) {
             localStorage.clear();
             localStorage.cleared = true;
@@ -90,12 +90,12 @@
                 //months: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
                 //weekdays: ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'],
                 shortMonths: Lang.get("shortMonths"),
-                noData: Lang.get("noData")
-                /*exportButtonTitle: "Exportar",
+                noData: Lang.get("noData")/*
+                exportButtonTitle: "Exportar",
                 printButtonTitle: "Imprimir",
                 rangeSelectorFrom: "De",
                 rangeSelectorTo: "Até",
-                rangeSelectorZoom: "Periodo",
+                rangeSelectorZoom: "Увеличение",
                 downloadPNG: 'Download imagem PNG',
                 downloadJPEG: 'Download imagem JPEG',
                 downloadPDF: 'Download documento PDF',
@@ -105,6 +105,12 @@
                 // thousandsSep: ".",
                 // decimalPoint: ','
             }
+        });
+
+
+        // Load favorites
+        Connector.getFavorites().success(function(result) {
+
         });
     }
 
