@@ -91,7 +91,7 @@
                                 da = convertDateFromCache(extractValue(data.Cols[1].tuples[i].path));//this.getDate(data.Cols[1].tuples[i].caption);
                                 tempData.push([
                                     da,
-                                    data.Data[data.Cols[0].tuples.length * data.Cols[0].tuples[t].children.length * d + t * data.Cols[0].tuples[t].children.length + c]
+                                    data.Data[data.Cols[0].tuples.length * data.Cols[0].tuples[t].children.length * d + t * data.Cols[0].tuples[t].children.length + c] || 0
                                 ]);
                                 if (tempData[tempData.length - 1][1] === "") tempData[tempData.length - 1][1] = null;
                                 k++;
@@ -111,7 +111,7 @@
                         for (i = 0; i < data.Cols[1].tuples.length; i++) {
                             da = convertDateFromCache(extractValue(data.Cols[1].tuples[i].path));//this.getDate(data.Cols[1].tuples[i].caption);
                             tempData.push(
-                                [da, data.Data[i * data.Cols[0].tuples.length + j]]
+                                [da, data.Data[i * data.Cols[0].tuples.length + j] || 0]
                             );
                         }
                         _this.addSeries({
