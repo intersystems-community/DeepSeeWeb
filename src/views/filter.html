@@ -1,7 +1,7 @@
 <div class="flt-modal">
 <div class="flt-toolbar">
     <div class="form-horizontal" style="width: 100%">
-        <input style="width: 120px;height: 20px; margin-top: 5px; margin-right: 2px" class="form-control input-sm pull-left" type="search" placeholder="{{'search' | lang}}" ng-model="model.search" ng-change="onSearch()" auto-focus>
+        <input style="width: 120px;height: 20px; margin-top: 5px; margin-right: 2px" class="form-control input-sm pull-left" type="search" placeholder="{{'search' | lang}}" ng-model="model.search" ng-change="onSearch()" ng-enter="searchFilters()" auto-focus>
         <div class="btn-group pull-right">
             <button class="btn btn-default btn-sm" ng-click="acceptFilter()"><i class="fa fa-check"> {{'accept' | lang}}</i></button>
             <button class="btn btn-default btn-sm" ng-click="removeFilter()"><i class="fa fa-eraser"> {{'dismiss' | lang}}</i></button>
@@ -9,14 +9,47 @@
         </div>
     </div>
 </div>
-<div style='overflow-y: scroll; max-height: 280px'>
+<div class="flt-toolbar">
+    <div class="form-horizontal" style="width: 100%">
+        <span ng-hide="model.isInterval">
+            <label class="filter-label">
+                <input type="checkbox" ng-model="model.isAll" ng-click="setAll()">
+                {{'all' | lang}}
+            </label>
+        </span>
+        <span ng-hide="model.isInterval">
+            <label class="filter-label">
+                <input type="checkbox" ng-model="model.isExclude">
+                {{'exclude' | lang}}
+            </label>
+        </span>
+        <label class="filter-label">
+            <input type="checkbox" ng-model="model.isInterval">
+            {{'interval' | lang}}
+        </label>
+    </div>
+</div>
+<div class="container-fluid" style="padding-top: 10px" ng-show="model.isInterval">
+    <div class="form-group">
+        <label>{{'from' | lang}}</label>
+        <select class="form-control" ng-model="model.from" ng-options="item.name for item in model.values"></select>
+    </div>
+    <div class="form-group">
+        <label>{{'to' | lang}}</label>
+        <select class="form-control" ng-model="model.to" ng-options="item.name for item in model.values"></select>
+    </div>
+</div>
+<div style='overflow-y: scroll; max-height: 280px' ng-hide="model.isInterval">
     <table class="table table-striped table-hover table-small">
         <tbody>
             <tr ng-repeat="v in model.values">
-                <td style="width:24px;padding-left: 6px"><input type="checkbox" ng-model="v.checked"></td>
+                <td style="width:24px;padding-left: 6px"><input type="checkbox" ng-model="v.checked" ng-click="onItemSelect()"></td>
                 <td ng-click="toogleRow(v)" ng-class="v.default ? 'bold' : ''">{{v.name}}</td>
             </tr>
         </tbody>
     </table>
+    <div class="loader-holder" ng-show="model.isLoading">
+        <div class="loader"></div>
+    </div>
 </div>
 </div>
