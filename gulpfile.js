@@ -97,6 +97,7 @@ gulp.task('copyindex', function () {
         "src/lib/no-data-to-display.src.js",
         "src/lib/highcharts-more.js",
         "src/lib/highcharts-3d.src.js",
+        "src/lib/highcharts-legendExtension.js",
         "src/lib/heatmap.src.js",
         "src/lib/treemap.src.js",
         "src/lib/highcharts-ng.min.js",
