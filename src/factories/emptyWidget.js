@@ -16,6 +16,10 @@
             function setFiltersToDefaults() {
                 for (var i = 0; i < _this.filterCount; i++) {
                     var flt = _this.getFilter(i);
+                    flt.isInterval = false;
+                    flt.isExclude = false;
+                    flt.fromIdx = -1;
+                    flt.toIdx = -1;
                     flt.values.forEach(function(fv){
                         fv.checked = fv.default === true;
                     });
