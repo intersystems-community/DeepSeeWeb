@@ -77,7 +77,7 @@
                 changeStyle(".ngdialog.ngdialog-theme-plain .ngdialog-content", "margin-left", rect.left + "px");
                 changeStyle(".ngdialog.ngdialog-theme-plain .ngdialog-content", "margin-top", (rect.top + 16) + "px");
             }
-            ngDialog.open({template: 'src/views/filter.html', data: flt, controller: "filter", showClose: false, className: "ngdialog-theme-plain" });
+            ngDialog.open({template: 'src/views/filter.html', data: {filter: flt, dataSource: _this.desc.dataSource}, controller: "filter", showClose: false, className: "ngdialog-theme-plain" });
         }
 
         /*function onResizeWindow() {
