@@ -16,6 +16,11 @@
                             namespace: Connector.getNamespace(),
                             sendCookies: true
                         },
+                        triggers: {
+                            drillDown: scope.item.onDrillDown,
+                            back: scope.item.onDrillDown
+                            //drillThrough: scope.item.onDrillDown
+                        },
                         columnResizeAnimation: true,
                         showSummary: true,
                         //loadingMessageHTML: '<div class="loader"></div>',
