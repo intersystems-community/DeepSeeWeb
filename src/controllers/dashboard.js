@@ -56,7 +56,7 @@
                     result.widgets.push({autocreated: true, name: "emptyWidget", type: CONST.emptyWidgetClass, key: "emptyWidgetFor" + $routeParams.path});
                 }
             }
-            if (result.info) $rootScope.$broadcast("search:dashboard", result.info.title);
+            if (result.info) $rootScope.$broadcast("menu:changeTitle", result.info.title);
             $scope.model.items = [];
             _this.desc = [];
             for (i = 0; i < result.widgets.length; i++) {
@@ -95,7 +95,28 @@
                 // Create item for description
                 item = {};
                 Utils.merge(item, result.widgets[i]);
+                fillDependentWidgets(item, result.widgets);
                 _this.desc.push(item);
+            }
+
+            setTimeout(broadcastDependents, 0);
+        }
+
+        function broadcastDependents(widgets) {
+            var brodcasted = [];
+            for (var i = 0; i <  _this.desc.length; i++) if ( _this.desc[i].dependents.length !== 0) {
+                var item = _this.desc[i];
+                if (brodcasted.indexOf(item.key) != -1) continue;
+                brodcasted.push(item.key);
+                $rootScope.$broadcast("widget:" + item.key + ":refreshDependents");
+            }
+        }
+
+        function fillDependentWidgets(item, widgets) {
+            item.dependents = [];
+            for (var i = 0; i < widgets.length; i++) if (widgets[i] != item) {
+                if (!widgets[i].Link) continue;
+                if (widgets[i].Link == item.name) item.dependents.push(widgets[i].key);
             }
         }
 
