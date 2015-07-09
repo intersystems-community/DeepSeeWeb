@@ -1,21 +1,25 @@
 (function() {
     'use strict';
 
-    function TimeChartFact(BaseChart, Utils) {
+    function TimeChartFact(BaseChart, Utils, $timeout) {
 
         function TimeChart($scope) {
             BaseChart.apply(this, [$scope]);
             var _this = this;
+
             var opt = {
                 options: {
+                    chart: {
+                        zoomType: 'x'
+                    },
                     tooltip: {
                         formatter: defaultTimechartTooltipFormatter
                     },
                     navigator: {
                         enabled: true
                     },
-                    rangeSelector: {
-                        inputEnabled: true,
+                    //rangeSelector: {
+                        /*inputEnabled: true,
                         buttons: [{
                             type: 'hour',
                             count: 1,
@@ -28,25 +32,19 @@
                             type: 'all',
                             count: 1,
                             text: 'All'
-                        }],
-                        selected: 1
-                    },
+                        }],*/
+                        //selected: 5
+                    //},
                     scrollbar: {
                         enabled: false
-                    },
-                    xAxis: {
-                        type: 'datetime',
-                        title: {
-                            text: ''
-                        }
-                    },
-                    yAxis: {
+                    }
+                    /* yAxis: {
                         min: 0,
                         title: {
                             text: ''
                         }
-                    },
-                    plotOptions: {
+                    },*/
+                    /*plotOptions: {
                         series: {
                             lineWidth: 3,
                             marker: {
@@ -56,11 +54,11 @@
                     },
                     legend: {
                         enabled: true
-                    }
+                    }*/
                 },
-                title: {
+               /* title: {
                     text: ''
-                },
+                },*/
 
                 series: [],
                 useHighStocks: true,
@@ -69,11 +67,27 @@
 
             Utils.merge($scope.chartConfig, opt);
 
+            function customFormatter() {
+                /* jshint ignore:start */
+                var t = this;
+                /* jshint ignore:end */
+                if (!_this.chart) return t.value;
+                var from = Math.floor(_this.chart.xAxis[0].getExtremes().min);
+                var to = Math.ceil(_this.chart.xAxis[0].getExtremes().max);
+                var days = daysBetween(new Date(from), new Date(to));
+                if (days <= 1) return Highcharts.dateFormat('%H:%M', t.value);
+                if (days < 5) return Highcharts.dateFormat('%e %b %H:%M', t.value);
+                if (days < 30) return Highcharts.dateFormat('%e %b', t.value);
+                if (days < 360 * 2) return Highcharts.dateFormat('%b %Y', t.value);
+                return Highcharts.dateFormat('%Y', t.value);
+            }
+
             this.parseData = function(data) {
+                //if (_this.chart) _this.chart.xAxis[0].setExtremes(null, null, null, null, null);
+                //if (_this.chart) _this.chart.xAxis[1].setExtremes(null, null, null, null, null);
                 $scope.chartConfig.yAxis.min = _this.getMinValue(data.Data);
                 //config.yAxis.max = ChartBase.getMaxValue(data.Data);
                 $scope.chartConfig.series = [];
-                $scope.chartConfig.xAxis.categories = [];
                 var tempData = [];
                 var minDate = Number.POSITIVE_INFINITY;
                 var maxDate = Number.NEGATIVE_INFINITY;
@@ -85,8 +99,6 @@
                     for(var t = 0; t < data.Cols[0].tuples.length; t++) {
                         for (var c = 0; c < data.Cols[0].tuples[t].children.length; c++) {
                             tempData = [];
-                            minDate = Number.POSITIVE_INFINITY;
-                            maxDate = Number.NEGATIVE_INFINITY;
                             for (var d = 0; d < data.Cols[1].tuples.length; d++) {
                                 da = convertDateFromCache(extractValue(data.Cols[1].tuples[i].path));//this.getDate(data.Cols[1].tuples[i].caption);
                                 tempData.push([
@@ -106,14 +118,12 @@
                 } else {
                     for(var j = 0; j < data.Cols[0].tuples.length; j++) {
                         tempData = [];
-                        minDate = Number.POSITIVE_INFINITY;
-                        maxDate = Number.NEGATIVE_INFINITY;
                         for (i = 0; i < data.Cols[1].tuples.length; i++) {
                             da = convertDateFromCache(extractValue(data.Cols[1].tuples[i].path));//this.getDate(data.Cols[1].tuples[i].caption);
-                            tempData.push(
-                                [da, data.Data[i * data.Cols[0].tuples.length + j] || 0]
-                            );
+                            var value = data.Data[i * data.Cols[0].tuples.length + j];
+                            if (value !== "") tempData.push([da, value || 0]);
                         }
+
                         _this.addSeries({
                             data: tempData,
                             name: data.Cols[0].tuples[j].caption,
@@ -122,19 +132,25 @@
                     }
                 }
 
-                minDate = +Infinity;
-                maxDate = -Infinity;
-                var minValue;
+                // Due bug in timechart we need manually update navigator and axis extremes after data refresh
+                if ((_this.chart) && ($scope.chartConfig.series.length !== 0)) {
+                    for (i = 0; i < _this.chart.xAxis.length; i++) _this.chart.xAxis[i].setExtremes();
+                    var nav = _this.chart.get('highcharts-navigator-series');
+                    if (nav) nav.setData($scope.chartConfig.series[0].data);
+                }
+                /*var minValue;
                 var maxValue;
                 for (i = 0; i <  $scope.chartConfig.series.length; i++) {
+                    //var k = 0;
+                    //while ($scope.chartConfig.series[i].data[k][1])
                     minValue = $scope.chartConfig.series[i].data[0][0];
                     maxValue = $scope.chartConfig.series[i].data[$scope.chartConfig.series[i].data.length - 1][0];
 
                     if (minValue < minDate) minDate = minValue;
                     if (maxValue > maxDate) maxDate = maxValue;
                 }
-                var days = daysBetween(new Date(minValue), new Date(maxValue));
-                if (days <= 2) {
+                var days = daysBetween(new Date(minValue), new Date(maxValue));*/
+                /*if (days <= 2) {
                     $scope.chartConfig.options.rangeSelector.buttons =
                         [{
                             type : 'minute',
@@ -200,7 +216,7 @@
                             text : 'All'
                         }];
                     $scope.chartConfig.options.rangeSelector.selected = 3;
-                }
+                }*/
             };
 
 
@@ -255,7 +271,8 @@
                 } else
                 if (str.split(" ").length == 2) {
                     //like 2015-01-07 05
-                    str += ":00";
+                    var timeParts = str.split(" ")[1].split(":").length;
+                     if (timeParts === 0) str += ":00";
                     d = Date.parse(str.replace(/-/g, "/"));
                     if (!isNaN(d)) return d;
                 }
@@ -303,6 +320,6 @@
     }
 
     angular.module('widgets')
-        .factory('TimeChart', ['BaseChart', 'Utils', TimeChartFact]);
+        .factory('TimeChart', ['BaseChart', 'Utils', '$timeout', TimeChartFact]);
 
 })();
