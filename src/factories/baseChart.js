@@ -1,7 +1,7 @@
 (function() {
     'use strict';
 
-    function BaseChartFact(Lang, Utils, Connector) {
+    function BaseChartFact(Lang, Utils, Connector, $timeout, CONST) {
 
         function BaseChart($scope) {
             this.storedData = [];
@@ -78,6 +78,9 @@
                 },
                 func: function (chart) {
                     _this.chart = chart;
+                    $timeout(function() {
+                        if (_this.chart) _this.chart.reflow();
+                    }, 0);
                 },
 
                 loading: true
@@ -93,6 +96,26 @@
                 $scope.chartConfig.options.legend = {
                     enabled: false
                 };
+
+                if (_this.desc.tile) {
+                     var opt = {
+                        xAxis: {
+                            labels: {
+                                style: {
+                                    color: CONST.fontColors[_this.desc.tile.fontColor]
+                                }
+                            }
+                        },
+                        yAxis: {
+                         labels: {
+                             style: {
+                                 color: CONST.fontColors[_this.desc.tile.fontColor]
+                             }
+                         }
+                        }
+                    };
+                    Utils.merge($scope.chartConfig, opt);
+                }
             }
 
             function onPointClick(e) {
@@ -242,6 +265,7 @@
             function addSeries(data) {
                 var cols = Highcharts.getOptions().colors;
                 data.color = cols[$scope.chartConfig.series.length % cols.length];
+                //if (!data.id) data.id = $scope.chartConfig.series.length + 1;
                 $scope.chartConfig.series.push(data);
             }
 
@@ -297,11 +321,12 @@
                     for(var t = 0; t < data.Cols[0].tuples.length; t++) {
                         for (var c = 0; c < data.Cols[0].tuples[t].children.length; c++) {
                             tempData = [];
-                            for (var da = 0; da < data.Cols[1].tuples.length; da++) {
+                            for (var g = 0; g < data.Cols[1].tuples.length; g++) {
                                 tempData.push({
-                                    y: data.Data[data.Cols[0].tuples.length * data.Cols[0].tuples[t].children.length * da + t * data.Cols[0].tuples[t].children.length + c],
+                                    y: data.Data[data.Cols[0].tuples.length * data.Cols[0].tuples[t].children.length * g + t * data.Cols[0].tuples[t].children.length + c],
                                     cube: data.Info.cubeName,
-                                    path: data.Cols[1].tuples[t].path
+                                    drilldown: true,
+                                    path: data.Cols[0].tuples[t].path
                                 });
                                 k++;
                             }
@@ -309,10 +334,29 @@
                             _this.addSeries({
                                 data: tempData,
                                 name: data.Cols[0].tuples[t].caption + "/" + data.Cols[0].tuples[t].children[c].caption,
-                                format: data.Cols[0].tuples[t].children[c].format,
+                                format: data.Cols[0].tuples[t].children[c].format
                             });
                         }
                     }
+                    /*for(var t = 0; t < data.Cols[0].tuples.length; t++) {
+                        for (var c = 0; c < data.Cols[0].tuples[t].children.length; c++) {
+                            tempData = [];
+                            for (var da = 0; da < data.Cols[1].tuples.length; da++) {
+                                tempData.push({
+                                    y: data.Data[data.Cols[0].tuples.length * data.Cols[0].tuples[t].children.length * da + t * data.Cols[0].tuples[t].children.length + c],
+                                    cube: data.Info.cubeName,
+                                    path: data.Cols[0].tuples[t].path
+                                });
+                                k++;
+                            }
+                            fixData(tempData);
+                            _this.addSeries({
+                                data: tempData,
+                                name: data.Cols[0].tuples[t].caption + "/" + data.Cols[0].tuples[t].children[c].caption,
+                                format: data.Cols[0].tuples[t].children[c].format
+                            });
+                        }
+                    }*/
                 } else {
                     //for(var j = 0; j < data.Cols[0].tuples.length; j++) {
                     for(var j = data.Cols[0].tuples.length - 1; j>=0; j--) {
@@ -353,6 +397,6 @@
     }
 
     angular.module('widgets')
-        .factory('BaseChart', ['Lang', 'Utils', 'Connector', BaseChartFact]);
+        .factory('BaseChart', ['Lang', 'Utils', 'Connector', '$timeout', 'CONST', BaseChartFact]);
 
 })();
