@@ -10,6 +10,7 @@
         this.getWidgetFilters = getWidgetFilters;
         this.applyFilter = applyFilter;
         this.getFilter = getFilter;
+        this.clear = clear;
 
         function init(filterArray) {
             _this.items = [];
@@ -94,6 +95,11 @@
             if (!_this.items[idx]) return undefined;
             return _this.items[idx];
         }
+
+        function clear() {
+            _this.items = [];
+        }
+
 
     }
 
