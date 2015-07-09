@@ -1,0 +1,59 @@
+<div ng-cloak>
+    <div gridster="tilesOpt">
+        <ul>
+            <li class="metro-tile"
+                ng-class="'cl' + tile.color + ' ' + (model.editing ? 'editing' : '') + ' ' + (model.edItem == tile ? 'metro-tile-selected' : '')"
+                gridster-item="tile"
+                ng-repeat="tile in dashboards"
+                ng-click="onItemClick(tile, $event)"
+                ng-style="{'background-image': 'url(' + tile.Cover + ')'}"
+                    >
+                <div ng-include="tile.template"></div>
+                <div class="metro-tile-icon">
+                    <svg viewBox="-10 -16 20 20" ng-style="{'fill': model.fontColors[tile.fontColor]}">
+                        <g><text text-anchor="middle" font-size="16px">{{model.icons[tile.icon]}}</text></g>
+                    </svg>
+                </div>
+
+                <h4 ng-style="{'color': model.fontColors[tile.fontColor]}"><span ng-show="model.edItem != tile">{{tile.customTitle || tile.title}}</span>
+                    <input type="text" ng-model="tile.customTitle" ng-show="model.edItem == tile" blur-on-enter>
+                </h4>
+
+            </li>
+        </ul>
+    </div>
+    <div class="sidebar-bottom" ng-class="model.edItem ? '' : 'closed'">
+        <span class="sidebar-block">
+            <label>{{'bgColor' | lang}}</label>
+            <div class="color-rect" ng-click='setTileColor($index)' ng-class="col + ' ' + (model.edItem.color == $index ? 'active' : '')" ng-repeat="col in model.colors">
+                <span class="fa fa-check" ng-show="model.edItem.color == $index"></span>
+            </div>
+        </span>
+        <span class="sidebar-block">
+            <label>{{'fntColor' | lang}}</label>
+            <div class="color-rect"
+                 ng-click='setFontColor($index)'
+                 ng-class="model.edItem.fontColor == $index ? 'active' : ''"
+                 ng-repeat="col in model.fontColors"
+                 ng-style="{'background-color': col}">
+                    <span class="fa fa-check" ng-show="model.edItem.fontColor == $index"></span>
+            </div>
+        </span>
+        <span class="sidebar-block">
+            <label>{{'icon' | lang}}</label>
+            <div class="color-rect" ng-repeat="ico in model.icons"  ng-click='setIcon($index)' ng-class="'cl' + model.edItem.color + ' ' +  (model.edItem.icon == $index ? 'active' : '')">
+                <svg viewBox="-10 -16 20 20" ng-style="{'fill': model.fontColors[model.edItem.fontColor]}">
+                    <g><text text-anchor="middle" font-size="16px">{{ico}}</text></g>
+                </svg>
+            </div>
+        </span>
+        <span class="sidebar-block">
+            <label>{{'widgetId' | lang}}</label>
+            <input type="text" ng-model="model.edItem.widget" blur-on-enter>
+        </span>
+    </div>
+    <div class="btn btn-default btn-dashboard" ng-click="enableEditing()" ng-class="model.editing?'btn-edit-dash': ''">
+        <i class="fa fa-wrench" ng-show="!model.editing"></i>
+        <i class="fa fa-check" ng-show="model.editing"> {{'done' | lang}}</i>
+    </div>
+</div>
