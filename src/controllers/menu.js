@@ -1,7 +1,7 @@
 (function(){
     'use strict';
 
-    function MenuCtrl($scope, $routeParams, Connector, Lang, $rootScope, $location, CONST) {
+    function MenuCtrl($scope, $routeParams, Connector, $window, $rootScope, $location, CONST) {
         var _this = this;
         this.favs = [];
         loadFav();
@@ -16,9 +16,12 @@
             onDashboard: isOnDashboard(),
             hideFolders: CONST.hideFolders,
             namespace: $routeParams.ns || "Samples",
-            title: $routeParams.folder
+            title: $routeParams.folder,
+            isMetro: localStorage.isMetro === "true" || false,
+            showImages: CONST.showImages
         };
         $scope.search = search;
+        $scope.setMetroStyle = setMetroStyle;
         $scope.gotoDeepSee = gotoDeepSee;
         $scope.resetWidgets = resetWidgets;
         $scope.onHomeClick = onHomeClick;
@@ -27,8 +30,15 @@
         $scope.removeFromFav = removeFromFav;
         $scope.navigateFav = navigateFav;
         $scope.toogleFolders = toogleFolders;
+        $scope.toogleImages = toogleImages;
         $rootScope.$on('toogleMenu', toggleMenu);
         $rootScope.$on('menu:changeTitle', changeTitle);
+
+        function setMetroStyle() {
+            $scope.model.isMetro = !$scope.model.isMetro;
+            localStorage.isMetro = $scope.model.isMetro;
+            $window.location.reload();
+        }
 
         function changeTitle(sc, title) {
             if (title) $scope.model.title = title.replace(".dashboard", "");
@@ -54,6 +64,13 @@
             CONST.hideFolders = !CONST.hideFolders;
             localStorage.hideFolders = CONST.hideFolders;
             $scope.model.hideFolders = CONST.hideFolders;
+            $rootScope.$broadcast("refresh");
+        }
+
+        function toogleImages() {
+            CONST.showImages = !CONST.showImages;
+            localStorage.showImages = CONST.showImages;
+            $scope.model.showImages = CONST.showImages;
             $rootScope.$broadcast("refresh");
         }
 
@@ -139,7 +156,9 @@
             //var parts = $scope.model.title.split("/");
             //if (parts.length != "")
             $scope.model.namespace = $routeParams.ns || "Samples";
-            if (localStorage.namespace.toLowerCase() !== $scope.model.namespace) {
+            var ns = localStorage.namespace;
+            if (ns) ns = ns.toLowerCase();
+            if (ns !== $scope.model.namespace) {
                 localStorage.namespace = $scope.model.namespace;
                 Connector.firstRun = true;
             }
@@ -147,6 +166,6 @@
     }
 
     angular.module('app')
-        .controller('menu', ['$scope', '$routeParams', 'Connector', 'Lang', '$rootScope', '$location', 'CONST', MenuCtrl] );
+        .controller('menu', ['$scope', '$routeParams', 'Connector', '$window', '$rootScope', '$location', 'CONST', MenuCtrl] );
 
 })();
