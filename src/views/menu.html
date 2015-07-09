@@ -26,9 +26,12 @@
                     <i class="fa fa-gear"></i>
                 </button>
                 <ul class="dropdown-menu" role="menu" style="cursor: pointer">
-                    <li><a hreaf="" ng-click="toogleFolders()"><i class="fa fa-check menu-icon" ng-show="!model.hideFolders"></i>{{'showFolders' | lang}}</a></li>
+                    <li><a ng-click="toogleFolders()"><i class="fa fa-check menu-icon" ng-show="!model.hideFolders"></i>{{'showFolders' | lang}}</a></li>
+                    <li><a ng-click="toogleImages()"><i class="fa fa-check menu-icon" ng-show="model.showImages"></i>{{'showImages' | lang}}</a></li>
                     <li role="presentation" class="divider"></li>
-                    <li><a hreaf="" ng-click="resetWidgets()">{{'resetWidgets' | lang}}</a></li>
+                    <li><a ng-click="resetWidgets()">{{'resetWidgets' | lang}}</a></li>
+                    <li><a ng-click="setMetroStyle()"><i class="fa fa-check menu-icon" ng-show="model.isMetro"></i>{{'metroStyle' | lang}}</a></li>
+                    <!--<li><a hreaf="">Timeout <input type="text" style="width: 100px"></a></li>-->
                 </ul>
             </div>
             <div class="btn-group">
