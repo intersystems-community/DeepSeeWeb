@@ -9,29 +9,41 @@
     angular.module('app', ['ngRoute', 'ngCookies', 'cgNotify', 'gridster', 'highcharts-ng', 'ng-context-menu', 'ngDialog', 'utils', 'dashboard', 'widgets', 'templates'])
 
     .constant('CONST', {
-        timeout: 10000,
-        ver: "1.1",
-        hideFolders: localStorage.hideFolders == "true" ? true : false,
+        css: {
+            classic: "css/metro.min.css",
+            metro: "css/classic.min.css"
+        },
+        bgColorClasses: ["", "cl1", "cl2", "cl3", "cl4", "cl5", "cl6", "cl7", "cl8", "cl9"],
+        fontColors: ["#FFF", "#000", "#F00", "#0A0", "#00F"],
+        icons: ["", "\uf0e4", "\uf114", "\uf080", "\uf1fe", "\uf200", "\uf201",
+            "\uf153", "\uf155", "\uf158", "\uf0c5", "\uf03a", "\uf0ce", "\uf0d1",
+            "\uf007", "\uf183", "\uf0c0", "\uf0b0", "\uf1c0", "\uf1b2", "\uf1b3",
+            "\uf02d", "\uf073", "\uf0ac", "\uf005", "\uf071", "\uf05a",
+            "\uf104"],
+        timeout: 60000,
+        ver: "1.2.04",
+        hideFolders: localStorage.hideFolders === "true" ? true : false,
+        showImages: localStorage.showImages === "true" ? true : false,
         emptyWidgetClass: "MDX2JSON.EmptyPortlet".toLowerCase()
     })
 
     .config(['$routeProvider', function ($routeProvider) {
         $routeProvider
             .when('/', {
-                templateUrl: 'src/views/dashboardList.html',
-                //templateUrl: 'src/views/home.html',
-                //controller: 'home'
-                controller: 'dashboardList'
+                //templateUrl: 'src/views/dashboardList.html',
+                templateUrl: 'src/views/home.html',
+                controller: 'home'
+                //controller: 'dashboardList'
             })
             .when('/d/:path*', {
                 templateUrl: 'src/views/dashboard.html',
                 controller: 'dashboard'
             })
             .when('/f/:folder*', {
-                templateUrl: 'src/views/dashboardList.html',
-                //templateUrl: 'src/views/home.html',
-                //controller: 'home'
-                controller: 'dashboardList'
+                //templateUrl: 'src/views/dashboardList.html',
+                templateUrl: 'src/views/home.html',
+                controller: 'home'
+                //controller: 'dashboardList'
             })
             .when('/login', {
                 templateUrl: 'src/views/login.html',
@@ -40,12 +52,13 @@
             .otherwise({ redirectTo: '/' });
     }])
 
-    .run(['gridsterConfig', 'Lang', '$rootScope', 'Connector', start]);
+    .run(['gridsterConfig', 'Lang', 'CONST', 'Connector', start]);
 
-    function start(gridsterConfig, Lang, $rootScope, Connector) {
-        if (!localStorage.cleared) {
-            localStorage.clear();
-            localStorage.cleared = true;
+    function start(gridsterConfig, Lang, CONST, Connector) {
+        if (localStorage.isMetro === "true") {
+            document.getElementById('pagestyle').setAttribute('href', CONST.css.classic);
+        } else {
+            document.getElementById('pagestyle').setAttribute('href', CONST.css.metro);
         }
 
         gridsterConfig.draggable.handle = ".widget-title-drag";
@@ -85,8 +98,11 @@
 
         // TODO: add lang support
         Highcharts.setOptions({
+            global: {
+                useUTC: false
+            },
             lang: {
-                loading: Lang.get("loading"),
+                loading: "<div class='loader'></div>",
                 //months: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
                 //weekdays: ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'],
                 shortMonths: Lang.get("shortMonths"),
