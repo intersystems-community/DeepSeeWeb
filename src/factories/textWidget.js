@@ -1,7 +1,7 @@
 (function() {
     'use strict';
 
-    function TextWidgetFact() {
+    function TextWidgetFact(CONST) {
 
         function TextWidget($scope) {
             var _this = this;
@@ -18,7 +18,11 @@
                         var v = result.Data[i];
                         var fmt = result.Cols[0].tuples[i].format;
                         if (fmt) v = numeral(v).format(fmt);
-                        $scope.model.textData.push({ label: result.Cols[0].tuples[i].caption, value: v });
+                        var color = "#000";
+                        if (_this.desc.tile) {
+                            color = CONST.fontColors[_this.desc.tile.fontColor];
+                        }
+                        $scope.model.textData.push({ label: result.Cols[0].tuples[i].caption, value: v, color: color });
                     }
                 }
             }
@@ -28,6 +32,6 @@
     }
 
     angular.module('widgets')
-        .factory('TextWidget', TextWidgetFact);
+        .factory('TextWidget', ['CONST', TextWidgetFact]);
 
 })();
