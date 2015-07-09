@@ -62,6 +62,7 @@
             }
 
             function hasDependents() {
+                if (!_this.desc.dependents) return 0;
                 return _this.desc.dependents.length !== 0;
             }
 
@@ -113,7 +114,9 @@
                     }
                 }
                 var mdx = /*useBasic == true ? _this.desc.basemdx :*/ _this.desc.mdx;
-                if (!filterActive) return mdx;
+
+                // Don't use filters in widgets placed on tiles
+                if (!filterActive || _this.desc.tile) return mdx;
 
                 // fist find all interval filters
                 if (mdx.toUpperCase().indexOf("WHERE") !== -1) mdx += " AND";
