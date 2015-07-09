@@ -1,7 +1,7 @@
 <span ng-repeat="flt in model.filters" class="pull-left flt-holder">
     <label>{{flt.label}}</label>
     <div class="input-group">
-        <input readonly type="text" class="form-control input-sm" value="{{flt.text}}" title="{{flt.text}}" style="background-color: #FFF; cursor: pointer" ng-click="toggleFilter(flt.idx,$event)">
+        <input readonly type="text" class="form-control input-sm" value="{{flt.text}}" title="{{flt.text}}" style="cursor: pointer" ng-click="toggleFilter(flt.idx,$event)">
         <span class="input-group-btn">
             <button class="btn btn-default btn-sm" type="button" ng-click="toggleFilter(flt.idx,$event)"><i class="fa fa-search"></i></button>
         </span>
