@@ -12,7 +12,7 @@
         var type = TypeMap.getClass(_this.desc.type);
         if (type) type.apply(this, [$scope]); else {
             _this.supported = false;
-            _this.showError(Lang.get("errWidgetNotSupported"));
+            _this.showError(Lang.get("errWidgetNotSupported") + ": " + _this.desc.type);
         }
         if ($scope.model.filters.length === 0) this.hideToolbar();
 
