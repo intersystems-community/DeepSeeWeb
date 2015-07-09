@@ -24,6 +24,7 @@ gulp.task('minify', ['templates'], function () {
         "src/controllers/menu.js",
         "src/controllers/dashboard.js",
         "src/controllers/dashboardList.js",
+        "src/controllers/home.js",
         "src/factories/baseWidget.js",
         "src/factories/emptyWidget.js",
         "src/factories/baseChart.js",
