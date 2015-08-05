@@ -23,11 +23,7 @@ Developed using AngularJS and Bootstrap.<br><br>
 #Build
 Project uses Gulp as build system. Install Gulp with following command:
 ```
-npm install gulp -g
-```
-Also plugins needed to be installed:
-```
-npm install gulp-uglify gulp-jshint gulp-concat gulp-cssmin gulp-html-replace gulp-angular-templatecache del --save-dev
+npm install
 ```
 To build project, simply run:
 ```
