@@ -11,6 +11,7 @@
     <link rel="stylesheet" type="text/css" href="css/angular-gridster.min.css">
     <link rel="stylesheet" type="text/css" href="css/angular-notify.min.css">
     <link rel="stylesheet" type="text/css" href="css/ngDialog.min.css">
+    <link rel="stylesheet" type="text/css" href="css/ngDialog-theme-default.min.css">
     <link rel="stylesheet" type="text/css" href="css/ngDialog-theme-plain.min.css">
     <link rel="stylesheet" type="text/css" href="css/lightPivotTable.min.css">
     <link rel="stylesheet" type="text/css" href="css/main.css">
@@ -20,7 +21,6 @@
     <link rel="stylesheet" type="text/css" href="css/classic.min.css" id="classic-style-css" disabled>
     -->
 
-     <!-- build:js -->
     <script src="src/lib/pdfmake.min.js"></script>
     <script src="src/lib/vfs_fonts.js"></script>
     <script src="src/lib/numeral.min.js"></script>
@@ -43,12 +43,13 @@
     <script src="src/lib/treemap.src.js"></script>
     <script src="src/lib/highcharts-ng.min.js"></script>
     <script src="src/lib/lightPivotTable.js"></script>
-
+    <!-- build:js src/app.js -->
     <script src="src/app.js"></script>
     <script src="src/services/utils.js"></script>
     <script src="src/directives/widgetContent.js"></script>
     <script src="src/services/error.js"></script>
     <script src="src/services/filters.js"></script>
+    <script src="src/controllers/settings.js"></script>
     <script src="src/controllers/filter.js"></script>
     <script src="src/directives/focus.js"></script>
     <script src="src/directives/pivot.js"></script>
@@ -66,6 +67,7 @@
     <script src="src/factories/lineChart.js"></script>
     <script src="src/factories/areaChart.js"></script>
     <script src="src/factories/barChart.js"></script>
+    <script src="src/factories/barChartPercent.js"></script>
     <script src="src/factories/columnChart.js"></script>
     <script src="src/factories/pieChart.js"></script>
     <script src="src/factories/xyChart.js"></script>
@@ -81,7 +83,6 @@
     <script src="src/directives/textWidget.js"></script>
     <script src="src/services/typeMap.js"></script>
     <script src="src/controllers/widget.js"></script>
-
     <script src="src/services/lang.js"></script>
     <!-- endbuild -->
 </head>
