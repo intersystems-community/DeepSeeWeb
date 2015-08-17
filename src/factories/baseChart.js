@@ -1,30 +1,38 @@
+/**
+ * Base chart class
+ */
 (function() {
     'use strict';
 
-    function BaseChartFact(Lang, Utils, Connector, $timeout, CONST) {
+    function BaseChartFact(Lang, Utils, Connector, $timeout, CONST, Storage) {
 
         function BaseChart($scope) {
-            this.storedData = [];
-            this.addSeries = addSeries;
-            this.setType = setType;
-            this.getMinValue = getMinValue;
-            this.enableStacking = enableStacking;
-            this.fixData = fixData;
-            this.baseRequestData = this.requestData;
-            this.requestData = reqestData;
-            this.parseData = parseMultivalueData;
-            this.onResize = onResize;
-            this._retrieveData = retrieveData;
+            this.storedData          = [];
+            this.addSeries           = addSeries;
+            this.setType             = setType;
+            this.getMinValue         = getMinValue;
+            this.enableStacking      = enableStacking;
+            this.fixData             = fixData;
+            this.baseRequestData     = this.requestData;
+            this.requestData         = reqestData;
+            this.parseData           = parseMultivalueData;
+            this.onResize            = onResize;
+            this._retrieveData       = retrieveData;
             this.onDrilldownReceived = onDrilldownReceived;
-            this.getDrillMDX = getDrillMDX;
+            this.getDrillMDX         = getDrillMDX;
 
-
-            var _this = this;
+            var _this    = this;
             var firstRun = true;
+            var settings = Storage.getAppSettings();
+
+            $scope.item.isLegend = true;
+            var widgetsSettings = Storage.getWidgetsSettings();
+            if (widgetsSettings[_this.desc.key]) {
+                if (widgetsSettings[_this.desc.key].isLegend !== undefined)  $scope.item.isLegend = widgetsSettings[_this.desc.key].isLegend;
+            }
+            widgetsSettings = null;
 
             $scope.item.isChart = true;
-            if (localStorage["widget:" + _this.desc.key + ":legend"] !== undefined) $scope.item.isLegend = localStorage["widget:" + _this.desc.key + ":legend"] === "true"; else $scope.item.isLegend = true;
-
             $scope.item.displayAsPivot = displayAsPivot;
             $scope.item.toggleLegend = toggleLegend;
             $scope.item.drillUp = drillUp;
@@ -79,6 +87,7 @@
                 func: function (chart) {
                     _this.chart = chart;
                     $timeout(function() {
+                        if (!_this) return;
                         if (_this.chart) _this.chart.reflow();
                     }, 0);
                 },
@@ -102,14 +111,14 @@
                         xAxis: {
                             labels: {
                                 style: {
-                                    color: CONST.fontColors[_this.desc.tile.fontColor]
+                                    color: settings.isMetro ? CONST.fontColorsMetro[_this.desc.tile.fontColor] : CONST.fontColors[_this.desc.tile.fontColor]
                                 }
                             }
                         },
                         yAxis: {
                          labels: {
                              style: {
-                                 color: CONST.fontColors[_this.desc.tile.fontColor]
+                                 color: settings.isMetro ? CONST.fontColorsMetro[_this.desc.tile.fontColor] : CONST.fontColors[_this.desc.tile.fontColor]
                              }
                          }
                         }
@@ -118,6 +127,10 @@
                 }
             }
 
+            /**
+             * Callback for point click. Used to do drilldown
+             * @param {object} e Event
+             */
             function onPointClick(e) {
                 if (!e.point) return;
                 $scope.chartConfig.loading = true;
@@ -147,6 +160,7 @@
             }
 
             function drillUp() {
+                _this.clearError();
                 _this.storedData.pop();
                 var data = _this.storedData.pop();
                 $scope.item.backButton = _this.storedData.length !== 0;
@@ -154,10 +168,15 @@
             }
 
             function getDrillMDX(path) {
-                var str = _this.getMDX();
-                var pos = str.indexOf(" ON 0,");
-                if (pos == -1) pos = 1;
-                var row = str.substring(pos + 6, str.indexOf(" ON 1"));
+                var pos = path.indexOf("&");
+                var p = path.substr(0, pos) + "Members";
+
+                var mdx = _this.getMDX();
+                mdx = mdx.replace(p, path + ".Children");
+
+                //var pos = str.indexOf(" ON 0,");
+                //if (pos == -1) pos = 1;
+                //var row = str.substring(pos + 6, str.indexOf(" ON 1"));
                 var customDrill = "";
                 /*if (widget) {
                     var drilldownSpec = "";
@@ -175,14 +194,18 @@
                 if (customDrill) {
                     str = str.replace(row, customDrill);
                     str += " %Filter " + path;
-                } else*/ str = str.replace(row, path + ".Children");
-
-                return str;
+                } else*/
+                //str = str.replace(row, path + ".Children");
+                mdx = mdx + " %FILTER " + path;
+                return mdx;
             }
 
             function toggleLegend() {
                 $scope.item.isLegend = !$scope.item.isLegend;
-                localStorage["widget:" + _this.desc.key + ":legend"] = $scope.item.isLegend;
+                var widgetsSettings = Storage.getWidgetsSettings();
+                if (!widgetsSettings[_this.desc.key]) widgetsSettings[_this.desc.key] = {};
+                widgetsSettings[_this.desc.key].isLegend = $scope.item.isLegend;
+                Storage.setWidgetsSettings(widgetsSettings);
                 if (_this.chart) {
                     if ($scope.item.isLegend) _this.chart.legendShow(); else _this.chart.legendHide();
                 }
@@ -220,6 +243,7 @@
             }
 
             function retrieveData(result) {
+                if (!_this) return;
                 $scope.chartConfig.loading = false;
                 if (result.Error) {
                     _this.showError(result.Error);
@@ -315,7 +339,7 @@
                 }
                 var tempData = [];
                 var hasChildren = false;
-                if (data.Cols[0].tuples.length !== 0) if (data.Cols[0].tuples[0].children) hasChildren = true;
+                if (data.Cols[0].tuples.length !== 0) if (data.Cols[0].tuples[0].children && data.Cols[0].tuples[0].children.length !== 0) hasChildren = true;
                 if (hasChildren) {
                     var k = 0;
                     for(var t = 0; t < data.Cols[0].tuples.length; t++) {
@@ -397,6 +421,6 @@
     }
 
     angular.module('widgets')
-        .factory('BaseChart', ['Lang', 'Utils', 'Connector', '$timeout', 'CONST', BaseChartFact]);
+        .factory('BaseChart', ['Lang', 'Utils', 'Connector', '$timeout', 'CONST', 'Storage', BaseChartFact]);
 
 })();
