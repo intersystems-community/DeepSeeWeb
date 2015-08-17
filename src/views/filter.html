@@ -44,7 +44,7 @@
         <tbody>
             <tr ng-repeat="v in model.values">
                 <td style="width:24px;padding-left: 6px"><input type="checkbox" ng-model="v.checked" ng-click="onItemSelect()"></td>
-                <td ng-click="toogleRow(v)" ng-class="v.default ? 'bold' : ''">{{v.name}}</td>
+                <td ng-click="toggleRow(v)" ng-class="v.default ? 'bold' : ''">{{v.name}}</td>
             </tr>
         </tbody>
     </table>
