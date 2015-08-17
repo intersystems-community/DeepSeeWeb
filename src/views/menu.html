@@ -22,17 +22,9 @@
                 </ul>
             </div>
             <div class="btn-group">
-                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false" title="{{'options'|lang}}">
+                <button type="button" class="btn btn-default" title="{{'options'|lang}}" ng-click="showSettings()">
                     <i class="fa fa-gear"></i>
                 </button>
-                <ul class="dropdown-menu" role="menu" style="cursor: pointer">
-                    <li><a ng-click="toogleFolders()"><i class="fa fa-check menu-icon" ng-show="!model.hideFolders"></i>{{'showFolders' | lang}}</a></li>
-                    <li><a ng-click="toogleImages()"><i class="fa fa-check menu-icon" ng-show="model.showImages"></i>{{'showImages' | lang}}</a></li>
-                    <li role="presentation" class="divider"></li>
-                    <li><a ng-click="resetWidgets()">{{'resetWidgets' | lang}}</a></li>
-                    <li><a ng-click="setMetroStyle()"><i class="fa fa-check menu-icon" ng-show="model.isMetro"></i>{{'metroStyle' | lang}}</a></li>
-                    <!--<li><a hreaf="">Timeout <input type="text" style="width: 100px"></a></li>-->
-                </ul>
             </div>
             <div class="btn-group">
                 <button class="btn btn-default" ng-click="gotoDeepSee()" ng-show="model.onDashboard" title="{{'gotoDeepSee'|lang}}"><i class="fa fa-mail-forward"></i></button>
@@ -49,6 +41,8 @@
         </form>
 
         <form class="navbar-form navbar-right">
+
+            <span ng-show="model.devMode" style="vertical-align: -webkit-baseline-middle; background-color: pink"><i class="fa fa-link"></i>&nbsp;Dev mode: {{model.devMode}}&nbsp;</span>
             <span style="vertical-align: -webkit-baseline-middle;"><i class="fa fa-database"></i>&nbsp;{{model.namespace}}&nbsp;</span>
             <div class="btn-group">
                 <button type="button" title="{{'signout' | lang}}" class="btn btn-default" ng-click="onSingoutClick()">{{model.username}} <i class="fa fa-sign-out"></i></button>
