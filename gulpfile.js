@@ -6,6 +6,8 @@ var gulp   = require('gulp'),
     cssmin = require('gulp-cssmin'),
     templateCache = require('gulp-angular-templatecache'),
     del = require('del');
+    // TODO: add html-min
+    //jsdoc = require("gulp-jsdoc");
 
 // Runing jshint an all source
 gulp.task('lint', function() {
@@ -64,6 +66,13 @@ gulp.task('templates', function() {
 gulp.task('cleanup', ['concat-templates'], function() {
     del(["build/src/templates.js"]);
 });
+
+/* Generate jsdoc
+gulp.task('jsdoc', function() {
+    return gulp.src(['src/ * * /*.js', '!src/lib/*'])
+        .pipe(jsdoc('./documentation'));
+});*/
+
 
 gulp.task('default', ['lint', 'minify', 'cssminify', 'concat-templates', 'copyfiles', 'cleanup'], function () {});
 
