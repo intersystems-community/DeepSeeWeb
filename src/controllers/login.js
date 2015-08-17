@@ -67,7 +67,7 @@
 
         /**
          * Callback for error during login request
-         * @param {object} data Server response
+         * @param {object|string} data Server response
          * @param {string} status Response status
          * @param {object} headers Response headers
          * @param {object} config Response config

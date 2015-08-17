@@ -5,12 +5,11 @@
     'use strict';
 
     function InterceptorSvc($q, $location, $routeParams, Lang) {
-        var svc = {
+        return {
             request: request,
            // response: onResponse,
             responseError: responseError
         };
-        return svc;
 
         /**
          * Handles all requests to server and sets Language based on settings

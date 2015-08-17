@@ -16,8 +16,8 @@
         this.clear = clear;
 
         /**
-         * Initialize srvice with filter array
-         * @param {ArraY} filterArray Filter array
+         * Initialize service with filter array
+         * @param {Array} filterArray Filter array
          */
         function init(filterArray) {
             _this.items = [];
@@ -82,7 +82,6 @@
             for (var i = 0; i < _this.items.length; i++) {
                 if ((_this.items[i].target === "*") || (_this.items[i].targetArray.indexOf(widgetName) !== -1)) {
                     res.push(_this.items[i]);
-                    continue;
                 }
             }
             return res;

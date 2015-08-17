@@ -110,7 +110,7 @@
 
             /**
              * Update mdx on dependent widgets
-             * @param {string} customMdx MDX that will be set on all dependent widgets
+             * @param {string|undefined} customMdx MDX that will be set on all dependent widgets
              */
             function broadcastDependents(customMdx) {
                 if (_this.hasDependents()) {

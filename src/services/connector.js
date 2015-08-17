@@ -47,7 +47,7 @@
 
         /**
          * Requests dashboard list
-         * @returns {Promise} $http promise
+         * @returns {object} $http promise
          */
         function getDashboards() {
             _this.firstRun = false;
@@ -62,7 +62,7 @@
         /**
          * Requests MDX query result
          * @param {string} mdx MDX query
-         * @returns {Promise} $http promise
+         * @returns {object} $http promise
          */
         function execMDX(mdx) {
             var parts = mdx.split(" ");
@@ -80,7 +80,7 @@
         /**
          * Requests MDX drillthrough query result
          * @param {string} mdx MDX query
-         * @returns {Promise} $http promise
+         * @returns {object} $http promise
          */
         function execMDXDrillthrough(mdx) {
             return $http({
@@ -95,7 +95,7 @@
         /**
          * Requests widgets list
          * @param {string} dashboard Dashboard
-         * @returns {Promise} $http promise
+         * @returns {object} $http promise
          */
         function getWidgets(dashboard) {
             return $http({
@@ -112,7 +112,7 @@
          * Requests filter values
          * @param {string} searchStr Search string
          * @param {string} dataSource Filter data source
-         * @returns {Promise} $http promise
+         * @returns {object} $http promise
          */
         function searchFilters(searchStr, dataSource) {
             return $http({
@@ -129,7 +129,7 @@
 
         /**
          * Requests favorites
-         * @returns {Promise} $http promise
+         * @returns {object} $http promise
          */
         function getFavorites() {
             return $http({
@@ -143,7 +143,7 @@
         /**
          * Adds favorite
          * @param {string} path Favorite path
-         * @returns {Promise} $http promise
+         * @returns {object} $http promise
          */
         function addFavorite(path) {
             return $http({
@@ -157,7 +157,7 @@
         /**
          * Deletes favorite
          * @param {string} path Favorite path
-         * @returns {Promise} $http promise
+         * @returns {object} $http promise
          */
         function deleteFavorite(path) {
             return $http({
@@ -171,7 +171,7 @@
         /**
          * Saves configuration to server
          * @param {object} config Configuration to save
-         * @returns {Promise} $http promise
+         * @returns {object} $http promise
          */
         function saveConfig(config) {
             return $http({
@@ -187,7 +187,7 @@
          * @param {string} login User login
          * @param {string} password User password
          * @param {string} namespace Namespace
-         * @returns {Promise} $http promise
+         * @returns {object} $http promise
          */
         function signIn(login, password, namespace) {
             _this.username = login;

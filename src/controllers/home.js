@@ -193,7 +193,7 @@
 
         /**
          * Process retrieved dashboard list
-         * @param {objecT} result Server response contains dashboard list
+         * @param {object} result Server response contains dashboard list
          */
         function retrieveData(result) {
             if (result.data) if (result.data.Error) {
@@ -296,8 +296,7 @@
             }
             var parts;
             function filter(a) {
-                if (a.title == parts[0]) return true;
-                return false;
+                return a.title == parts[0];
             }
 
 
