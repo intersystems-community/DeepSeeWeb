@@ -1,7 +1,7 @@
 (function() {
     'use strict';
 
-    function EmptyWidgetFact($rootScope, Lang, Filters, Utils) {
+    function EmptyWidgetFact($rootScope, Lang, Filters, Storage) {
 
         function EmptyWidget($scope) {
             var _this = this;
@@ -10,8 +10,10 @@
             //$scope.item.toolbarView = '';
             $scope.item.toolbarView = 'src/views/emptyWidgetToolbar.html';
             $scope.item.setFiltersToDefaults = setFiltersToDefaults;
-            $scope.item.viewSize = getViewSize();
+            $scope.item.viewSize = getViewSize(); // viewSize - value in % to place filtes (can be 33, 50, 100)
             $scope.item.setViewSize = setViewSize;
+
+            this.requestData = function(){};
 
             function setFiltersToDefaults() {
                 for (var i = 0; i < _this.filterCount; i++) {
@@ -35,11 +37,17 @@
             }
 
             function getViewSize() {
-                return localStorage["widget" + _this.desc.key + "viewSize"] || 100;
+                var widgets = Storage.getWidgetsSettings();
+                if (!widgets[_this.desc.key]) return 100;
+                if (widgets[_this.desc.key].viewSize === undefined) return 100;
+                return widgets[_this.desc.key].viewSize;
             }
 
             function saveViewSize() {
-                localStorage["widget" + _this.desc.key + "viewSize"] = $scope.item.viewSize;
+                var widgets = Storage.getWidgetsSettings();
+                if (!widgets[_this.desc.key]) widgets[_this.desc.key] = {};
+                widgets[_this.desc.key].viewSize = $scope.item.viewSize;
+                Storage.setWidgetsSettings(widgets);
             }
         }
 
@@ -47,6 +55,6 @@
     }
 
     angular.module('widgets')
-        .factory('EmptyWidget', ['$rootScope', 'Lang', 'Filters', 'Utils', EmptyWidgetFact]);
+        .factory('EmptyWidget', ['$rootScope', 'Lang', 'Filters', 'Storage', EmptyWidgetFact]);
 
 })();
