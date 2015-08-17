@@ -1,3 +1,6 @@
+/**
+ * Speedometer chart class factory
+ */
 (function() {
     'use strict';
 
@@ -11,7 +14,7 @@
 
             var ex = {
                 tooltip: {
-                    enabled: false,
+                    enabled: false
                 },
                 chart: {
                     plotBackgroundColor: null,
@@ -82,8 +85,11 @@
                 tickColor: '#666'
             };
 
+            /**
+             * Speedometer chart data parser function. Creates series for speedometer chart from data
+             * @param {object} data Data
+             */
            function speedometerDataConverter(data) {
-               var values = [];
                var idx = 0;
                if (data.Cols[0].tuples.length > 1) idx = 1;
                var v = data.Data[idx];

@@ -1,3 +1,6 @@
+/**
+ * Line chart class factory
+ */
 (function() {
     'use strict';
 

@@ -1,10 +1,9 @@
+/**
+ * Custom chart for KKB to display stacked bar chart with percents and additional data
+ */
 (function() {
     'use strict';
 
-    /**
-     * Custom chart for KKB to display stacked bar chart with percents and additional data
-     * @constructor
-     */
     function BarChartPercentFact(BaseChart, Utils) {
 
         function BarChartPercent($scope) {

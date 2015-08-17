@@ -1,3 +1,6 @@
+/**
+ * Hi-low chart class factory
+ */
 (function() {
     'use strict';
 
@@ -43,6 +46,11 @@
             };
             Utils.merge($scope.chartConfig.options, ex);
 
+
+            /**
+             * Hi-low chart data parser function. Creates series for hi-low chart from data
+             * @param {object} data Data
+             */
             function hiLowDataConverter(data) {
                 var i;
                 $scope.chartConfig.xAxis.categories = [];

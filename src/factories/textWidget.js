@@ -1,3 +1,6 @@
+/**
+ * Text widget class factory
+ */
 (function() {
     'use strict';
 

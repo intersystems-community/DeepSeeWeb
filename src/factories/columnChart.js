@@ -1,3 +1,6 @@
+/**
+ * Column chart class factory
+ */
 (function() {
     'use strict';
 

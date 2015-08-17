@@ -1,3 +1,6 @@
+/**
+ * Pivot table class factory
+ */
 (function() {
     'use strict';
 
@@ -14,14 +17,25 @@
             $scope.$on("print:" + $scope.item.$$hashKey, print);
             $scope.item.onDrillDown = onDrillDown;
 
+            /**
+             * Called after pivot table was initialized
+             * @param {object} lpt Pivot table object
+             */
             function onInit(lpt) {
                 _this.lpt = lpt;
             }
 
+            /**
+             * Called on drildown event. Broadcasts all dependent widgets to update their mdx based on pivot drill mdx
+             * @param {object} p Pivot
+             */
             function onDrillDown(p) {
                 _this.broadcastDependents(p.mdx);
             }
 
+            /**
+             * Requests pivot data
+             */
             function requestData() {
                 if (_this.lpt) {
                     var newMdx = _this.getMDX();
@@ -32,10 +46,16 @@
                 }
             }
 
+            /**
+             * Resize callback
+             */
             function onResize() {
                 if (_this.lpt) _this.lpt.updateSizes();
             }
 
+            /**
+             * Print pivot data (incomplete, don't use this function)
+             */
             function print() {
                 if (!_this.lpt) return;
                 var p = _this.lpt.CONFIG.container;

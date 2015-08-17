@@ -1,3 +1,6 @@
+/**
+ * XY chart class factory
+ */
 (function() {
     'use strict';
 
@@ -29,6 +32,10 @@
                 }
             };
 
+            /**
+             * XY chart data parser function. Creates series for XY chart from data
+             * @param {object} data Data
+             */
             this.parseData = function(data) {
                 var fmt1 = "";
                 var fmt2 = "";

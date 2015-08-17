@@ -1,3 +1,6 @@
+/**
+ * Pie chart class factory
+ */
 (function() {
     'use strict';
 
@@ -61,7 +64,9 @@
             this.setType('pie');
             this.requestData();
 
-
+            /**
+             * Toggles legend of pie chart
+             */
             function toggleLegend() {
                 $scope.item.isLegend = !$scope.item.isLegend;
                 localStorage["widget:" + _this.desc.key + ":legend"] = $scope.item.isLegend;

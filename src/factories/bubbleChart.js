@@ -1,3 +1,6 @@
+/**
+ * Bubble chart class factory
+ */
 (function() {
     'use strict';
 
@@ -44,6 +47,10 @@
             };
             Utils.merge($scope.chartConfig.options, ex);
 
+            /**
+             * Bubble chart data parser function. Creates series for bubble chart from data
+             * @param {object} data Data
+             */
             function bubbleDataConvertor(data) {
                 $scope.chartConfig.series = [];
                 if (data.Cols[0].tuples.length >= 1) $scope.chartConfig.xAxis.title.text = data.Cols[0].tuples[0].caption;

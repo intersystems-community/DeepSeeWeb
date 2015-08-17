@@ -1,3 +1,6 @@
+/**
+ * Area chart class factory
+ */
 (function() {
     'use strict';
 

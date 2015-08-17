@@ -1,5 +1,5 @@
 /**
- * Base widget class
+ * Base widget class factory
  */
 (function() {
     'use strict';
@@ -88,7 +88,7 @@
 
             /**
              * Get widget filter
-             * @param {integer} idx Index of filter to get
+             * @param {number} idx Index of filter to get
              * @returns {object} Widget filter
              */
             function getFilter(idx) {
@@ -123,7 +123,7 @@
             /**
              * Process request error for widget
              * @param e
-             * @param {integer} status Error code
+             * @param {number} status Error code
              */
             function onRequestError(e, status) {
                 $scope.chartConfig.loading = false;

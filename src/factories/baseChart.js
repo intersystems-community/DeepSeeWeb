@@ -1,5 +1,5 @@
 /**
- * Base chart class
+ * Base chart class factory
  */
 (function() {
     'use strict';
@@ -12,7 +12,6 @@
             this.setType             = setType;
             this.getMinValue         = getMinValue;
             this.enableStacking      = enableStacking;
-            this.fixData             = fixData;
             this.baseRequestData     = this.requestData;
             this.requestData         = reqestData;
             this.parseData           = parseMultivalueData;
@@ -139,6 +138,10 @@
                 Connector.execMDX(mdx).error(_this._onRequestError).success(_this.onDrilldownReceived);
             }
 
+            /**
+             * Callback for drilldown data request
+             * @param {object} result Drilldown data
+             */
             function onDrilldownReceived(result) {
                 if (!result) return;
                 $scope.chartConfig.loading = false;
@@ -159,6 +162,9 @@
                 _this._retrieveData(result);
             }
 
+            /**
+             * Makes drillup
+             */
             function drillUp() {
                 _this.clearError();
                 _this.storedData.pop();
@@ -167,6 +173,11 @@
                 _this._retrieveData(data);
             }
 
+            /**
+             * Returns MDX for drilldown
+             * @param {string} path Drilldown path
+             * @returns {string} Drilldown MDX
+             */
             function getDrillMDX(path) {
                 var pos = path.indexOf("&");
                 var p = path.substr(0, pos) + "Members";
@@ -177,7 +188,6 @@
                 //var pos = str.indexOf(" ON 0,");
                 //if (pos == -1) pos = 1;
                 //var row = str.substring(pos + 6, str.indexOf(" ON 1"));
-                var customDrill = "";
                 /*if (widget) {
                     var drilldownSpec = "";
                     if (widget.pivotData) if (widget.pivotData.rowAxisOptions) if (widget.pivotData.rowAxisOptions.drilldownSpec) drilldownSpec = widget.pivotData.rowAxisOptions.drilldownSpec;
@@ -200,6 +210,9 @@
                 return mdx;
             }
 
+            /**
+             * Toggles chart legend and save state in storage
+             */
             function toggleLegend() {
                 $scope.item.isLegend = !$scope.item.isLegend;
                 var widgetsSettings = Storage.getWidgetsSettings();
@@ -212,6 +225,9 @@
                 $scope.chartConfig.legend = {enabled: $scope.item.isLegend};
             }
 
+            /**
+             * Displays chart as pivot widget
+             */
             function displayAsPivot() {
                 if (_this.desc.type === "pivot") {
                     delete $scope.item.pivotMdx;
@@ -225,6 +241,10 @@
                 }
             }
 
+            /**
+             * Default formatter for chart values
+             * @returns {string} Formatted value
+             */
             function defaultFormatter() {
                 /* jshint ignore:start */
                 var t = this;
@@ -237,11 +257,18 @@
                 return a;
             }
 
+            /**
+             * Requests chart data
+             */
             function reqestData() {
                 $scope.chartConfig.loading = true;
                 _this.baseRequestData();
             }
 
+            /**
+             * Callback for chart data request
+             * @param {object} result chart data
+             */
             function retrieveData(result) {
                 if (!_this) return;
                 $scope.chartConfig.loading = false;
@@ -286,6 +313,10 @@
                 }
             }
 
+            /**
+             * Adds series to chart
+             * @param {object} data Series data
+             */
             function addSeries(data) {
                 var cols = Highcharts.getOptions().colors;
                 data.color = cols[$scope.chartConfig.series.length % cols.length];
@@ -293,6 +324,9 @@
                 $scope.chartConfig.series.push(data);
             }
 
+            /**
+             * Enables chart stacking
+             */
             function enableStacking() {
                 var ex = {
                     plotOptions: {
@@ -301,14 +335,21 @@
                         }
                     }
                 };
-
                 Utils.merge($scope.chartConfig.options, ex);
             }
 
+            /**
+             * Set chart type
+             * @param {string} type Chart type
+             */
             function setType(type) {
                 $scope.chartConfig.options.chart.type = type;
             }
 
+            /**
+             * Fix data. Removes empty values
+             * @param {Array} tempData Data
+             */
             function fixData(tempData) {
                 for (var g = 0; g < tempData.length; g++) {
                     if (!tempData[g].y) tempData[g].y = null;
@@ -316,6 +357,11 @@
                 }
             }
 
+            /**
+             * Returns minimum value of data array
+             * @param {Array} data Data
+             * @returns {Number} Minimum value
+             */
             function getMinValue(data) {
                 var min = Infinity;
                 for (var i = 0; i < data.length; i++) {
@@ -324,6 +370,10 @@
                 return min;
             }
 
+            /**
+             * Parse data and create chart series
+             * @param {object} d Data
+             */
             function parseMultivalueData(d) {
                 var data = d;
                 var i;
@@ -406,12 +456,15 @@
                         _this.addSeries({
                             data: tempData,
                             name: name,
-                            format: format,
+                            format: format
                         });
                     }
                 }
             }
 
+            /**
+             * Callback for resize event
+             */
             function onResize() {
                 if (_this.chart) if (_this.chart.container) if (_this.chart.container.parentNode) _this.chart.setSize(_this.chart.container.parentNode.offsetWidth, _this.chart.container.parentNode.offsetHeight, false);
             }

@@ -1,3 +1,6 @@
+/**
+ * Treemap chart class factory
+ */
 (function() {
     'use strict';
 
@@ -43,6 +46,10 @@
 
             $scope.chartConfig.options.legend = {enabled: false};
 
+            /**
+             * Treemap chart data parser function. Creates series for treemap chart from data
+             * @param {object} data Data
+             */
             function treeMapDataConverter(data) {
                 var i;
                 $scope.chartConfig.series = [];
@@ -95,8 +102,6 @@
                 }
             }
             //Utils.merge($scope.chartConfig.options, ex);
-
-
         }
 
         return TreeMapChart;
