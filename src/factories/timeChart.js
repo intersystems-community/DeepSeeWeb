@@ -116,7 +116,7 @@
                         }
                     }
                 } else {
-                    for(var j = 0; j < data.Cols[0].tuples.length; j++) {
+                    for(var j = data.Cols[0].tuples.length - 1; j >= 0; j--) {
                         tempData = [];
                         for (i = 0; i < data.Cols[1].tuples.length; i++) {
                             da = convertDateFromCache(extractValue(data.Cols[1].tuples[i].path));//this.getDate(data.Cols[1].tuples[i].caption);
@@ -133,7 +133,7 @@
                 }
 
                 // Due bug in timechart we need manually update navigator and axis extremes after data refresh
-                if ((_this.chart) && ($scope.chartConfig.series.length !== 0)) {
+                if ((_this.chart) && ($scope.chartConfig.series.length !== 0) && (_this.chart.xAxis)) {
                     for (i = 0; i < _this.chart.xAxis.length; i++) _this.chart.xAxis[i].setExtremes();
                     var nav = _this.chart.get('highcharts-navigator-series');
                     if (nav) nav.setData($scope.chartConfig.series[0].data);
