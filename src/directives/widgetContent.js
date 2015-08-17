@@ -1,7 +1,14 @@
+/**
+ * Directive for widget content
+ */
 (function() {
     'use strict';
 
     angular.module('app')
+
+    /**
+     * Sets new element directives based on widget type
+     */
         .directive('widgetContent', ['$parse', '$compile', 'TypeMap', function($parse, $compile, TypeMap) {
         return {
             compile: function compile(tElement, tAttrs) {

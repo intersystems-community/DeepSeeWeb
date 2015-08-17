@@ -1,3 +1,7 @@
+/**
+ * Controller for login screen
+ * @view views/login.html
+ */
 (function (){
     'use strict';
 
@@ -12,10 +16,15 @@
             error: ""
         };
 
-        $scope.$on('signinerror', this.onError);
-        $rootScope.$broadcast('toogleMenu', false);
+        $scope.onLoginClick = onLoginClick;
+        $scope.$on('signinerror', onError);
+        // Listened in menu.js
+        $rootScope.$broadcast('toggleMenu', false);
 
-        $scope.onLoginClick = function() {
+        /**
+         * Click event gandler for login button
+         */
+        function onLoginClick() {
             clearError();
             if (!$scope.model.login) { showError(Lang.get('errLoginRequired')); return; }
             if (!$scope.model.password) { showError(Lang.get('errPassRequired')); return; }
@@ -25,13 +34,17 @@
                 .signIn($scope.model.login, $scope.model.password, $scope.model.namespace)
                 .error(onError)
                 .success(onSuccess);
-        };
+        }
 
+        /**
+         * Callback for success login
+         */
         function onSuccess() {
             localStorage.namespace = $scope.model.namespace;
             localStorage.userName = Connector.username;
 
-            $rootScope.$broadcast('toogleMenu', true);
+            // Listened in menu.js
+            $rootScope.$broadcast('toggleMenu', true);
             var from = $location.search().from;
             var search = {};
             if (from) {
@@ -52,6 +65,13 @@
             else $location.path("/").search({ns: $scope.model.namespace});
         }
 
+        /**
+         * Callback for error during login request
+         * @param {object} data Server response
+         * @param {string} status Response status
+         * @param {object} headers Response headers
+         * @param {object} config Response config
+         */
         function onError(data, status, headers, config) {
             var respTime = new Date().getTime() - startTime;
             if(respTime >= config.timeout){
@@ -80,10 +100,17 @@
            }
         }
 
+        /**
+         * Clears error message
+         */
         function clearError() {
             $scope.model.error = "";
         }
 
+        /**
+         * Shows error message
+         * @param {string} txt Error message
+         */
         function showError(txt) {
             $scope.model.error = txt;
         }

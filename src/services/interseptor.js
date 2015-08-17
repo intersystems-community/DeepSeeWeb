@@ -1,18 +1,26 @@
+/**
+ * Service to intercept requests and responses.
+ */
 (function() {
     'use strict';
 
     function InterceptorSvc($q, $location, $routeParams, Lang) {
         var svc = {
-            //request: request,
+            request: request,
            // response: onResponse,
             responseError: responseError
         };
         return svc;
 
-        /*function request(config) {
-            config.headers = { Authorization: Session.auth  };
+        /**
+         * Handles all requests to server and sets Language based on settings
+         * @param {object} config Request config
+         * @returns {object} New request config
+         */
+        function request(config) {
+            if (!config.headers) config.headers = { 'Accept-Language': Lang.current }; else config.headers['Accept-Language'] = Lang.current;
             return config;
-        }*/
+        }
 
         /*function onResponse(response) {
             var deferred = $q.defer();
@@ -22,6 +30,11 @@
             return deferred.promise;
         }*/
 
+        /**
+         * Handles all server error responses
+         * @param {object} e Error
+         * @returns {object|boolean} Error
+         */
         function responseError(e) {
             /*if (e.status === 503) {
                 Error.show("503. Service unavailable.");

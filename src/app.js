@@ -1,3 +1,6 @@
+/**
+ * Main application module
+ */
 (function() {
     'use strict';
 
@@ -14,16 +17,15 @@
             metro: "css/classic.min.css"
         },
         bgColorClasses: ["", "cl1", "cl2", "cl3", "cl4", "cl5", "cl6", "cl7", "cl8", "cl9"],
-        fontColors: ["#FFF", "#000", "#F00", "#0A0", "#00F"],
+        fontColors: ["#000", "#FFF", "#F00", "#0A0", "#00F"],
+        fontColorsMetro: ["#FFF", "#000", "#F00", "#0A0", "#00F"],
         icons: ["", "\uf0e4", "\uf114", "\uf080", "\uf1fe", "\uf200", "\uf201",
             "\uf153", "\uf155", "\uf158", "\uf0c5", "\uf03a", "\uf0ce", "\uf0d1",
             "\uf007", "\uf183", "\uf0c0", "\uf0b0", "\uf1c0", "\uf1b2", "\uf1b3",
             "\uf02d", "\uf073", "\uf0ac", "\uf005", "\uf071", "\uf05a",
             "\uf104"],
         timeout: 60000,
-        ver: "1.2.04",
-        hideFolders: localStorage.hideFolders === "true" ? true : false,
-        showImages: localStorage.showImages === "true" ? true : false,
+        ver: "1.2.14b",
         emptyWidgetClass: "MDX2JSON.EmptyPortlet".toLowerCase()
     })
 
@@ -52,10 +54,19 @@
             .otherwise({ redirectTo: '/' });
     }])
 
-    .run(['gridsterConfig', 'Lang', 'CONST', 'Connector', start]);
+    .run(['gridsterConfig', 'Lang', 'CONST', 'Connector', 'Storage', start]);
 
-    function start(gridsterConfig, Lang, CONST, Connector) {
-        if (localStorage.isMetro === "true") {
+    /**
+     * Application entry point
+     * @param gridsterConfig
+     * @param Lang
+     * @param CONST
+     * @param Connector
+     * @param Storage
+     */
+    function start(gridsterConfig, Lang, CONST, Connector, Storage) {
+        var settings = Storage.getAppSettings();
+        if (settings.isMetro) {
             document.getElementById('pagestyle').setAttribute('href', CONST.css.classic);
         } else {
             document.getElementById('pagestyle').setAttribute('href', CONST.css.metro);

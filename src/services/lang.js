@@ -1,24 +1,61 @@
+/**
+ * Localization service. Also contains localization filter
+ */
 (function() {
     'use strict';
 
-    function LangSvc($locale, $window, LANGSTR) {
-        this.current = "en";
+    function LangSvc(Storage, $window, LANGSTR) {
+        var settings = Storage.getAppSettings();
+        var _this = this;
+        this.getLanguages = getLanguages;
+        this.get = get;
         //TODO: set angular $locale here
 
-        switch ($window.navigator.language.toLowerCase()) {
-            case "en": this.current = "ru"; break;
-            case "ru": this.current = "ru"; break;
-            case "de": this.current = "de"; break;
-            default:      this.current = "en"; break;
+        if (!settings.language) {
+            switch ($window.navigator.language.toLowerCase()) {
+                case "en":
+                    this.current = "ru";
+                    break;
+                case "ru":
+                    this.current = "ru";
+                    break;
+                case "de":
+                    this.current = "de";
+                    break;
+                default:
+                    this.current = "en";
+                    break;
+            }
+        } else this.current = settings.language || "en";
+
+        /**
+         * Translates string with current language
+         * @param text string to translate
+         * @returns {string} translated string
+         */
+        function get(text) {
+            if (!LANGSTR[_this.current]) return text;
+            if (!LANGSTR[_this.current][text]) return text;
+            return LANGSTR[_this.current][text];
         }
 
-        this.get = function(text) {
-            if (!LANGSTR[this.current]) return text;
-            if (!LANGSTR[this.current][text]) return text;
-            return LANGSTR[this.current][text];
-        };
+        /**
+         * Returns supported languages
+         * @returns {Array} Supported languages
+         */
+        function getLanguages() {
+            var langs = [];
+            for (var l in LANGSTR) langs.push(l);
+            return langs;
+        }
     }
 
+    /**
+     * Angular filter function for language support
+     * @param Lang
+     * @returns {Function}
+     * @constructor
+     */
     function LangFlt(Lang) {
         return function(text) {
             return Lang.get(text);
@@ -26,10 +63,20 @@
     }
 
     angular.module('app')
-        .service('Lang', ['$locale', '$window', 'LANGSTR', LangSvc])
-        .filter('lang', LangFlt)
+        .service('Lang', ['Storage', '$window', 'LANGSTR', LangSvc])
+        .filter('lang', ['Lang', LangFlt])
+
+    /**
+     * All language string constants
+     */
         .constant('LANGSTR', {
             en: {
+                cancel: "Cancel",
+                save: "Save",
+                //theme: "Theme",
+                view: "View",
+                newView: "New",
+                language: "Language",
                 dashboard: "Dashboard",
                 folder: "Folder",
                 signin: "Sign in",
@@ -44,6 +91,7 @@
                 dismiss: "Dismiss",
                 home: "Home",
                 resetWidgets: "Reset widgets",
+                resetTiles: "Reset tiles",
                 addToFavorites: "Add to favorites",
                 removeFromFav: "Remove from favorites",
                 refresh: "Refresh",
@@ -89,6 +137,12 @@
                 shortMonths: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
             },
             ru: {
+                cancel: "Отмена",
+                save: "Сохранить",
+                //theme: "Тема",
+                view: "Представление",
+                newView: "Добавить",
+                language: "Язык",
                 dashboard: "Индикаторная панель",
                 folder: "Папка",
                 signin: "Вход",
@@ -104,6 +158,7 @@
                 home: "Домой",
                 refresh: "Обновить",
                 resetWidgets: "Сбросить виджеты",
+                resetTiles: "Сбросить тайлы",
                 addToFavorites: "Добавить в избраное",
                 removeFromFav: "Удалить из избраного",
                 showFolders: "Отображать папки",
@@ -146,8 +201,7 @@
                 errNoWidgets: "Сервер вернул пустой список виджетов",
                 errNoDashboards: "В данной обласни нет дашбордов",
                 shortMonths: ["Янв", "Фев", "Мар", "Апр", "Май", "Июн", "Июл", "Авг", "Сен", "Окт", "Ноя", "Дек"]
-            },
-            de: {}
+            }
         });
 
 })();

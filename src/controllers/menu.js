@@ -1,7 +1,11 @@
+/**
+ * Controller for application menu(top line of screen)
+ * @view views/menu.html
+ */
 (function(){
     'use strict';
 
-    function MenuCtrl($scope, $routeParams, Connector, $window, $rootScope, $location, CONST) {
+    function MenuCtrl($scope, $routeParams, Connector, $window, $rootScope, $location, CONST, ngDialog) {
         var _this = this;
         this.favs = [];
         loadFav();
@@ -14,76 +18,88 @@
             visible: true,
             favs: getFavs(),
             onDashboard: isOnDashboard(),
-            hideFolders: CONST.hideFolders,
+            //hideFolders: CONST.hideFolders,
             namespace: $routeParams.ns || "Samples",
             title: $routeParams.folder,
-            isMetro: localStorage.isMetro === "true" || false,
-            showImages: CONST.showImages
+            //isMetro: localStorage.isMetro === "true" || false,
+            //showImages: CONST.showImages,
+            devMode: localStorage.connectorRedirect
         };
         $scope.search = search;
-        $scope.setMetroStyle = setMetroStyle;
         $scope.gotoDeepSee = gotoDeepSee;
-        $scope.resetWidgets = resetWidgets;
         $scope.onHomeClick = onHomeClick;
         $scope.onSingoutClick = onSingoutClick;
         $scope.addToFavorites = addToFavorites;
         $scope.removeFromFav = removeFromFav;
         $scope.navigateFav = navigateFav;
-        $scope.toogleFolders = toogleFolders;
-        $scope.toogleImages = toogleImages;
-        $rootScope.$on('toogleMenu', toggleMenu);
+        $scope.showSettings = showSettings;
+        $rootScope.$on('toggleMenu', toggleMenu);
         $rootScope.$on('menu:changeTitle', changeTitle);
+        $scope.$on('$routeChangeSuccess', onRouteChange);
 
-        function setMetroStyle() {
-            $scope.model.isMetro = !$scope.model.isMetro;
-            localStorage.isMetro = $scope.model.isMetro;
-            $window.location.reload();
+        /**
+         * Open settings modal window
+         */
+        function showSettings() {
+            ngDialog.open({template: 'src/views/settings.html', data: {}, controller: "settings", showClose: true, className: "ngdialog-theme-default" });
         }
 
+        /**
+         * Changes current application title
+         * @param {object} sc Scope
+         * @param {string} title New title
+         */
         function changeTitle(sc, title) {
             if (title) $scope.model.title = title.replace(".dashboard", "");
         }
 
+        /**
+         * Redirects to original DeepSee page, contains current dashboard. Works only if user on dashboard screen
+         */
         function gotoDeepSee() {
             if (!isOnDashboard()) return;
             var host = "";
-            if ($location.$$host === "test.deepsee.com") host = "http://146.185.143.59";
+            //if ($location.connectorRedirect) host = "http://146.185.143.59";
             var url = "/csp/" + Connector.getNamespace() + "/_DeepSee.UserPortal.DashboardViewer.zen?DASHBOARD=" + $routeParams.path;
             window.open(host + url);
         }
 
+        /**
+         * Search callback
+         * @param {string} txt Search string
+         */
         function search(txt) {
+            //"search:dashboard" is listened in home.js
             $rootScope.$broadcast("search:dashboard", txt);
         }
 
+        /**
+         * Home button click handler
+         */
         function onHomeClick() {
             $location.path("/");
         }
 
-        function toogleFolders() {
-            CONST.hideFolders = !CONST.hideFolders;
-            localStorage.hideFolders = CONST.hideFolders;
-            $scope.model.hideFolders = CONST.hideFolders;
-            $rootScope.$broadcast("refresh");
-        }
-
-        function toogleImages() {
-            CONST.showImages = !CONST.showImages;
-            localStorage.showImages = CONST.showImages;
-            $scope.model.showImages = CONST.showImages;
-            $rootScope.$broadcast("refresh");
-        }
-
+        /**
+         * Saves favorites to localstorage
+         */
         function saveFav() {
             if (_this.favs.length === 0) delete localStorage.favs;
             localStorage.favs = JSON.stringify(_this.favs);
         }
 
+        /**
+         * Load favorites from localstorage
+         */
         function loadFav() {
             if (!localStorage.favs) return;
             _this.favs = JSON.parse(localStorage.favs);
         }
 
+        /**
+         * Returns favorites array
+         * @returns {Array} Favorites
+         */
         function getFavs() {
             // TODO: sort favs
             var res = [];
@@ -95,6 +111,9 @@
             return res;
         }
 
+        /**
+         * Add current dashboard to favorites
+         */
         function addToFavorites() {
             var favPath = $routeParams.path;
             if (favExists(favPath)) return;
@@ -106,6 +125,9 @@
             saveFav();
         }
 
+        /**
+         * Removes current dashboard from favorites
+         */
         function removeFromFav() {
             var favPath = $routeParams.path;
             if (!favExists(favPath)) return;
@@ -119,35 +141,55 @@
             saveFav();
         }
 
+        /**
+         * Navigate to favorite. Redirects to favorite dashboard
+         * @param {object} fav favorite
+         */
         function navigateFav(fav) {
             if (!_this.favs[fav.idx]) return;
             $location.path("/d/" + _this.favs[fav.idx]);
         }
 
+        /**
+         * Is favorite exists
+         * @param {string} path Favorite path
+         * @returns {boolean} True if favorite exists
+         */
         function favExists(path) {
             for (var i = 0; i < _this.favs.length; i++) if (_this.favs[i] === path) return true;
             return false;
         }
 
+        /**
+         * Sign out click handler
+         */
         function onSingoutClick() {
             Connector.signOut();
         }
 
+        /**
+         * Toggle menu. Callback for $on("toggleMenu")
+         * @param {object} event Event
+         * @param {boolean} isVisible show menu or not
+         */
         function toggleMenu(event, isVisible) {
             if (isVisible) $scope.model.username = localStorage.userName || "";
             $scope.model.visible = isVisible;
         }
 
-        function resetWidgets() {
-            $rootScope.$broadcast("resetWidgets");
-        }
-
+        /**
+         * Returns true if user currently on dashboard
+         * @returns {boolean} Is on dashboard
+         */
         function isOnDashboard() {
             if (!$routeParams.path) return false;
             return $routeParams.path.indexOf(".dashboard") !== -1;
         }
 
-        $scope.$on('$routeChangeSuccess', function () {
+        /**
+         * Route change callback. Used to update title, check namespace, etc.
+         */
+        function onRouteChange() {
             $scope.model.onDashboard = isOnDashboard();
             $scope.model.searchText = "";
             $scope.model.canAdd = !favExists($routeParams.path);
@@ -162,10 +204,10 @@
                 localStorage.namespace = $scope.model.namespace;
                 Connector.firstRun = true;
             }
-        });
+        }
     }
 
     angular.module('app')
-        .controller('menu', ['$scope', '$routeParams', 'Connector', '$window', '$rootScope', '$location', 'CONST', MenuCtrl] );
+        .controller('menu', ['$scope', '$routeParams', 'Connector', '$window', '$rootScope', '$location', 'CONST', 'ngDialog', MenuCtrl] );
 
 })();

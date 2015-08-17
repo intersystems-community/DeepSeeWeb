@@ -1,3 +1,6 @@
+/**
+ * Service to store all filters on dashboard
+ */
 (function() {
     'use strict';
 
@@ -12,6 +15,10 @@
         this.getFilter = getFilter;
         this.clear = clear;
 
+        /**
+         * Initialize srvice with filter array
+         * @param {ArraY} filterArray Filter array
+         */
         function init(filterArray) {
             _this.items = [];
             _this.isFiltersOnToolbarExists = false;
@@ -27,6 +34,11 @@
             }
         }
 
+        /**
+         * Returns filter display text
+         * @param {object} flt Filter
+         * @returns {string} Filter display text
+         */
         function findDisplayText(flt) {
             if (flt.value === "" || flt.value === undefined) return "";
             for (var i = 0; i < flt.values.length; i++) if (flt.values[i].path == flt.value) {
@@ -37,7 +49,11 @@
             return "";
         }
 
-        // This is model representation of filters, not filters itself. To get filter use Filters.getFilter(flt.idx)
+        /**
+         * Returns model representation of filters, not filters itself. To get filter use Filters.getFilter(flt.idx)
+         * @param {string} widgetName Returns filters of widget with this name
+         * @returns {Array} Model filters
+         */
         function getWidgetModelFilters(widgetName) {
             var res = [];
             for (var i = 0; i < _this.items.length; i++) {
@@ -56,7 +72,11 @@
             return res;
         }
 
-        // Returns list of filters applied to widget(note: this filters can be displayed on another widgets, to get displayed widget use getWidgetModelFilters)
+        /**
+         * Returns list of filters USED by widget (note: this filters can be displayed on another widgets, to get displayed filters use getWidgetModelFilters)
+         * @param {string} widgetName Widget name
+         * @returns {Array} Filters used by widget
+         */
         function getWidgetFilters(widgetName) {
             var res = [];
             for (var i = 0; i < _this.items.length; i++) {
@@ -68,6 +88,11 @@
             return res;
         }
 
+        /**
+         * Applies filter
+         * @param {object} flt Filter to apply
+         * @param {boolean} noRefresh Disable refresh broadcast if true
+         */
         function applyFilter(flt, noRefresh) {
             var disp = "";
             var val = "";
@@ -84,23 +109,31 @@
             flt.value = val;
             if (!noRefresh) {
                 if (flt.targetArray.length !== 0) {
+                    // Listened in widget.js
                     for (i = 0; i < flt.targetArray.length; i++) $rootScope.$broadcast("filter" + flt.targetArray[i]);
                 } else {
+                    // Listened in widget.js
                     if (flt.target === "*") $rootScope.$broadcast("filterAll");
                 }
             }
         }
 
+        /**
+         * Returns filter by index
+         * @param {number} idx Filter index
+         * @returns {object} Filter
+         */
         function getFilter(idx) {
             if (!_this.items[idx]) return undefined;
             return _this.items[idx];
         }
 
+        /**
+         * Clear all filters
+         */
         function clear() {
             _this.items = [];
         }
-
-
     }
 
     angular.module('app')

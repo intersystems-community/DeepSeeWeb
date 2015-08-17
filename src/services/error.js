@@ -1,3 +1,6 @@
+/**
+ * Service to show error messages
+ */
 (function() {
     'use strict';
 
@@ -7,6 +10,10 @@
             position: "center"
         });
 
+        /**
+         * Shows error message
+         * @param {string} txt Error message
+         */
         this.show = function(txt) {
             console.error(txt);
             notify({ message: txt, classes: ['gmail-notify'] });

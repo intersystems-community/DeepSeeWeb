@@ -1,3 +1,6 @@
+/**
+ * Service contains utility functions
+ */
 (function() {
     'use strict';
 
@@ -5,6 +8,12 @@
         var _this = this;
         this.merge = mergeRecursive;
 
+        /**
+         * Merger all object properties to another
+         * @param {object} obj1 Object to merge properties in
+         * @param {object} obj2 Object to read properties from
+         * @returns {object} obj1 contains all properties from obj2
+         */
         function mergeRecursive(obj1, obj2) {
             for (var p in obj2) {
                 try {
@@ -22,6 +31,7 @@
             }
             return obj1;
         }
+
     }
 
     angular.module('app')

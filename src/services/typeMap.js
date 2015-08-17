@@ -1,9 +1,12 @@
+/**
+ * Service to store widget type map. Returns appropriate class for specific type
+ */
 (function() {
     'use strict';
 
     function TypeMapSvc(CONST, AreaChart, BarChart, LineChart, ColumnChart, PieChart, XyChart, TimeChart, PivotWidget,
                         TextWidget, HiLowChart, TreeMapChart, BubbleChart, BullseyeChart, SpeedometerChart,
-                        FuelGaugeChart, EmptyWidget) {
+                        FuelGaugeChart, EmptyWidget, BarChartPercent) {
         var types = {
             fuelgauge: {
                 class: FuelGaugeChart,
@@ -53,6 +56,10 @@
                 class: BarChart,
                 type: "chart"
             },
+            'isc.kkbanalitics.portlets.stacionarkkbportlet': {
+                class: BarChartPercent,
+                type: "chart"
+            },
             barchartstacked: {
                 class: BarChart,
                 type: "chart"
@@ -100,13 +107,21 @@
             type: "empty"
         };
 
-        //types.linechart = types[CONST.emptyWidgetClass];
-
+        /**
+         * Returns class based on type name
+         * @param {string} name Type name
+         * @returns {object|undefined} Class constructor function
+         */
         this.getClass = function(name) {
             if (!types[name.toLowerCase()]) return undefined;
             return types[name.toLowerCase()].class;
         };
 
+        /**
+         * Returns type group based on type name
+         * @param {string} name Type name
+         * @returns {string|undefined} Type group
+         */
         this.getType = function(name) {
             if (!types[name.toLowerCase()]) return undefined;
             return types[name.toLowerCase()].type;
@@ -116,6 +131,6 @@
     angular.module('widgets')
         .service('TypeMap', ['CONST', 'AreaChart', 'BarChart', 'LineChart', 'ColumnChart', 'PieChart', 'XyChart', 'TimeChart',
             'PivotWidget', 'TextWidget', 'HiLowChart', 'TreeMapChart', 'BubbleChart', 'BullseyeChart', 'SpeedometerChart',
-            'FuelGaugeChart', 'EmptyWidget', TypeMapSvc]);
+            'FuelGaugeChart', 'EmptyWidget', 'BarChartPercent', TypeMapSvc]);
 
 })();

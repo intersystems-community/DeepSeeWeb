@@ -1,10 +1,12 @@
+/**
+ * Controller for widget
+ */
 (function(){
     'use strict';
 
-    function WidgetCtrl($scope, Lang, TypeMap, gridsterConfig, ngDialog, Filters, BaseWidget) {
+    function WidgetCtrl($scope, Lang, TypeMap, gridsterConfig, ngDialog, Filters, BaseWidget, Storage) {
         var _this = this;
         BaseWidget.apply(this, [$scope]);
-        //this.changeType = function(newType) { changeType(null, newType); };
         $scope.model = {
             error: "",
             filters: Filters.getWidgetModelFilters(this.desc.name)
@@ -34,17 +36,12 @@
         $scope.$watch('item.sizeY', onResizeVertical, true);
         $scope.$on("resetWidgets", resetWidget);
         $scope.$on("setType:" + $scope.item.$$hashKey, changeType);
-        /* $scope.$on('resizeWidget' + $scope.item.$$hashKey, function() {
-             if (_this.chart) _this.chart.setSize(_this.size.width, _this.size.height, false);
-             if (_this.lpt) _this.lpt.updateSizes();
-         });*/
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        /*function onSizeChange(newSize) {
-            _this.size = newSize;
-            //if (_this.lpt) _this.lpt.updateSizes();
-        }*/
-
+        /**
+         * Changes widget type. Callback for $on("setType")
+         * @param {object} sc Scope
+         * @param {string} t Type
+         */
         function changeType(sc, t) {
             _this.desc.type = t;
             if ((_this.chart) && (t.indexOf("chart") != -1)) {
@@ -52,22 +49,41 @@
             } else $scope.$broadcast("typeChanged");
         }
 
+        /**
+         * Reset widget position and size
+         */
         function resetWidget() {
-            delete localStorage["pos" + _this.desc.key + "x"];
-            delete localStorage["pos" + _this.desc.key + "y"];
-            delete localStorage["sizes" + _this.desc.key + "x"];
-            delete localStorage["sizes" + _this.desc.key + "y"];
+            var widgets = Storage.getWidgetsSettings();
+            var k = _this.desc.key;
+            var w = widgets[k];
+            if (!w) return;
+            delete w.sizeX;
+            delete w.sizeY;
+            delete w.row;
+            delete w.col;
+            Storage.setWidgetsSettings(widgets);
         }
 
+        /**
+         * Widget resize callback
+         */
         function onResize() {
             _this.onResize();
         }
 
+        /**
+         * Apply filter callback
+         */
         function applyFilter() {
             _this.updateFiltersText();
             _this.requestData();
         }
 
+        /**
+         * Shows filter window on widget, when user pressed filter button or filter input
+         * @param {number} idx Filter index
+         * @param {object} e Event
+         */
         function toggleFilter(idx, e) {
             var flt = Filters.getFilter(idx);
             if (!flt) return;
@@ -80,52 +96,80 @@
             ngDialog.open({template: 'src/views/filter.html', data: {filter: flt, dataSource: _this.desc.dataSource}, controller: "filter", showClose: false, className: "ngdialog-theme-plain" });
         }
 
-        /*function onResizeWindow() {
-            if (_this.chart) {
-                if (!isNaN($scope.item.sizeX)) _this.chart.setSize($scope.item.sizeX * gridsterConfig.itemSize + ($scope.item.sizeX-1)*12, _this.chart.chartHeight);
-                if (!isNaN($scope.item.sizeY)) _this.chart.setSize(_this.chart.chartWidth, $scope.item.sizeY * gridsterConfig.itemSize+ ($scope.item.sizeY-1)*12 - 50);
-            }
-        }*/
-
+        /**
+         * Callback for moving widget horizontally
+         * @param {undefined} a Not used
+         * @param {undefined} b Not used
+         * @param {object} $scope Scope
+         */
         function onMoveHorizontal(a, b, $scope){
             if (!gridsterConfig.isDragging) return;
             if (!isNaN($scope.item.row)) {
-                localStorage["pos" + _this.desc.key + "x"] = $scope.item.col;
+                var widgets = Storage.getWidgetsSettings();
+                var k = _this.desc.key;
+                if (!widgets[k]) widgets[k] = {};
+                widgets[k].col = $scope.item.col;
+                Storage.setWidgetsSettings(widgets);
             }
         }
 
+        /**
+         * Callback for moving widget vertically
+         * @param {undefined} a Not used
+         * @param {undefined} b Not used
+         * @param {object} $scope Scope
+         */
         function onMoveVertical(a, b, $scope){
             if (!gridsterConfig.isDragging) return;
             if (!isNaN($scope.item.row)) {
-                localStorage["pos" + _this.desc.key + "y"] = $scope.item.row;
+                var widgets = Storage.getWidgetsSettings();
+                var k = _this.desc.key;
+                if (!widgets[k]) widgets[k] = {};
+                widgets[k].row = $scope.item.row;
+                Storage.setWidgetsSettings(widgets);
             }
         }
 
-        function onResizeHorizontal(sx, sy, $scope){
+        /**
+         * Callback for sizing widget horizontally
+         * @param {undefined} a Not used
+         * @param {undefined} b Not used
+         * @param {object} $scope Scope
+         */
+        function onResizeHorizontal(a, b, $scope){
             if (!gridsterConfig.isResizing) return;
             if (!isNaN($scope.item.sizeX)) {
-                localStorage["sizes" + _this.desc.key + "x"] = $scope.item.sizeX;
-                //_this.onResize();
-               /* if (_this.chart) {
-                    _this.chart.setSize($scope.item.sizeX * gridsterConfig.itemSize + ($scope.item.sizeX-1)*12, _this.chart.chartHeight, false);
-                }*/
-                //if (_this.lpt) _this.lpt.updateSizes();
+                var widgets = Storage.getWidgetsSettings();
+                var k = _this.desc.key;
+                if (!widgets[k]) widgets[k] = {};
+                widgets[k].sizeX = $scope.item.sizeX;
+                Storage.setWidgetsSettings(widgets);
             }
         }
 
-        function onResizeVertical(sx, sy, $scope) {
+        /**
+         * Callback for sizing widget vertically
+         * @param {undefined} a Not used
+         * @param {undefined} b Not used
+         * @param {object} $scope Scope
+         */
+        function onResizeVertical(a, b, $scope) {
             if (!gridsterConfig.isResizing) return;
             if (!isNaN($scope.item.sizeY)) {
-                localStorage["sizes" + _this.desc.key + "y"] = $scope.item.sizeY;
-                //_this.onResize();
-               /* if (_this.chart) {
-                    _this.chart.setSize(_this.chart.chartWidth, $scope.item.sizeY * gridsterConfig.itemSize+ ($scope.item.sizeY-1)*12 - 50, false);
-                }*/
-                //if (_this.lpt) _this.lpt.updateSizes();
+                var widgets = Storage.getWidgetsSettings();
+                var k = _this.desc.key;
+                if (!widgets[k]) widgets[k] = {};
+                widgets[k].sizeY = $scope.item.sizeY;
+                Storage.setWidgetsSettings(widgets);
             }
         }
 
-        // function used to change ngDialog css rules to position it in desired place
+        /**
+         * Changes ngDialog css rules to set modal position to the desired place
+         * @param {string} selectorText Selector to find elements
+         * @param {string} style Style attribute to change
+         * @param {string} value Attribute value
+         */
         function changeStyle(selectorText, style, value) {
             var theRules = [];
             for (var i = 0; i < document.styleSheets.length; i++) {
@@ -145,6 +189,6 @@
     }
 
     angular.module('widgets')
-        .controller('widget', ['$scope', 'Lang', 'TypeMap', 'gridsterConfig', 'ngDialog', 'Filters', 'BaseWidget', WidgetCtrl]);
+        .controller('widget', ['$scope', 'Lang', 'TypeMap', 'gridsterConfig', 'ngDialog', 'Filters', 'BaseWidget', 'Storage', WidgetCtrl]);
 
 })();

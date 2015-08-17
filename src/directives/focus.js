@@ -1,8 +1,15 @@
+/**
+ * Directives for working with element focus and "return" key
+ */
 (function() {
     'use strict';
 
     angular.module('app')
-        .directive('autoFocus', function($timeout) {
+
+    /**
+     * Sets focus automatically to element
+     */
+        .directive('autoFocus', ['$timeout', function($timeout) {
             return {
                 restrict: 'AC',
                 link: function (_scope, _element) {
@@ -11,8 +18,11 @@
                     }, 0);
                 }
             };
-        })
+        }])
 
+    /**
+     * Sets focus to next element after "return" key is pressed
+     */
         .directive('focusNext', function() {
             return {
                 restrict: 'A',
@@ -29,6 +39,9 @@
             };
         })
 
+    /**
+     * Blurs focus after "return" key is pressed
+     */
         .directive('blurOnEnter', function() {
             return {
                 restrict: 'A',
@@ -45,6 +58,9 @@
             };
         })
 
+    /**
+     * Binds function to "return" key pressed event
+     */
         .directive('ngEnter', function () {
             return function (scope, element, attrs) {
                 element.bind("keydown keypress", function (event) {
@@ -57,6 +73,24 @@
                     }
                 });
             };
-        });
+        })
+
+
+    /**
+     * Creates function in scope to focus element
+     */
+        .directive('focusFunc', ['$timeout', function($timeout) {
+            return {
+                restrict: 'A',
+                link: function ($scope, elem, attrs) {
+                    var func = attrs.focusFunc;
+                    $scope[func] = function() {
+                        $timeout(function () {
+                            elem[0].focus();
+                        }, 0);
+                    };
+                }
+            };
+        }]);
 
 })();

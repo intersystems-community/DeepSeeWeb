@@ -1,7 +1,14 @@
+/**
+ * Directives for text widget
+ */
 (function() {
     'use strict';
 
     angular.module('app')
+
+    /**
+     * Creates div with svg inside for part of text widget
+     */
         .directive('textWidget', ['$parse', '$compile', 'Lang', 'Connector', function($parse, $compile, Lang, Connector) {
             return {
                 link: function(scope, element, attrs) {
@@ -13,7 +20,11 @@
                 }
             };
         }])
-    .directive('resizeAfterRender', function ($timeout) {
+
+    /**
+     * Resizes svg after rendering to fit all space of element
+     */
+    .directive('resizeAfterRender', ['$timeout', function ($timeout) {
             return {
                 restrict: 'A',
                 link: function (scope, element, attr) {
@@ -43,5 +54,5 @@
                     }
                 }
             };
-        });
+        }]);
 })();

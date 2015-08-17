@@ -1,35 +1,35 @@
+/**
+ * Controller for main screen, contains dashboard list as tiles
+ * @view views/home.html
+ */
 (function() {
     'use strict';
 
-    function DashboardListCtrl($scope, $location, $routeParams, Connector, Error, CONST, Lang, Filters) {
+    function DashboardListCtrl($scope, $location, $routeParams, Connector, Error, CONST, Lang, Filters, Storage) {
         var _this = this;
+        var settings = Storage.getAppSettings();
         var icons = CONST.icons;
         this.search = "";
         var itemDescs = [];
         Filters.clear();
 
         this.getFolderItems = getFolderItems;
-        this.getCurrentFolder = getCurrentFolder;
+        this.setCurrentFolder = setCurrentFolder;
         this.retrieveData = retrieveData;
         this.requestData = requestData;
 
         $scope.model = {
             editing: false,
             colors: CONST.bgColorClasses,
-            fontColors: CONST.fontColors,
+            fontColors: settings.isMetro ? CONST.fontColorsMetro : CONST.fontColors,
             icons: icons,
             edItem: null,
             optW: 0,
             optH: 0,
             opt: false
         };
-        if (localStorage.isMetro !== "true") {
-            // swap black and white in metro style
-            var tmp = $scope.model.fontColors[0];
-            $scope.model.fontColors[0] = $scope.model.fontColors[1];
-            $scope.model.fontColors[1] = tmp;
-        }
         $scope.tilesOpt = {
+            minRows: 4,
             margins: [10,10],
             draggable: {
                 enabled: false
@@ -45,15 +45,18 @@
         $scope.setIcon = setIcon;
         $scope.getDesc = getDesc;
         $scope.$on("refresh", function() {_this.requestData();});
+        $scope.$on("search:dashboard", onSearchDashboard);
 
-        this.getCurrentFolder();
+        this.setCurrentFolder();
         this.requestData();
 
+        /**
+         * Save tiles configuration to storage
+         */
         function saveTiles() {
-            var d = localStorage.tiles || "{}";
-            var t = JSON.parse(d);
+            var t = Storage.getTilesSettings();
             var path = "/";
-            if (!CONST.hideFolders) path = _this.curFolder;
+            if (!settings.hideFolders) path = _this.curFolder;
             for (var i = 0; i < $scope.dashboards.length; i++) {
                 var item = $scope.dashboards[i];
                 if (!t[path]) t[path] = {};
@@ -70,7 +73,7 @@
                 if (item.customTitle !== undefined) t[path][item.title].title = item.customTitle;
             }
 
-            localStorage.tiles = JSON.stringify(t);
+            Storage.setTilesSettings(t);
 
             // Refresh only if widget id changed
             for (i = 0; i < $scope.dashboards.length; i++) {
@@ -81,42 +84,45 @@
             }
         }
 
+        /**
+         * Get full description of tile item
+         * @param {number} idx Item index
+         * @returns {object} Item description
+         */
         function getDesc(idx) {
             return itemDescs[idx];
         }
 
+        /**
+         * Set tile background color
+         * @param {number} c Color index. Colors stored in CONST.bgColorClasses
+         */
         function setTileColor(c) {
             if (!$scope.model.edItem) return;
             $scope.model.edItem.color = c;
         }
+
+        /**
+         * Set tile font color
+         * @param {number} c Color index. Colors stored in CONST.fontColorsMetro or CONST.fontColors, depending on current ui style
+         */
         function setFontColor(c) {
             if (!$scope.model.edItem) return;
             $scope.model.edItem.fontColor = c;
         }
+
+        /**
+         * Set tile icon
+         * @param {number} c Icon index. Icons stored in CONST.icons
+         */
         function setIcon(c) {
             if (!$scope.model.edItem) return;
             $scope.model.edItem.icon = c;
         }
 
-        /*function getRandomIcon () {
-            var ar = ["fa-database", "fa-medium", "fa-at", "fa-bar-chart", "fa-calendar-o", "fa-chart-arrow-down",
-            "fa-cloud", "fa-dashboard", "fa-map-marker", "fa-pie-chart", "fa-user", "fa-users", "fa-truck",
-            "fa-plus-square", "fa-globe", "fa-cube", "fa-child", "fa-archive", "fa-calculator", "fa-cubes", "fa-heart",
-            "fa-info-circle", "fa-flask", "fa-eye", "fa-car", "fa-bank", "fa-gear", "fa-paypal", "fa-line-chart",
-            "fa-area-chart", "fa-eur", "fa-dollar", "fa-table", "fa-files-o", "fa-th", "fa-cc-visa"];
-            return ar[Math.floor(Math.random() * ar.length)];
-        };*/
-
-        $scope.$on("search:dashboard", onSearchDashboard);
-
-        function onStartTileDrag(event, $element, tile) {
-            //$element.removeClass('jiggly');
-        }
-
-        function onEndTileDrag(event, $element, tile) {
-            //$element.addClass('jiggly');
-        }
-
+        /**
+         * Toggle editing mode
+          */
         function enableEditing() {
             $scope.model.editing = !$scope.model.editing;
             $scope.tilesOpt.draggable.enabled = $scope.model.editing;
@@ -127,14 +133,21 @@
             }
         }
 
+        /**
+         * Callback for searching on dashboard
+         * @param {object} sc Scope
+         * @param {string} txt Text to search
+         */
         function onSearchDashboard(sc, txt) {
             _this.search = txt;
             if (!sessionStorage.dashboarList) return;
             $scope.dashboards = _this.getFolderItems(JSON.parse(sessionStorage.dashboarList), _this.curFolder);
         }
 
-        // Get current folder from address hash
-        function getCurrentFolder() {
+        /**
+         * Set current folder from address hash
+         */
+        function setCurrentFolder() {
             _this.curFolder = "";
             if ($routeParams.folder) _this.curFolder = $routeParams.folder;
             if (_this.curFolder !== "") {
@@ -142,15 +155,12 @@
             }
         }
 
-        // Redirect when item clicked
-        function onItemClicked(item, e) {
+        /**
+         * Tile click event handler
+         * @param {object} item Tile item clicked
+         */
+        function onItemClicked(item) {
             if ($scope.model.editing) {
-                /*$scope.model.opt = true;
-                var w = e.currentTarget.offsetWidth;
-                var h = e.currentTarget.offsetHeight;
-                $scope.model.optX = e.currentTarget.offsetLeft + w / 2 - 336 / 2;
-                if (item.row < 3) $scope.model.optY = e.currentTarget.offsetParent.offsetTop + e.currentTarget.offsetTop + h + $scope.tilesOpt.margins[1];
-                    else $scope.model.optY = e.currentTarget.offsetParent.offsetTop + e.currentTarget.offsetTop - $scope.tilesOpt.margins[1] - 240;*/
                 $scope.model.edItem = item;
                 return;
             }
@@ -169,7 +179,9 @@
             }
         }
 
-        // Request dashboard list
+        /**
+         * Request dashboard list
+          */
         function requestData() {
             // Request server only first time
             if (!sessionStorage.dashboarList || Connector.firstRun) {
@@ -179,7 +191,10 @@
             }
         }
 
-        // Process retrieved dashboard list
+        /**
+         * Process retrieved dashboard list
+         * @param {objecT} result Server response contains dashboard list
+         */
         function retrieveData(result) {
             if (result.data) if (result.data.Error) {
                 Error.show(result.data.Error);
@@ -196,11 +211,13 @@
             }
         }
 
-
-
+        /**
+         * Process retrieved dashboard list to setup initial values, etc.
+         * @param dashboards
+         */
         function setupList(dashboards) {
             for (var i = 0; i < dashboards.length; i++) {
-                if (!CONST.showImages) dashboards[i].Cover = "";
+                if (!settings.showImages) dashboards[i].Cover = "";
 
                 if (dashboards[i].Cover) {
                     //dashboards[i].Cover = "http://146.185.143.59/" + dashboards[i].Cover;
@@ -211,28 +228,38 @@
                     dashboards[i].Cover = "";
                     dashboards[i].icon = 0;
                     dashboards[i].requestedWidget = dashboards[i].widget;
-                    Connector.getWidgets(dashboards[i].path).success(
-                        (function(key) {
-                            return function(data) {
-                                retriveTileData(data, key);
-                            };
-                        })(dashboards[i])
-                    );
+                    Connector.getWidgets(dashboards[i].path).success(createDataCallback(dashboards[i]));
                 }
             }
         }
 
-        // Get items for specified folder
+        /**
+         * Creates callback on data request, for widget placed on tile
+         * @param {object} widget Widget description object
+         * @returns {Function} Callback function
+         */
+        function createDataCallback(widget) {
+            return function(data) {
+                retriveWidgetData(data, widget);
+            };
+        }
+
+        /**
+         * Get items for specified folder
+         * @param {object} data Dashboard list
+         * @param {string} folder Folder name
+         * @returns {Array} Items in folder
+         */
         function getFolderItems(data, folder) {
             var dashboards = [];
             var i;
             var item;
             var path;
             var c;
-            var conf = JSON.parse(localStorage.tiles || "{}");
-            conf = conf[CONST.hideFolders ? "/" : _this.curFolder] || {};
+            var conf = Storage.getTilesSettings();
+            conf = conf[settings.hideFolders ? "/" : _this.curFolder] || {};
 
-            if (CONST.hideFolders || _this.search) {
+            if (settings.hideFolders || _this.search) {
                 for (i = 0; i < data.children.length; i++) {
                     item = data.children[i];
                     if (item.path.toLocaleLowerCase().indexOf(_this.search.toLocaleLowerCase()) === -1) continue;
@@ -324,38 +351,15 @@
             }
 
             setupList(dashboards);
-
-           /* for (var i = 0; i < dashboards.length; i++) {
-                if (!CONST.showImages) dashboards[i].Cover = "";
-                if (dashboards[i].widget !== null) {
-                    dashboards[i].Cover = "";
-                    dashboards[i].icon = 0;
-                }
-
-                if (dashboards[i].Cover) {
-                    dashboards[i].Cover = "http://146.185.143.59/" + dashboards[i].Cover;
-                    dashboards[i].icon = 0;
-                }
-
-
-            }*/
-
-            /*var result = dashboards.sort(function (a, b) {
-                if (a.isFolder && !b.isFolder) return -1;
-                if (b.isFolder && !a.isFolder) return 1;
-                if (a.title > b.title) return 1; else return -1;
-            });*/
-
-            // update position according to array index if position wasn't stored in localstorage
-           /* result.forEach(function(el, idx) {
-                if (el.col === undefined) el.col = idx % 12;
-                if (el.row === undefined) el.row = parseInt(idx / 12);
-            });*/
-
             return dashboards;
         }
 
-        function retriveTileData(result, tile) {
+        /**
+         * Callback for widget data retrieved
+         * @param {object} result Widget data
+         * @param {object} tile Tile on which widget is placed
+         */
+        function retriveWidgetData(result, tile) {
             if (!result.widgets[tile.widget]) {
                 console.warn("Can't find widget with index " + tile.widget);
                 return;
@@ -366,12 +370,10 @@
             itemDescs.push(result.widgets[tile.widget]);
             tile.idx = itemDescs.length - 1;
             tile.template = "src/views/tile.html";
-
-            //console.log(itemDescs[tile.idx]);
         }
     }
 
     var dashboard = angular.module('dashboard');
-    dashboard.controller('home', ['$scope', '$location', '$routeParams', 'Connector', 'Error', 'CONST', 'Lang', 'Filters', DashboardListCtrl]);
+    dashboard.controller('home', ['$scope', '$location', '$routeParams', 'Connector', 'Error', 'CONST', 'Lang', 'Filters', 'Storage', DashboardListCtrl]);
 
 })();

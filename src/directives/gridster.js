@@ -1,3 +1,6 @@
+/**
+ * Directive for gridster
+ */
 (function() {
     'use strict';
 

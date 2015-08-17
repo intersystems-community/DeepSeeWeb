@@ -1,7 +1,11 @@
+/**
+ * Controller for dashboard screen contains widgets
+ * @view views/dashboard.html
+ */
 (function(){
     'use strict';
 
-    function DashboardCtrl($scope, $rootScope, $routeParams, Connector, Error, Filters, Lang, Utils, CONST) {
+    function DashboardCtrl($scope, $rootScope, $routeParams, Connector, Error, Filters, Lang, Utils, CONST, Storage) {
         var _this = this;
         this.desc = []; // stores widget definition received from server
         this.ctxItem = undefined;
@@ -15,27 +19,45 @@
         $scope.setType = setType;
         $scope.$on("resetWidgets", function() { window.location.reload(); });
 
+        /**
+         * Sets widget type. Widget to change: this.ctxItem
+         * @param {string} t Widget type
+         */
         function setType(t) {
             if (!_this.ctxItem) return;
             $scope.$broadcast('setType:' + _this.ctxItem, t);
         }
 
+        /**
+         * Widget context menu callback. Sets current context widget: this.ctxItem
+         * @param item
+         */
         function onCtxMenuShow(item) {
             _this.ctxItem = item.$$hashKey;
         }
 
+        /**
+         * Print callback. Prints this.ctxItem widget
+         */
         function printItem() {
             if (!_this.ctxItem) return;
             $scope.$broadcast('print:' + _this.ctxItem);
             _this.ctxItem = undefined;
         }
 
+        /**
+         * Refresh callback. Refresh this.ctxItem widget
+         */
         function refreshItem() {
             if (!_this.ctxItem) return;
             $scope.$broadcast('refresh:' + _this.ctxItem);
             _this.ctxItem = undefined;
         }
 
+        /**
+         * Retrieve data callback. Builds widget list
+         * @param {object} result Widget list
+         */
         function retrieveData(result) {
             var i;
             if (!result) return;
@@ -102,7 +124,10 @@
             setTimeout(broadcastDependents, 0);
         }
 
-        function broadcastDependents(widgets) {
+        /**
+         * Send message to refresh all dependent widgets
+         */
+        function broadcastDependents() {
             var brodcasted = [];
             for (var i = 0; i <  _this.desc.length; i++) if ( _this.desc[i].dependents.length !== 0) {
                 var item = _this.desc[i];
@@ -112,6 +137,11 @@
             }
         }
 
+        /**
+         * Builds dependents list for widget
+         * @param {object} item Main widget
+         * @param {Array} widgets Array of widgets. Checks any widget in this array, is it dependent from "Main widget"(linked to main widget)
+         */
         function fillDependentWidgets(item, widgets) {
             item.dependents = [];
             for (var i = 0; i < widgets.length; i++) if (widgets[i] != item) {
@@ -120,13 +150,26 @@
             }
         }
 
+        /**
+         * Set widget position and size in gridster
+         * @param {object} item Gridster item
+         * @param {string|number} k Widget key
+         */
         function setWidgetSizeAndPos(item, k) {
-            if (localStorage["sizes" + k + "x"] !== undefined)  item.sizeX = parseInt(localStorage["sizes" + k + "x"]);
-            if (localStorage["sizes" + k + "y"] !== undefined)  item.sizeY = parseInt(localStorage["sizes" + k + "y"]);
-            if (localStorage["pos" + k + "x"] !== undefined)  item.col = parseInt(localStorage["pos" + k + "x"]);
-            if (localStorage["pos" + k + "y"] !== undefined)  item.row = parseInt(localStorage["pos" + k + "y"]);
+            var widgets = Storage.getWidgetsSettings();
+            var w = widgets[k];
+            if (!w) return;
+            if (w.sizeX !== undefined) item.sizeX = w.sizeX;
+            if (w.sizeX !== undefined) item.sizeY = w.sizeY;
+            if (w.col !== undefined) item.col = w.col;
+            if (w.row !== undefined) item.row = w.row;
         }
 
+        /**
+         * Get widget description(actual description retrieved from server)
+         * @param {number} idx Widget index
+         * @returns {object} Widget description
+         */
         function getDesc(idx) {
             if (!_this.desc[idx]) return undefined;
             return _this.desc[idx];
@@ -136,6 +179,6 @@
     }
 
     angular.module('dashboard')
-        .controller('dashboard', ['$scope', '$rootScope', '$routeParams', 'Connector', 'Error', 'Filters', 'Lang', 'Utils', 'CONST', DashboardCtrl]);
+        .controller('dashboard', ['$scope', '$rootScope', '$routeParams', 'Connector', 'Error', 'Filters', 'Lang', 'Utils', 'CONST', 'Storage', DashboardCtrl]);
 
 })();

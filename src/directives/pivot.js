@@ -1,3 +1,6 @@
+/**
+ * Directive for light pivot table
+ */
 (function() {
     'use strict';
 
