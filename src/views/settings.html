@@ -1,0 +1,53 @@
+<div class="dialog-contents wnd-settings">
+    <h3 class="settings-header">{{'options' | lang}}</h3>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    {{'language' | lang}}
+                    <select ng-model="model.language">
+                        <option ng-repeat="l in ::model.langs" value="{{::l}}" ng-selected="{{::l==model.language}}">{{::l}}</option>
+                    </select>
+                </div>
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" ng-model="model.showFolders">{{'showFolders' | lang}}
+                    </label>
+                </div>
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" ng-model="model.showImages">{{'showImages' | lang}}
+                    </label>
+                </div>
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" ng-model="model.isMetro">{{'metroStyle' | lang}}
+                    </label>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    {{'view' | lang}}
+                    <select ng-show="!model.addViewMode">
+                        <option value="default">Default</option>
+                    </select>
+                    <input type="text" ng-show="model.addViewMode" ng-model="model.viewName" focus-func="setFocusOnInput">
+                    <button type="button" class="btn btn-default btn-xs" ng-click="onNewViewvClick()">{{model.addViewMode ? ('save'|lang) : ('newView'|lang)}}</button>
+                    <button type="button" class="btn btn-default btn-xs" ng-click="onCancelViewClick()" ng-show="model.addViewMode">{{'cancel' | lang}}</button>
+
+                </div>
+
+                <div class="form-group">
+                    <button type="button" class="btn btn-default btn-xs" ng-click="resetWidgets()">{{'resetWidgets' | lang}}</button>
+                    <button type="button" class="btn btn-default btn-xs" ng-click="resetTiles()">{{'resetTiles' | lang}}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div style="text-align: center;">
+        <button type="button" class="btn btn-success" ng-click="applySettrings()">{{'accept' | lang}}</button>
+        <button type="button" class="btn btn-default" ng-click="closeThisDialog()">{{'close' | lang}}</button>
+    </div>
+</div>
