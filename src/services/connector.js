@@ -20,6 +20,7 @@
         this.deleteFavorite = deleteFavorite;
         this.searchFilters = searchFilters;
         this.saveConfig = saveConfig;
+        this.loadConfig = loadConfig;
 
         // for local testing
         /*
@@ -169,6 +170,19 @@
         }
 
         /**
+         * Loads configuration from server
+         * @returns {object} $http promise
+         */
+        function loadConfig(cutomNamespace) {
+            return $http({
+                method: 'Get',
+                data: {},
+                url: _this.url + 'Config/DeepSeeWeb?Namespace=' + (cutomNamespace || getNamespace()),
+                withCredentials: true
+            });
+        }
+
+        /**
          * Saves configuration to server
          * @param {object} config Configuration to save
          * @returns {object} $http promise
@@ -176,7 +190,7 @@
         function saveConfig(config) {
             return $http({
                 method: 'POST',
-                data: { Application: "DeepSeeWeb", Config: config },
+                data: { Application: "DeepSeeWeb", Config: JSON.stringify(config) },
                 url: _this.url + 'Config?Namespace=' + getNamespace(),
                 withCredentials: true
             });

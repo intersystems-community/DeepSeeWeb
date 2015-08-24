@@ -1,6 +1,5 @@
-<div class="dialog-contents wnd-settings">
+    <div class="dialog-contents">
     <h3 class="settings-header">{{'options' | lang}}</h3>
-
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-6">
@@ -28,26 +27,35 @@
             </div>
             <div class="col-md-6">
                 <div class="form-group">
-                    {{'view' | lang}}
-                    <select ng-show="!model.addViewMode">
-                        <option value="default">Default</option>
-                    </select>
-                    <input type="text" ng-show="model.addViewMode" ng-model="model.viewName" focus-func="setFocusOnInput">
-                    <button type="button" class="btn btn-default btn-xs" ng-click="onNewViewvClick()">{{model.addViewMode ? ('save'|lang) : ('newView'|lang)}}</button>
-                    <button type="button" class="btn btn-default btn-xs" ng-click="onCancelViewClick()" ng-show="model.addViewMode">{{'cancel' | lang}}</button>
-
-                </div>
-
-                <div class="form-group">
                     <button type="button" class="btn btn-default btn-xs" ng-click="resetWidgets()">{{'resetWidgets' | lang}}</button>
                     <button type="button" class="btn btn-default btn-xs" ng-click="resetTiles()">{{'resetTiles' | lang}}</button>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div style="text-align: center;">
-        <button type="button" class="btn btn-success" ng-click="applySettrings()">{{'accept' | lang}}</button>
-        <button type="button" class="btn btn-default" ng-click="closeThisDialog()">{{'close' | lang}}</button>
+        <div class="divider"></div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="input-group">
+                    <div class="float-left" ng-hide="model.addMode">
+                        {{'curSettings' | lang}}&nbsp;
+                    </div>
+                    <select class="float-left" ng-show="!model.addMode" ng-model="model.selectedSettings" ng-options="item for item in model.settingsNames" ></select>
+                    <input class="float-left input-xs" type="text" ng-show="model.addMode" ng-model="model.settingsName" focus-func="setFocusOnInput" ng-enter="onAddClick()">
+                    <span class="input-group-btn float-left">
+                        <button type="button" class="btn btn-default btn-xs" ng-click="onAddClick()" ng-hide="model.addMode">+</button>
+                        <button type="button" class="btn btn-default btn-xs" ng-click="onCancelClick()" ng-show="model.addMode"><i class="fa fa-close"></i></button>
+                    </span>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="pull-right">
+                    <button type="button" class="btn btn-default" ng-click="onLoadClick()">{{'load' | lang}}</button>
+                <button type="button" class="btn btn-success" ng-click="applySettrings()">{{'save' | lang}}</button>
+                <button type="button" class="btn btn-default" ng-click="closeThisDialog()">{{'close' | lang}}</button>
+                </div>
+            </div>
+        </div>
     </div>
 </div>

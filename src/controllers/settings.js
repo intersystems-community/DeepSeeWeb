@@ -15,53 +15,74 @@
         var shouldRefresh = false;
 
         $scope.model = {
-            addViewMode: false,
-            viewName:    "",
-            showFolders: !settings.hideFolders,
-            isMetro:     settings.isMetro,
-            showImages:  settings.showImages,
-            langs:       Lang.getLanguages(),
-            language:    Lang.current
+            addMode:   false,
+            settingsNames: Storage.getSettingsNames(),
+            selectedSettings: Storage.currentSettings,
+            settingsName:      "",
+            showFolders:   !settings.hideFolders,
+            isMetro:       settings.isMetro,
+            showImages:    settings.showImages,
+            langs:         Lang.getLanguages(),
+            language:      Lang.current
         };
 
         $scope.applySettrings    = applySettrings;
         $scope.resetWidgets      = resetWidgets;
         $scope.resetTiles        = resetTiles;
-        $scope.onNewViewvClick   = onNewViewvClick;
-        $scope.onCancelViewClick = onCancelViewClick;
+        $scope.onAddClick   = onAddClick;
+        $scope.onCancelClick = onCancelClick;
+        $scope.onLoadClick = onLoadClick;
 
         /**
          * Handler for "New view" button
          */
-        function onNewViewvClick() {
-            $scope.model.addViewMode = !$scope.model.addViewMode;
-            if ($scope.model.addViewMode) {
-                $scope.model.viewName = "";
+        function onAddClick() {
+            $scope.model.addMode = !$scope.model.addMode;
+            if ($scope.model.addMode) {
+                $scope.model.settingsName = "";
                 // Declared in directive 'focusFunc' - directives/focus.js
                 $scope.setFocusOnInput();
             } else {
-                saveView($scope.model.viewName);
+                addSettings($scope.model.settingsName);
             }
         }
 
         /**
          * Handler for "Cancel view" button
          */
-        function onCancelViewClick() {
-            $scope.model.addViewMode = false;
+        function onCancelClick() {
+            $scope.model.addMode = false;
+        }
+
+        function onLoadClick() {
+            var name = $scope.model.selectedSettings;
+            if (Storage.isSettingsExists(name)) {
+                delete localStorage.userSettings;
+                Storage.setCurrentSettings(name);
+                reloadPage();
+            }
         }
 
         /**
-         * Saves current tiles and widgets to server(placement, sizes, colors etc.)
+         * Adds new settings record to settings list
          * @param {string} name Name used to store view on server
          */
-        function saveView(name) {
-            if (!name) {
-                Error.show("Please specify view name");
-                return;
-            }
-            var settings = Storage.getAllSettings();
-            Connector.saveConfig(settings);
+        function addSettings(name) {
+            if (!name) return;
+            if ($scope.model.settingsNames.indexOf(name) === -1) $scope.model.settingsNames.push(name);
+            $scope.model.selectedSettings = name;
+
+            //$scope.model.addMode = false;
+            /*var settings = Storage.getAllSettings();
+            if (!settings[name]) settings[name] = {};
+            Utils.merge(settings[name], settings[Storage.currentSettings]);
+
+            Storage.currentSettings = name;
+            $scope.model.selectedSettings = name;
+            localStorage.currentSettings = name;
+
+            Connector.saveConfig(settings);*/
+
         }
 
         /**
@@ -69,10 +90,10 @@
          */
         function applySettrings() {
             var old              = Utils.merge({}, settings);
-            settings.language    = $scope.model.language;
-            settings.hideFolders = !$scope.model.showFolders;
-            settings.showImages  = $scope.model.showImages;
-            settings.isMetro     = $scope.model.isMetro;
+            settings.language    = $scope.model.language || "en";
+            settings.hideFolders = !$scope.model.showFolders ? true : false;
+            settings.showImages  = $scope.model.showImages ? true : false;
+            settings.isMetro     = $scope.model.isMetro ? true : false;
 
             if (old.language    !== settings.language)    shouldRefresh = true;
             if (old.isMetro     !== settings.isMetro)     shouldRefresh = true;
@@ -80,8 +101,12 @@
             if (old.showImages  !== settings.showImages)  shouldRefresh = true;
 
             Storage.setAppSettings(settings);
+            Storage.saveCurrentSettings($scope.model.selectedSettings);
+            Storage.setCurrentSettings($scope.model.selectedSettings);
 
-            if (shouldRefresh) reloadPage(); else $scope.closeThisDialog();
+            Connector.saveConfig(Storage.settings).then(function(){
+                if (shouldRefresh) reloadPage(); else $scope.closeThisDialog();
+            });
         }
 
         /**

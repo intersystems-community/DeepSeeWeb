@@ -160,7 +160,7 @@
             var w = widgets[k];
             if (!w) return;
             if (w.sizeX !== undefined) item.sizeX = w.sizeX;
-            if (w.sizeX !== undefined) item.sizeY = w.sizeY;
+            if (w.sizeY !== undefined) item.sizeY = w.sizeY;
             if (w.col !== undefined) item.col = w.col;
             if (w.row !== undefined) item.row = w.row;
         }

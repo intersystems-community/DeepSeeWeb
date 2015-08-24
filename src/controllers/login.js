@@ -44,7 +44,7 @@
             localStorage.userName = Connector.username;
 
             // Listened in menu.js
-            $rootScope.$broadcast('toggleMenu', true);
+            //$rootScope.$broadcast('toggleMenu', true);
             var from = $location.search().from;
             var search = {};
             if (from) {

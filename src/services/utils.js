@@ -16,11 +16,11 @@
          */
         function mergeRecursive(obj1, obj2) {
             for (var p in obj2) {
-                //TODO: if (!obj2.hasOwnProperty(p)) continue;
+                if (!obj2.hasOwnProperty(p)) continue;
                 try {
                     // Property in destination object set; update its value.
                     if (obj2[p].constructor == Object) {
-                        obj1[p] = mergeRecursive(obj1[p], obj2[p]);
+                        obj1[p] = mergeRecursive(obj1[p] || {}, obj2[p]);
 
                     } else {
                         obj1[p] = obj2[p];

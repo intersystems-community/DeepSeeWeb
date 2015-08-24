@@ -4,9 +4,21 @@
 (function() {
     'use strict';
 
-    function StorageSvc() {
+    function StorageSvc(CONST, Lang, Utils, $rootScope, $location) {
         var _this = this;
 
+        this.settings            = {
+            Default: {}
+        };
+        this.temp = {}; // used to store all changes in settings
+
+        this.currentSettings     = localStorage.currentSettings || "Default";
+        this.configLoaded        = false;
+        this.saveCurrentSettings = saveCurrentSettings;
+        this.isSettingsExists    = isSettingsExists;
+        this.setCurrentSettings  = setCurrentSettings;
+        this.getSettingsNames    = getSettingsNames;
+        this.loadConfig          = loadConfig;
         this.getAppSettings      = getAppSettings;
         this.setAppSettings      = setAppSettings;
         this.getWidgetsSettings  = getWidgetsSettings;
@@ -16,12 +28,97 @@
         this.removeTilesSettings = removeTilesSettings;
         this.getAllSettings      = getAllSettings;
 
+
+        /**
+         * Saves current settings stored in this.temp to settings with name
+         * @param {name} name Settings name
+         */
+        function saveCurrentSettings(name) {
+            _this.settings[name] = {};
+            Utils.merge(_this.settings[name], _this.temp);
+        }
+
+        /**
+         * Loads config
+         * @param {object} config Configuration to load
+         */
+        function loadConfig(response) {
+                if (!response) return;
+                _this.configLoaded = true;
+                if (response && response.Config) {
+                    if (response.Config.constructor === Object) _this.settings = response.Config; else {
+                        var o;
+                        try {
+                            o = JSON.parse(response.Config);
+                        } catch (e) {
+                            o = {};
+                        }
+                        _this.settings = o;
+                    }
+                    if (localStorage.userSettings) {
+                        _this.temp = JSON.parse(localStorage.userSettings);
+                        if (!_this.settings[_this.currentSettings]) _this.currentSettings = "Default";
+                    } else
+                    {
+                        _this.temp = {};
+                        if (!_this.settings[_this.currentSettings]) _this.currentSettings = "Default";
+                        if (_this.settings[_this.currentSettings]) Utils.merge(_this.temp, _this.settings[_this.currentSettings]);
+                    }
+                }
+
+                var settings = _this.getAppSettings();
+                if (settings.isMetro) {
+                    document.getElementById('pagestyle').setAttribute('href', CONST.css.classic);
+                } else {
+                    document.getElementById('pagestyle').setAttribute('href', CONST.css.metro);
+                }
+
+                Lang.current = settings.language || "en";
+
+
+                // Listened in menu.js
+                //$rootScope.$broadcast('menu:toggleLoading', false);
+        }
+
+        /**
+         * Returns tru if settings with name exists
+         * @param {string} name Settings name to check
+         * @returns {boolean} True if exists
+         */
+        function isSettingsExists(name) {
+            return _this.settings[name] !== undefined;
+        }
+
+        /**
+         * Sets current settings name
+         * @param {string} name Name of settings
+         */
+        function setCurrentSettings(name) {
+            localStorage.currentSettings = name;
+            _this.currentSettings = name;
+        }
+
+        /**
+         * Get settings list
+         * @returns {Array} Settings names
+         */
+        function getSettingsNames() {
+            var result = [];
+            for (var p in _this.settings) {
+                if (!_this.settings.hasOwnProperty(p)) continue;
+                result.push(p);
+                //result.push({ id: result.length, name: p });
+            }
+            return result;
+        }
+
         /**
          * Returns application settings stored in localstorage
          * @returns {object} Application settings
          */
         function getAppSettings() {
-            return JSON.parse(localStorage.settings || "{}");
+            return _this.temp.app || {};
+            //return JSON.parse(localStorage.settings || "{}");
         }
 
         /**
@@ -34,7 +131,8 @@
          *   .isMetro use or not metro theme
          */
         function setAppSettings(settings) {
-            localStorage.settings = JSON.stringify(settings);
+            _this.temp.app = settings;
+            localStorage.userSettings = JSON.stringify(_this.temp);
         }
 
         /**
@@ -42,7 +140,7 @@
          * @returns {object} Widget settings
          */
         function getWidgetsSettings() {
-            return JSON.parse(localStorage.widgets || "{}");
+            return _this.temp.widgets || {};
         }
 
         /**
@@ -50,7 +148,8 @@
          * @param {object} widgets Widget settings to store
          */
         function setWidgetsSettings(widgets) {
-            localStorage.widgets = JSON.stringify(widgets);
+            _this.temp.widgets = widgets;
+            localStorage.userSettings = JSON.stringify(_this.temp);
         }
 
         /**
@@ -58,7 +157,7 @@
          * @returns {object} Tiles settings
          */
         function getTilesSettings() {
-            return JSON.parse(localStorage.tiles || "{}");
+            return _this.temp.tiles || {};
         }
 
         /**
@@ -66,29 +165,27 @@
          * @param {object} tiles Tiles settings to store
          */
         function setTilesSettings(tiles) {
-            localStorage.tiles = JSON.stringify(tiles);
+            _this.temp.tiles = tiles;
+            localStorage.userSettings = JSON.stringify(_this.temp);
         }
 
         /**
          * Removes tiles settings
          */
         function removeTilesSettings() {
-            delete localStorage.tiles;
+            _this.temp.tiles = {};
+            localStorage.userSettings = JSON.stringify(_this.temp);
         }
 
         /**
          * Returns all settings
          */
         function getAllSettings() {
-            return {
-                app: _this.getAppSettings(),
-                widgets: _this.getWidgetsSettings(),
-                tiles: _this.getTilesSettings()
-            };
+           return _this.settings;
         }
     }
 
     angular.module('app')
-        .service('Storage', StorageSvc);
+        .service('Storage', ['CONST', 'Lang', 'Utils', '$rootScope', '$location', StorageSvc]);
 
 })();

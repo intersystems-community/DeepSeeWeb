@@ -11,11 +11,12 @@
         loadFav();
 
         $scope.model = {
+          //  isLoading: true,
             ver: CONST.ver,
             searchText: "",
             canAdd: !favExists($routeParams.path),
             username: localStorage.userName || "",
-            visible: true,
+            visible: false,
             favs: getFavs(),
             onDashboard: isOnDashboard(),
             //hideFolders: CONST.hideFolders,
@@ -34,14 +35,22 @@
         $scope.navigateFav = navigateFav;
         $scope.showSettings = showSettings;
         $rootScope.$on('toggleMenu', toggleMenu);
+      //  $rootScope.$on('menu:toggleLoading', toggleLoading);
         $rootScope.$on('menu:changeTitle', changeTitle);
         $scope.$on('$routeChangeSuccess', onRouteChange);
+
+        /**
+         * Toggles loading indicator
+         */
+       /* function toggleLoading(event, isVisible){
+            $scope.model.isLoading = isVisible;
+        }*/
 
         /**
          * Open settings modal window
          */
         function showSettings() {
-            ngDialog.open({template: 'src/views/settings.html', data: {}, controller: "settings", showClose: true, className: "ngdialog-theme-default" });
+            ngDialog.open({template: 'src/views/settings.html', data: {}, controller: "settings", showClose: true, className: "ngdialog-theme-default wnd-settings" });
         }
 
         /**

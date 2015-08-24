@@ -13,6 +13,17 @@
             this._retrieveData = retrieveData;
             this.requestData();
 
+
+            /**
+             * Finds data property by name
+             * @param {string} str Name
+             * @returns {undefined|object} Data property
+             */
+            function findDataPropByName(str) {
+                if (!_this.desc.dataProperties) return;
+                for (var k = 0; k < _this.desc.dataProperties.length - 1; k++) if (_this.desc.dataProperties[k].dataValue === str) return _this.desc.dataProperties[k];
+            }
+
             /**
              * Fills widget with data retrieved from server
              * @param {object} result Result of MDX query
@@ -32,11 +43,11 @@
                             color = CONST.fontColors[_this.desc.tile.fontColor];
                         }
 
-                        // Check if caption exists in dataProperties
                         var caption = result.Cols[0].tuples[i].caption;
-                        if (_this.desc.dataProperties && _this.desc.dataProperties[i]) {
-                            if (_this.desc.dataProperties[i].label === "$auto") caption = _this.desc.dataProperties[i].dataValue || caption; else
-                                caption = _this.desc.dataProperties[i].label || caption;
+                        var prop = findDataPropByName(result.Cols[0].tuples[i].dimension);
+                        if (prop) {
+                            if (prop.label === "$auto") caption = prop.dataValue || caption; else
+                                caption = prop.label || caption;
                         }
 
                         // Add parameter

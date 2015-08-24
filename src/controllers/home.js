@@ -257,7 +257,7 @@
             var path;
             var c;
             var conf = Storage.getTilesSettings();
-            conf = conf[settings.hideFolders ? "/" : _this.curFolder] || {};
+            conf = conf[(settings.hideFolders || settings.hideFolders === undefined) ? '\\' : _this.curFolder] || {};
 
             if (settings.hideFolders || _this.search) {
                 for (i = 0; i < data.children.length; i++) {

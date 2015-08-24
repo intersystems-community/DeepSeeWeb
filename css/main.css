@@ -556,3 +556,22 @@ body::-webkit-scrollbar {
     text-align: center;
     padding-bottom: 10px;
 }
+
+.ngdialog.ngdialog-theme-default.wnd-settings .ngdialog-content{
+    width: 640px;
+}
+
+.divider {
+    width:100%;
+    border-top: 1px solid #CCC;
+    padding-bottom: 16px;
+}
+
+.float-left {
+    float: left;
+}
+
+.input-xs {
+    height: 22px;
+}
+

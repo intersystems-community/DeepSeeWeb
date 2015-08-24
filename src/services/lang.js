@@ -4,14 +4,14 @@
 (function() {
     'use strict';
 
-    function LangSvc(Storage, $window, LANGSTR) {
-        var settings = Storage.getAppSettings();
+    function LangSvc( $window, LANGSTR) {
+        //var settings = Storage.getAppSettings();
         var _this = this;
         this.getLanguages = getLanguages;
         this.get = get;
         //TODO: set angular $locale here
 
-        if (!settings.language) {
+        //if (!settings.language) {
             switch ($window.navigator.language.toLowerCase()) {
                 case "en":
                     this.current = "ru";
@@ -26,7 +26,7 @@
                     this.current = "en";
                     break;
             }
-        } else this.current = settings.language || "en";
+        //} else this.current = settings.language || "en";
 
         /**
          * Translates string with current language
@@ -63,7 +63,7 @@
     }
 
     angular.module('app')
-        .service('Lang', ['Storage', '$window', 'LANGSTR', LangSvc])
+        .service('Lang', ['$window', 'LANGSTR', LangSvc])
         .filter('lang', ['Lang', LangFlt])
 
     /**
@@ -73,8 +73,10 @@
             en: {
                 cancel: "Cancel",
                 save: "Save",
+                load: "Load",
                 //theme: "Theme",
-                view: "View",
+                //view: "View",
+                curSettings: "Current settings",
                 newView: "New",
                 language: "Language",
                 dashboard: "Dashboard",
@@ -139,8 +141,10 @@
             ru: {
                 cancel: "Отмена",
                 save: "Сохранить",
+                load: "Загрузить",
                 //theme: "Тема",
-                view: "Представление",
+                //view: "Представление",
+                curSettings: "Текущие настройки",
                 newView: "Добавить",
                 language: "Язык",
                 dashboard: "Индикаторная панель",
