@@ -13,7 +13,23 @@
             return {
                 link: function(scope, element, attrs) {
                     element.removeAttr('map-widget');
-                    element[0].innerHTML =  "maaap";
+                    var map = new ol.Map({
+                        layers: [
+                            new ol.layer.Tile({
+                                source: new ol.source.OSM()
+                            })
+                        ],
+                        controls: ol.control.defaults({
+                            attributionOptions: {
+                                collapsible: false
+                            }
+                        }),
+                        target: element[0],
+                        view: new ol.View({
+                            center: [0, 0],
+                            zoom: 2
+                        })
+                    });
                     $compile(element)(scope);
                 }
             };
