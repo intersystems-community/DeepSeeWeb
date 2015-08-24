@@ -118,7 +118,7 @@ body::-webkit-scrollbar {
     box-shadow: none;
     outline: none;
     text-shadow: none;
-    position: absolute;
+    position: fixed;
     right: 10px;
     bottom: 10px;
     font-size: x-large;
@@ -176,7 +176,7 @@ body::-webkit-scrollbar {
 .sidebar-bottom {
     overflow: hidden;
     width: 100%;
-    position: absolute;
+    position: fixed;
     bottom: 0px;
     border-top: 1px solid rgb(101, 84, 255);
     /*background-color: #00aff0;*/
