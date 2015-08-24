@@ -287,7 +287,7 @@
                     if (c.icon !== undefined) dashboards[i].icon = c.icon; else dashboards[i].icon = (dashboards[i].title === "" ? (icons.length - 1) : dashboards[i].isFolder ? 2 : 1);
                     dashboards[i].color = c.color || (dashboards[i].title === "" ? 2 : dashboards[i].isFolder ? 3 : 1);
                     dashboards[i].fontColor = c.fontColor || 0;
-                    dashboards[i].customTitle = c.title || dashboards[i].title;
+                    if (dashboards[i].widget === null) dashboards[i].customTitle = c.title || dashboards[i].title; else dashboards[i].title = "";
                 }
 
                 setupList(dashboards);
@@ -346,7 +346,7 @@
                 if (c.icon !== undefined) dashboards[i].icon = c.icon; else dashboards[i].icon = (dashboards[i].title === "" ? (icons.length - 1) : dashboards[i].isFolder ? 2 : 1);
                 dashboards[i].color = c.color || (dashboards[i].title === "" ? 2 : dashboards[i].isFolder ? 3 : 1);
                 dashboards[i].fontColor = c.fontColor || 0;
-                dashboards[i].customTitle = c.title || dashboards[i].title;
+                if (dashboards[i].widget === null) dashboards[i].customTitle = c.title || dashboards[i].title; else dashboards[i].title = "";
             }
 
             setupList(dashboards);
