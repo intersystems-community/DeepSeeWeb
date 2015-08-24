@@ -13,8 +13,13 @@
             return {
                 link: function(scope, element, attrs) {
                     element.removeAttr('map-widget');
+                    /*var raster = new ol.layer.Tile({
+                        source: new ol.source.MapQuest({layer: 'sat'})
+                    });*/
+
                     var map = new ol.Map({
                         layers: [
+                            //raster,
                             new ol.layer.Tile({
                                 source: new ol.source.OSM()
                             })
@@ -30,7 +35,9 @@
                             zoom: 2
                         })
                     });
-                    $compile(element)(scope);
+                    //$compile(element)(scope);
+
+                    if (scope.onInit) scope.onInit(map);
                 }
             };
         }]);
