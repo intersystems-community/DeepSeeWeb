@@ -6,7 +6,7 @@
 
     function TypeMapSvc(CONST, AreaChart, BarChart, LineChart, ColumnChart, PieChart, XyChart, TimeChart, PivotWidget,
                         TextWidget, HiLowChart, TreeMapChart, BubbleChart, BullseyeChart, SpeedometerChart,
-                        FuelGaugeChart, EmptyWidget, BarChartPercent) {
+                        FuelGaugeChart, EmptyWidget, BarChartPercent, MapWidget) {
         var types = {
             fuelgauge: {
                 class: FuelGaugeChart,
@@ -99,6 +99,10 @@
             textmeter: {
                 class: TextWidget,
                 type: "text"
+            },
+            map: {
+                class: MapWidget,
+                type: "map"
             }
         };
 
@@ -131,6 +135,6 @@
     angular.module('widgets')
         .service('TypeMap', ['CONST', 'AreaChart', 'BarChart', 'LineChart', 'ColumnChart', 'PieChart', 'XyChart', 'TimeChart',
             'PivotWidget', 'TextWidget', 'HiLowChart', 'TreeMapChart', 'BubbleChart', 'BullseyeChart', 'SpeedometerChart',
-            'FuelGaugeChart', 'EmptyWidget', 'BarChartPercent', TypeMapSvc]);
+            'FuelGaugeChart', 'EmptyWidget', 'BarChartPercent', 'MapWidget', TypeMapSvc]);
 
 })();
