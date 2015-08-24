@@ -25,27 +25,26 @@
             "\uf02d", "\uf073", "\uf0ac", "\uf005", "\uf071", "\uf05a",
             "\uf104"],
         timeout: 60000,
-        ver: "1.2.14b",
+        ver: "1.2.19b",
         emptyWidgetClass: "MDX2JSON.EmptyPortlet".toLowerCase()
     })
 
     .config(['$routeProvider', function ($routeProvider) {
         $routeProvider
             .when('/', {
-                //templateUrl: 'src/views/dashboardList.html',
                 templateUrl: 'src/views/home.html',
-                controller: 'home'
-                //controller: 'dashboardList'
+                controller: 'home',
+                resolve: { config: ['Connector', '$q', 'Storage', '$rootScope', '$route', configResolver] }
             })
             .when('/d/:path*', {
                 templateUrl: 'src/views/dashboard.html',
-                controller: 'dashboard'
+                controller: 'dashboard',
+                resolve: { config: ['Connector', '$q', 'Storage', '$rootScope', '$route', configResolver] }
             })
             .when('/f/:folder*', {
-                //templateUrl: 'src/views/dashboardList.html',
                 templateUrl: 'src/views/home.html',
-                controller: 'home'
-                //controller: 'dashboardList'
+                controller: 'home',
+                resolve: { config: ['Connector', '$q', 'Storage', '$rootScope', '$route', configResolver] }
             })
             .when('/login', {
                 templateUrl: 'src/views/login.html',
@@ -54,7 +53,40 @@
             .otherwise({ redirectTo: '/' });
     }])
 
-    .run(['gridsterConfig', 'Lang', 'CONST', 'Connector', 'Storage', start]);
+    .run(['gridsterConfig', 'Lang', 'CONST', 'Connector', '$route', start]);
+
+
+    /**
+     * Loads config before route changed
+     * @param {object} Connector Connector service
+     * @param $q
+     * @param {object} Storage Storage service
+     * @returns {IPromise<T>}
+     */
+    function configResolver(Connector, $q, Storage, $rootScope, $route) {
+        var deffered = $q.defer();
+        if (Storage.configLoaded) {
+            $rootScope.$broadcast('toggleMenu', true);
+            deffered.resolve();
+            return deffered.promise;
+        }
+        Connector.loadConfig($route.current.params.ns).success(function(result) {
+            $rootScope.$broadcast('toggleMenu', true);
+            Storage.loadConfig(result);
+            deffered.resolve();
+        }).error(function(result) {
+            deffered.resolve();
+        });
+        return deffered.promise;
+    }
+
+/*
+    function loadConfig($q,$http) {
+        var deffered = $q.defer();
+
+        // make your http request here and resolve its promise
+        return deffered.promise;
+    }*/
 
     /**
      * Application entry point
@@ -64,13 +96,8 @@
      * @param Connector
      * @param Storage
      */
-    function start(gridsterConfig, Lang, CONST, Connector, Storage) {
-        var settings = Storage.getAppSettings();
-        if (settings.isMetro) {
-            document.getElementById('pagestyle').setAttribute('href', CONST.css.classic);
-        } else {
-            document.getElementById('pagestyle').setAttribute('href', CONST.css.metro);
-        }
+    function start(gridsterConfig, Lang, CONST, Connector, $route) {
+
 
         gridsterConfig.draggable.handle = ".widget-title-drag";
         gridsterConfig.resizable.handles = ['se'];
@@ -136,9 +163,9 @@
 
 
         // Load favorites
-        Connector.getFavorites().success(function(result) {
+        /*Connector.getFavorites().success(function(result) {
 
-        });
+        });*/
     }
 
 })();
