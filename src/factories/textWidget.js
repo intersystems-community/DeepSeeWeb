@@ -4,11 +4,12 @@
 (function() {
     'use strict';
 
-    function TextWidgetFact(CONST) {
+    function TextWidgetFact(CONST, Storage) {
 
         function TextWidget($scope) {
             var _this = this;
             $scope.model.textData = [];
+            var settings = Storage.getAppSettings();
 
             this._retrieveData = retrieveData;
             this.requestData();
@@ -40,7 +41,7 @@
                         // Change font color, if widget is displayed on tile
                         var color = "#000";
                         if (_this.desc.tile) {
-                            color = CONST.fontColors[_this.desc.tile.fontColor];
+                            color =  settings.isMetro ? CONST.fontColorsMetro[_this.desc.tile.fontColor] : CONST.fontColors[_this.desc.tile.fontColor];
                         }
 
                         var caption = result.Cols[0].tuples[i].caption;
@@ -61,6 +62,6 @@
     }
 
     angular.module('widgets')
-        .factory('TextWidget', ['CONST', TextWidgetFact]);
+        .factory('TextWidget', ['CONST', 'Storage', TextWidgetFact]);
 
 })();
