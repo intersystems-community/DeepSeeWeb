@@ -46,7 +46,7 @@
                     }
                 },
                 yAxis: {
-                    minRange: 1,
+                    //minRange: 1,
                     plotLines: [{
                         color: 'red',
                         value: 1,
@@ -87,7 +87,7 @@
                     return '<span style="font-weight: bold; color: black">' + t.value + '<span>';
                 }
                 if (_this.noPlanCats.indexOf(t.value) !== -1) {
-                    return '<span style="font-weight: bold; color: red">' + t.value + '<span>';
+                    return '<span style="color: red">' + t.value + '<span>';
                 }
                 return t.value;
             }
@@ -129,17 +129,32 @@
                 var och = _this.chart.series[1].processedYData[t.point.index] || 0;
                 if (planned === 0) planned = opl + nepr;
                 var a = '<b>' + t.point.name + '</b><br>';
-                a += "Запланировано: " + planned + "<br/>";
+                if (_this.noPlanCats.indexOf(t.point.name) !== -1) {
+                    a += "Запланировано: план отсутствует<br/>";
+                } else a += "Запланировано: " + planned + "<br/>";
                 a += "<span>&nbsp;</span><br/>";
-                a += "Всего пролечено: " +  (opl + nepr) + " (" + Math.round((opl + nepr) / planned * 100).toFixed(0) +  "%)<br/>";
+                a += "Всего пролечено: " +  (opl + nepr);
+                if (planned !== 0) a+= " (" + Math.round((opl + nepr) / planned * 100).toFixed(0) +  "%)"; else a += " (0%)";
+                a+= "<br/>";
                 a += "из них:<br/>";
-                a += "<span>&nbsp;</span><span>&nbsp;</span><span>&nbsp;</span><span>принято к оплате: " + opl + " (" + Math.round(opl / planned * 100).toFixed(0) +  "%)</span><br/>";
-                a += "<span>&nbsp;</span><span>&nbsp;</span><span>&nbsp;</span><span>не принято к оплате: " + parseInt(nepr) + " (" + Math.round(nepr / planned * 100).toFixed(0) +  "%)</span><br/>";
+                a += "<span>&nbsp;</span><span>&nbsp;</span><span>&nbsp;</span><span>принято к оплате: " + opl;
+                if (planned !== 0) a+= " (" + Math.round(opl / planned * 100).toFixed(0) +  "%)</span>"; else a += " (0%)";
+                a+= "<br/>";
+                a += "<span>&nbsp;</span><span>&nbsp;</span><span>&nbsp;</span><span>не принято к оплате: " + parseInt(nepr);
+                if (planned !== 0) a+= " (" + Math.round(nepr / planned * 100).toFixed(0) +  "%)</span>"; else a += " (0%)";
+                a+= "<br/>";
                 a += "<span>&nbsp;</span><br/>";
-                a += "Пребывает в стационаре: " + sta + " (" + Math.round(sta / planned * 100).toFixed(0) + "%)<br/>";
-                a += "В очереди: " + och +  " (" + Math.round(och / planned * 100).toFixed(0) + "%)<br/>";
+                a += "Пребывает в стационаре: " + sta;
+                if (planned !== 0) a+= " (" + Math.round(sta / planned * 100).toFixed(0) + "%)";
+                a+= "<br/>";
+                a += "В очереди: " + och;
+                if (planned !== 0) a+= " (" + Math.round(och / planned * 100).toFixed(0) + "%)";
+                a+= "<br/>";
                 a += "<span>&nbsp;</span><br/>";
-                a += "Проноз выполнения плана: " + (opl + nepr + sta + och) + " (" +  Math.round((opl + nepr + sta + och) / planned * 100).toFixed(0) + "%)<br/>";
+                a += "Проноз выполнения плана: " + (opl + nepr + sta + och);
+                if (planned !== 0) a+= " (" +  Math.round((opl + nepr + sta + och) / planned * 100).toFixed(0) + "%)"; else {
+                    if (_this.noPlanCats.indexOf(t.point.name) !== -1) a += "(100%)"; else a += " (0%)";
+                }
                 return a;
             }
 
@@ -148,12 +163,28 @@
              * @param {object} data MDX result
              */
             function parseData(data) {
+                while(_this.chart.series.length > 0) _this.chart.series[0].remove(false);
                 _this.noPlanCats     = [];
                 _this.oldParseData(data);
                 var maxValue = 0;
-                var i;
+                var i, j;
                 var l;
                 var temp;
+                var max, val;
+
+                //Set Y axis min to 100 if data values is lower 100
+                max = 0;
+                if ($scope.chartConfig.series.length > 4) {
+                    for (j = 0; j < $scope.chartConfig.series[0].data.length; j++) {
+                        val = 0;
+                        for (i = 5; i < $scope.chartConfig.series.length; i++) {
+                            val += $scope.chartConfig.series[i].data[j].y;
+                        }
+                        if (val > max) max = val;
+                    }
+                }
+                if (max < 1) max = 1.1;
+                $scope.chartConfig.yAxis.max = max;
 
                 // Find categories without planned values
                 for (i = 0, l = $scope.chartConfig.series[0].data.length; i < l; i++) {
@@ -161,8 +192,19 @@
                         $scope.chartConfig.series[0].data[i].y === undefined ||
                         $scope.chartConfig.series[0].data[i].y === "" ||
                         $scope.chartConfig.series[0].data[i].y === 0) {
-                            $scope.chartConfig.series[8].data[i].y = 1;
-                            _this.noPlanCats.push($scope.chartConfig.series[8].data[i].name);
+
+                            var total = ($scope.chartConfig.series[1].data[i].y || 0) +
+                                        ($scope.chartConfig.series[2].data[i].y || 0) +
+                                        ($scope.chartConfig.series[3].data[i].y || 0) +
+                                        ($scope.chartConfig.series[4].data[i].y || 0);
+                            if (total != 0) {
+                                if ($scope.chartConfig.series[1].data[i].y) $scope.chartConfig.series[5].data[i].y = $scope.chartConfig.series[1].data[i].y / total;
+                                if ($scope.chartConfig.series[2].data[i].y) $scope.chartConfig.series[6].data[i].y = $scope.chartConfig.series[2].data[i].y / total;
+                                if ($scope.chartConfig.series[3].data[i].y) $scope.chartConfig.series[7].data[i].y = $scope.chartConfig.series[3].data[i].y / total;
+                                if ($scope.chartConfig.series[4].data[i].y) $scope.chartConfig.series[8].data[i].y = $scope.chartConfig.series[4].data[i].y / total;
+                            } else $scope.chartConfig.series[8].data[i].y = 1;
+
+                        _this.noPlanCats.push($scope.chartConfig.series[8].data[i].name);
                         }
                 }
 
