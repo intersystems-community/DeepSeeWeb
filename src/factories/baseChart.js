@@ -445,7 +445,6 @@
                             });
                         }
                         fixData(tempData);
-                        //TODO: lang
                         var name = Lang.get("count");
                         var format = "";
                         if (data.Cols[0].tuples[j]) {
