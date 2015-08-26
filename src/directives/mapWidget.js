@@ -36,7 +36,6 @@
                         })
                     });
                     //$compile(element)(scope);
-
                     if (scope.onInit) scope.onInit(map);
                 }
             };
