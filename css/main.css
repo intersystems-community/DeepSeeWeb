@@ -561,7 +561,7 @@ body::-webkit-scrollbar {
     width: 640px;
 }
 
-.divider {
+.line-divider {
     width:100%;
     border-top: 1px solid #CCC;
     padding-bottom: 16px;
@@ -575,3 +575,8 @@ body::-webkit-scrollbar {
     height: 22px;
 }
 
+
+.bar-summary {
+    transform: scale(2, 1);
+    transform-origin: center;
+}
