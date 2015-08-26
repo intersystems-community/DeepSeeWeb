@@ -25,7 +25,7 @@
             "\uf02d", "\uf073", "\uf0ac", "\uf005", "\uf071", "\uf05a",
             "\uf104"],
         timeout: 60000,
-        ver: "1.2.20",
+        ver: "1.2.21",
         emptyWidgetClass: "MDX2JSON.EmptyPortlet".toLowerCase()
     })
 
