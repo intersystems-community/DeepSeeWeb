@@ -127,7 +127,8 @@
                 var opl = _this.chart.series[4].processedYData[t.point.index] || 0;
                 var sta = _this.chart.series[2].processedYData[t.point.index] || 0;
                 var och = _this.chart.series[1].processedYData[t.point.index] || 0;
-                if (planned === 0) planned = opl + nepr;
+                var total = och + sta + nepr + opl;
+                if (planned === 0) planned = total;
                 var a = '<b>' + t.point.name + '</b><br>';
                 if (_this.noPlanCats.indexOf(t.point.name) !== -1) {
                     a += "Запланировано: план отсутствует<br/>";
@@ -145,10 +146,10 @@
                 a+= "<br/>";
                 a += "<span>&nbsp;</span><br/>";
                 a += "Пребывает в стационаре: " + sta;
-                if (planned !== 0) a+= " (" + Math.round(sta / planned * 100).toFixed(0) + "%)";
+                if (planned !== 0) a+= " (" + Math.round(sta / planned * 100).toFixed(0) + "%)"; else a += " (0%)";
                 a+= "<br/>";
                 a += "В очереди: " + och;
-                if (planned !== 0) a+= " (" + Math.round(och / planned * 100).toFixed(0) + "%)";
+                if (planned !== 0) a+= " (" + Math.round(och / planned * 100).toFixed(0) + "%)"; else a += " (0%)";
                 a+= "<br/>";
                 a += "<span>&nbsp;</span><br/>";
                 a += "Проноз выполнения плана: " + (opl + nepr + sta + och);
@@ -197,7 +198,7 @@
                                         ($scope.chartConfig.series[2].data[i].y || 0) +
                                         ($scope.chartConfig.series[3].data[i].y || 0) +
                                         ($scope.chartConfig.series[4].data[i].y || 0);
-                            if (total != 0) {
+                            if (total !== 0) {
                                 if ($scope.chartConfig.series[1].data[i].y) $scope.chartConfig.series[5].data[i].y = $scope.chartConfig.series[1].data[i].y / total;
                                 if ($scope.chartConfig.series[2].data[i].y) $scope.chartConfig.series[6].data[i].y = $scope.chartConfig.series[2].data[i].y / total;
                                 if ($scope.chartConfig.series[3].data[i].y) $scope.chartConfig.series[7].data[i].y = $scope.chartConfig.series[3].data[i].y / total;
