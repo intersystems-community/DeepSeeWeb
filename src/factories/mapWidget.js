@@ -7,13 +7,18 @@
     function MapWidgetFact(CONST, $timeout) {
 
         function MapWidget($scope) {
-            var _this = this
+            var _this = this;
             this.CLUSTER_RANGE = 1;
             this.map = null;
             this.markers = null;
             this.iconStyle = null;
+            this.popup = null;
 
-            $scope.model.textData = [];
+            $scope.model.tooltip = {
+                items: [],
+                visible: false,
+                name: "dsa"
+            };
             this.onInit = onInit;
             this.onResize = onResize;
 
@@ -25,7 +30,6 @@
              * @param {object} result Result of MDX query
              */
             function retrieveData(result) {
-                $scope.model.data = [];
                 if (result && _this.map) {
                     var size = result.Cols[0].tuples.length;
                     var k = 0;
@@ -38,11 +42,21 @@
                         var point = new ol.geom.Point([lon, lat]);
                         point.transform('EPSG:4326', 'EPSG:900913');
 
+                        var labels = [];
+                        var values = [];
+                        for (var j = 2; j < result.Cols[0].tuples.length; j++) {
+                            labels.push(result.Cols[0].tuples[j].caption);
+                            values.push(result.Data[k + j]);
+                        }
+
                         var iconFeature = new ol.Feature({
                             geometry: point,
                             name: name,
+                            labels: labels,
+                            values: values,
                             k: k
                         });
+
 
                         features.push(iconFeature);
                         k += size;
@@ -84,8 +98,7 @@
                         anchorXUnits: 'fraction',
                         anchorYUnits: 'pixels',
                         opacity: 1,
-                        src: 'http://maps.gstatic.com/mapfiles/api-3/images/spotlight-poi.png'
-                        //src: 'img/map-marker-red.png'
+                        src: 'img/map-marker-red.png'
                     })
                 });
 
@@ -104,11 +117,99 @@
                     style: _this.iconStyle
                 });
                 _this.map.addLayer(vectorLayer);
+
+                // Create popup
+                _this.popup = new ol.Overlay({
+                    element: $scope.tooltipElement,
+                    positioning: 'bottom-center',
+                    offset: [0, -40],
+                    stopEvent: false
+                });
+                _this.map.addOverlay(_this.popup);
+
+
+                _this.map.on('click', onMapClick);
+                _this.map.on('pointermove', onPointerMove);
+                //_this.map.getView().on('change:resolution', constrainPan);
+                //_this.map.getView().on('change:center', constrainPan);
+            }
+/*
+            function constrainPan() {
+                var extent = [-10, -10, 10, 10];
+                var view = _this.map.getView();
+                var visible = view.calculateExtent(_this.map.getSize());
+                var centre = view.getCenter();
+                var delta;
+                var adjust = false;
+                if ((delta = extent[0] - visible[0]) > 0) {
+                    adjust = true;
+                    centre[0] += delta;
+                } else if ((delta = extent[2] - visible[2]) < 0) {
+                    adjust = true;
+                    centre[0] += delta;
+                }
+                if ((delta = extent[1] - visible[1]) > 0) {
+                    adjust = true;
+                    centre[1] += delta;
+                } else if ((delta = extent[3] - visible[3]) < 0) {
+                    adjust = true;
+                    centre[1] += delta;
+                }
+                if (adjust) {
+                    view.setCenter(centre);
+                }
+            }*/
+
+            function onPointerMove(e) {
+                if (e.dragging) {
+                    hideTooltip();
+                    return;
+                }
+                var pixel = _this.map.getEventPixel(e.originalEvent);
+                var hit = _this.map.hasFeatureAtPixel(pixel);
+                 _this.map.getTarget().style.cursor = hit ? 'pointer' : '';
+            }
+
+            function onMapClick(evt) {
+                var feature = _this.map.forEachFeatureAtPixel(evt.pixel,
+                    function (feature, layer) {
+                        return feature;
+                    });
+                if (feature) {
+                    var labels = feature.get("features")[0].get("labels");
+                    var values = feature.get("features")[0].get("values");
+                    $scope.model.tooltip.items = [];
+                    for (var i = 0; i < labels.length; i++) $scope.model.tooltip.items.push({label: labels[i], value: values[i]});
+                    $scope.model.tooltip.name = feature.get("features")[0].get("name");
+
+                    var geometry = feature.getGeometry();
+                    var coord = geometry.getCoordinates();
+                    coord[0] += Math.floor((_this.map.getCoordinateFromPixel(evt.pixel)[0] / 40075016.68) + 0.5) * 20037508.34 * 2;
+                    _this.popup.setPosition(coord);
+                    /*$(element).popover({
+                        'placement': 'top',
+                        'html': true,
+                        'content': feature.get('name')
+                    });*/
+                    //$(element).popover('show');
+                    showTooltip();
+                } else {
+                    hideTooltip();
+                    //$(element).popover('destroy');
+                }
+                $scope.$apply();
+            }
+
+            function showTooltip() {
+                $scope.model.tooltip.visible = true;
+            }
+
+            function hideTooltip() {
+                $scope.model.tooltip.visible = false;
             }
 
             function onResize() {
                 if (_this.map) _this.map.updateSize();
-                console.log("resize");
             }
         }
 
