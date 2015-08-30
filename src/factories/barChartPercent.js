@@ -12,16 +12,22 @@
             _this.oldParseData   = this.parseData;
             _this.parseData      = parseData;
             _this.basePointClick = $scope.chartConfig.options.plotOptions.series.point.events.click;
+            _this.noPlanCats     = []; // Stores categories that have no planed value. Used to make it red
 
             this.setType('bar');
             this.enableStacking();
-
             var ex = {
                 options: {
+                    chart: {
+                        events: {
+                            redraw: onRedraw
+                        }
+                    },
                     legend: {
                         reversed: true
                     },
                     tooltip: {
+                        useHTML: true,
                         formatter: customFormatter
                     },
                     plotOptions: {
@@ -36,15 +42,11 @@
                 },
                 xAxis: {
                     labels: {
-                        formatter: function () {
-                            if (this.value === "ИТОГО") {
-                                return '<span style="font-weight: bold; color: black">' + this.value + '<span>';
-                            }
-                            return this.value;
-                        }
+                        formatter: formatXAxis
                     }
                 },
                 yAxis: {
+                    //minRange: 1,
                     plotLines: [{
                         color: 'red',
                         value: 1,
@@ -52,17 +54,57 @@
                         zIndex: 3
                     }],
                     labels: {
-                        formatter: function () {
-                            if (this.value === 1) {
-                                return '<span style="font-size: 110%;font-weight:bold;color: red">100%</span>';
-                            }
-                            return this.value * 100 + "%";
-                        }
+                        formatter: formatYAxis
                     }
                 }
             };
 
             Utils.merge($scope.chartConfig, ex);
+
+            /**
+             * Used to format Y axis labels
+             * @returns {string} Formatted label text
+             */
+            function formatYAxis() {
+                /* jshint ignore:start */
+                var t = this;
+                /* jshint ignore:end */
+                if (t.value === 1) {
+                    return '<span style="font-size: 110%;font-weight:bold;color: red">100%</span>';
+                }
+                return parseFloat(t.value * 100).toFixed(0) + "%";
+            }
+
+            /**
+             * Used to format X axis labels
+             * @returns {string} Formatted label text
+             */
+            function formatXAxis() {
+                /* jshint ignore:start */
+                var t = this;
+                /* jshint ignore:end */
+                if (t.value === "ИТОГО") {
+                    return '<span style="font-weight: bold; color: black">' + t.value + '<span>';
+                }
+                if (_this.noPlanCats.indexOf(t.value) !== -1) {
+                    return '<span style="color: red">' + t.value + '<span>';
+                }
+                return t.value;
+            }
+
+            /**
+             * Fires after chart have been redrawn
+             * Used to add class to summary bar, that will make it bigger
+             */
+            function onRedraw() {
+                if (_this.chart) {
+                    if (_this.chart.series.length > 4) {
+                        for (var i = 5; i < _this.chart.series.length; i++)
+                            if (_this.chart.series[i].data.length !== 0 && _this.chart.series[i].data[0].graphic && _this.chart.series[i].data[0].graphic.element)
+                                _this.chart.series[i].data[0].graphic.element.setAttribute("class", "bar-summary");
+                    }
+                }
+            }
 
             /**
              * Highchart bar click event handler
@@ -80,11 +122,39 @@
                 /* jshint ignore:start */
                 var t = this;
                 /* jshint ignore:end */
+                var planned = _this.chart.series[0].processedYData[t.point.index] || 0;
+                var nepr = _this.chart.series[3].processedYData[t.point.index] || 0;
+                var opl = _this.chart.series[4].processedYData[t.point.index] || 0;
+                var sta = _this.chart.series[2].processedYData[t.point.index] || 0;
+                var och = _this.chart.series[1].processedYData[t.point.index] || 0;
+                var total = och + sta + nepr + opl;
+                if (planned === 0) planned = total;
                 var a = '<b>' + t.point.name + '</b><br>';
-                for (var i = 4; i >= 0; i--) {
-                    var v = _this.chart.series[i].processedYData[t.point.index];
-                    if (!v) v = 0;
-                    a += _this.chart.series[i].name + ": " + v.toString() + "<br>";
+                if (_this.noPlanCats.indexOf(t.point.name) !== -1) {
+                    a += "Запланировано: план отсутствует<br/>";
+                } else a += "Запланировано: " + planned + "<br/>";
+                a += "<span>&nbsp;</span><br/>";
+                a += "Всего пролечено: " +  (opl + nepr);
+                if (planned !== 0) a+= " (" + Math.round((opl + nepr) / planned * 100).toFixed(0) +  "%)"; else a += " (0%)";
+                a+= "<br/>";
+                a += "из них:<br/>";
+                a += "<span>&nbsp;</span><span>&nbsp;</span><span>&nbsp;</span><span>принято к оплате: " + opl;
+                if (planned !== 0) a+= " (" + Math.round(opl / planned * 100).toFixed(0) +  "%)</span>"; else a += " (0%)";
+                a+= "<br/>";
+                a += "<span>&nbsp;</span><span>&nbsp;</span><span>&nbsp;</span><span>не принято к оплате: " + parseInt(nepr);
+                if (planned !== 0) a+= " (" + Math.round(nepr / planned * 100).toFixed(0) +  "%)</span>"; else a += " (0%)";
+                a+= "<br/>";
+                a += "<span>&nbsp;</span><br/>";
+                a += "Пребывает в стационаре: " + sta;
+                if (planned !== 0) a+= " (" + Math.round(sta / planned * 100).toFixed(0) + "%)"; else a += " (0%)";
+                a+= "<br/>";
+                a += "В очереди: " + och;
+                if (planned !== 0) a+= " (" + Math.round(och / planned * 100).toFixed(0) + "%)"; else a += " (0%)";
+                a+= "<br/>";
+                a += "<span>&nbsp;</span><br/>";
+                a += "Проноз выполнения плана: " + (opl + nepr + sta + och);
+                if (planned !== 0) a+= " (" +  Math.round((opl + nepr + sta + och) / planned * 100).toFixed(0) + "%)"; else {
+                    if (_this.noPlanCats.indexOf(t.point.name) !== -1) a += "(100%)"; else a += " (0%)";
                 }
                 return a;
             }
@@ -94,18 +164,80 @@
              * @param {object} data MDX result
              */
             function parseData(data) {
+                while(_this.chart.series.length > 0) _this.chart.series[0].remove(false);
+                _this.noPlanCats     = [];
                 _this.oldParseData(data);
-                var cols = [];Highcharts.getOptions().colors.slice();
+                var maxValue = 0;
+                var i, j;
+                var l;
+                var temp;
+                var max, val;
+
+                //Set Y axis min to 100 if data values is lower 100
+                max = 0;
+                if ($scope.chartConfig.series.length > 4) {
+                    for (j = 0; j < $scope.chartConfig.series[0].data.length; j++) {
+                        val = 0;
+                        for (i = 5; i < $scope.chartConfig.series.length; i++) {
+                            val += $scope.chartConfig.series[i].data[j].y;
+                        }
+                        if (val > max) max = val;
+                    }
+                }
+                if (max < 1) max = 1.1;
+                $scope.chartConfig.yAxis.max = max;
+
+                // Find categories without planned values
+                for (i = 0, l = $scope.chartConfig.series[0].data.length; i < l; i++) {
+                    if ($scope.chartConfig.series[0].data[i].y === null ||
+                        $scope.chartConfig.series[0].data[i].y === undefined ||
+                        $scope.chartConfig.series[0].data[i].y === "" ||
+                        $scope.chartConfig.series[0].data[i].y === 0) {
+
+                            var total = ($scope.chartConfig.series[1].data[i].y || 0) +
+                                        ($scope.chartConfig.series[2].data[i].y || 0) +
+                                        ($scope.chartConfig.series[3].data[i].y || 0) +
+                                        ($scope.chartConfig.series[4].data[i].y || 0);
+                            if (total !== 0) {
+                                if ($scope.chartConfig.series[1].data[i].y) $scope.chartConfig.series[5].data[i].y = $scope.chartConfig.series[1].data[i].y / total;
+                                if ($scope.chartConfig.series[2].data[i].y) $scope.chartConfig.series[6].data[i].y = $scope.chartConfig.series[2].data[i].y / total;
+                                if ($scope.chartConfig.series[3].data[i].y) $scope.chartConfig.series[7].data[i].y = $scope.chartConfig.series[3].data[i].y / total;
+                                if ($scope.chartConfig.series[4].data[i].y) $scope.chartConfig.series[8].data[i].y = $scope.chartConfig.series[4].data[i].y / total;
+                            } else $scope.chartConfig.series[8].data[i].y = 1;
+
+                        _this.noPlanCats.push($scope.chartConfig.series[8].data[i].name);
+                        }
+                }
+
+                // Setup custom colors for series
+                var cols = [];
                 cols[3] = "#7fa645";
                 cols[3] = "#9fd84b";
                 cols[2] = "#00b9ff";
                 cols[1] = "#f7a35c";
                 cols[0] = "#aaaaaa";
-                for (var i = 0; i < $scope.chartConfig.series.length; i++) {
+                for (i = 0; i < $scope.chartConfig.series.length; i++) {
                     $scope.chartConfig.series[i].color = cols[(i-1) % cols.length];
                     if (i < 5) {
                         $scope.chartConfig.series[i].visible = false;
                         $scope.chartConfig.series[i].showInLegend = false;
+                    }
+                }
+
+                // Move summary on top
+                var k = $scope.chartConfig.xAxis.categories.length;
+                if (k > 1) {
+                    temp = $scope.chartConfig.xAxis.categories[0];
+                    $scope.chartConfig.xAxis.categories[0] = $scope.chartConfig.xAxis.categories[k - 1];
+                    $scope.chartConfig.xAxis.categories[k - 1] = temp;
+
+                    for (var n = 0, ls = $scope.chartConfig.series.length; n < ls; n++) {
+                        k = $scope.chartConfig.series[n].data.length;
+                        if (k > 1) {
+                            temp = $scope.chartConfig.series[n].data[0];
+                            $scope.chartConfig.series[n].data[0] = $scope.chartConfig.series[n].data[k - 1];
+                            $scope.chartConfig.series[n].data[k - 1] = temp;
+                        }
                     }
                 }
             }
