@@ -36,6 +36,10 @@
                                 element.attr("text-widget", '');
                                 break;
                             }
+                            case "map": {
+                                element.attr("map-widget", '');
+                                break;
+                            }
                             case "empty": {
                                 //element.attr("ng-include", 'src/views/filters.html');
                                 element.append("<div class='empty-widget' ng-include=\"'src/views/emptyWidgetContent.html'\"></div>");

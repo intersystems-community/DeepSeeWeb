@@ -575,7 +575,41 @@ body::-webkit-scrollbar {
     height: 22px;
 }
 
+.map-tooltip {
+    padding: 4px;
+    -webkit-box-shadow: 1px 1px 9px 0px rgba(50, 50, 50, 0.5);
+    -moz-box-shadow:    1px 1px 9px 0px rgba(50, 50, 50, 0.5);
+    box-shadow:         1px 1px 9px 0px rgba(50, 50, 50, 0.5);
+    margin-bottom: -1px;
+}
 
+.arrow_box {
+    position: relative;
+    background: #ffffff;
+}
+.arrow_box:after, .arrow_box:before {
+    top: 100%;
+    left: 50%;
+    border: solid transparent;
+    content: " ";
+    height: 0;
+    width: 0;
+    position: absolute;
+    pointer-events: none;
+}
+
+.arrow_box:after {
+    border-color: rgba(255, 255, 255, 0);
+    border-top-color: #ffffff;
+    border-width: 10px;
+    margin-left: -10px;
+}
+.arrow_box:before {
+    border-color: rgba(176, 176, 176, 0);
+    border-top-color: #B0B0B0;
+    border-width: 11px;
+    margin-left: -11px;
+}
 .bar-summary {
     transform: scale(2, 1);
     transform-origin: center;
