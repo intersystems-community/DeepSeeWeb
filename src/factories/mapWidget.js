@@ -13,7 +13,6 @@
             this.markers = null;
             this.iconStyle = null;
             this.popup = null;
-
             $scope.model.tooltip = {
                 items: [],
                 visible: false,
@@ -30,13 +29,24 @@
              * @param {object} result Result of MDX query
              */
             function retrieveData(result) {
+                var min = [Number.MAX_VALUE, Number.MAX_VALUE];
+                var max = [Number.MIN_VALUE, Number.MIN_VALUE];
+
                 if (result && _this.map) {
                     var size = result.Cols[0].tuples.length;
                     var k = 0;
                     var features = [];
+
+                    var latIdx = 0;
+                    var lonIdx = 1;
+                    var item = result.Cols[0].tuples.filter(function(el) { return el.caption.toLowerCase() === "longitude"; });
+                    if (item.length !== 0) lonIdx = result.Cols[0].tuples.indexOf(item[0]);
+                    item = result.Cols[0].tuples.filter(function(el) { return el.caption.toLowerCase() === "latitude"; });
+                    if (item.length !== 0) latIdx = result.Cols[0].tuples.indexOf(item[0]);
+
                     for (var i = 0; i < result.Cols[1].tuples.length; i++) {
-                        var lat = result.Data[k + 0];
-                        var lon = result.Data[k + 1];
+                        var lat = parseFloat(result.Data[k+latIdx] || 0);
+                        var lon = parseFloat(result.Data[k+lonIdx] || 0);
                         var name = result.Cols[1].tuples[i].caption;
 
                         var point = new ol.geom.Point([lon, lat]);
@@ -56,13 +66,40 @@
                             values: values,
                             k: k
                         });
+                        if (parseFloat(lon) < min[0]) min[0] = parseFloat(lon);
+                        if (parseFloat(lat) < min[1]) min[1] = parseFloat(lat);
+                        if (parseFloat(lon) > max[0]) max[0] = parseFloat(lon);
+                        if (parseFloat(lat) > max[1]) max[1] = parseFloat(lat);
 
+                        if (min[0] == max[0]) {
+                            min[0] -= 0.25;
+                            max[0] += 0.25;
+                        }
+                        if (min[1] == max[1]) {
+                            min[1] -= 0.25;
+                            max[1] += 0.25;
+                        }
 
                         features.push(iconFeature);
                         k += size;
                     }
+
+                    console.log("bounds: ", min, " - ", max);
+
                     _this.markers.clear();
                     _this.markers.addFeatures(features);
+
+                    //_this.map.getView().setCenter();
+                    //p.transform('EPSG:4326', 'EPSG:900913');
+                    //var ex = _this.map.getView().calculateExtent(ol.proj.transform([max[0] - min[0], max[1] - min[1]], 'EPSG:4326', 'EPSG:900913'));
+                    var p1 = ol.proj.transform([min[0], min[1]], 'EPSG:4326', 'EPSG:900913');
+                    var p2 = ol.proj.transform([max[0], max[1]], 'EPSG:4326', 'EPSG:900913');
+                    if (features.length !== 0) _this.map.getView().fit([p1[0], p1[1], p2[0], p2[1]], _this.map.getSize());
+
+
+                    //_this.map.getView().setZoom(max[1] - max[0] / 10);
+                    //_this.map.getView().setCenter(ol.proj.transform([min[0] + (max[0] - min[0])/2, min[1] + (max[1] - min[1])/2], 'EPSG:4326', 'EPSG:900913'));
+
                     _this.map.updateSize();
                   /*  var vectorSource = new ol.source.Vector({
                         features: features
