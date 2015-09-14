@@ -614,3 +614,16 @@ body::-webkit-scrollbar {
     transform: scale(2, 1);
     transform-origin: center;
 }
+
+.settings-content {
+    height: 200px;
+    padding-bottom: 16px;
+}
+
+.settings-tab {
+    cursor: pointer;
+}
+
+.settings-tabbar {
+    margin-bottom: 16px;
+}

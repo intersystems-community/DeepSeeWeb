@@ -65,8 +65,16 @@ body {
 .navbar-default .navbar-brand {
     color: white; !important;
     text-shadow: none;
-    display: none;
+    display: block;
 }
+
+.navbar-default .navbar-brand:hover {
+    color: white; !important;
+}
+.navbar-default .navbar-brand:focus {
+    color: white; !important;
+}
+
 
 .navbar-default {
     box-shadow: none;
