@@ -10,6 +10,7 @@
         this.username = localStorage.userName || "";
         this.url = "";
         this.getDashboards = getDashboards;
+        this.getPivotData = getPivotData;
         this.execMDX = execMDX;
         this.getWidgets = getWidgets;
         this.signIn = signIn;
@@ -56,6 +57,16 @@
                 method: 'POST',
                 data: {Folder: ""},
                 url: _this.url + 'Dashboards?Namespace=' + getNamespace(),
+                withCredentials: true
+            });
+        }
+
+        function getPivotData(dataSourceName) {
+            return $http({
+                method: 'POST',
+                url: _this.url + 'DataSource?Namespace=' + getNamespace(),
+                data: {DataSource: dataSourceName},
+                timeout: CONST.timeout,
                 withCredentials: true
             });
         }
