@@ -16,9 +16,11 @@
             }
 
             this.desc = $scope.getDesc($scope.item.idx);
+            this.pivotData = null;
             this.linkedMdx = "";
             this._onRequestError = onRequestError;
             this._retrieveData = function(){};
+            this._retriveDataSource = onDataSourceReceived;
             this.onInit = function(){};
             this.getMDX = getMDX;
             this.clearError = clearError;
@@ -36,6 +38,16 @@
             this.onResize = function(){};
 
             //this.liveUpdateInterval = setInterval(_this.requestData, 5000);
+            // Find refresh controls with timeout
+            if (_this.desc.controls) {
+                var refreshers = _this.desc.controls.filter(function (ctrl) {
+                    return ctrl.action === "refresh" && parseInt(ctrl.timeout) > 0;
+                });
+                if (refreshers.length !== 0) {
+                    // Use only one
+                    this.liveUpdateInterval = setInterval(_this.requestData, parseInt(refreshers[0].timeout) * 1000);
+                }
+            }
 
             $scope.item.toolbarView = 'src/views/filters.html';
             $scope.$on('$destroy', function () { _this.destroy(); });
@@ -49,6 +61,9 @@
             }
             if (this.isLinked()) $scope.$on("setLinkedMDX:" + _this.desc.key, onSetLinkedMdx);
             if (this.hasDependents()) $scope.$on("widget:" + _this.desc.key + ":refreshDependents", onRefreshDependents);
+
+
+            requestPivotData();
 
             /**
              * Callback for $on(":refreshDependents"). Sends refresh broadcast to all dependent widgets
@@ -93,6 +108,14 @@
              */
             function getFilter(idx) {
                 return Filters.getFilter($scope.model.filters[idx].idx);
+            }
+
+            function requestPivotData() {
+                if (_this.desc.dataSource) Connector.getPivotData(_this.desc.dataSource).error(_this._onRequestError).success(_this._retriveDataSource);
+            }
+
+            function onDataSourceReceived(data) {
+                _this.pivotData = data;
             }
 
             /**
@@ -182,7 +205,10 @@
                         if (flt.isExclude) bracket = "(";
                         var values = flt.value.split(",");
                         path = flt.targetProperty;
-                        mdx += " %FILTER " + bracket;
+                        if (flt.isExclude)
+                            mdx += " %FILTER " + bracket;
+                        else
+                            mdx += " %FILTER %OR(" + bracket;
                         for (var j = 0; j < values.length; j++) {
                             if (flt.isExclude)
                                 mdx += path + "." + values[j] + ".%NOT,";
@@ -192,6 +218,7 @@
                         bracket = "}";
                         if (flt.isExclude) bracket = ")";
                         mdx = mdx.substr(0, mdx.length - 1) + " " + bracket;
+                        if (!flt.isExclude) mdx += ")";
                     }
                 }
 
