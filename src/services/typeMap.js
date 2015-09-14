@@ -6,7 +6,7 @@
 
     function TypeMapSvc(CONST, AreaChart, BarChart, LineChart, ColumnChart, PieChart, XyChart, TimeChart, PivotWidget,
                         TextWidget, HiLowChart, TreeMapChart, BubbleChart, BullseyeChart, SpeedometerChart,
-                        FuelGaugeChart, EmptyWidget, BarChartPercent, MapWidget) {
+                        FuelGaugeChart, EmptyWidget, BarChartPercent, MapWidget, Storage, $injector) {
         var types = {
             fuelgauge: {
                 class: FuelGaugeChart,
@@ -112,6 +112,19 @@
         };
 
         /**
+         * Register new widget type
+         * @param {string} name name in TypeMap
+         * @param {string} type Widget type. "chart", "pivot", "map"
+         * @param {string} cl Widget ckass
+         */
+        this.register = function(name, type, cl) {
+            types[name] = {
+                class: cl,
+                type: type
+            };
+        };
+
+        /**
          * Returns class based on type name
          * @param {string} name Type name
          * @returns {object|undefined} Class constructor function
@@ -130,11 +143,24 @@
             if (!types[name.toLowerCase()]) return undefined;
             return types[name.toLowerCase()].type;
         };
+
+        var _this = this;
+        // Register custom types
+        var addons;
+        try {
+            addons = JSON.parse(Storage.getAddons() || "{}");
+        } catch (e) {}
+        if (addons && addons.widgets && addons.widgets.length !== 0) {
+            for (var i = 0; i < addons.widgets.length; i++) {
+                _this.register(addons.widgets[i].name, addons.widgets[i].type, $injector.get(addons.widgets[i].class));
+            }
+        }
+
     }
 
     angular.module('widgets')
         .service('TypeMap', ['CONST', 'AreaChart', 'BarChart', 'LineChart', 'ColumnChart', 'PieChart', 'XyChart', 'TimeChart',
             'PivotWidget', 'TextWidget', 'HiLowChart', 'TreeMapChart', 'BubbleChart', 'BullseyeChart', 'SpeedometerChart',
-            'FuelGaugeChart', 'EmptyWidget', 'BarChartPercent', 'MapWidget', TypeMapSvc]);
+            'FuelGaugeChart', 'EmptyWidget', 'BarChartPercent', 'MapWidget', 'Storage', '$injector', TypeMapSvc]);
 
 })();
