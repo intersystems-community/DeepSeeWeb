@@ -8,11 +8,20 @@
 
         function BarChartPercent($scope) {
             BaseChart.apply(this, [$scope]);
+
+            $scope.item.menuDisabled = true;
+
             var _this            = this;
             _this.oldParseData   = this.parseData;
             _this.parseData      = parseData;
             _this.basePointClick = $scope.chartConfig.options.plotOptions.series.point.events.click;
+            _this.baseDrillup    = $scope.item.drillUp;
             _this.noPlanCats     = []; // Stores categories that have no planed value. Used to make it red
+            _this.getDrillMDX    = getDrillMDX;
+            _this.onResize       = onResize;
+            var baseTitle        = $scope.item.title;
+            var titles           = [];
+            $scope.item.drillUp  = onDrillup;
 
             this.setType('bar');
             this.enableStacking();
@@ -42,7 +51,14 @@
                 },
                 xAxis: {
                     labels: {
-                        formatter: formatXAxis
+                        formatter: formatXAxis,
+                        step: 1,
+                        style: {
+                            //textOverflow: 'none',
+                            ///color: "blue",
+                            padding: '0px',
+                            margin: '0px'
+                        }
                     }
                 },
                 yAxis: {
@@ -54,12 +70,72 @@
                         zIndex: 3
                     }],
                     labels: {
-                        formatter: formatYAxis
+                        formatter: formatYAxis,
+                        step: 1
                     }
                 }
             };
 
             Utils.merge($scope.chartConfig, ex);
+
+
+            function onResize() {
+                if (_this.chart) if (_this.chart.container) if (_this.chart.container.parentNode) {
+                    if (_this.chart.container.parentNode.offsetHeight < 450) {
+                        $scope.chartConfig.xAxis.labels.style["font-size"] = 6;
+                    } else {
+                        $scope.chartConfig.xAxis.labels.style["font-size"] = 11;
+                    }
+                    _this.chart.setSize(_this.chart.container.parentNode.offsetWidth, _this.chart.container.parentNode.offsetHeight, false);
+                }
+            }
+
+            function onDrillup() {
+                _this.baseDrillup();
+                titles.pop();
+                var tit = titles.pop();
+                if (!tit) $scope.item.title = baseTitle; else $scope.item.title = baseTitle + " - " + tit;
+            }
+
+            /**
+             * Returns MDX for drilldown
+             * @param {string} path Drilldown path
+             * @returns {string} Drilldown MDX
+             */
+            function getDrillMDX(path) {
+                var pos = path.indexOf("&");
+                var p = path.substr(0, pos) + "Members";
+                var mdx = _this.getMDX();
+
+                var customDrill = "";
+                if (_this.pivotData) {
+                    var drilldownSpec = "";
+                    if (_this.pivotData.rowAxisOptions) if (_this.pivotData.rowAxisOptions.drilldownSpec) drilldownSpec = _this.pivotData.rowAxisOptions.drilldownSpec;
+                    if (drilldownSpec) {
+                        var drills = drilldownSpec.split("^");
+                        if (drills.length !== 0) {
+                            if (drills[_this.drillLevel]) customDrill = drills[_this.drillLevel];
+                            for (var i = 0; i < _this.drills.length; i++) {
+                                if (drills[i]) mdx += " %Filter " + _this.drills[i];
+                            }
+                        }
+                    }
+                }
+                if (customDrill) {
+                    var match = mdx.match(/ON 0,(.*)ON 1/);
+                    if (match.length === 2) {
+                        var str = match[1];
+                        var isNonEmpty = str.indexOf("NON EMPTY") !== -1;
+                        mdx = mdx.replace(str, (isNonEmpty ? "NON EMPTY " : " ") + p + " ");
+                    }
+
+                    mdx = mdx.replace(p, customDrill);
+                } else
+                    mdx = mdx.replace(p, path + ".Children");
+                mdx = mdx + " %FILTER " + path;
+                return mdx;
+            }
+
 
             /**
              * Used to format Y axis labels
@@ -113,6 +189,8 @@
             function onPointClick(e) {
                 if (e.point.name === "ИТОГО") return;
                 _this.basePointClick(e);
+                titles.push(e.point.name);
+                $scope.item.title = baseTitle + " - " + e.point.name;
             }
 
             /**
@@ -128,33 +206,37 @@
                 var sta = _this.chart.series[2].processedYData[t.point.index] || 0;
                 var och = _this.chart.series[1].processedYData[t.point.index] || 0;
                 var total = och + sta + nepr + opl;
-                if (planned === 0) planned = total;
+               /* var isPlan = true;
+                if (planned === 0) {
+                    isPlan = false;
+                    planned = total;
+                }*/
                 var a = '<b>' + t.point.name + '</b><br>';
                 if (_this.noPlanCats.indexOf(t.point.name) !== -1) {
                     a += "Запланировано: план отсутствует<br/>";
                 } else a += "Запланировано: " + planned + "<br/>";
                 a += "<span>&nbsp;</span><br/>";
                 a += "Всего пролечено: " +  (opl + nepr);
-                if (planned !== 0) a+= " (" + Math.round((opl + nepr) / planned * 100).toFixed(0) +  "%)"; else a += " (0%)";
+                if (planned !== 0) a+= " (" + Math.round((opl + nepr) / planned * 100).toFixed(0) +  "%)"; //else a += " (0%)";
                 a+= "<br/>";
                 a += "из них:<br/>";
                 a += "<span>&nbsp;</span><span>&nbsp;</span><span>&nbsp;</span><span>принято к оплате: " + opl;
-                if (planned !== 0) a+= " (" + Math.round(opl / planned * 100).toFixed(0) +  "%)</span>"; else a += " (0%)";
+                if (planned !== 0) a+= " (" + Math.round(opl / planned * 100).toFixed(0) +  "%)</span>"; //else a += " (0%)";
                 a+= "<br/>";
                 a += "<span>&nbsp;</span><span>&nbsp;</span><span>&nbsp;</span><span>не принято к оплате: " + parseInt(nepr);
-                if (planned !== 0) a+= " (" + Math.round(nepr / planned * 100).toFixed(0) +  "%)</span>"; else a += " (0%)";
+                if (planned !== 0) a+= " (" + Math.round(nepr / planned * 100).toFixed(0) +  "%)</span>"; //else a += " (0%)";
                 a+= "<br/>";
                 a += "<span>&nbsp;</span><br/>";
                 a += "Пребывает в стационаре: " + sta;
-                if (planned !== 0) a+= " (" + Math.round(sta / planned * 100).toFixed(0) + "%)"; else a += " (0%)";
+                if (planned !== 0) a+= " (" + Math.round(sta / planned * 100).toFixed(0) + "%)"; //else a += " (0%)";
                 a+= "<br/>";
                 a += "В очереди: " + och;
-                if (planned !== 0) a+= " (" + Math.round(och / planned * 100).toFixed(0) + "%)"; else a += " (0%)";
+                if (planned !== 0) a+= " (" + Math.round(och / planned * 100).toFixed(0) + "%)"; //else a += " (0%)";
                 a+= "<br/>";
                 a += "<span>&nbsp;</span><br/>";
                 a += "Проноз выполнения плана: " + (opl + nepr + sta + och);
                 if (planned !== 0) a+= " (" +  Math.round((opl + nepr + sta + och) / planned * 100).toFixed(0) + "%)"; else {
-                    if (_this.noPlanCats.indexOf(t.point.name) !== -1) a += "(100%)"; else a += " (0%)";
+                    //if (_this.noPlanCats.indexOf(t.point.name) !== -1) a += "(100%)"; else a += " (0%)";
                 }
                 return a;
             }
