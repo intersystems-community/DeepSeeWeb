@@ -91,7 +91,8 @@
                     col: (i * 2) % 12,
                     title: result.widgets[i].title,
                     toolbar: true,
-                    backButton: false
+                    backButton: false,
+                    menuDisabled: false
                 };
                 if (result.widgets[i].displayInfo) {
                     var tc = 1;
