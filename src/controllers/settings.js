@@ -33,6 +33,9 @@
         $scope.onCancelClick = onCancelClick;
         $scope.onLoadClick = onLoadClick;
 
+        $scope.onInit = function() {
+           $scope.editor.setText(Storage.getAddons());
+        };
         /**
          * Handler for "New view" button
          */
@@ -99,6 +102,8 @@
             if (old.isMetro     !== settings.isMetro)     shouldRefresh = true;
             if (old.hideFolders !== settings.hideFolders) shouldRefresh = true;
             if (old.showImages  !== settings.showImages)  shouldRefresh = true;
+
+            if ($scope.editor) Storage.setAddons($scope.editor.getText());
 
             Storage.setAppSettings(settings);
             Storage.saveCurrentSettings($scope.model.selectedSettings);
