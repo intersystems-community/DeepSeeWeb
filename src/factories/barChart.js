@@ -11,6 +11,8 @@
             this.setType('bar');
             if (this.desc.type.toLowerCase() === "barchartstacked") this.enableStacking();
 
+            //this.show
+
             this.requestData();
         }
 
