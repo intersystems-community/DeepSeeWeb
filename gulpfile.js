@@ -5,7 +5,12 @@ var gulp   = require('gulp'),
     concat = require('gulp-concat'),
     cssmin = require('gulp-cssmin'),
     templateCache = require('gulp-angular-templatecache'),
-    del = require('del');
+    del = require('del'),
+    zip = require('gulp-zip'),
+    bump = require('gulp-bump'),
+    replace = require('gulp-replace'),
+    release = require('gulp-github-release');
+
     // TODO: add html-min
     //jsdoc = require("gulp-jsdoc");
 
@@ -19,9 +24,10 @@ gulp.task('lint', function() {
 // Minify all project js files
 gulp.task('minify', function () {
     var assets = useref.assets();
-
+    var p = require('./package.json');
     return gulp.src('index.html')
         .pipe(assets)
+        .pipe(replace('"{{package.json.version}}"', '"' + p.version + '"'))
         .pipe(uglify())
         .pipe(assets.restore())
         .pipe(useref())
@@ -65,7 +71,38 @@ gulp.task('templates', function() {
 // Remove temporary files
 gulp.task('cleanup', ['concat-templates'], function() {
     del(["build/src/templates.js"]);
+    del(["build/*.zip"]);
 });
+
+// Creates zip with builded project
+gulp.task('zip', function() {
+    var p = require('./package.json');
+
+    return gulp.src('build/**/*')
+        .pipe(zip('DSW-' + p.version + '.zip'))
+        .pipe(gulp.dest('build'));
+});
+
+// Deploys release on github
+/*gulp.task('upload', ['zip'], function() {
+    var p = require('./package.json');
+    return gulp.src('./build/' + 'DSW-' + p.version + '.zip')
+    .pipe(release({
+        token: '',                     // or you can set an env var called GITHUB_TOKEN instead
+        owner: 'gnibeda',
+        name: 'DeepSeeWeb v' + p.version,
+        repo: 'publish-release',
+        tag: 'v'+p.version,
+        manifest: p
+    }));
+});*/
+
+gulp.task('makerelease', ['zip'], function() {
+    return gulp.src('./package.json')
+        //.pipe(bump())
+        .pipe(gulp.dest('./'));
+});
+
 
 /* Generate jsdoc
 gulp.task('jsdoc', function() {
