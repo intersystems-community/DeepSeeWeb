@@ -7,6 +7,8 @@
     function BaseChartFact(Lang, Utils, Connector, $timeout, CONST, Storage) {
 
         function BaseChart($scope) {
+            this.drillLevel          = 0;
+            this.drills              = [];
             this.storedData          = [];
             this.addSeries           = addSeries;
             this.setType             = setType;
@@ -20,6 +22,7 @@
             this.onDrilldownReceived = onDrilldownReceived;
             this.getDrillMDX         = getDrillMDX;
 
+
             var _this    = this;
             var firstRun = true;
             var settings = Storage.getAppSettings();
@@ -30,6 +33,17 @@
                 if (widgetsSettings[_this.desc.key].isLegend !== undefined)  $scope.item.isLegend = widgetsSettings[_this.desc.key].isLegend;
             }
             widgetsSettings = null;
+
+            // Remove NOW from filters
+            if ($scope.model.filters) for (var i = 0; i < $scope.model.filters.length; i++) {
+                var f = this.getFilter(i);
+                if (f.values) for (var k = 0; k < f.values.length; k++) {
+                    if (f.values[k].name.toUpperCase() === "СЕЙЧАС" || f.values[k].name.toUpperCase() === "NOW") {
+                        f.values.splice(k, 1);
+                        break;
+                    }
+                }
+            }
 
             $scope.item.isChart = true;
             $scope.item.displayAsPivot = displayAsPivot;
@@ -126,6 +140,9 @@
                 }
             }
 
+
+
+
             /**
              * Callback for point click. Used to do drilldown
              * @param {object} e Event
@@ -134,6 +151,8 @@
                 if (!e.point) return;
                 $scope.chartConfig.loading = true;
                 var mdx = _this.getDrillMDX(e.point.path);
+                _this.drillLevel++;
+                _this.drills.push(e.point.path);
                 _this.broadcastDependents(mdx);
                 Connector.execMDX(mdx).error(_this._onRequestError).success(_this.onDrilldownReceived);
             }
@@ -171,6 +190,8 @@
                 var data = _this.storedData.pop();
                 $scope.item.backButton = _this.storedData.length !== 0;
                 _this._retrieveData(data);
+                _this.drillLevel--;
+                _this.drills.pop();
             }
 
             /**
@@ -183,29 +204,35 @@
                 var p = path.substr(0, pos) + "Members";
 
                 var mdx = _this.getMDX();
-                mdx = mdx.replace(p, path + ".Children");
 
-                //var pos = str.indexOf(" ON 0,");
-                //if (pos == -1) pos = 1;
-                //var row = str.substring(pos + 6, str.indexOf(" ON 1"));
-                /*if (widget) {
+                // Remove all functions
+                // TODO: dont replace %Label
+                var match = mdx.match(/ON 0,(.*)ON 1/);
+                if (match.length === 2) {
+                    var str = match[1];
+                    var isNonEmpty = str.indexOf("NON EMPTY") !== -1;
+                    mdx = mdx.replace(str, (isNonEmpty ? "NON EMPTY " : " ") + p + " ");
+                }
+
+                var customDrill = "";
+                if (_this.pivotData) {
                     var drilldownSpec = "";
-                    if (widget.pivotData) if (widget.pivotData.rowAxisOptions) if (widget.pivotData.rowAxisOptions.drilldownSpec) drilldownSpec = widget.pivotData.rowAxisOptions.drilldownSpec;
+                    if (_this.pivotData.rowAxisOptions) if (_this.pivotData.rowAxisOptions.drilldownSpec) drilldownSpec = _this.pivotData.rowAxisOptions.drilldownSpec;
                     if (drilldownSpec) {
                         var drills = drilldownSpec.split("^");
-                        if (drills.length != 0) {
-                            if (drills[widget.drillLevel]) customDrill = drills[widget.drillLevel];
-                            for (var i = 0; i < widget.drills.length; i++) {
-                                if (drills[i]) str += " %Filter " + widget.drills[i];
+                        if (drills.length !== 0) {
+                            if (drills[_this.drillLevel]) customDrill = drills[_this.drillLevel];
+                            for (var i = 0; i < _this.drills.length; i++) {
+                                if (drills[i]) mdx += " %Filter " + _this.drills[i];
                             }
                         }
                     }
                 }
                 if (customDrill) {
-                    str = str.replace(row, customDrill);
-                    str += " %Filter " + path;
-                } else*/
-                //str = str.replace(row, path + ".Children");
+                    mdx = mdx.replace(p, customDrill);
+                } else
+                    mdx = mdx.replace(p, path + ".Children");
+
                 mdx = mdx + " %FILTER " + path;
                 return mdx;
             }
@@ -261,6 +288,8 @@
              * Requests chart data
              */
             function reqestData() {
+                _this.drillLevel = 0;
+                _this.drills = [];
                 $scope.chartConfig.loading = true;
                 _this.baseRequestData();
             }
