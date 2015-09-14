@@ -27,6 +27,8 @@
         this.setTilesSettings    = setTilesSettings;
         this.removeTilesSettings = removeTilesSettings;
         this.getAllSettings      = getAllSettings;
+        this.setAddons           = setAddons;
+        this.getAddons           = getAddons;
 
 
         /**
@@ -133,6 +135,15 @@
         function setAppSettings(settings) {
             _this.temp.app = settings;
             localStorage.userSettings = JSON.stringify(_this.temp);
+        }
+
+        function setAddons(addons) {
+            _this.temp.addons = addons;
+            localStorage.userSettings = JSON.stringify(_this.temp);
+        }
+
+        function getAddons() {
+            return _this.temp.addons || {};
         }
 
         /**
