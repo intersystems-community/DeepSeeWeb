@@ -9,7 +9,7 @@
     angular.module('templates', []);
     angular.module('utils', []);
 
-    angular.module('app', ['ngRoute', 'ngCookies', 'cgNotify', 'gridster', 'highcharts-ng', 'ng-context-menu', 'ngDialog', 'utils', 'dashboard', 'widgets', 'templates'])
+    angular.module('app', ['oc.lazyLoad', 'ngRoute', 'ngCookies', 'cgNotify', 'gridster', 'highcharts-ng', 'ng-context-menu', 'ngDialog', 'utils', 'dashboard', 'widgets', 'templates'])
 
     .constant('CONST', {
         css: {
@@ -25,7 +25,7 @@
             "\uf02d", "\uf073", "\uf0ac", "\uf005", "\uf071", "\uf05a",
             "\uf104"],
         timeout: 60000,
-        ver: "1.2.23",
+        ver: "{{package.json.version}}",
         emptyWidgetClass: "MDX2JSON.EmptyPortlet".toLowerCase()
     })
 
@@ -34,17 +34,17 @@
             .when('/', {
                 templateUrl: 'src/views/home.html',
                 controller: 'home',
-                resolve: { config: ['Connector', '$q', 'Storage', '$rootScope', '$route', configResolver] }
+                resolve: { config: ['Connector', '$q', 'Storage', '$rootScope', '$route', '$ocLazyLoad', configResolver] }
             })
             .when('/d/:path*', {
                 templateUrl: 'src/views/dashboard.html',
                 controller: 'dashboard',
-                resolve: { config: ['Connector', '$q', 'Storage', '$rootScope', '$route', configResolver] }
+                resolve: { config: ['Connector', '$q', 'Storage', '$rootScope', '$route', '$ocLazyLoad', configResolver] }
             })
             .when('/f/:folder*', {
                 templateUrl: 'src/views/home.html',
                 controller: 'home',
-                resolve: { config: ['Connector', '$q', 'Storage', '$rootScope', '$route', configResolver] }
+                resolve: { config: ['Connector', '$q', 'Storage', '$rootScope', '$route', '$ocLazyLoad', configResolver] }
             })
             .when('/login', {
                 templateUrl: 'src/views/login.html',
@@ -56,6 +56,60 @@
     .run(['gridsterConfig', 'Lang', 'CONST', 'Connector', '$route', start]);
 
 
+    function loadjscssfile(filename, filetype, callback){
+        var fileref;
+        if (filetype=="js"){ //if filename is a external JavaScript file
+            fileref=document.createElement('script');
+            fileref.setAttribute("type","text/javascript");
+            fileref.setAttribute("src", filename);
+        }
+        else if (filetype=="css"){ //if filename is an external CSS file
+            fileref=document.createElement("link");
+            fileref.setAttribute("rel", "stylesheet");
+            fileref.setAttribute("type", "text/css");
+            fileref.setAttribute("href", filename);
+        }
+        if (typeof fileref!="undefined") {
+            fileref.onload = callback;
+            document.getElementsByTagName("head")[0].appendChild(fileref, 0);
+        }
+    }
+
+    function loadAddons(deffered, Storage, $q, $ocLazyLoad) {
+        var addons;
+        try {
+            addons = JSON.parse(Storage.getAddons() || "{}");
+        }
+        catch (e) { }
+        if (!addons || !addons.widgets || addons.widgets.length === 0) {
+            deffered.resolve();
+            return;
+        }
+        var defers = [];
+        for (var i = 0; i < addons.widgets.length; i++) {
+            var url = addons.widgets[i].url;
+            if (url) {
+                var defer = $q.defer();
+                defers.push(defer.promise);
+
+                $ocLazyLoad.load(url).then((function(d){
+                    return function() {
+                        d.resolve();
+                    };
+                })(defer));
+
+                /*loadjscssfile(url, "js", (function(d){
+                    return function() {
+                        d.resolve();
+                    }
+                })(defer));*/
+            }
+        }
+        if (defers.length === 0) deffered.resolve(); else {
+            $q.all(defers).then(function() { deffered.resolve(); });
+        }
+    }
+
     /**
      * Loads config before route changed
      * @param {object} Connector Connector service
@@ -63,7 +117,7 @@
      * @param {object} Storage Storage service
      * @returns {IPromise<T>}
      */
-    function configResolver(Connector, $q, Storage, $rootScope, $route) {
+    function configResolver(Connector, $q, Storage, $rootScope, $route, $ocLazyLoad) {
         var deffered = $q.defer();
         if (Storage.configLoaded) {
             $rootScope.$broadcast('toggleMenu', true);
@@ -73,7 +127,9 @@
         Connector.loadConfig($route.current.params.ns).success(function(result) {
             $rootScope.$broadcast('toggleMenu', true);
             Storage.loadConfig(result);
-            deffered.resolve();
+
+            loadAddons(deffered, Storage, $q, $ocLazyLoad);
+
         }).error(function(result) {
             deffered.resolve();
         });
