@@ -34,17 +34,6 @@
             }
             widgetsSettings = null;
 
-            // Remove NOW from filters
-            if ($scope.model.filters) for (var i = 0; i < $scope.model.filters.length; i++) {
-                var f = this.getFilter(i);
-                if (f.values) for (var k = 0; k < f.values.length; k++) {
-                    if (f.values[k].name.toUpperCase() === "СЕЙЧАС" || f.values[k].name.toUpperCase() === "NOW") {
-                        f.values.splice(k, 1);
-                        break;
-                    }
-                }
-            }
-
             $scope.item.isChart = true;
             $scope.item.displayAsPivot = displayAsPivot;
             $scope.item.toggleLegend = toggleLegend;
@@ -204,6 +193,11 @@
                 var p = path.substr(0, pos) + "Members";
 
                 var mdx = _this.getMDX();
+
+                if (path === "") {
+                    mdx = mdx.replace(" ON 1 FROM", " .children ON 1 FROM");
+                    return mdx;
+                }
 
                 // Remove all functions
                 // TODO: dont replace %Label
