@@ -23,6 +23,19 @@
             var titles           = [];
             $scope.item.drillUp  = onDrillup;
 
+
+            // Remove NOW from filters
+            // TODO: check this
+            if ($scope.model.filters) for (var i = 0; i < $scope.model.filters.length; i++) {
+                var f = this.getFilter(i);
+                if (f.values) for (var k = 0; k < f.values.length; k++) {
+                    if (f.values[k].name && (f.values[k].name.toUpperCase() === "СЕЙЧАС" || f.values[k].name.toUpperCase() === "NOW")) {
+                        f.values.splice(k, 1);
+                        break;
+                    }
+                }
+            }
+
             this.setType('bar');
             this.enableStacking();
             var ex = {
@@ -122,6 +135,7 @@
                     }
                 }
                 if (customDrill) {
+                    if (customDrill.indexOf(',%LABEL([podrReal].[All podrReal],"ИТОГО","")') === -1) customDrill = "{" + customDrill + ',%LABEL([podrReal].[All podrReal],"ИТОГО","")}';
                     var match = mdx.match(/ON 0,(.*)ON 1/);
                     if (match.length === 2) {
                         var str = match[1];
@@ -133,6 +147,9 @@
                 } else
                     mdx = mdx.replace(p, path + ".Children");
                 mdx = mdx + " %FILTER " + path;
+
+                console.log(mdx);
+
                 return mdx;
             }
 
