@@ -119,14 +119,19 @@
                 /* jshint ignore:start */
                 var t = this;
                 /* jshint ignore:end */
+
+                var date = new Date(t.x);
+                var dateStr = date.toLocaleDateString();
+                if (date.toLocaleTimeString() !== "0:00:00") dateStr += " " + date.toLocaleTimeString();
+
                 if (t.series) {
                     fmt = t.series.options.format;
                     val = t.y;
                     if (fmt) val = numeral(val).format(fmt);
-                    a = '<span style="color:' + t.series.color + '">\u25CF</span>' + t.series.name + ':<b> ' + val;
+                    a = '<b>' + dateStr + '</b><br><span style="color:' + t.series.color + '">\u25CF</span>' + t.series.name + ':<b> ' + val;
                     return a;
                 } else {
-                    a = "";
+                    a = '<b>' + dateStr + '</b><br>';
                     for (var i = t.points.length - 1; i > -1; i--) {
                         fmt = t.points[i].series.options.format;
                         val = t.points[i].y;
