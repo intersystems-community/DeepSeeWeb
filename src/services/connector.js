@@ -15,6 +15,7 @@
         this.getWidgets = getWidgets;
         this.signIn = signIn;
         this.signOut = signOut;
+        this.getFile = getFile;
         this.getNamespace = getNamespace;
         this.getFavorites = getFavorites;
         this.addFavorite = addFavorite;
@@ -135,6 +136,19 @@
                     Search: searchStr
                 },
                 url: _this.url + 'Filters?Namespace=' + getNamespace(),
+                withCredentials: true
+            });
+        }
+
+        /**
+         * Loads file
+         * @returns {object} $http promise
+         */
+        function getFile(url) {
+            return $http({
+                method: 'GET',
+                data: {},
+                url: url,
                 withCredentials: true
             });
         }
