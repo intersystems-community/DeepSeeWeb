@@ -103,6 +103,10 @@
             map: {
                 class: MapWidget,
                 type: "map"
+            },
+            "deepsee.enhancedmapportlet": {
+                class: MapWidget,
+                type: "map"
             }
         };
 
