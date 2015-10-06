@@ -5,7 +5,7 @@
 (function(){
     'use strict';
 
-    function MenuCtrl($scope, $routeParams, Connector, $window, $rootScope, $location, CONST, ngDialog) {
+    function MenuCtrl($scope, $routeParams, Connector, $window, $rootScope, $location, CONST, ngDialog, Lang) {
         var _this = this;
         this.favs = [];
         loadFav();
@@ -24,7 +24,9 @@
             title: $routeParams.folder,
             //isMetro: localStorage.isMetro === "true" || false,
             //showImages: CONST.showImages,
-            devMode: localStorage.connectorRedirect
+            devMode: localStorage.connectorRedirect,
+            btnHome: Lang.get("home"),
+            lblSearch: Lang.get("search")
         };
         $scope.search = search;
         $scope.gotoDeepSee = gotoDeepSee;
@@ -39,6 +41,11 @@
         $rootScope.$on('menu:changeTitle', changeTitle);
         $scope.$on('$routeChangeSuccess', onRouteChange);
 
+
+        $rootScope.$on('lang:changed', function() {
+            $scope.model.btnHome = Lang.get("home");
+            $scope.model.lblSearch = Lang.get("search");
+        });
         /**
          * Toggles loading indicator
          */
@@ -217,6 +224,6 @@
     }
 
     angular.module('app')
-        .controller('menu', ['$scope', '$routeParams', 'Connector', '$window', '$rootScope', '$location', 'CONST', 'ngDialog', MenuCtrl] );
+        .controller('menu', ['$scope', '$routeParams', 'Connector', '$window', '$rootScope', '$location', 'CONST', 'ngDialog', 'Lang', MenuCtrl] );
 
 })();
