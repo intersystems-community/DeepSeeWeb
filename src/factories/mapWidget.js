@@ -39,7 +39,7 @@
                 fileName = fn.join(".");*/
 
                 var url = "/csp/" + Connector.getNamespace() + "/" + fileName;
-
+                if (localStorage.connectorRedirect) url="sampolygons.js";
                 Connector.getFile(url).success(onPolyFileLoaded);
             }
 
@@ -98,6 +98,9 @@
                 var count = 0;
 
                 for (var p in polys) {
+
+                    var item = _this.mapData.Cols[1].tuples.filter(function(el) { return el.caption === p; });
+                    if (item.length === 0) continue;
 
                     var parts = polys[p].split(';');
                     var poly = [];
@@ -437,6 +440,7 @@
                     if (feature.getGeometry().getType().toLowerCase() === "polygon") {
                         var key = feature.get("key");
                         console.log(key);
+
 
                         $scope.model.tooltip.items = getTooltipData(key);
                         $scope.model.tooltip.name = key;
