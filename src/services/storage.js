@@ -76,7 +76,7 @@
                 }
 
                 Lang.current = settings.language || "en";
-
+                $rootScope.$broadcast('lang:changed');
 
                 // Listened in menu.js
                 //$rootScope.$broadcast('menu:toggleLoading', false);
