@@ -135,7 +135,7 @@
                     }
                 }
                 if (customDrill) {
-                    if (customDrill.indexOf(',%LABEL([podrReal].[All podrReal],"ИТОГО","")') === -1) customDrill = "{" + customDrill + ',%LABEL([podrReal].[All podrReal],"ИТОГО","")}';
+                    if (customDrill.indexOf('"ИТОГО"') === -1) customDrill = "{" + customDrill + ',%LABEL([podrReal].[All podrReal],"ИТОГО","")}';
                     var match = mdx.match(/ON 0,(.*)ON 1/);
                     if (match.length === 2) {
                         var str = match[1];
