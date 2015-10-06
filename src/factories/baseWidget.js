@@ -203,7 +203,7 @@
                     if (flt.value !== "" && !flt.isInterval) {
                         var bracket = "{";
                         if (flt.isExclude) bracket = "(";
-                        var values = flt.value.split(",");
+                        var values = flt.value.split("|");
                         path = flt.targetProperty;
                         if (flt.isExclude)
                             mdx += " %FILTER " + bracket;

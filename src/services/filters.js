@@ -100,7 +100,7 @@
             for (i = 0; i < flt.values.length; i++) {
                 if (flt.values[i].checked) {
                     disp += flt.values[i].name + ",";
-                    val += flt.values[i].path + ",";
+                    val += flt.values[i].path + "|";
                 }
             }
             if (disp !== "") disp = disp.substr(0, disp.length - 1);
