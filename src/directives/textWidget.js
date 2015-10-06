@@ -1,4 +1,4 @@
-/**
+    /**
  * Directives for text widget
  */
 (function() {

@@ -14,7 +14,7 @@
                 template: function(element, attrs) {
                     return "<div ng-show='model.tooltip.visible'><div class='panel panel-default map-tooltip'>" +
                                "<div style='text-align: center;'><strong>{{model.tooltip.name}}</strong></div>" +
-                               "<div ng-repeat='item in model.tooltip.items'>{{item.label}}: {{item.value}}</div>" +
+                               "<div ng-repeat='item in model.tooltip.items'>{{item.label}} {{item.value}}</div>" +
                            "</div>"+
                            "<div class='arrow_box'></div></div>";
                 },
