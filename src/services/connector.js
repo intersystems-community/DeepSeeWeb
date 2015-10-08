@@ -16,6 +16,7 @@
         this.signIn = signIn;
         this.signOut = signOut;
         this.getFile = getFile;
+        this.getTermList = getTermList;
         this.getNamespace = getNamespace;
         this.getFavorites = getFavorites;
         this.addFavorite = addFavorite;
@@ -62,11 +63,31 @@
             });
         }
 
-        function getPivotData(dataSourceName) {
+        /**
+         * Request pivot data
+         * @param {string} name Name of pivot
+         * @returns {object} $http promise
+         */
+        function getPivotData(name) {
             return $http({
                 method: 'POST',
                 url: _this.url + 'DataSource?Namespace=' + getNamespace(),
-                data: {DataSource: dataSourceName},
+                data: {DataSource: name},
+                timeout: CONST.timeout,
+                withCredentials: true
+            });
+        }
+
+        /**
+         * Request pivot data
+         * @param {string} name Name of pivot
+         * @returns {object} $http promise
+         */
+        function getTermList(name) {
+            return $http({
+                method: 'POST',
+                url: _this.url + 'TermList?Namespace=' + getNamespace(),
+                data: {TermList: name},
                 timeout: CONST.timeout,
                 withCredentials: true
             });
