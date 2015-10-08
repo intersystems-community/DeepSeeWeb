@@ -8,7 +8,7 @@
                     </div>
                     <div class="widget-title-btn" ng-show="item.isChart" ng-click="item.displayAsPivot()" ng-class="item.pivotMdx ? 'active' : ''" title="{{'showPivot' | lang}}"><i class="fa fa-table"></i></div>
                     <div class="widget-title-btn" ng-show="item.isChart" ng-click="item.toggleLegend()" ng-class="item.isLegend ? '' : 'notActive'" title="{{'showLegend' | lang}}"><i class="fa fa-info"></i></div>
-                    <div class="widget-title-drag"><span>{{item.title}}</span></div>
+                    <div class="widget-title-drag"><span>{{item.title}} {{item.toolbar}}</span></div>
                 </div>
                 <div class="widget" ng-controller="widget">
                     <div class="widget-toolbar" ng-show="item.toolbar" ng-include="item.toolbarView"></div>

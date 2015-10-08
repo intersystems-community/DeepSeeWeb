@@ -8,6 +8,7 @@
 
         function BaseWidget($scope) {
             var _this = this;
+            this.desc = $scope.getDesc($scope.item.idx);
             var firstRun = true;
             this.supported = true;
             if ($scope.tile) {
@@ -15,9 +16,17 @@
                 Utils.merge($scope.item, $scope.tile);
             }
 
-            this.desc = $scope.getDesc($scope.item.idx);
+            // Setup for datasource choser
+            $scope.item.dsItems = [];
+            $scope.item.dsLabel = "";
+            $scope.item.dsSelected = Utils.removeExt(_this.desc.dataSource.split("/").pop());
+            $scope.onDataSourceChange = onDataSourceChange;
+
+            this.customRowSpec = "";
+            this.customDataSource = "";
             this.pivotData = null;
             this.linkedMdx = "";
+            this.hasDatasourceChoser = false;
             this._onRequestError = onRequestError;
             this._retrieveData = function(){};
             this._retriveDataSource = onDataSourceReceived;
@@ -62,8 +71,72 @@
             if (this.isLinked()) $scope.$on("setLinkedMDX:" + _this.desc.key, onSetLinkedMdx);
             if (this.hasDependents()) $scope.$on("widget:" + _this.desc.key + ":refreshDependents", onRefreshDependents);
 
-
+            setupChoseDataSource();
             requestPivotData();
+
+
+            function changeDataSource(pivot) {
+                if (pivot)
+                    _this.customDataSource = pivot;
+                else
+                    _this.customDataSource = "";
+                requestPivotData();
+            }
+
+            function changeRowSpec(path) {
+                console.log(path);
+                if (!path) _this.customRowSpec = ""; else _this.customRowSpec = path;
+                _this.requestData();
+            }
+
+            function onDataSourceChange(item) {
+                var sel, val, idx;
+                sel = $scope.item.dsSelected;
+                if (sel) {
+                    idx = item.labels.indexOf(sel);
+                    if (idx !== -1) val = item.values[idx];
+                }
+                switch (item.action) {
+                    case 'chooseDataSource': changeDataSource(val); break;
+                    case 'chooseRowSpec': changeRowSpec(val); break;
+                }
+            }
+            /**
+             * Will setup datasource choser. If widget has control chooseDataSource
+             */
+            function setupChoseDataSource() {
+                function getSetter(item) {
+                    return function(data) {
+                        if (data.data && typeof data.data === "object") {
+                            item.labels = [];
+                            item.values = [];
+                            for (var k in data.data) {
+                                item.labels.push(k);
+                                item.values.push(data.data[k]);
+                            }
+                        }
+                    }
+                }
+
+                var chosers = _this.desc.controls.filter(function(el) { return el.action === 'chooseDataSource' || el.action === 'chooseRowSpec'; });
+                if (chosers.length === 0) return;
+                _this.hasDatasourceChoser = true;
+                $scope.item.dsItems = [];
+                for (var i = 0; i < chosers.length; i++) {
+                    var prop = chosers[i].targetProperty;
+                    if (!prop) continue;
+                    var a = prop.split(".");
+                    a.pop();
+                    prop = a.join(".");
+                    var item = {
+                        action: chosers[i].action,
+                        label: chosers[i].label || Lang.get("dataSource")
+                    };
+                    $scope.item.dsItems.push(item);
+                    Connector.getTermList(prop).then(getSetter(item));
+                }
+                showToolbar();
+            }
 
             /**
              * Callback for $on(":refreshDependents"). Sends refresh broadcast to all dependent widgets
@@ -111,11 +184,15 @@
             }
 
             function requestPivotData() {
-                if (_this.desc.dataSource) Connector.getPivotData(_this.desc.dataSource).error(_this._onRequestError).success(_this._retriveDataSource);
+                var ds = _this.customDataSource || _this.desc.dataSource;
+                if (ds) Connector.getPivotData(ds).error(_this._onRequestError).success(_this._retriveDataSource);
             }
 
             function onDataSourceReceived(data) {
                 _this.pivotData = data;
+                if (_this.customDataSource) {
+
+                }
             }
 
             /**
@@ -180,7 +257,16 @@
                         break;
                     }
                 }
-                var mdx = /*useBasic == true ? _this.desc.basemdx :*/ _this.desc.mdx;
+                var mdx = _this.desc.mdx;
+
+                if (_this.customRowSpec) {
+                    var match = mdx.match(/ON 0,(.*)ON 1/);
+                    if (match.length === 2) {
+                        var str = match[1];
+                        var isNonEmpty = str.indexOf("NON EMPTY") !== -1;
+                        mdx = mdx.replace(str, (isNonEmpty ? "NON EMPTY " : " ") + _this.customRowSpec + " ");
+                    }
+                }
 
                 // Don't use filters in widgets placed on tiles
                 // TODO: fix this

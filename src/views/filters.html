@@ -1,3 +1,7 @@
+<span ng-repeat="choser in item.dsItems" class="pull-left flt-holder">
+    <label>{{choser.label}}</label>
+    <select class="form-control input-sm" ng-model="item.dsSelected" ng-options="el for el in choser.labels" ng-change="onDataSourceChange(choser)"></select>
+</span>
 <span ng-repeat="flt in model.filters" class="pull-left flt-holder">
     <label>{{flt.label}}</label>
     <div class="input-group">
