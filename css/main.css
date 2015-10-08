@@ -627,3 +627,9 @@ body::-webkit-scrollbar {
 .settings-tabbar {
     margin-bottom: 16px;
 }
+
+select.input-sm {
+    height: 20px; !important;
+    padding: 0px;
+    margin-top: -4px;
+}
