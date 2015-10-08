@@ -341,6 +341,22 @@
              * @param {object} data Series data
              */
             function addSeries(data) {
+
+                if (data && data.data && data.data.length !== 0) {
+                    var isEmpty = true;
+                    var exists = false;
+                    for (var i = 0; i < data.data.length; i++) {
+                        var v = data.data[i];
+                        if (typeof v !== "object") continue;
+                        if (v instanceof Array) continue;
+                        exists = true;
+                        if (v.y !== 0 && v.y !== "" && v.y !== null && v.y !== undefined) {
+                            isEmpty = false;
+                            break;
+                        }
+                    }
+                    if (isEmpty && exists) data.showInLegend = false;
+                }
                 var cols = Highcharts.getOptions().colors;
                 data.color = cols[$scope.chartConfig.series.length % cols.length];
                 //if (!data.id) data.id = $scope.chartConfig.series.length + 1;
