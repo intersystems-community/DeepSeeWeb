@@ -7,6 +7,21 @@
     function UtilsSvc() {
         var _this = this;
         this.merge = mergeRecursive;
+        this.removeExt = removeExt;
+        this.replaceFilename = replaceFilename;
+
+        function removeExt(fileName) {
+            var a = fileName.split(".");
+            if (a.length === 1) return fileName;
+            a.pop();
+            return a.join(".");
+        }
+
+        function replaceFilename(oldName, newName) {
+            var a = oldName.split("/");
+            a[a.length - 1] = newName;
+            return a.join("/");
+        }
 
         /**
          * Merger all object properties to another
