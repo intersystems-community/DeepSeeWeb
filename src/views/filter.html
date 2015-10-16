@@ -43,8 +43,9 @@
     <table class="table table-striped table-hover table-small">
         <tbody>
             <tr ng-repeat="v in model.values">
-                <td style="width:24px;padding-left: 6px"><input type="checkbox" ng-model="v.checked" ng-click="onItemSelect()"></td>
-                <td ng-click="toggleRow(v)" ng-class="v.default ? 'bold' : ''">{{v.name}}</td>
+                <td style="width:24px;padding-left:6px;vertical-align: inherit;"><input type="checkbox" ng-model="v.checked" ng-click="onItemSelect()"></td>
+                <td ng-click="toggleRow(v)" ng-class="v.default ? 'bold' : ''">{{v.name}}<div class="flt-item-desc" ng-if="v.info">{{v.info}}</div></td>
+
             </tr>
         </tbody>
     </table>
