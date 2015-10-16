@@ -274,7 +274,14 @@
             _this.username = "";
             localStorage.userName = "";
 
-            $location.path("/login").search({});
+            return $http({
+                method: 'Get',
+                data: {},
+                url: _this.url + 'Logout?Namespace=' + getNamespace(),
+                withCredentials: true
+            }).then(function() {
+                $location.path("/login").search({});
+            });
         }
     }
 
