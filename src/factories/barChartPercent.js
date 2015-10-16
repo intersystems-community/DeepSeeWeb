@@ -142,10 +142,17 @@
                         var isNonEmpty = str.indexOf("NON EMPTY") !== -1;
                         mdx = mdx.replace(str, (isNonEmpty ? "NON EMPTY " : " ") + p + " ");
                     }
-
                     mdx = mdx.replace(p, customDrill);
-                } else
-                    mdx = mdx.replace(p, path + ".Children");
+                } else {
+                    if (mdx.indexOf(p) === -1) {
+                        match =  mdx.match(/SELECT(.*)ON 1/);
+                        if (match && match.length === 2) {
+                            var str = match[1];
+                            var isNonEmpty = str.indexOf("NON EMPTY") !== -1;
+                            mdx = mdx.replace(str, (isNonEmpty ? " NON EMPTY " : " ") + path + ".Children" + " ");
+                        }
+                    } else mdx = mdx.replace(p, path + ".Children");
+                }
                 mdx = mdx + " %FILTER " + path;
 
                 console.log(mdx);
