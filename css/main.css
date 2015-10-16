@@ -633,3 +633,7 @@ select.input-sm {
     padding: 0px;
     margin-top: -4px;
 }
+
+.flt-item-desc {
+    font-size: 12px;
+}
