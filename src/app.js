@@ -96,6 +96,10 @@
                     return function() {
                         d.resolve();
                     };
+                })(defer)).catch((function(d){
+                    return function() {
+                        d.resolve();
+                    };
                 })(defer));
 
                 /*loadjscssfile(url, "js", (function(d){
