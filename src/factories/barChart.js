@@ -4,14 +4,12 @@
 (function() {
     'use strict';
 
-    function BarChartFact(BaseChart) {
+    function BarChartFact(BaseChart, Utils) {
 
         function BarChart($scope) {
             BaseChart.apply(this, [$scope]);
             this.setType('bar');
             if (this.desc.type.toLowerCase() === "barchartstacked") this.enableStacking();
-
-            //this.show
 
             this.requestData();
         }
