@@ -9,6 +9,7 @@
         function BaseChart($scope) {
             this.drillLevel          = 0;
             this.drills              = [];
+            this.drillNames          = [];
             this.storedData          = [];
             this.addSeries           = addSeries;
             this.setType             = setType;
@@ -21,13 +22,15 @@
             this._retrieveData       = retrieveData;
             this.onDrilldownReceived = onDrilldownReceived;
             this.getDrillMDX         = getDrillMDX;
-
+            this.formatNumber        = formatNumber;
+            this.dataInfo            = null;
 
             var _this    = this;
             var firstRun = true;
             var settings = Storage.getAppSettings();
 
             $scope.item.isLegend = true;
+            $scope.item.currentDrill = "";
             var widgetsSettings = Storage.getWidgetsSettings();
             if (widgetsSettings[_this.desc.key]) {
                 if (widgetsSettings[_this.desc.key].isLegend !== undefined)  $scope.item.isLegend = widgetsSettings[_this.desc.key].isLegend;
@@ -142,7 +145,18 @@
                 var mdx = _this.getDrillMDX(e.point.path);
                 _this.drillLevel++;
                 _this.drills.push(e.point.path);
+
                 _this.broadcastDependents(mdx);
+
+               /* var parts = e.point.path.split(".");
+                parts.pop();
+                var cur = parts.pop();
+                if (cur) {
+                    cur = cur.replace("[", "").replace("]","")
+                }
+                if (!cur) cur = e.point.name;
+                $scope.item.currentDrill = ", " + cur;
+                _this.drillNames.push(cur);*/
                 Connector.execMDX(mdx).error(_this._onRequestError).success(_this.onDrilldownReceived);
             }
 
@@ -181,6 +195,9 @@
                 _this._retrieveData(data);
                 _this.drillLevel--;
                 _this.drills.pop();
+                /*_this.drillNames.pop();
+                var cd = _this.drillNames.pop();
+                if (cd) $scope.item.currentDrill = ", " + cd; else $scope.item.currentDrill = "";*/
             }
 
             /**
@@ -202,7 +219,7 @@
                 // Remove all functions
                 // TODO: dont replace %Label
                 var match = mdx.match(/ON 0,(.*)ON 1/);
-                if (match.length === 2) {
+                if (match && match.length === 2) {
                     var str = match[1];
                     var isNonEmpty = str.indexOf("NON EMPTY") !== -1;
                     mdx = mdx.replace(str, (isNonEmpty ? "NON EMPTY " : " ") + p + " ");
@@ -224,8 +241,16 @@
                 }
                 if (customDrill) {
                     mdx = mdx.replace(p, customDrill);
-                } else
-                    mdx = mdx.replace(p, path + ".Children");
+                } else {
+                    if (mdx.indexOf(p) === -1) {
+                        match =  mdx.match(/SELECT(.*)ON 1/);
+                        if (match && match.length === 2) {
+                            var str = match[1];
+                            var isNonEmpty = str.indexOf("NON EMPTY") !== -1;
+                            mdx = mdx.replace(str, (isNonEmpty ? " NON EMPTY " : " ") + path + ".Children" + " ");
+                        }
+                    } else mdx = mdx.replace(p, path + ".Children");
+                }
 
                 mdx = mdx + " %FILTER " + path;
                 return mdx;
@@ -262,6 +287,15 @@
                 }
             }
 
+            function formatNumber(v, format) {
+                var res = numeral(v).format(format.replace(/;/g, ""));
+                if (_this.dataInfo) {
+                    res = res.replace(/,/g, _this.dataInfo.numericGroupSeparator)
+                             .replace(/\./g, _this.dataInfo.decimalSeparator);
+                }
+                return res;
+            }
+
             /**
              * Default formatter for chart values
              * @returns {string} Formatted value
@@ -272,7 +306,7 @@
                 /* jshint ignore:end */
                 var fmt = t.series.options.format;
                 var val = t.y;
-                if (fmt) val = numeral(val).format(fmt.replace(/;/g, ""));
+                if (fmt) val = _this.formatNumber(val, fmt);
                 var a = t.point.name + '<br>' + t.series.name + ': <b>' + val + "</b><br>";
                 if (t.point.percentage) a += parseFloat(t.point.percentage).toFixed(2).toString() + "%";
                 return a;
@@ -416,6 +450,7 @@
             function parseMultivalueData(d) {
                 var data = d;
                 var i;
+                if (d && d.Info) _this.dataInfo = d.Info;
                 $scope.chartConfig.yAxis.min = getMinValue(data.Data);
                 $scope.chartConfig.series = [];
                 $scope.chartConfig.xAxis.categories = [];
@@ -447,7 +482,7 @@
                             _this.addSeries({
                                 data: tempData,
                                 name: data.Cols[0].tuples[t].caption + "/" + data.Cols[0].tuples[t].children[c].caption,
-                                format: data.Cols[0].tuples[t].children[c].format
+                                format: data.Cols[0].tuples[t].children[c].format || getFormat(data)
                             });
                         }
                     }
@@ -494,10 +529,15 @@
                         _this.addSeries({
                             data: tempData,
                             name: name,
-                            format: format
+                            format: format || getFormat(data)
                         });
                     }
                 }
+            }
+
+            function getFormat(data) {
+                if (!data.Info) return "";
+                return
             }
 
             /**
