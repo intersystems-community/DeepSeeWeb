@@ -19,7 +19,8 @@
             // Setup for datasource choser
             $scope.item.dsItems = [];
             $scope.item.dsLabel = "";
-            $scope.item.dsSelected = Utils.removeExt(_this.desc.dataSource.split("/").pop());
+            $scope.item.dsSelected = "";
+            if (_this.desc.dataSource) $scope.item.dsSelected = Utils.removeExt(_this.desc.dataSource.split("/").pop());
             $scope.onDataSourceChange = onDataSourceChange;
 
             this.customRowSpec = "";
@@ -118,6 +119,7 @@
                     }
                 }
 
+                if (!_this.desc.controls || _this.desc.controls.length === 0) return;
                 var chosers = _this.desc.controls.filter(function(el) { return el.action === 'chooseDataSource' || el.action === 'chooseRowSpec'; });
                 if (chosers.length === 0) return;
                 _this.hasDatasourceChoser = true;
@@ -191,7 +193,8 @@
             function onDataSourceReceived(data) {
                 _this.pivotData = data;
                 if (_this.customDataSource) {
-
+                    _this.desc.mdx = data.mdx;
+                    _this.requestData();
                 }
             }
 
