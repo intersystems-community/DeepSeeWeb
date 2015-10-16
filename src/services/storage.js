@@ -143,7 +143,7 @@
         }
 
         function getAddons() {
-            return _this.temp.addons || {};
+            return localStorage.devAddons || _this.temp.addons || {};
         }
 
         /**
