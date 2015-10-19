@@ -8,19 +8,20 @@
 
         function BaseWidget($scope) {
             var _this = this;
-            this.desc = $scope.getDesc($scope.item.idx);
-            var firstRun = true;
-            this.supported = true;
             if ($scope.tile) {
                 $scope.item = {};
                 Utils.merge($scope.item, $scope.tile);
             }
+            if ($scope.item) this.desc = $scope.getDesc($scope.item.idx);
+            var firstRun = true;
+            this.supported = true;
+
 
             // Setup for datasource choser
             $scope.item.dsItems = [];
             $scope.item.dsLabel = "";
             $scope.item.dsSelected = "";
-            if (_this.desc.dataSource) $scope.item.dsSelected = Utils.removeExt(_this.desc.dataSource.split("/").pop());
+            if (_this.desc && _this.desc.dataSource) $scope.item.dsSelected = Utils.removeExt(_this.desc.dataSource.split("/").pop());
             $scope.onDataSourceChange = onDataSourceChange;
 
             this.customRowSpec = "";
@@ -49,7 +50,7 @@
 
             //this.liveUpdateInterval = setInterval(_this.requestData, 5000);
             // Find refresh controls with timeout
-            if (_this.desc.controls) {
+            if (_this.desc && _this.desc.controls) {
                 var refreshers = _this.desc.controls.filter(function (ctrl) {
                     return ctrl.action === "refresh" && parseInt(ctrl.timeout) > 0;
                 });
@@ -106,6 +107,8 @@
              * Will setup datasource choser. If widget has control chooseDataSource
              */
             function setupChoseDataSource() {
+                if (!_this.desc) return;
+
                 function getSetter(item) {
                     return function(data) {
                         if (data.data && typeof data.data === "object") {
@@ -164,6 +167,7 @@
              * @returns {object} Linked widget
              */
             function isLinked() {
+                if (!_this.desc) return false;
                 return _this.desc.Link;
             }
 
@@ -172,6 +176,7 @@
              * @returns {boolean} true if widget has dependents
              */
             function hasDependents() {
+                if (!_this.desc) return 0;
                 if (!_this.desc.dependents) return 0;
                 return _this.desc.dependents.length !== 0;
             }
@@ -191,6 +196,7 @@
             }
 
             function onDataSourceReceived(data) {
+                if (!_this) return;
                 _this.pivotData = data;
                 if (_this.customDataSource) {
                     _this.desc.mdx = data.mdx;
