@@ -15,7 +15,7 @@
                     </svg>
                 </div>
 
-                <h4 ng-style="{'color': model.fontColors[tile.fontColor]}"><span ng-show="model.edItem != tile">{{tile.customTitle || tile.title}}</span>
+                <h4 ng-hide="tile.hideTitle" ng-style="{'color': model.fontColors[tile.fontColor]}"><span ng-show="model.edItem != tile">{{tile.customTitle || tile.title}}</span>
                     <input type="text" ng-model="tile.customTitle" ng-show="model.edItem == tile" blur-on-enter>
                 </h4>
 
@@ -50,6 +50,10 @@
         <span class="sidebar-block">
             <label>{{'widgetId' | lang}}</label>
             <input type="text" ng-model="model.edItem.widget" blur-on-enter>
+        </span>
+        <span class="sidebar-block">
+            <label>{{'hideTitle' | lang}}</label>
+            <input type="checkbox" ng-model="model.edItem.hideTitle" blur-on-enter>
         </span>
     </div>
     <div class="btn btn-default btn-dashboard" ng-click="enableEditing()" ng-class="model.editing?'btn-edit-dash': ''">
