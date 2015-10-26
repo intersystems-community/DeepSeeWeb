@@ -25,6 +25,9 @@
             this.formatNumber        = formatNumber;
             this.dataInfo            = null;
 
+            var baseTitle        = $scope.item.title;
+            var titles           = [];
+
             var _this    = this;
             var firstRun = true;
             var settings = Storage.getAppSettings();
@@ -145,7 +148,12 @@
                 var mdx = _this.getDrillMDX(e.point.path);
                 _this.drillLevel++;
                 _this.drills.push(e.point.path);
-
+                var p = e.point.path.split(".");
+                p.pop();
+                if (p[p.length - 1] && e.point.name) {
+                    titles.push($scope.item.title);
+                    $scope.item.title = p[p.length - 1] + " - " + e.point.name;
+                }
                 _this.broadcastDependents(mdx);
 
                /* var parts = e.point.path.split(".");
@@ -195,6 +203,10 @@
                 _this._retrieveData(data);
                 _this.drillLevel--;
                 _this.drills.pop();
+
+                //titles.pop();
+                var tit = titles.pop();
+                if (!tit) $scope.item.title = baseTitle; else $scope.item.title = tit;
                 /*_this.drillNames.pop();
                 var cd = _this.drillNames.pop();
                 if (cd) $scope.item.currentDrill = ", " + cd; else $scope.item.currentDrill = "";*/
