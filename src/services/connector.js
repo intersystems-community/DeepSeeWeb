@@ -270,6 +270,7 @@
             $cookieStore.remove("CSPWSERVERID");
             $cookieStore.remove("CacheLoginToken");
             $cookieStore.remove("CSPSESSIONID-SP-80-UP-");
+            $cookieStore.remove("CSPSESSIONID-SP-80-UP-MDX2JSON-");
 
             _this.username = "";
             localStorage.userName = "";
