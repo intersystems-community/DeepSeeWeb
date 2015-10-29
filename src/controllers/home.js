@@ -68,6 +68,7 @@
                 t[path][item.title].color = item.color;
                 t[path][item.title].fontColor = item.fontColor;
                 t[path][item.title].icon = item.icon;
+                t[path][item.title].hideTitle = item.hideTitle;
                 if (item.widget !== null && item.widget !== "") t[path][item.title].widget = parseInt(item.widget); else delete t[path][item.title].widget;
 
                 if (item.customTitle !== undefined) t[path][item.title].title = item.customTitle;
@@ -275,6 +276,7 @@
 
                 for (i = 0; i < dashboards.length; i++) {
                     c = conf[dashboards[i].title] || {};
+                    if (c.hideTitle !== undefined) dashboards[i].hideTitle = c.hideTitle;
                     if (c.row !== undefined) dashboards[i].row = c.row; else dashboards[i].row = parseInt(i / 12);
                     if (c.col !== undefined) dashboards[i].col = c.col; else dashboards[i].col = i % 12;
 
@@ -335,6 +337,7 @@
 
             for (i = 0; i < dashboards.length; i++) {
                 c = conf[dashboards[i].title] || {};
+                if (c.hideTitle !== undefined) dashboards[i].hideTitle = c.hideTitle;
                 if (c.row !== undefined) dashboards[i].row = c.row; else dashboards[i].row = parseInt(i / 12);
                 if (c.col !== undefined) dashboards[i].col = c.col; else dashboards[i].col = i % 12;
 
