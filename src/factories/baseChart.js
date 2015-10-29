@@ -252,7 +252,12 @@
                     }
                 }
                 if (customDrill) {
-                    mdx = mdx.replace(p, customDrill);
+                    var match = mdx.match(/ON 0,(.*)ON 1/);
+                    if (match && match.length === 2) {
+                        var str = match[1];
+                        var newstr = str.replace(p, customDrill);
+                        mdx = mdx.replace(str, newstr);
+                    } else mdx = mdx.replace(re, customDrill);
                 } else {
                     if (mdx.indexOf(p) === -1) {
                         match =  mdx.match(/SELECT(.*)ON 1/);
@@ -486,7 +491,7 @@
                                     y: data.Data[data.Cols[0].tuples.length * data.Cols[0].tuples[t].children.length * g + t * data.Cols[0].tuples[t].children.length + c],
                                     cube: data.Info.cubeName,
                                     drilldown: true,
-                                    path: data.Cols[0].tuples[t].path
+                                    path: data.Cols[1].tuples[g].path
                                 });
                                 k++;
                             }
