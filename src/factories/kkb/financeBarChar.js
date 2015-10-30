@@ -15,16 +15,31 @@
             _this.parseData = parseData;
 
             function parseData(d) {
+                var i;
                 oldParse(d);
                 if ($scope.chartConfig.series.length === 0) return;
-                var total = 0;
-                for (var i = 0; i < $scope.chartConfig.series[0].data.length; i++) if ($scope.chartConfig.series[0].data[i].y > 0) total += $scope.chartConfig.series[0].data[i].y;
-                $scope.chartConfig.series[0].data.sort(function(a, b) { if (a.y < b.y) return 1; else return -1; });
 
+                // Calculate total
+                var total = 0;
+                for (i = 0; i < $scope.chartConfig.series[0].data.length; i++) if ($scope.chartConfig.series[0].data[i].y > 0) total += $scope.chartConfig.series[0].data[i].y;
+
+                // Sort date in increasing order
+                var datas = $scope.chartConfig.series[0].data.slice(0);
+                $scope.chartConfig.series[0].data.sort(function(a, b) { if (a.y < b.y) return 1; else return -1; });
+                var cats = $scope.chartConfig.xAxis.categories.slice(0);
+                for (i = 0; i < $scope.chartConfig.series[0].data.length; i++) {
+                    var item = $scope.chartConfig.series[0].data[i];
+                    var idx = datas.indexOf(item);
+                    $scope.chartConfig.xAxis.categories[i] = cats[idx];
+                }
+                datas = null;
+                cats = null;
+
+                // Color first 80%
                 var t = 0;
-                for (var i = 0; i < $scope.chartConfig.series[0].data.length; i++) {
-                    if (total - t > total * 0.8) $scope.chartConfig.series[0].data[i].color = "green";
-                    if ($scope.chartConfig.series[0].data[i].y < 0) $scope.chartConfig.series[0].data[i].color = "red"
+                for (i = 0; i < $scope.chartConfig.series[0].data.length; i++) {
+                    if (t < total * 0.8) $scope.chartConfig.series[0].data[i].color = "green";
+                    if ($scope.chartConfig.series[0].data[i].y < 0) $scope.chartConfig.series[0].data[i].color = "red";
                     t += $scope.chartConfig.series[0].data[i].y;
                 }
 
