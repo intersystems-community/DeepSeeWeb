@@ -68,7 +68,8 @@
                         for (var c = 0; c < data.Cols[0].tuples[t].children.length; c++) {
                             tempData = [];
                             for (var d = 0; d < data.Cols[1].tuples.length; d++) {
-                                da = convertDateFromCache(extractValue(data.Cols[1].tuples[t].path));//this.getDate(data.Cols[1].tuples[i].caption);
+                                da = convertDateFromCache(extractValue(data.Cols[1].tuples[d].path));//this.getDate(data.Cols[1].tuples[i].caption);
+                                console.log(da);
                                 tempData.push([
                                     da,
                                     data.Data[data.Cols[0].tuples.length * data.Cols[0].tuples[t].children.length * d + t * data.Cols[0].tuples[t].children.length + c] || 0
