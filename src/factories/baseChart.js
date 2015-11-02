@@ -23,6 +23,7 @@
             this.onDrilldownReceived = onDrilldownReceived;
             this.getDrillMDX         = getDrillMDX;
             this.formatNumber        = formatNumber;
+            this.initFormatForSeries = initFormatForSeries;
             this.dataInfo            = null;
 
             var baseTitle        = $scope.item.title;
@@ -150,9 +151,9 @@
                 _this.drills.push(e.point.path);
                 var p = e.point.path.split(".");
                 p.pop();
-                if (p[p.length - 1] && e.point.name) {
+                if (p[p.length - 1] && (e.point.name || e.point.category)) {
                     titles.push($scope.item.title);
-                    $scope.item.title = p[p.length - 1] + " - " + e.point.name;
+                    $scope.item.title = baseTitle + " - " + (e.point.name ? (p[p.length - 1] + " - ") : "") + (e.point.name || e.point.category);
                 }
                 _this.broadcastDependents(mdx);
 
@@ -168,6 +169,13 @@
                 Connector.execMDX(mdx).error(_this._onRequestError).success(_this.onDrilldownReceived);
             }
 
+            function doDrillUp() {
+                _this.drillLevel--;
+                _this.drills.pop();
+                var tit = titles.pop();
+                if (!tit) $scope.item.title = baseTitle; else $scope.item.title = tit;
+            }
+
             /**
              * Callback for drilldown data request
              * @param {object} result Drilldown data
@@ -180,7 +188,10 @@
                     return;
                 }
 
-                if (result.Data.length === 0) return;
+                if (result.Data.length === 0) {
+                    doDrillUp();
+                    return;
+                }
                 var hasValue = false;
                 for (var i = 0; i < result.Data.length; i++) if (result.Data[i]) {
                     hasValue = true;
@@ -200,16 +211,13 @@
                 _this.storedData.pop();
                 var data = _this.storedData.pop();
                 $scope.item.backButton = _this.storedData.length !== 0;
-                _this._retrieveData(data);
-                _this.drillLevel--;
-                _this.drills.pop();
 
-                //titles.pop();
+                _this._retrieveData(data);
+                /*_this.drillLevel--;
+                _this.drills.pop();
                 var tit = titles.pop();
-                if (!tit) $scope.item.title = baseTitle; else $scope.item.title = tit;
-                /*_this.drillNames.pop();
-                var cd = _this.drillNames.pop();
-                if (cd) $scope.item.currentDrill = ", " + cd; else $scope.item.currentDrill = "";*/
+                if (!tit) $scope.item.title = baseTitle; else $scope.item.title = tit;*/
+                doDrillUp();
             }
 
             /**
@@ -305,7 +313,8 @@
             }
 
             function formatNumber(v, format) {
-                var res = numeral(v).format(format.replace(/;/g, ""));
+                var res;
+                if (format) res = numeral(v).format(format.replace(/;/g, "")); else res = v.toString();
                 if (_this.dataInfo) {
                     res = res.replace(/,/g, _this.dataInfo.numericGroupSeparator)
                              .replace(/\./g, _this.dataInfo.decimalSeparator);
@@ -327,6 +336,21 @@
                 var a = t.point.name + '<br>' + t.series.name + ': <b>' + val + "</b><br>";
                 if (t.point.percentage) a += parseFloat(t.point.percentage).toFixed(2).toString() + "%";
                 return a;
+            }
+
+            function initFormatForSeries(d) {
+                var series = $scope.chartConfig.series;
+                for (var i = 0; i < series.length; i++) {
+                    if (!series[i].format) series[i].format = getFormat(d);
+                }
+
+                function getFormat(d) {
+                    if (!d || !d.Info) return "";
+                    var fmt = "";
+                    for (var i = 0; i < d.Info.numericGroupSize; i++) fmt += "#";
+                    fmt += ",#.##";
+                    return fmt;
+                }
             }
 
             /**
