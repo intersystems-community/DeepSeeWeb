@@ -637,3 +637,8 @@ select.input-sm {
 .flt-item-desc {
     font-size: 12px;
 }
+
+.btn-action {
+    height: 29px;
+    margin-top: 6px;
+}
