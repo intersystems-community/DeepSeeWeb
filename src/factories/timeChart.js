@@ -51,6 +51,7 @@
              * @param {object} data Data
              */
             this.parseData = function(data) {
+                if (data && data.Info) _this.dataInfo = data.Info;
                 //if (_this.chart) _this.chart.xAxis[0].setExtremes(null, null, null, null, null);
                 //if (_this.chart) _this.chart.xAxis[1].setExtremes(null, null, null, null, null);
                 $scope.chartConfig.yAxis.min = _this.getMinValue(data.Data);
@@ -69,7 +70,6 @@
                             tempData = [];
                             for (var d = 0; d < data.Cols[1].tuples.length; d++) {
                                 da = convertDateFromCache(extractValue(data.Cols[1].tuples[d].path));//this.getDate(data.Cols[1].tuples[i].caption);
-                                console.log(da);
                                 tempData.push([
                                     da,
                                     data.Data[data.Cols[0].tuples.length * data.Cols[0].tuples[t].children.length * d + t * data.Cols[0].tuples[t].children.length + c] || 0
@@ -107,6 +107,8 @@
                     var nav = _this.chart.get('highcharts-navigator-series');
                     if (nav) nav.setData($scope.chartConfig.series[0].data);
                 }
+
+                _this.initFormatForSeries(data);
             };
 
             /**
@@ -128,7 +130,8 @@
                 if (t.series) {
                     fmt = t.series.options.format;
                     val = t.y;
-                    if (fmt) val = numeral(val).format(fmt);
+                    //if (fmt) val = numeral(val).format(fmt);
+                    val = _this.formatNumber(val, fmt);
                     a = '<b>' + dateStr + '</b><br><span style="color:' + t.series.color + '">\u25CF</span>' + t.series.name + ':<b> ' + val;
                     return a;
                 } else {
@@ -136,7 +139,8 @@
                     for (var i = t.points.length - 1; i > -1; i--) {
                         fmt = t.points[i].series.options.format;
                         val = t.points[i].y;
-                        if (fmt) val = numeral(val).format(fmt);
+                        //if (fmt) val = numeral(val).format(fmt);
+                        val = _this.formatNumber(val, fmt);
                         a += '<span style="color:' + t.points[i].series.color + '">\u25CF</span>' + t.points[i].series.name + ':<b> ' + val + '<br>';
                     }
                     return a;
