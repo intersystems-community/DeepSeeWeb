@@ -70,6 +70,7 @@
                 return;
             }
             if (result.filters) Filters.init(result.filters);
+            // TODO: Check if there is actions on toolbar
             if (Filters.isFiltersOnToolbarExists) {
                 // Check if there empty widget exists, if no - we should create it
                 var isExists = false;
