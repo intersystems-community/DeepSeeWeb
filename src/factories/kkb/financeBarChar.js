@@ -38,9 +38,8 @@
                 // Color first 80%
                 var t = 0;
                 for (i = 0; i < $scope.chartConfig.series[0].data.length; i++) {
-                    if ($scope.chartConfig.series[0].data[i].y < 0) continue;
                     if (t < total * 0.8) $scope.chartConfig.series[0].data[i].color = "green";
-                    if ($scope.chartConfig.series[0].data[i].y < 0) $scope.chartConfig.series[0].data[i].color = "red";
+                    if ($scope.chartConfig.series[0].data[i].y < 0) $scope.chartConfig.series[0].data[i].color = "red"; else
                     t += $scope.chartConfig.series[0].data[i].y;
                 }
 
