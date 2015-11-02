@@ -17,6 +17,9 @@
             this.supported = true;
 
 
+            // Setup for actions
+            $scope.item.acItems = [];
+
             // Setup for datasource choser
             $scope.item.dsItems = [];
             $scope.item.dsLabel = "";
@@ -29,6 +32,7 @@
             this.pivotData = null;
             this.linkedMdx = "";
             this.hasDatasourceChoser = false;
+            this.hasActions = false;
             this._onRequestError = onRequestError;
             this._retrieveData = function(){};
             this._retriveDataSource = onDataSourceReceived;
@@ -74,9 +78,14 @@
             if (this.hasDependents()) $scope.$on("widget:" + _this.desc.key + ":refreshDependents", onRefreshDependents);
 
             setupChoseDataSource();
+            setupActions();
             requestPivotData();
 
 
+            /**
+             * Changes current datasource
+             * @param {string} pivot Pivot name
+             */
             function changeDataSource(pivot) {
                 if (pivot)
                     _this.customDataSource = pivot;
@@ -85,12 +94,33 @@
                 requestPivotData();
             }
 
+            /**
+             * Change current row spec
+             * @param {string} path Path
+             */
             function changeRowSpec(path) {
                 console.log(path);
                 if (!path) _this.customRowSpec = ""; else _this.customRowSpec = path;
                 _this.requestData();
             }
 
+            /**
+             * Setup action buttons for widget. Received from controls
+             */
+            function setupActions() {
+                if (!_this.desc.controls || _this.desc.controls.length === 0) return;
+                var actions = _this.desc.controls.filter(function(el) { return el.type === 'auto' });
+                if (actions.length === 0) return;
+                _this.hasActions = true;
+                showToolbar();
+                $scope.item.acItems = actions;
+                // Filters.isFiltersOnToolbarExists = true;
+            }
+
+            /**
+             * Event handler for datasource list intem change
+             * @param item
+             */
             function onDataSourceChange(item) {
                 var sel, val, idx;
                 sel = $scope.item.dsSelected;
@@ -112,6 +142,7 @@
                 function getSetter(item) {
                     return function(data) {
                         if (data.data && typeof data.data === "object") {
+                            for (var prop in data.data) if (data.data[prop] === _this.desc.dataSource) { $scope.item.dsSelected = prop; }
                             item.labels = [];
                             item.values = [];
                             for (var k in data.data) {
