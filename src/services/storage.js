@@ -78,6 +78,34 @@
                 Lang.current = settings.language || "en";
                 $rootScope.$broadcast('lang:changed');
 
+                Highcharts.setOptions({
+                    global: {
+                        useUTC: false
+                    },
+                    lang: {
+                        loading: "<div class='loader'></div>",
+                        //months: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
+                        //weekdays: ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'],
+                        shortMonths: Lang.get("shortMonths"),
+                        rangeSelectorZoom: Lang.get("zoom"),
+                        rangeSelectorFrom: Lang.get("from"),
+                        rangeSelectorTo: Lang.get("to"),
+                        noData: Lang.get("noData")/*
+                         exportButtonTitle: "Exportar",
+                         printButtonTitle: "Imprimir",
+                         rangeSelectorFrom: "De",
+                         rangeSelectorTo: "Até",
+                         rangeSelectorZoom: "??????????",
+                         downloadPNG: 'Download imagem PNG',
+                         downloadJPEG: 'Download imagem JPEG',
+                         downloadPDF: 'Download documento PDF',
+                         downloadSVG: 'Download imagem SVG'*/
+                        // resetZoom: "Reset",
+                        // resetZoomTitle: "Reset,
+                        // thousandsSep: ".",
+                        // decimalPoint: ','
+                    }
+                });
                 // Listened in menu.js
                 //$rootScope.$broadcast('menu:toggleLoading', false);
         }
