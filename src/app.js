@@ -158,12 +158,12 @@
      */
     function start(gridsterConfig, Lang, CONST, Connector, $route) {
 
-        Array.prototype.swap = function (x, y) {
+        /*Array.prototype.swap = function (x, y) {
             var b = this[x];
             this[x] = this[y];
             this[y] = b;
             return this;
-        }
+        }*/
 
         gridsterConfig.draggable.handle = ".widget-title-drag";
         gridsterConfig.resizable.handles = ['se'];

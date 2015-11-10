@@ -107,6 +107,10 @@
             "deepsee.enhancedmapportlet": {
                 class: MapWidget,
                 type: "map"
+            },
+            "rf.mapportlet": {
+                class: MapWidget,
+                type: "map"
             }
         };
 

@@ -78,7 +78,7 @@
             if (this.hasDependents()) $scope.$on("widget:" + _this.desc.key + ":refreshDependents", onRefreshDependents);
 
             setupChoseDataSource();
-            setupActions();
+            //setupActions();
             requestPivotData();
 
 
@@ -266,7 +266,7 @@
              * @param {number} status Error code
              */
             function onRequestError(e, status) {
-                $scope.chartConfig.loading = false;
+                if ($scope.chartConfig) $scope.chartConfig.loading = false;
                 var msg = Lang.get("errWidgetRequest");
                 switch (status) {
                     case 401: msg = Lang.get('errUnauth'); break;
@@ -298,6 +298,7 @@
                     }
                 }
                 var mdx = _this.desc.mdx;
+                if (!mdx) console.warn("Widget without MDX");
 
                 if (_this.customRowSpec) {
                     var match = mdx.match(/ON 0,(.*)ON 1/);
@@ -329,7 +330,7 @@
                     if (flt.value !== "" && !flt.isInterval) {
                         var bracket = "{";
                         if (flt.isExclude) bracket = "(";
-                        var values = flt.value.split("|");
+                        var values = flt.value.toString().split("|");
                         path = flt.targetProperty;
                         if (flt.isExclude)
                             mdx += " %FILTER " + bracket;
