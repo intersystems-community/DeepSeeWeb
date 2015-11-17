@@ -8,6 +8,13 @@
 
         function BaseWidget($scope) {
             var _this = this;
+            this.drillLevel      = 0;
+            this.drills          = [];
+            this.drillsMDX       = [];
+            this.storedData      = [];
+            var titles           = [];
+            var baseTitle        = $scope.item.title;
+
             if ($scope.tile) {
                 $scope.item = {};
                 Utils.merge($scope.item, $scope.tile);
@@ -26,6 +33,7 @@
             $scope.item.dsSelected = "";
             if (_this.desc && _this.desc.dataSource) $scope.item.dsSelected = Utils.removeExt(_this.desc.dataSource.split("/").pop());
             $scope.onDataSourceChange = onDataSourceChange;
+            $scope.item.drillUp = drillUp;
 
             this.customRowSpec = "";
             this.customDataSource = "";
@@ -33,9 +41,12 @@
             this.linkedMdx = "";
             this.hasDatasourceChoser = false;
             this.hasActions = false;
+            this.getDrillMDX = getDrillMDX;
             this._onRequestError = onRequestError;
             this._retrieveData = function(){};
             this._retriveDataSource = onDataSourceReceived;
+            this.doDrill = doDrill;
+            this.onDrilldownReceived = onDrilldownReceived;
             this.onInit = function(){};
             this.getMDX = getMDX;
             this.clearError = clearError;
@@ -81,6 +92,140 @@
             //setupActions();
             requestPivotData();
 
+
+            function doDrill(path, name, category) {
+                var mdx = _this.getDrillMDX(path);
+                if (!mdx) return;
+                _this.drillLevel++;
+                _this.drills.push(path);
+                var p = path.split(".");
+                p.pop();
+                if (p[p.length - 1] && (name || category)) {
+                    titles.push($scope.item.title);
+                    $scope.item.title = (baseTitle ? (baseTitle + " - ") : "") + (name ? (p[p.length - 1] + " - ") : "") + (name || category);
+                }
+                _this.broadcastDependents(mdx);
+                _this.drillsMDX.push(mdx);
+                Connector.execMDX(mdx).error(_this._onRequestError).success(_this.onDrilldownReceived);
+            }
+
+            /**
+             * Makes drillup
+             */
+            function drillUp() {
+                _this.clearError();
+                _this.storedData.pop();
+                var data = _this.storedData.pop();
+                $scope.item.backButton = _this.storedData.length !== 0;
+
+                _this._retrieveData(data);
+                /*_this.drillLevel--;
+                 _this.drills.pop();
+                 var tit = titles.pop();
+                 if (!tit) $scope.item.title = baseTitle; else $scope.item.title = tit;*/
+                doDrillUp();
+            }
+
+            /**
+             * Callback for drilldown data request
+             * @param {object} result Drilldown data
+             */
+            function onDrilldownReceived(result) {
+                if (!result) return;
+                if ($scope.chartConfig) $scope.chartConfig.loading = false;
+                if (result.Error) {
+                    _this.showError(result.Error);
+                    return;
+                }
+
+                if (result.Data.length === 0) {
+                    doDrillUp();
+                    return;
+                }
+                var hasValue = false;
+                for (var i = 0; i < result.Data.length; i++) if (result.Data[i]) {
+                    hasValue = true;
+                    break;
+                }
+                if (!hasValue) return;
+
+                $scope.item.backButton = true;
+                _this._retrieveData(result);
+            }
+
+            /**
+             * Back button click handler
+             */
+            function doDrillUp() {
+                _this.drillLevel--;
+                _this.drills.pop();
+                _this.drillsMDX.pop();
+                _this.broadcastDependents(_this.drillsMDX[_this.drillsMDX.length - 1]);
+                var tit = titles.pop();
+                if (!tit) $scope.item.title = baseTitle; else $scope.item.title = tit;
+            }
+
+
+            /**
+             * Returns MDX for drilldown
+             * @param {string} path Drilldown path
+             * @returns {string} Drilldown MDX
+             */
+            function getDrillMDX(path) {
+                var pos = path.indexOf("&");
+                var p = path.substr(0, pos) + "Members";
+
+                var mdx = _this.getMDX();
+
+                if (path === "") {
+                    mdx = mdx.replace(" ON 1 FROM", " .children ON 1 FROM");
+                    return mdx;
+                }
+
+                // Remove all functions
+                // TODO: dont replace %Label
+                var match = mdx.match(/ON 0,(.*)ON 1/);
+                if (match && match.length === 2) {
+                    var str = match[1];
+                    var isNonEmpty = str.indexOf("NON EMPTY") !== -1;
+                    mdx = mdx.replace(str, (isNonEmpty ? "NON EMPTY " : " ") + p + " ");
+                }
+
+                var customDrill = "";
+                if (_this.pivotData) {
+                    var drilldownSpec = "";
+                    if (_this.pivotData.rowAxisOptions) if (_this.pivotData.rowAxisOptions.drilldownSpec) drilldownSpec = _this.pivotData.rowAxisOptions.drilldownSpec;
+                    if (drilldownSpec) {
+                        var drills = drilldownSpec.split("^");
+                        if (drills.length !== 0) {
+                            if (drills[_this.drillLevel]) customDrill = drills[_this.drillLevel];
+                            for (var i = 0; i < _this.drills.length; i++) {
+                                if (drills[i]) mdx += " %Filter " + _this.drills[i];
+                            }
+                        }
+                    }
+                }
+                if (customDrill) {
+                    var match = mdx.match(/ON 0,(.*)ON 1/);
+                    if (match && match.length === 2) {
+                        var str = match[1];
+                        var newstr = str.replace(p, customDrill);
+                        mdx = mdx.replace(str, newstr);
+                    } else mdx = mdx.replace(re, customDrill);
+                } else {
+                    if (mdx.indexOf(p) === -1) {
+                        match =  mdx.match(/SELECT(.*)ON 1/);
+                        if (match && match.length === 2) {
+                            var str = match[1];
+                            var isNonEmpty = str.indexOf("NON EMPTY") !== -1;
+                            mdx = mdx.replace(str, (isNonEmpty ? " NON EMPTY " : " ") + path + ".Children" + " ");
+                        }
+                    } else mdx = mdx.replace(p, path + ".Children");
+                }
+
+                mdx = mdx + " %FILTER " + path;
+                return mdx;
+            }
 
             /**
              * Changes current datasource
@@ -240,6 +385,10 @@
              */
             function requestData() {
                 if (!_this.supported) return;
+                $scope.item.backButton = false;
+                $scope.item.title = baseTitle;
+                _this.drillLevel = 0;
+                _this.drills = [];
                 var mdx = _this.getMDX();
                 if (mdx === "") return;
                 _this.clearError();

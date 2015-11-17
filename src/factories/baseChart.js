@@ -7,10 +7,6 @@
     function BaseChartFact(Lang, Utils, Connector, $timeout, CONST, Storage) {
 
         function BaseChart($scope) {
-            this.drillLevel          = 0;
-            this.drills              = [];
-            this.drillNames          = [];
-            this.storedData          = [];
             this.addSeries           = addSeries;
             this.setType             = setType;
             this.getMinValue         = getMinValue;
@@ -20,21 +16,15 @@
             this.parseData           = parseMultivalueData;
             this.onResize            = onResize;
             this._retrieveData       = retrieveData;
-            this.onDrilldownReceived = onDrilldownReceived;
-            this.getDrillMDX         = getDrillMDX;
             this.formatNumber        = formatNumber;
             this.initFormatForSeries = initFormatForSeries;
             this.dataInfo            = null;
-
-            var baseTitle        = $scope.item.title;
-            var titles           = [];
 
             var _this    = this;
             var firstRun = true;
             var settings = Storage.getAppSettings();
 
             $scope.item.isLegend = true;
-            $scope.item.currentDrill = "";
             var widgetsSettings = Storage.getWidgetsSettings();
             if (widgetsSettings[_this.desc.key]) {
                 if (widgetsSettings[_this.desc.key].isLegend !== undefined)  $scope.item.isLegend = widgetsSettings[_this.desc.key].isLegend;
@@ -44,7 +34,7 @@
             $scope.item.isChart = true;
             $scope.item.displayAsPivot = displayAsPivot;
             $scope.item.toggleLegend = toggleLegend;
-            $scope.item.drillUp = drillUp;
+
             $scope.$on("print:" + $scope.item.$$hashKey, function(){ if (_this.chart) _this.chart.print();});
             $scope.chartConfig = {
                 options: {
@@ -136,9 +126,6 @@
                 }
             }
 
-
-
-
             /**
              * Callback for point click. Used to do drilldown
              * @param {object} e Event
@@ -146,139 +133,7 @@
             function onPointClick(e) {
                 if (!e.point) return;
                 $scope.chartConfig.loading = true;
-                var mdx = _this.getDrillMDX(e.point.path);
-                _this.drillLevel++;
-                _this.drills.push(e.point.path);
-                var p = e.point.path.split(".");
-                p.pop();
-                if (p[p.length - 1] && (e.point.name || e.point.category)) {
-                    titles.push($scope.item.title);
-                    $scope.item.title = baseTitle + " - " + (e.point.name ? (p[p.length - 1] + " - ") : "") + (e.point.name || e.point.category);
-                }
-                _this.broadcastDependents(mdx);
-
-               /* var parts = e.point.path.split(".");
-                parts.pop();
-                var cur = parts.pop();
-                if (cur) {
-                    cur = cur.replace("[", "").replace("]","")
-                }
-                if (!cur) cur = e.point.name;
-                $scope.item.currentDrill = ", " + cur;
-                _this.drillNames.push(cur);*/
-                Connector.execMDX(mdx).error(_this._onRequestError).success(_this.onDrilldownReceived);
-            }
-
-            function doDrillUp() {
-                _this.drillLevel--;
-                _this.drills.pop();
-                var tit = titles.pop();
-                if (!tit) $scope.item.title = baseTitle; else $scope.item.title = tit;
-            }
-
-            /**
-             * Callback for drilldown data request
-             * @param {object} result Drilldown data
-             */
-            function onDrilldownReceived(result) {
-                if (!result) return;
-                $scope.chartConfig.loading = false;
-                if (result.Error) {
-                    _this.showError(result.Error);
-                    return;
-                }
-
-                if (result.Data.length === 0) {
-                    doDrillUp();
-                    return;
-                }
-                var hasValue = false;
-                for (var i = 0; i < result.Data.length; i++) if (result.Data[i]) {
-                    hasValue = true;
-                    break;
-                }
-                if (!hasValue) return;
-
-                $scope.item.backButton = true;
-                _this._retrieveData(result);
-            }
-
-            /**
-             * Makes drillup
-             */
-            function drillUp() {
-                _this.clearError();
-                _this.storedData.pop();
-                var data = _this.storedData.pop();
-                $scope.item.backButton = _this.storedData.length !== 0;
-
-                _this._retrieveData(data);
-                /*_this.drillLevel--;
-                _this.drills.pop();
-                var tit = titles.pop();
-                if (!tit) $scope.item.title = baseTitle; else $scope.item.title = tit;*/
-                doDrillUp();
-            }
-
-            /**
-             * Returns MDX for drilldown
-             * @param {string} path Drilldown path
-             * @returns {string} Drilldown MDX
-             */
-            function getDrillMDX(path) {
-                var pos = path.indexOf("&");
-                var p = path.substr(0, pos) + "Members";
-
-                var mdx = _this.getMDX();
-
-                if (path === "") {
-                    mdx = mdx.replace(" ON 1 FROM", " .children ON 1 FROM");
-                    return mdx;
-                }
-
-                // Remove all functions
-                // TODO: dont replace %Label
-                var match = mdx.match(/ON 0,(.*)ON 1/);
-                if (match && match.length === 2) {
-                    var str = match[1];
-                    var isNonEmpty = str.indexOf("NON EMPTY") !== -1;
-                    mdx = mdx.replace(str, (isNonEmpty ? "NON EMPTY " : " ") + p + " ");
-                }
-
-                var customDrill = "";
-                if (_this.pivotData) {
-                    var drilldownSpec = "";
-                    if (_this.pivotData.rowAxisOptions) if (_this.pivotData.rowAxisOptions.drilldownSpec) drilldownSpec = _this.pivotData.rowAxisOptions.drilldownSpec;
-                    if (drilldownSpec) {
-                        var drills = drilldownSpec.split("^");
-                        if (drills.length !== 0) {
-                            if (drills[_this.drillLevel]) customDrill = drills[_this.drillLevel];
-                            for (var i = 0; i < _this.drills.length; i++) {
-                                if (drills[i]) mdx += " %Filter " + _this.drills[i];
-                            }
-                        }
-                    }
-                }
-                if (customDrill) {
-                    var match = mdx.match(/ON 0,(.*)ON 1/);
-                    if (match && match.length === 2) {
-                        var str = match[1];
-                        var newstr = str.replace(p, customDrill);
-                        mdx = mdx.replace(str, newstr);
-                    } else mdx = mdx.replace(re, customDrill);
-                } else {
-                    if (mdx.indexOf(p) === -1) {
-                        match =  mdx.match(/SELECT(.*)ON 1/);
-                        if (match && match.length === 2) {
-                            var str = match[1];
-                            var isNonEmpty = str.indexOf("NON EMPTY") !== -1;
-                            mdx = mdx.replace(str, (isNonEmpty ? " NON EMPTY " : " ") + path + ".Children" + " ");
-                        }
-                    } else mdx = mdx.replace(p, path + ".Children");
-                }
-
-                mdx = mdx + " %FILTER " + path;
-                return mdx;
+                _this.doDrill(e.point.path, e.point.name, e.point.category);
             }
 
             /**
@@ -357,8 +212,6 @@
              * Requests chart data
              */
             function reqestData() {
-                _this.drillLevel = 0;
-                _this.drills = [];
                 $scope.chartConfig.loading = true;
                 _this.baseRequestData();
             }
