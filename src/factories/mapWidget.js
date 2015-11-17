@@ -4,7 +4,7 @@
 (function() {
     'use strict';
 
-    function MapWidgetFact(CONST, $timeout, Connector) {
+    function MapWidgetFact(BaseChart, CONST, $timeout, Connector) {
 
         function MapWidget($scope) {
             var _this = this;
@@ -18,15 +18,16 @@
             $scope.model.tooltip = {
                 items: [],
                 visible: false,
-                name: "dsa"
+                name: ""
             };
             this.onInit = onInit;
             this.onResize = onResize;
             this._retrieveData = retrieveData;
             this.requestData();
+
+
             _this.mapData = null;
             requestPolygons();
-
 
             var polys = null;
 
@@ -39,7 +40,8 @@
                 fileName = fn.join(".");*/
 
                 var url = "/csp/" + Connector.getNamespace() + "/" + fileName;
-                if (localStorage.connectorRedirect) url="sampolygons.js";
+                if (localStorage.connectorRedirect) url="mospolygons.js";
+                //if (localStorage.connectorRedirect) url = localStorage.connectorRedirect.replace("MDX2JSON/", "").split("/").slice(0, -1).join("/") + "/csp/" + Connector.getNamespace() + "/" + fileName;
                 Connector.getFile(url).success(onPolyFileLoaded);
             }
 
@@ -58,7 +60,7 @@
                 item = item[0];
                 var idx = _this.mapData.Cols[1].tuples.indexOf(item);
                 var l = _this.mapData.Cols[0].tuples.length;
-                var color = _this.mapData.Cols[0].tuples.filter(function(el) { return el.caption === "color"; });
+                var color = _this.mapData.Cols[0].tuples.filter(function(el) { return el.caption === _this.desc.properties.colorProperty; });
                 if (color.length === 0) return;
                 color = color[0]
                 var colorIdx = _this.mapData.Cols[0].tuples.indexOf(color);
@@ -72,32 +74,41 @@
                 return parts.join(",");
             }
 
+            function centerView(min, max) {
+                var lat = _this.desc.properties.latitude;
+                var lon = _this.desc.properties.longitude;
+                var zoom = _this.desc.properties.zoom;
+
+                if (lat && lon && zoom) {
+                    _this.map.getView().setCenter(ol.proj.transform([lon, lat], 'EPSG:4326', 'EPSG:900913'));
+                    _this.map.getView().setZoom(zoom);
+                } else {
+                    if (Math.abs(min[0] - max[0]) < 0.00000001 && Math.abs(min[1] - max[1]) < 0.00000001) return;
+                    var p1 = ol.proj.transform([min[0], min[1]], 'EPSG:4326', 'EPSG:900913');
+                    var p2 = ol.proj.transform([max[0], max[1]], 'EPSG:4326', 'EPSG:900913');
+                    //console.log([p1[0], p1[1], p2[0], p2[1]]);
+                    //console.log(_this.map.getSize());
+                    _this.map.getView().fit([p1[0], p1[1], p2[0], p2[1]], _this.map.getSize());
+                    /*_this.map.getView().fit([p1[0], p1[1], p2[0], p2[1]], _this.map.getSize(),
+                        {
+                            padding: [10, 10, 10, 10],
+                            constrainResolution: true,
+                            nearest: true
+                        });*/
+                }
+            }
+
             function buildPolygons() {
+                var lon, lat, zoom, i, p, k;
                 if (!polys || !_this.map || !_this.mapData) return;
                 var features = [];
-
-                /*var polyCoords = [];
-                var coords = "95.61,38.60 95.22,37.98 95.60,37.66 94.97,37.65".split(' ');
-
-                for (var i in coords) {
-                    var c = coords[i].split(',');
-                    polyCoords.push(ol.proj.transform([parseFloat(c[0]), parseFloat(c[1])], 'EPSG:4326', 'EPSG:3857'));
-                }
-
-                var feature = new ol.Feature({
-                    geometry: new ol.geom.Polygon([polyCoords])
-                });
-                features.push(feature);
-                _this.polys.clear();
-                _this.polys.addFeatures(features);
-                return;*/
 
                 var min = [Number.MAX_VALUE, Number.MAX_VALUE];
                 var max = [Number.MIN_VALUE, Number.MIN_VALUE];
 
                 var count = 0;
-
-                for (var p in polys) {
+                //polyCoordProp  = _this.desc.proper Polygon Coords property
+                for (p in polys) {
 
                     var item = _this.mapData.Cols[1].tuples.filter(function(el) { return el.caption === p; });
                     if (item.length === 0) continue;
@@ -105,11 +116,11 @@
                     var parts = polys[p].split(';');
                     var poly = [];
                     count++;
-                    if (count === 23) continue;
+                    //if (count > 2) continue;
 
 
-                    for (var k = 0; k < parts.length; k++) {
-
+                    for (k = 0; k < parts.length; k++) {
+                        if (!parts[k]) continue;
                         var coords = parts[k].split(' ');
                         /*
                         if (coords.length > 500) {
@@ -120,10 +131,11 @@
                             }
                         }*/
                         var polyCoords = [];
-                        for (var i in coords) {
+                        for (i in coords) {
+                            if (!coords[i]) continue;
                             var c = coords[i].split(',');
-                            var lon = parseFloat(c[0]);
-                            var lat = parseFloat(c[1]);
+                            lon = parseFloat(c[0]);
+                            lat = parseFloat(c[1]);
                             var point = new ol.geom.Point([lon, lat]);
                             point.transform('EPSG:4326', 'EPSG:900913');
                             polyCoords.push(point.getCoordinates());
@@ -131,6 +143,10 @@
                         poly.push(polyCoords);
                     }
                     //if (count === 23) console.log(JSON.stringify( poly));
+                    if (poly.length !== 1) {
+                        poly = poly.slice(0, 1);
+                    }
+
                     var feature = new ol.Feature({
                         geometry: new ol.geom.Polygon(poly),
                         key: p
@@ -155,23 +171,21 @@
                     if (parseFloat(lon) > max[0]) max[0] = parseFloat(lon);
                     if (parseFloat(lat) > max[1]) max[1] = parseFloat(lat);
 
-                    if (min[0] == max[0]) {
-                        min[0] -= 0.25;
-                        max[0] += 0.25;
+                    /*if (min[0] == max[0]) {
+                        min[0] -= 0.05;
+                        max[0] += 0.05;
                     }
                     if (min[1] == max[1]) {
-                        min[1] -= 0.25;
-                        max[1] += 0.25;
-                    }
+                        min[1] -= 0.05;
+                        max[1] += 0.05;
+                    }*/
                 }
 
+                _this.featureOverlay.getSource().clear();
                 _this.polys.clear();
                 _this.polys.addFeatures(features);
+                centerView(min, max);
 
-                var p1 = ol.proj.transform([min[0], min[1]], 'EPSG:4326', 'EPSG:900913');
-                var p2 = ol.proj.transform([max[0], max[1]], 'EPSG:4326', 'EPSG:900913');
-                if (features.length !== 0) _this.map.getView().fit([p1[0], p1[1], p2[0], p2[1]], _this.map.getSize());
-                _this.map.updateSize();
             }
 
             /**
@@ -179,8 +193,10 @@
              * @param {object} result Result of MDX query
              */
             function retrieveData(result) {
+                _this.storedData.push(result);
                 _this.mapData = result;
                 buildPolygons();
+
                 var min = [Number.MAX_VALUE, Number.MAX_VALUE];
                 var max = [Number.MIN_VALUE, Number.MIN_VALUE];
 
@@ -188,12 +204,13 @@
                     var size = result.Cols[0].tuples.length;
                     var k = 0;
                     var features = [];
-
+                    var latitudeProperty = _this.desc.properties.latitudeProperty || "latitude";
+                    var longitudeProperty  = _this.desc.properties.longitudeProperty || "longitude";
                     var latIdx = -1;
                     var lonIdx = -1;
-                    var item = result.Cols[0].tuples.filter(function(el) { return el.caption.toLowerCase() === "longitude"; });
+                    var item = result.Cols[0].tuples.filter(function(el) { return el.caption.toLowerCase() === latitudeProperty; });
                     if (item.length !== 0) lonIdx = result.Cols[0].tuples.indexOf(item[0]);
-                    item = result.Cols[0].tuples.filter(function(el) { return el.caption.toLowerCase() === "latitude"; });
+                    item = result.Cols[0].tuples.filter(function(el) { return el.caption.toLowerCase() === longitudeProperty; });
                     if (item.length !== 0) latIdx = result.Cols[0].tuples.indexOf(item[0]);
 
                     if (lonIdx === -1 || latIdx === -1) return;
@@ -239,39 +256,15 @@
                         k += size;
                     }
 
-                    console.log("bounds: ", min, " - ", max);
-
                     _this.markers.clear();
                     _this.markers.addFeatures(features);
 
-                    //_this.map.getView().setCenter();
-                    //p.transform('EPSG:4326', 'EPSG:900913');
-                    //var ex = _this.map.getView().calculateExtent(ol.proj.transform([max[0] - min[0], max[1] - min[1]], 'EPSG:4326', 'EPSG:900913'));
-                    var p1 = ol.proj.transform([min[0], min[1]], 'EPSG:4326', 'EPSG:900913');
+                    centerView(min, max);
+                   /* var p1 = ol.proj.transform([min[0], min[1]], 'EPSG:4326', 'EPSG:900913');
                     var p2 = ol.proj.transform([max[0], max[1]], 'EPSG:4326', 'EPSG:900913');
                     if (features.length !== 0) _this.map.getView().fit([p1[0], p1[1], p2[0], p2[1]], _this.map.getSize());
 
-
-                    //_this.map.getView().setZoom(max[1] - max[0] / 10);
-                    //_this.map.getView().setCenter(ol.proj.transform([min[0] + (max[0] - min[0])/2, min[1] + (max[1] - min[1])/2], 'EPSG:4326', 'EPSG:900913'));
-
-                    _this.map.updateSize();
-                  /*  var vectorSource = new ol.source.Vector({
-                        features: features
-                    });
-
-                    var clusterSource = new ol.source.Cluster({
-                        distance: _this.CLUSTER_RANGE,
-                        source: vectorSource
-                    });
-
-                    var vectorLayer = new ol.layer.Vector({
-                        source: clusterSource,
-                        style: _this.iconStyle
-                    });
-
-                    _this.map.addLayer(vectorLayer);*/
-
+                    _this.map.updateSize();*/
                 }
 
             }
@@ -439,17 +432,9 @@
                 if (feature) {
                     if (feature.getGeometry().getType().toLowerCase() === "polygon") {
                         var key = feature.get("key");
-                        console.log(key);
-
-
-                        $scope.model.tooltip.items = getTooltipData(key);
-                        $scope.model.tooltip.name = key;
-
-                        var geometry = feature.getGeometry();
-                        var coord = evt.coordinate;//geometry.getFirstCoordinate();
-                       // coord[0] += Math.floor((_this.map.getCoordinateFromPixel(evt.pixel)[0] / 40075016.68) + 0.5) * 20037508.34 * 2;
-                        _this.popup.setPosition(coord);
-                        showTooltip();
+                        var item = _this.mapData.Cols[1].tuples.filter(function(el) { return el.caption == key } );
+                        if (!item) return;
+                        _this.doDrill(item[0].path, key);
                     } else {
                         var labels = feature.get("features")[0].get("labels");
                         var values = feature.get("features")[0].get("values");
@@ -496,6 +481,6 @@
     }
 
     angular.module('widgets')
-        .factory('MapWidget', ['CONST', '$timeout', 'Connector', MapWidgetFact]);
+        .factory('MapWidget', ['BaseChart', 'CONST', '$timeout', 'Connector', MapWidgetFact]);
 
 })();
