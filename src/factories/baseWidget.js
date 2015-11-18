@@ -12,8 +12,8 @@
             this.drills          = [];
             this.drillsMDX       = [];
             this.storedData      = [];
-            var titles           = [];
-            var baseTitle        = $scope.item.title;
+            this.titles           = [];
+            this.baseTitle        = $scope.item.title;
 
             if ($scope.tile) {
                 $scope.item = {};
@@ -60,6 +60,7 @@
             this.hasDependents = hasDependents;
             this.broadcastDependents = broadcastDependents;
             this.destroy = destroy;
+            this.getDrillTitle = getDrillTitle;
             this.liveUpdateInterval = null;
             this.onResize = function(){};
 
@@ -93,6 +94,12 @@
             requestPivotData();
 
 
+            function getDrillTitle(path, name, category) {
+                var p = path.split(".");
+                p.pop();
+                return (_this.baseTitle ? (_this.baseTitle + " - ") : "") + (name ? (p[p.length - 1] + " - ") : "") + (name || category)
+            }
+
             function doDrill(path, name, category) {
                 var mdx = _this.getDrillMDX(path);
                 if (!mdx) return;
@@ -101,8 +108,8 @@
                 var p = path.split(".");
                 p.pop();
                 if (p[p.length - 1] && (name || category)) {
-                    titles.push($scope.item.title);
-                    $scope.item.title = (baseTitle ? (baseTitle + " - ") : "") + (name ? (p[p.length - 1] + " - ") : "") + (name || category);
+                    _this.titles.push($scope.item.title);
+                    $scope.item.title = _this.getDrillTitle(path, name, category);
                 }
                 _this.broadcastDependents(mdx);
                 _this.drillsMDX.push(mdx);
@@ -161,8 +168,8 @@
                 _this.drills.pop();
                 _this.drillsMDX.pop();
                 _this.broadcastDependents(_this.drillsMDX[_this.drillsMDX.length - 1]);
-                var tit = titles.pop();
-                if (!tit) $scope.item.title = baseTitle; else $scope.item.title = tit;
+                var tit = _this.titles.pop();
+                if (!tit) $scope.item.title = _this.baseTitle; else $scope.item.title = tit;
             }
 
 
@@ -386,7 +393,7 @@
             function requestData() {
                 if (!_this.supported) return;
                 $scope.item.backButton = false;
-                $scope.item.title = baseTitle;
+                $scope.item.title = _this.baseTitle;
                 _this.drillLevel = 0;
                 _this.drills = [];
                 var mdx = _this.getMDX();

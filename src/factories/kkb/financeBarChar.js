@@ -6,13 +6,34 @@
 
     function FinanceBarChartFact(BarChartKKB, Utils) {
 
+        // Number of bars when valueas are shown(if less than this)
+        var SHOW_VALUES_COUNT = 20;
+
+
         function FinanceBarChartKKB($scope) {
             BarChartKKB.apply(this, [$scope]);
             var _this = this;
-
             var oldParse = _this.parseData;
-
             _this.parseData = parseData;
+            _this.getDrillTitle = getDrillTitle;
+
+            var ex = {
+                plotOptions: {
+                    bar: {
+                        dataLabels: {
+                            enabled: true
+                        }
+                    }
+                }
+            };
+
+            Utils.merge($scope.chartConfig.options, ex);
+
+
+            function getDrillTitle(path, name, category) {
+                var tit = $scope.item.title;
+                return (tit ? (tit + " - ") : "") + category;
+            }
 
             function parseData(d) {
                 var i;
@@ -45,6 +66,7 @@
 
                     //$scope.chartConfig.xAxis.categories = [];
                 //for (var i = 0; i < $scope.chartConfig.series[0].data.length; i++) $scope.chartConfig.xAxis.categories.push($scope.chartConfig.series[0].data[i].name);
+                $scope.chartConfig.options.plotOptions.bar.dataLabels.enabled =  $scope.chartConfig.series[0].data.length <= SHOW_VALUES_COUNT;
             }
             /*var ex = {
                 tooltip: {
@@ -61,6 +83,8 @@
                 }
             };
             Utils.merge($scope.chartConfig.options, ex);*/
+
+
         }
 
         return FinanceBarChartKKB;
