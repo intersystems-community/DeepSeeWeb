@@ -190,7 +190,11 @@
          */
         function toggleMenu(event, isVisible) {
             if (isVisible) $scope.model.username = localStorage.userName || "";
-            $scope.model.visible = isVisible;
+            $scope.model.visible = isVisible && (!isEmbedded());
+        }
+
+        function isEmbedded() {
+            return window.location.hash.replace("?", "").replace("#/", "").split("&").indexOf("embed=1") !== -1;
         }
 
         /**

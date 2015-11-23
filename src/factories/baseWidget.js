@@ -12,8 +12,9 @@
             this.drills          = [];
             this.drillsMDX       = [];
             this.storedData      = [];
-            this.titles           = [];
-            this.baseTitle        = $scope.item.title;
+            this.titles          = [];
+            this.baseTitle       = $scope.item.title;
+            this.drillFilter     = "";
 
             if ($scope.tile) {
                 $scope.item = {};
@@ -34,7 +35,9 @@
             if (_this.desc && _this.desc.dataSource) $scope.item.dsSelected = Utils.removeExt(_this.desc.dataSource.split("/").pop());
             $scope.onDataSourceChange = onDataSourceChange;
             $scope.item.drillUp = drillUp;
+            $scope.performAction = performAction;
 
+            this.customColSpec = "";
             this.customRowSpec = "";
             this.customDataSource = "";
             this.pivotData = null;
@@ -61,12 +64,19 @@
             this.broadcastDependents = broadcastDependents;
             this.destroy = destroy;
             this.getDrillTitle = getDrillTitle;
+            this.drillUp = drillUp;
             this.liveUpdateInterval = null;
             this.onResize = function(){};
 
             //this.liveUpdateInterval = setInterval(_this.requestData, 5000);
             // Find refresh controls with timeout
             if (_this.desc && _this.desc.controls) {
+
+                var colSpec = _this.desc.controls.filter(function (ctrl) {
+                    return ctrl.action === "setColumnSpec";
+                });
+                if (colSpec.length !== 0) _this.customColSpec = colSpec[0].targetProperty;
+
                 var refreshers = _this.desc.controls.filter(function (ctrl) {
                     return ctrl.action === "refresh" && parseInt(ctrl.timeout) > 0;
                 });
@@ -78,6 +88,8 @@
 
             $scope.item.toolbarView = 'src/views/filters.html';
             $scope.$on('$destroy', function () { _this.destroy(); });
+            $scope.$on('drillFilter:' + _this.desc.name, onDrillFilter);
+            $scope.$on('drillFilter:*', onDrillFilter);
 
             if (this.filterCount === undefined) {
                 Object.defineProperty(this, "filterCount", {
@@ -90,9 +102,20 @@
             if (this.hasDependents()) $scope.$on("widget:" + _this.desc.key + ":refreshDependents", onRefreshDependents);
 
             setupChoseDataSource();
-            //setupActions();
+            setupActions();
             requestPivotData();
 
+            function onDrillFilter(sc, path) {
+                _this.drillFilter = path;
+                _this.requestData();
+            }
+
+            function performAction(action) {
+                if (action.action === 'setColumnSpec') {
+                    _this.customColSpec = action.targetProperty;
+                    _this.requestData();
+                }
+            }
 
             function getDrillTitle(path, name, category) {
                 var p = path.split(".");
@@ -126,10 +149,6 @@
                 $scope.item.backButton = _this.storedData.length !== 0;
 
                 _this._retrieveData(data);
-                /*_this.drillLevel--;
-                 _this.drills.pop();
-                 var tit = titles.pop();
-                 if (!tit) $scope.item.title = baseTitle; else $scope.item.title = tit;*/
                 doDrillUp();
             }
 
@@ -229,7 +248,9 @@
                         }
                     } else mdx = mdx.replace(p, path + ".Children");
                 }
-
+                if (_this.drillFilter) {
+                    mdx = mdx + " %FILTER " + _this.drillFilter;
+                }
                 mdx = mdx + " %FILTER " + path;
                 return mdx;
             }
@@ -261,7 +282,7 @@
              */
             function setupActions() {
                 if (!_this.desc.controls || _this.desc.controls.length === 0) return;
-                var actions = _this.desc.controls.filter(function(el) { return el.type === 'auto' });
+                var actions = _this.desc.controls.filter(function(el) { return el.action === 'setColumnSpec' && el.type !== "hidden"; });
                 if (actions.length === 0) return;
                 _this.hasActions = true;
                 showToolbar();
@@ -431,6 +452,18 @@
                 _this.showError(msg);
             }
 
+
+            function checkColSpec(mdx) {
+                if (_this.customColSpec) {
+                    var match = mdx.match(/ON 0,(.*)ON 1/);
+                    if (match && match.length === 2) {
+                        var str = match[1];
+                        var isNonEmpty = str.indexOf("NON EMPTY") !== -1;
+                        mdx = mdx.replace(str, (isNonEmpty ? "NON EMPTY " : " ") + _this.customColSpec + " ");
+                    }
+                }
+                return mdx;
+            }
             /**
              * Return widget MDX depending on active filters
              * @returns {string}
@@ -442,10 +475,22 @@
                 var path;
 
                 // If widget is linked, use linkedMDX
-                if (_this.isLinked()) return _this.linkedMdx;
+                if (_this.isLinked()) {
+                    var str = _this.linkedMdx;
+                    str = checkColSpec(str);
+                    return str;
+                }
 
                 // Check for active filters on widget
                 var filters = Filters.getWidgetFilters(_this.desc.name);
+                // Add filter for drillFilter feature
+                if (_this.drillFilter) {
+                    var parts = _this.drillFilter.split("&");
+                    filters.push({
+                        targetProperty: parts[0].slice(0, -1),
+                        value: "&" + parts[1]
+                    });
+                }
                 for (i = 0; i < filters.length; i++) {
                     flt = filters[i];
                     if (flt.value !== "" || flt.isInterval) {
@@ -464,6 +509,8 @@
                         mdx = mdx.replace(str, (isNonEmpty ? "NON EMPTY " : " ") + _this.customRowSpec + " ");
                     }
                 }
+
+                mdx = checkColSpec(mdx);
 
                 // Don't use filters in widgets placed on tiles
                 // TODO: fix this
