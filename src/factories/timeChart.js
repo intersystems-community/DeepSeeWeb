@@ -125,7 +125,7 @@
 
                 var date = new Date(t.x);
                 var dateStr = date.toLocaleDateString();
-                if (date.toLocaleTimeString() !== "0:00:00") dateStr += " " + date.toLocaleTimeString();
+                if (date.getHours() !== 0 && date.getMinutes() !== 0 && date.getSeconds() !== 0) dateStr += " " + date.toLocaleTimeString();
 
                 if (t.series) {
                     fmt = t.series.options.format;

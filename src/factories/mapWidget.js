@@ -20,40 +20,14 @@
                 visible: false,
                 name: ""
             };
-            var _drillUp = this.drillUp;
-            this.drillUp = drillUp;
-            $scope.item.drillUp = drillUp;
             this.onInit = onInit;
             this.onResize = onResize;
             this._retrieveData = retrieveData;
             this.requestData();
             _this.mapData = null;
-            // Array of widget names that shall be filtered during drill down
-            _this.drillFilterWidgets = null;
 
             var polys = null;
             requestPolygons();
-            setupDrillFilter();
-
-            function drillUp() {
-                var path = _this.drills[_this.drills.length - 2];
-                doDrillFilter(path);
-                _drillUp();
-            }
-
-            function setupDrillFilter() {
-                if (_this.desc.properties && _this.desc.properties.drillFilterProperty) {
-                    _this.drillFilterWidgets = _this.desc.properties.drillFilterProperty.split(",");
-                }
-            }
-
-            function doDrillFilter(path) {
-                if (!_this.drillFilterWidgets || !_this.drillFilterWidgets.length) return;
-                var i;
-                for (i = 0; i < _this.drillFilterWidgets.length; i++) {
-                    $rootScope.$broadcast("drillFilter:" + _this.drillFilterWidgets[i], path);
-                }
-            }
 
             function requestPolygons() {
                 if (!_this.desc.properties || !_this.desc.properties.coordsJsFile) return;
@@ -459,7 +433,7 @@
                         var item = _this.mapData.Cols[1].tuples.filter(function(el) { return el.caption == key } );
                         if (!item) return;
                         _this.doDrill(item[0].path, key);
-                        doDrillFilter(item[0].path);
+                        //_this.doDrillFilter(item[0].path);
                     } else {
                         var labels = feature.get("features")[0].get("labels");
                         var values = feature.get("features")[0].get("values");
