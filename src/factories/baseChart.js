@@ -159,11 +159,13 @@
                     delete $scope.item.pivotMdx;
                     _this.desc.type = _this.desc.oldType;
                     $scope.$broadcast("typeChanged");
+                    //$scope.$destroy();
                 } else {
                     _this.desc.oldType = _this.desc.type;
                     _this.desc.type = "pivot";
                     $scope.item.pivotMdx = _this.getMDX();
                     $scope.$broadcast("typeChanged");
+                    //$scope.$destroy();
                 }
             }
 

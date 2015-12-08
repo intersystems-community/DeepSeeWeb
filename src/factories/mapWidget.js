@@ -77,7 +77,7 @@
                 var lon = _this.desc.properties.longitude;
                 var zoom = _this.desc.properties.zoom;
 
-                if (lat && lon && zoom) {
+                if (_this.drillLevel === 0 && lat && lon && zoom) {
                     _this.map.getView().setCenter(ol.proj.transform([lon, lat], 'EPSG:4326', 'EPSG:900913'));
                     _this.map.getView().setZoom(zoom);
                 } else {

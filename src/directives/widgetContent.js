@@ -57,7 +57,7 @@
                         if (scope.onSizeChange) scope.onSizeChange(size);
                     }, true);*/
 
-                    scope.$on('typeChanged', function(){
+                    /*scope.$on('typeChanged', function(){
                         element.empty();
                         element.removeAttr('highchart');
                         element.removeAttr('id');
@@ -68,7 +68,7 @@
 //                        element.attr("pivot", '');
                         assignAttrs();
                         $compile(element)(scope);
-                    });
+                    });*/
 
                     $compile(element)(scope);
                 };

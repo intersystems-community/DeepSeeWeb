@@ -89,9 +89,13 @@
             }
 
             $scope.item.toolbarView = 'src/views/filters.html';
-            $scope.$on('$destroy', function () { _this.destroy(); });
-            $scope.$on('drillFilter:' + _this.desc.name, onDrillFilter);
-            $scope.$on('drillFilter:*', onDrillFilter);
+            var filterListener = $scope.$on('drillFilter:' + _this.desc.name, onDrillFilter);
+            var filterAllListener = $scope.$on('drillFilter:*', onDrillFilter);
+            $scope.$on('$destroy', function () {
+                filterListener();
+                filterAllListener();
+                _this.destroy();
+            });
 
             if (this.filterCount === undefined) {
                 Object.defineProperty(this, "filterCount", {
@@ -165,8 +169,8 @@
                 var data = _this.storedData.pop();
                 $scope.item.backButton = _this.storedData.length !== 0;
 
-                _this._retrieveData(data);
                 doDrillUp();
+                _this._retrieveData(data);
             }
 
             /**

@@ -92,7 +92,7 @@
                 var defer = $q.defer();
                 defers.push(defer.promise);
 
-                $ocLazyLoad.load(url).then((function(d){
+                $ocLazyLoad.load(url + "?timestamp=" + Date.now().toString()).then((function(d){
                     return function() {
                         d.resolve();
                     };

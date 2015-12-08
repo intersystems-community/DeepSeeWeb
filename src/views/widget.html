@@ -1,0 +1,9 @@
+<div class="widget-toolbar" ng-show="item.toolbar" ng-include="item.toolbarView"></div>
+
+<!-- widget content -->
+<div context-menu="onCtxMenuShow(item)" context-menu-disabled="item.menuDisabled" data-target="ctx-item-menu" ng-class="{ 'highlight': highlight, 'expanded' : expanded }">
+    <div widget-content="getDesc(item.idx).type" class="widget-content" style="top:{{item.toolbar?52:16}}px"></div>
+</div>
+<!-------------------->
+
+<div class="widget-error" ng-show="model.error">{{model.error}}</div>

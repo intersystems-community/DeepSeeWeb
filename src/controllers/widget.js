@@ -25,8 +25,8 @@
         $scope.toggleFilter = toggleFilter;
 
         $scope.$on("refresh:" + $scope.item.$$hashKey, function(){_this.requestData();});
-        $scope.$on("filter" + _this.desc.name, applyFilter);
-        $scope.$on("filterAll", applyFilter);
+        var filterListener = $scope.$on("filter" + _this.desc.name, applyFilter);
+        var filterAllListener = $scope.$on("filterAll", applyFilter);
         //$scope.$on('resize', onResize);
         $scope.$on('gridster-item-transition-end', onResize);
         $scope.$on('gridster-resized', onResize);
@@ -36,6 +36,10 @@
         $scope.$watch('item.sizeY', onResizeVertical, true);
         $scope.$on("resetWidgets", resetWidget);
         $scope.$on("setType:" + $scope.item.$$hashKey, changeType);
+        $scope.$on('$destroy', function () {
+            filterListener();
+            filterAllListener();
+        });
 
         /**
          * Changes widget type. Callback for $on("setType")
@@ -46,7 +50,8 @@
             _this.desc.type = t;
             if ((_this.chart) && (t.indexOf("chart") != -1)) {
                 _this.setType(t.replace("chart", ""));
-            } else $scope.$broadcast("typeChanged");
+            }
+            $scope.$broadcast("typeChanged");
         }
 
         /**
