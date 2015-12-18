@@ -38,7 +38,7 @@
                 fileName = fn.join(".");*/
 
                 var url = "/csp/" + Connector.getNamespace() + "/" + fileName;
-                if (localStorage.connectorRedirect) url="mospolygons.js";
+                if (localStorage.connectorRedirect) url="rfpolygons.js";
                 //if (localStorage.connectorRedirect) url = localStorage.connectorRedirect.replace("MDX2JSON/", "").split("/").slice(0, -1).join("/") + "/csp/" + Connector.getNamespace() + "/" + fileName;
                 Connector.getFile(url).success(onPolyFileLoaded);
             }
@@ -97,7 +97,8 @@
             }
 
             function buildPolygons() {
-                var lon, lat, zoom, i, p, k;
+                var lon, lat, zoom, i, p, k, l;
+                var coordsProperty = _this.desc.properties.coordsProperty;
                 if (!polys || !_this.map || !_this.mapData) return;
                 var features = [];
 
@@ -107,9 +108,24 @@
                 var count = 0;
                 //polyCoordProp  = _this.desc.proper Polygon Coords property
                 for (p in polys) {
-
-                    var item = _this.mapData.Cols[1].tuples.filter(function(el) { return el.caption === p; });
-                    if (item.length === 0) continue;
+                    var key = p;
+                    var item;
+                    if (coordsProperty) {
+                        item = _this.mapData.Cols[0].tuples.filter(function(el) { return el.caption === coordsProperty; });
+                        if (item.length === 0) continue;
+                        var idx = _this.mapData.Cols[0].tuples.indexOf(item[0]);
+                        var l = _this.mapData.Cols[0].tuples.length;
+                        var found = false;
+                        for (var e = idx; e < _this.mapData.Data.length; e += l) if (_this.mapData.Data[e] === key) {
+                            found = true;
+                            break;
+                        }
+                        if (!found) continue;
+                        //key = _this.mapData.Data[idx % l + Math.floor(idx / l)];
+                    } else {
+                        item = _this.mapData.Cols[1].tuples.filter(function (el) { return el.caption === p; });
+                        if (item.length === 0) continue;
+                    }
 
                     var parts = polys[p].split(';');
                     var poly = [];
@@ -162,7 +178,7 @@
 
                     features.push(feature);
 
-
+                    console.log("poly");
 
                     if (parseFloat(lon) < min[0]) min[0] = parseFloat(lon);
                     if (parseFloat(lat) < min[1]) min[1] = parseFloat(lat);
@@ -430,6 +446,7 @@
                 if (feature) {
                     if (feature.getGeometry().getType().toLowerCase() === "polygon") {
                         var key = feature.get("key");
+                        var coordsProperty = _this.desc.properties.coordsProperty || "caption";
                         var item = _this.mapData.Cols[1].tuples.filter(function(el) { return el.caption == key } );
                         if (!item) return;
                         _this.doDrill(item[0].path, key);

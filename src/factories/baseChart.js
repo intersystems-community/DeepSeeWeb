@@ -6,6 +6,9 @@
 
     function BaseChartFact(Lang, Utils, Connector, $timeout, CONST, Storage) {
 
+        var DEF_ROW_COUNT = 20;
+        var DEF_COL_COUNT = 20;
+
         function BaseChart($scope) {
             this.addSeries           = addSeries;
             this.setType             = setType;
@@ -29,11 +32,16 @@
             if (widgetsSettings[_this.desc.key]) {
                 if (widgetsSettings[_this.desc.key].isLegend !== undefined)  $scope.item.isLegend = widgetsSettings[_this.desc.key].isLegend;
             }
+            $scope.item.isTop = false;
+            if (widgetsSettings[_this.desc.key]) {
+                if (widgetsSettings[_this.desc.key].isTop !== undefined)  $scope.item.isTop = widgetsSettings[_this.desc.key].isTop;
+            }
             widgetsSettings = null;
 
             $scope.item.isChart = true;
             $scope.item.displayAsPivot = displayAsPivot;
             $scope.item.toggleLegend = toggleLegend;
+            $scope.item.toggleTop = toggleTop;
 
             $scope.$on("print:" + $scope.item.$$hashKey, function(){ if (_this.chart) _this.chart.print();});
             $scope.chartConfig = {
@@ -124,6 +132,36 @@
                     };
                     Utils.merge($scope.chartConfig, opt);
                 }
+            }
+
+            function limitSeriesAndData() {
+                var i, j;
+                var controls = _this.desc.controls || [];
+                var cont = controls.filter(function(el) { return el.action === "setRowCount"; })[0];
+                var ser = $scope.chartConfig.series;
+                var rowCount = cont ? (cont.value || DEF_ROW_COUNT) : DEF_ROW_COUNT;
+                var cont = controls.filter(function(el) { return el.action === "setColumnCount"; })[0];
+                var colCount = cont ? (cont.value || DEF_COL_COUNT) : DEF_COL_COUNT;
+                if ($scope.item.isTop) {
+                    for (i = 0; i < ser.length; i++) {
+                        if (i + 1 > rowCount) ser[i].visible = false;
+                        for (j = 0; j < ser[i].data.length; j++) {
+                            if (j + 1 > colCount && (ser[i].data[j] instanceof Object)) ser[i].data[j].visible = false;
+                        }
+                    }
+                } else {
+                    for (i = 0; i < ser.length; i++) ser[i].visible = true;
+                }
+            }
+
+            function toggleTop() {
+                $scope.item.isTop = !$scope.item.isTop;
+                var widgetsSettings = Storage.getWidgetsSettings();
+                if (!widgetsSettings[_this.desc.key]) widgetsSettings[_this.desc.key] = {};
+                widgetsSettings[_this.desc.key].isTop = $scope.item.isTop;
+                Storage.setWidgetsSettings(widgetsSettings);
+
+                limitSeriesAndData();
             }
 
             /**
@@ -429,6 +467,7 @@
                         });
                     }
                 }
+                limitSeriesAndData();
             }
 
             function getFormat(data) {
