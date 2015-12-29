@@ -9,8 +9,8 @@
         function BarChart($scope) {
             BaseChart.apply(this, [$scope]);
             this.setType('bar');
+            $scope.item.isBtnZero = true;
             if (this.desc.type.toLowerCase() === "barchartstacked") this.enableStacking();
-
             this.requestData();
         }
 

@@ -24,6 +24,7 @@
         this.searchFilters = searchFilters;
         this.saveConfig = saveConfig;
         this.loadConfig = loadConfig;
+        this.execAction = execAction;
 
         // for local testing
         /*
@@ -284,6 +285,21 @@
                 $location.path("/login").search({});
             });
         }
+
+        /**
+         * Requests dashboard list
+         * @returns {object} $http promise
+         */
+        function execAction(action, cube) {
+            return $http({
+                method: 'POST',
+                data: {},
+                url: _this.url + 'Action/' + cube + '/' + action + '?Namespace=' + getNamespace(),
+                withCredentials: true
+            });
+        }
+
+
     }
 
     angular.module('app')

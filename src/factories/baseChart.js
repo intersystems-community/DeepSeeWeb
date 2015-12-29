@@ -21,7 +21,9 @@
             this._retrieveData       = retrieveData;
             this.formatNumber        = formatNumber;
             this.initFormatForSeries = initFormatForSeries;
+            this.limitSeriesAndData = limitSeriesAndData;
             this.dataInfo            = null;
+            this.widgetData          = null;
 
             var _this    = this;
             var firstRun = true;
@@ -36,12 +38,19 @@
             if (widgetsSettings[_this.desc.key]) {
                 if (widgetsSettings[_this.desc.key].isTop !== undefined)  $scope.item.isTop = widgetsSettings[_this.desc.key].isTop;
             }
+            $scope.item.showZero = false;
+            if (widgetsSettings[_this.desc.key]) {
+                if (widgetsSettings[_this.desc.key].showZero !== undefined)  $scope.item.showZero = widgetsSettings[_this.desc.key].showZero;
+            }
             widgetsSettings = null;
 
             $scope.item.isChart = true;
             $scope.item.displayAsPivot = displayAsPivot;
             $scope.item.toggleLegend = toggleLegend;
             $scope.item.toggleTop = toggleTop;
+            $scope.item.showZeroOnAxis = showZeroOnAxis;
+            $scope.item.isBtnZero = false;
+
 
             $scope.$on("print:" + $scope.item.$$hashKey, function(){ if (_this.chart) _this.chart.print();});
             $scope.chartConfig = {
@@ -134,23 +143,66 @@
                 }
             }
 
+            function showZeroOnAxis() {
+                $scope.item.showZero = !$scope.item.showZero;
+                var widgetsSettings = Storage.getWidgetsSettings();
+                if (!widgetsSettings[_this.desc.key]) widgetsSettings[_this.desc.key] = {};
+                widgetsSettings[_this.desc.key].showZero = $scope.item.showZero;
+                Storage.setWidgetsSettings(widgetsSettings);
+
+                if ($scope.item.showZero) {
+                    $scope.chartConfig.yAxis.prevMin = $scope.chartConfig.yAxis.currentMin;
+                    $scope.chartConfig.yAxis.currentMin = 0;
+                } else {
+                    $scope.chartConfig.yAxis.currentMin = $scope.chartConfig.yAxis.prevMin;
+                }
+            }
+
             function limitSeriesAndData() {
-                var i, j;
+                _this._retrieveData(_this.widgetData);
+                return;
+
+
+                var i, j, c;
                 var controls = _this.desc.controls || [];
                 var cont = controls.filter(function(el) { return el.action === "setRowCount"; })[0];
                 var ser = $scope.chartConfig.series;
                 var rowCount = cont ? (cont.value || DEF_ROW_COUNT) : DEF_ROW_COUNT;
                 var cont = controls.filter(function(el) { return el.action === "setColumnCount"; })[0];
                 var colCount = cont ? (cont.value || DEF_COL_COUNT) : DEF_COL_COUNT;
-                if ($scope.item.isTop) {
-                    for (i = 0; i < ser.length; i++) {
-                        if (i + 1 > rowCount) ser[i].visible = false;
-                        for (j = 0; j < ser[i].data.length; j++) {
-                            if (j + 1 > colCount && (ser[i].data[j] instanceof Object)) ser[i].data[j].visible = false;
+                rowCount = 4;
+                if ($scope.chartConfig.options.plotOptions.series.stacking === "normal") {
+                    var cats = $scope.chartConfig.xAxis.categories;
+                    if ($scope.item.isTop) {
+                        //_this.chart._backupSeries = Utils.merge([], ser);
+                        for (c = 0; c < cats.length; c++) {
+                            for (i = 0; i < ser.length; i++) {
+                                if (ser[i].data[c] instanceof Object) {
+                                   if (c + 1 > rowCount) delete ser[i].data[c];
+                                }//c < rowCount;
+                            }
                         }
+                        /*for (i = 0; i < ser.length; i++) {
+                            for (j = 0; j < ser[i].data.length; j++) {
+                                delete ser[i].data[j];
+                            }
+                        }*/
+                        //_this.chart.xAxis[0].setCategories(cats.slice(0, rowCount));
+                    } else {
+                        //_this.parseData(_this.widgetData, true);
+
                     }
                 } else {
-                    for (i = 0; i < ser.length; i++) ser[i].visible = true;
+                    if ($scope.item.isTop) {
+                        for (i = 0; i < ser.length; i++) {
+                            if (i + 1 > rowCount) ser[i].visible = false;
+                            for (j = 0; j < ser[i].data.length; j++) {
+                                if (j + 1 > colCount && (ser[i].data[j] instanceof Object)) ser[i].data[j].visible = false;
+                            }
+                        }
+                    } else {
+                        for (i = 0; i < ser.length; i++) ser[i].visible = true;
+                    }
                 }
             }
 
@@ -262,6 +314,11 @@
              */
             function retrieveData(result) {
                 if (!_this) return;
+
+                // Store current widget data
+                _this.widgetData = {};
+                angular.copy(result, _this.widgetData);
+
                 $scope.chartConfig.loading = false;
                 if (result.Error) {
                     _this.showError(result.Error);
@@ -276,6 +333,10 @@
                      */
                     var min = _this.getMinValue(result.Data);
                     if (min > 0 && min <= 10) $scope.chartConfig.yAxis.currentMin = 0;
+                    if ($scope.item.showZero) {
+                        $scope.chartConfig.yAxis.prevMin = $scope.chartConfig.yAxis.currentMin;
+                        $scope.chartConfig.yAxis.currentMin = 0;
+                    }
                     if (!result.Cols) return;
 
                     if (result.Cols[0].tuples.length === 0) {
@@ -377,6 +438,21 @@
                 return min;
             }
 
+            function limitData(d) {
+                var i, j, c;
+                var controls = _this.desc.controls || [];
+                var cont = controls.filter(function(el) { return el.action === "setRowCount"; })[0];
+                var rowCount = cont ? (cont.value || DEF_ROW_COUNT) : DEF_ROW_COUNT;
+                rowCount = 4;
+                if ($scope.chartConfig.options.plotOptions.series.stacking === "normal") {
+                    var cats = d.Cols[1].tuples;
+                    var ser = d.Cols[0].tuples;
+                    if ($scope.item.isTop) {
+                        cats.splice(0, cats.length - rowCount);
+                    }
+                }
+            }
+
             /**
              * Parse data and create chart series
              * @param {object} d Data
@@ -384,6 +460,9 @@
             function parseMultivalueData(d) {
                 var data = d;
                 var i;
+
+                limitData(d);
+
                 if (d && d.Info) _this.dataInfo = d.Info;
                 $scope.chartConfig.yAxis.min = getMinValue(data.Data);
                 $scope.chartConfig.series = [];
@@ -467,7 +546,10 @@
                         });
                     }
                 }
-                limitSeriesAndData();
+                //_this.chart._backupSeries = [];
+                //angular.copy($scope.chartConfig.series, _this.chart._backupSeries);
+
+                //if (ignoreRowLimit !== true) limitSeriesAndData();
             }
 
             function getFormat(data) {

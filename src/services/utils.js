@@ -30,14 +30,26 @@
          * @returns {object} obj1 contains all properties from obj2
          */
         function mergeRecursive(obj1, obj2) {
+            // If object is array, construct new array and make clone
+            if (obj2.constructor === Array) {
+                obj1 = [];
+                for (var i = 0; i < obj2.length; i++) {
+                    if (typeof obj2[i] === "object") obj1[i] = mergeRecursive({}, obj2[i]); else obj1[i] = obj2[i];
+                }
+                return obj1;
+            }
+
             for (var p in obj2) {
                 if (!obj2.hasOwnProperty(p)) continue;
                 try {
                     // Property in destination object set; update its value.
                     if (obj2[p].constructor == Object) {
                         obj1[p] = mergeRecursive(obj1[p] || {}, obj2[p]);
-
-                    } else {
+                    }
+                    if (obj2[p].constructor == Object) {
+                        obj1[p] = mergeRecursive(obj1[p] || [], obj2[p]);
+                    }
+                    else {
                         obj1[p] = obj2[p];
                     }
                 } catch (e) {

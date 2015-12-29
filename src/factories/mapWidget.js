@@ -26,6 +26,9 @@
             this.requestData();
             _this.mapData = null;
 
+            $scope.model.tooltip.name = "";
+            $scope.model.tooltip.items = [];
+
             var polys = null;
             requestPolygons();
 
@@ -39,6 +42,7 @@
 
                 var url = "/csp/" + Connector.getNamespace() + "/" + fileName;
                 if (localStorage.connectorRedirect) url="rfpolygons.js";
+                //if (localStorage.connectorRedirect) url="mospolygons.js";
                 //if (localStorage.connectorRedirect) url = localStorage.connectorRedirect.replace("MDX2JSON/", "").split("/").slice(0, -1).join("/") + "/csp/" + Connector.getNamespace() + "/" + fileName;
                 Connector.getFile(url).success(onPolyFileLoaded);
             }
@@ -107,6 +111,126 @@
 
                 var count = 0;
                 //polyCoordProp  = _this.desc.proper Polygon Coords property
+
+                // TODO: new iteration
+                var l = _this.mapData.Cols[0].tuples.length;
+                idx = -1;
+                item = _this.mapData.Cols[0].tuples.filter(function(el) { return el.caption === coordsProperty; });
+                if (item.length != 0) {
+                    idx = _this.mapData.Cols[0].tuples.indexOf(item[0]);
+                }
+
+                for (var t = 0; t < _this.mapData.Cols[1].tuples.length; t++) {
+                    var key = _this.mapData.Cols[1].tuples[t].caption;
+                    var pkey = key;
+                    if (idx !== -1) pkey = _this.mapData.Data[t * l + idx];
+                    if (!polys[pkey]) continue;
+
+                    var parts = polys[pkey].split(';');
+                    var poly = [];
+                    count++;
+                    //if (count > 2) continue;
+
+
+                    for (k = 0; k < parts.length; k++) {
+                        if (!parts[k]) continue;
+                        var coords = parts[k].split(' ');
+                        /*
+                         if (coords.length > 500) {
+                         var h = 0;
+                         while (h < coords.length) {
+                         coords.splice(h, 3);
+                         h += 6;
+                         }
+                         }*/
+                        var polyCoords = [];
+                        for (i in coords) {
+                            if (!coords[i]) continue;
+                            var c = coords[i].split(',');
+                            if (c.length < 2) continue;
+                            lon = parseFloat(c[0]);
+                            lat = parseFloat(c[1]);
+                            if (isNaN(lon) || isNaN(lat)) {
+                                console.warn("Wrong poly coordinates: ", coords[i]);
+                                continue;
+                            }
+                            if (lon < 0) lon = 360 + lon;
+                            //if (lat < 0) lat = 360 + lat;
+                            var point = new ol.geom.Point([Math.abs(lon), lat]);
+                            point.transform('EPSG:4326', 'EPSG:900913');
+                            //point.v[0] = point.v[0] .toFixed(2);
+                            //point.v[1] = point.v[1] .toFixed(2);
+                            /*if (point.v[0] < -20037508.34 || point.v[0] > 20037508.34) {
+                                console.warn("Wrong poly coordinates: ", coords[i], "lon", point.v[0]);
+                                continue;
+                            }
+                            if (point.v[1] < -20037508.34 || point.v[1] > 20037508.34) {
+                                console.warn("Wrong poly coordinates: ", coords[i], "lat", point.v[1]);
+                                continue;
+                            }*/
+                            polyCoords.push(point.getCoordinates());
+                        }
+                        poly.push(polyCoords);
+
+                        if (poly.length >300) {
+                            var tmp = [];
+                            for (var i = 0; i < poly.length; i+=2) {
+                                tmp.push(poly[i]);
+                            }
+                            poly = tmp;
+                        }
+                    }
+                    //if (count === 23) console.log(JSON.stringify( poly));
+                    //for (var rr = 0; rr < poly.length; rr++) poly[rr] = poly[rr].reverse();
+                    if (poly.length !== 1) {
+                        //poly = poly.slice(0, 1);
+                    }
+
+                    // Find poly title
+                    var polyTitle = key;
+                    if (_this.desc.properties.polygonTitleProperty) {
+                        var it = _this.mapData.Cols[0].tuples.filter(function (el) {
+                            return el.caption === _this.desc.properties.polygonTitleProperty;
+                        });
+                        if (it.length != 0) {
+                            var tidx = _this.mapData.Cols[0].tuples.indexOf(it[0]);
+                            if (tidx !== -1) {
+                                polyTitle = _this.mapData.Data[t * l + tidx];
+                            }
+                        }
+                    }
+
+                    var feature = new ol.Feature({
+                        geometry: new ol.geom.Polygon(poly),
+                        //geometry: new ol.geom.MultiPolygon([poly]),
+                        key: key,
+                        title:  polyTitle
+                    });
+
+                    feature.setStyle(new ol.style.Style({
+                        fill: new ol.style.Fill({
+                            color: getFeatureColor(key) || "none"
+                        }),
+                        stroke: new ol.style.Stroke({
+                            color: 'rgba(0, 0, 0, 0.3)',
+                            width: 1
+                        })
+                    }));
+
+                    features.push(feature);
+
+                    if (parseFloat(lon) < min[0]) min[0] = parseFloat(lon);
+                    if (parseFloat(lat) < min[1]) min[1] = parseFloat(lat);
+                    if (parseFloat(lon) > max[0]) max[0] = parseFloat(lon);
+                    if (parseFloat(lat) > max[1]) max[1] = parseFloat(lat);
+                }
+
+                _this.featureOverlay.getSource().clear();
+                _this.polys.clear();
+                _this.polys.addFeatures(features);
+                centerView(min, max);
+
+                return;
                 for (p in polys) {
                     var key = p;
                     var item;
@@ -177,8 +301,6 @@
                     }));
 
                     features.push(feature);
-
-                    console.log("poly");
 
                     if (parseFloat(lon) < min[0]) min[0] = parseFloat(lon);
                     if (parseFloat(lat) < min[1]) min[1] = parseFloat(lat);
@@ -350,7 +472,7 @@
                 _this.popup = new ol.Overlay({
                     element: $scope.tooltipElement,
                     positioning: 'bottom-center',
-                    offset: [0, -40],
+                    offset: [0, -10],
                     stopEvent: false
                 });
                 _this.map.addOverlay(_this.popup);
@@ -403,6 +525,25 @@
             }*/
 
             function onPointerMove(e) {
+                $scope.hideTooltip();
+
+
+
+                var feature = _this.map.forEachFeatureAtPixel(e.pixel,
+                    function (feature, layer) {
+                        return feature;
+                    });
+                if (feature) {
+                    var str = feature.getProperties().title || "";
+                    if (str) {
+                        /*$scope.model.tooltip.name = str;
+                        var coord = _this.map.getCoordinateFromPixel(e.pixel);
+                        _this.popup.setPosition(coord);
+                        showTooltip();*/
+                        $scope.showTooltip(str, e.originalEvent.pageX, e.originalEvent.pageY);
+                    }
+                }
+
                 if (e.dragging) {
                     hideTooltip();
                     return;
@@ -411,9 +552,6 @@
                 var hit = _this.map.hasFeatureAtPixel(pixel);
                  _this.map.getTarget().style.cursor = hit ? 'pointer' : '';
 
-                var feature = _this.map.forEachFeatureAtPixel(pixel, function(feature, layer) {
-                    return feature;
-                });
                 _this.featureOverlay.getSource().clear();
                 if (feature) _this.featureOverlay.getSource().addFeature(feature);
             }

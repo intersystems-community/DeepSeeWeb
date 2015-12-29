@@ -135,6 +135,8 @@
                 if (action.action === 'setColumnSpec') {
                     _this.customColSpec = action.targetProperty;
                     _this.requestData();
+                } else {
+                    Connector.execAction(action.action, _this.desc.cube).then(requestData);
                 }
             }
 
@@ -181,6 +183,11 @@
                 var drillInfo = params.drillInfo;
                 var result = params.response.data;
                 if (!result) return;
+
+                // Store current widget data
+                _this.widgetData = {};
+                angular.copy(result, _this.widgetData);
+
                 if ($scope.chartConfig) $scope.chartConfig.loading = false;
                 if (result.Error) {
                     _this.showError(result.Error);
@@ -315,7 +322,10 @@
              */
             function setupActions() {
                 if (!_this.desc.controls || _this.desc.controls.length === 0) return;
-                var actions = _this.desc.controls.filter(function(el) { return el.action === 'setColumnSpec' && el.type !== "hidden"; });
+                var stdList = ['applyfilter', 'setfilter', 'refresh', 'reloaddashboard', 'showlisting', 'showgeolisting', 'showbreakdown', 'setdatasource',
+                    'choosedatasource', 'applyvariable', 'setrowspec', 'chooserowspec', 'setcolumnspec', 'choosecolumnspec', 'viewdashboard', 'navigate',
+                    'newwindow', 'setrowcount', 'seteowsort', 'setcolumncount', 'setcolumnsort'];
+                var actions = _this.desc.controls.filter(function(el) { return stdList.indexOf(el.action.toLowerCase()) === -1 && el.type !== "hidden"; });
                 if (actions.length === 0) return;
                 _this.hasActions = true;
                 showToolbar();
@@ -395,6 +405,8 @@
             function onSetLinkedMdx(sc, mdx) {
                 $scope.item.backButton = false;
                 if (_this.storedData) _this.storedData = [];
+                // Store in scope to have ability get it after wiget type is changed dynamically
+                _this.desc.linkedMdx = mdx;
                 _this.linkedMdx = mdx;
                 _this.requestData();
             }
@@ -514,7 +526,7 @@
 
                 // If widget is linked, use linkedMDX
                 if (_this.isLinked()) {
-                    var str = _this.linkedMdx;
+                    var str = _this.linkedMdx || this.desc.linkedMdx || "";
                     str = checkColSpec(str);
                     return str;
                 }

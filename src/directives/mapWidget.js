@@ -29,6 +29,13 @@
 
                     //$compile(element.contents())(scope);
 
+
+                    var tt = $("<div class='map-tooltip'>fff</div>");
+                    tt
+                        .hide()
+                        .appendTo("body");
+                    scope.tooltip = tt;
+
                     var map = new ol.Map({
                         layers: [
                             //raster,
@@ -50,8 +57,34 @@
                         })
                     });
 
+                    map.getViewport().addEventListener('mouseout', function(evt){
+                        scope.hideTooltip();
+                    }, false);
 
+                    var hintTimeout = null;
+                    scope.hideTooltip = function() {
+                        if (hintTimeout) clearTimeout(hintTimeout);
+                        scope.tooltip.hide();
+                    };
+
+
+                    scope.showTooltip = function(txt, x, y) {
+                        if (hintTimeout) clearTimeout(hintTimeout);
+                        hintTimeout = setTimeout(function() {
+                            var el = scope.tooltip;
+                            el
+                                .text(txt)
+                                .css("left", x.toString() + "px")
+                                .css("top", y.toString() + "px")
+                                .show();
+                        }, 600);
+                    };
                     if (scope.onInit) scope.onInit(map);
+
+                    scope.$on("$destroy", function() {
+                        scope.tooltip.remove();
+                        scope.tooltip = null;
+                    })
                 }
             };
         }]);

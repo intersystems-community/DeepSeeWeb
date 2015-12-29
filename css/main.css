@@ -576,11 +576,18 @@ body::-webkit-scrollbar {
 }
 
 .map-tooltip {
-    padding: 4px;
+    padding-left: 2px;
+    padding-right: 2px;
     -webkit-box-shadow: 1px 1px 9px 0px rgba(50, 50, 50, 0.5);
     -moz-box-shadow:    1px 1px 9px 0px rgba(50, 50, 50, 0.5);
     box-shadow:         1px 1px 9px 0px rgba(50, 50, 50, 0.5);
-    margin-bottom: -1px;
+    margin-top: 24px;
+    font-family: sans-serif;
+    font-size: small;
+    z-index: 1000;
+    position: absolute;
+    background-color: white;
+    border: 1px solid #888888;
 }
 
 .arrow_box {

@@ -9,7 +9,7 @@
         function AreaChart($scope) {
             BaseChart.apply(this, [$scope]);
             this.setType('area');
-
+            $scope.item.isBtnZero = true;
             var ex = {
                 plotOptions: {
                     series: {

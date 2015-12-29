@@ -9,6 +9,7 @@
         function ColumnChart($scope) {
             BaseChart.apply(this, [$scope]);
             this.setType('column');
+            $scope.item.isBtnZero = true;
             if (this.desc.type.toLowerCase() === "columnchartstacked") this.enableStacking();
 
             this.requestData();

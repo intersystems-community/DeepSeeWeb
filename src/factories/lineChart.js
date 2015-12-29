@@ -11,6 +11,7 @@
         function LineChart($scope) {
             BaseChart.apply(this, [$scope]);
             this.setType('line');
+            $scope.item.isBtnZero = true;
             if (this.desc.type.toLowerCase() != "combochart") {
                 $scope.chartConfig.options.plotOptions = {
                     series: {

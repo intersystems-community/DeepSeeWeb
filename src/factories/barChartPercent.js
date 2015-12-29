@@ -271,6 +271,7 @@
              */
             function parseData(data) {
                 while(_this.chart.series.length > 0) _this.chart.series[0].remove(false);
+
                 _this.noPlanCats     = [];
                 _this.oldParseData(data);
                 var maxValue = 0;
@@ -285,7 +286,7 @@
                     for (j = 0; j < $scope.chartConfig.series[0].data.length; j++) {
                         val = 0;
                         for (i = 5; i < $scope.chartConfig.series.length; i++) {
-                            val += $scope.chartConfig.series[i].data[j].y;
+                            if ($scope.chartConfig.series[i].data[j]) val += $scope.chartConfig.series[i].data[j].y;
                         }
                         if (val > max) max = val;
                     }
@@ -295,6 +296,16 @@
 
                 // Find categories without planned values
                 for (i = 0, l = $scope.chartConfig.series[0].data.length; i < l; i++) {
+                    /*if (!$scope.chartConfig.series[0].data[i]) continue;
+                    if (!$scope.chartConfig.series[1].data[i]) continue;
+                    if (!$scope.chartConfig.series[2].data[i]) continue;
+                    if (!$scope.chartConfig.series[3].data[i]) continue;
+                    if (!$scope.chartConfig.series[4].data[i]) continue;
+                    if (!$scope.chartConfig.series[5].data[i]) continue;
+                    if (!$scope.chartConfig.series[6].data[i]) continue;
+                    if (!$scope.chartConfig.series[7].data[i]) continue;
+                    if (!$scope.chartConfig.series[8].data[i]) continue;*/
+
                     if ($scope.chartConfig.series[0].data[i].y === null ||
                         $scope.chartConfig.series[0].data[i].y === undefined ||
                         $scope.chartConfig.series[0].data[i].y === "" ||
