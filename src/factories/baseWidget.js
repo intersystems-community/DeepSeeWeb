@@ -13,7 +13,7 @@
             this.drillsMDX       = [];
             this.storedData      = [];
             this.titles          = [];
-            this.baseTitle       = $scope.item.title;
+            this.baseTitle       = $scope.item ? $scope.item.title : $scope.$parent.title;
             this.drillFilter     = "";
             // Array of widget names that shall be filtered during drill down
             this.drillFilterWidgets = null;
