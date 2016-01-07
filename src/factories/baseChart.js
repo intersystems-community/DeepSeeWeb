@@ -171,7 +171,8 @@
                 var cont = controls.filter(function(el) { return el.action === "setColumnCount"; })[0];
                 var colCount = cont ? (cont.value || DEF_COL_COUNT) : DEF_COL_COUNT;
                 rowCount = 4;
-                if ($scope.chartConfig.options.plotOptions.series.stacking === "normal") {
+                if ($scope.chartConfig.options.plotOptions.series.stacking === "normal" ||
+                    !$scope.chartConfig.options.plotOptions.series.stacking) {
                     var cats = $scope.chartConfig.xAxis.categories;
                     if ($scope.item.isTop) {
                         //_this.chart._backupSeries = Utils.merge([], ser);
@@ -443,8 +444,9 @@
                 var controls = _this.desc.controls || [];
                 var cont = controls.filter(function(el) { return el.action === "setRowCount"; })[0];
                 var rowCount = cont ? (cont.value || DEF_ROW_COUNT) : DEF_ROW_COUNT;
-                rowCount = 4;
-                if ($scope.chartConfig.options.plotOptions.series.stacking === "normal") {
+                //rowCount = 4;
+                if ($scope.chartConfig.options.plotOptions.series.stacking === "normal" ||
+                    !$scope.chartConfig.options.plotOptions.series.stacking ) {
                     var cats = d.Cols[1].tuples;
                     var ser = d.Cols[0].tuples;
                     if ($scope.item.isTop) {
