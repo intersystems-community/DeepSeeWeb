@@ -499,7 +499,21 @@
 
             function checkColSpec(mdx) {
                 if (_this.customColSpec) {
-                    var match;
+                    var selText = "SELECT NON EMPTY";
+                    var lastSel = mdx.lastIndexOf(selText);
+                    if (lastSel === -1) {
+                        selText = "SELECT";
+                        lastSel = mdx.lastIndexOf(selText);
+                    }
+                    if (lastSel === -1) return mdx;
+                    var lastOn = mdx.lastIndexOf("ON 0");
+                    if (lastOn === -1) return mdx;
+                    if (lastOn < lastSel) return mdx;
+
+                    mdx = mdx.replace(mdx.substring(lastSel, lastOn), selText + " " + _this.customColSpec + " ");
+                    return mdx;
+
+                    /*var match;
                     match = mdx.match(/SELECT NON EMPTY (.*)ON 0/);
                     if (match && match.length === 2) {
                         var str = match[1];
@@ -510,7 +524,7 @@
                             var str = match[1];
                             mdx = mdx.replace(str, _this.customColSpec + " ");
                         }
-                    }
+                    }*/
                 }
                 return mdx;
             }

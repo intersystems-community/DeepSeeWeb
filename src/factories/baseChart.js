@@ -444,13 +444,13 @@
                 var controls = _this.desc.controls || [];
                 var cont = controls.filter(function(el) { return el.action === "setRowCount"; })[0];
                 var rowCount = cont ? (cont.value || DEF_ROW_COUNT) : DEF_ROW_COUNT;
-                //rowCount = 4;
+                //rowCount = 20;
                 if ($scope.chartConfig.options.plotOptions.series.stacking === "normal" ||
                     !$scope.chartConfig.options.plotOptions.series.stacking ) {
                     var cats = d.Cols[1].tuples;
                     var ser = d.Cols[0].tuples;
                     if ($scope.item.isTop) {
-                        cats.splice(0, cats.length - rowCount);
+                        cats.splice(rowCount, cats.length - rowCount);
                     }
                 }
             }
