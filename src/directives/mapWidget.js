@@ -12,7 +12,7 @@
         .directive('mapWidget', ['$templateCache', '$compile', function($templateCache, $compile) {
             return {
                 template: function(element, attrs) {
-                    return "<div ng-show='model.tooltip.visible'><div class='panel panel-default map-tooltip'>" +
+                    return "<div ng-show='model.tooltip.visible'><div class='panel panel-default map-popup'>" +
                                "<div style='text-a" +
                         "lign: center;'><strong>{{model.tooltip.name}}</strong></div>" +
                                "<div ng-repeat='item in model.tooltip.items'>{{item.label}} {{item.value}}</div>" +

@@ -603,6 +603,7 @@ body::-webkit-scrollbar {
     width: 0;
     position: absolute;
     pointer-events: none;
+    margin-top: -1px;
 }
 
 .arrow_box:after {
@@ -648,4 +649,13 @@ select.input-sm {
 .btn-action {
     height: 29px;
     margin-top: 6px;
+}
+
+.map-popup {
+    margin-bottom: 0px;
+    border-color: rgb(176, 176, 176);
+    padding: 4px;
+    -webkit-box-shadow: 1px 1px 9px 0px rgba(50, 50, 50, 0.5);
+    -moz-box-shadow: 1px 1px 9px 0px rgba(50, 50, 50, 0.5);
+    box-shadow: 1px 1px 9px 0px rgba(50, 50, 50, 0.5);
 }

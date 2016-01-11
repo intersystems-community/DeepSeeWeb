@@ -77,11 +77,11 @@
             }
 
             function centerView(min, max) {
-                var lat = _this.desc.properties.latitude;
-                var lon = _this.desc.properties.longitude;
-                var zoom = _this.desc.properties.zoom;
+                var lat = parseFloat(_this.desc.properties.latitude);
+                var lon = parseFloat(_this.desc.properties.longitude);
+                var zoom = parseFloat(_this.desc.properties.zoom);
 
-                if (_this.drillLevel === 0 && lat && lon && zoom) {
+                if (_this.drillLevel === 0 && (!isNaN(lat) && !isNaN(lon) && !isNaN(zoom)) && (lat !== undefined && lon !== undefined && zoom !== undefined)) {
                     _this.map.getView().setCenter(ol.proj.transform([lon, lat], 'EPSG:4326', 'EPSG:900913'));
                     _this.map.getView().setZoom(zoom);
                 } else {
@@ -356,7 +356,8 @@
                         var lon = parseFloat(result.Data[k+lonIdx] || 0);
                         var name = result.Cols[1].tuples[i].caption;
 
-                        var point = new ol.geom.Point([lon, lat]);
+                        ///var point = new ol.geom.Point([lon, lat]);
+                        var point = new ol.geom.Point([lat, lon]);
                         //var point = new ol.geom.Point([48.584626, 53.1613304]);
                         point.transform('EPSG:4326', 'EPSG:900913');
 
@@ -413,6 +414,26 @@
                 _this.map = map;
                 $timeout(onResize, 0);
 
+
+                /*var iconFeature = new ol.Feature({
+                    geometry: new ol.geom.Point([0, 0]),
+                    name: 'Null Island',
+                    population: 4000,
+                    rainfall: 500
+                });
+
+                iconFeature.setStyle(iconStyle);
+
+                var vectorSource = new ol.source.Vector({
+                    features: [iconFeature]
+                });
+
+                var vectorLayer = new ol.layer.Vector({
+                    source: vectorSource
+                });
+                _this.map.addLayer(vectorLayer);*/
+
+
                 // Create style for marker
                 _this.iconStyle = new ol.style.Style({
                     image: new ol.style.Icon({
@@ -450,29 +471,31 @@
                     source: _this.polys,
                     style: _this.polyStyle
                 });
+                vectorLayer.setZIndex(0);
                 _this.map.addLayer(vectorLayer);
 
                 // Setup clustering
                 _this.markers = new ol.source.Vector({
                     features: []
                 });
-                var clusterSource = new ol.source.Cluster({
+                /*var clusterSource = new ol.source.Cluster({
                     distance: _this.CLUSTER_RANGE,
                     source: _this.markers
-                });
+                });*/
 
                 // Create layer for markers
                 var vectorLayer = new ol.layer.Vector({
-                    source: clusterSource,
+                    source: _this.markers,
                     style: _this.iconStyle
                 });
                 _this.map.addLayer(vectorLayer);
+                vectorLayer.setZIndex(10);
 
                 // Create popup
                 _this.popup = new ol.Overlay({
                     element: $scope.tooltipElement,
                     positioning: 'bottom-center',
-                    offset: [0, -10],
+                    offset: [0, -40],
                     stopEvent: false
                 });
                 _this.map.addOverlay(_this.popup);
@@ -491,6 +514,7 @@
                 });
 
                 _this.map.addLayer(_this.featureOverlay);
+                vectorLayer.setZIndex(2);
 
                 _this.map.on('click', onMapClick);
                 _this.map.on('pointermove', onPointerMove);
@@ -590,14 +614,14 @@
                         _this.doDrill(item[0].path, key);
                         //_this.doDrillFilter(item[0].path);
                     } else {
-                        var labels = feature.get("features")[0].get("labels");
-                        var values = feature.get("features")[0].get("values");
+                        var labels = feature.get("labels");
+                        var values = feature.get("values");
                         $scope.model.tooltip.items = [];
                         for (var i = 0; i < labels.length; i++) $scope.model.tooltip.items.push({
                             label: labels[i] + ": ",
                             value: values[i]
                         });
-                        $scope.model.tooltip.name = feature.get("features")[0].get("name");
+                        $scope.model.tooltip.name = feature.get("name");
 
                         var geometry = feature.getGeometry();
                         var coord = geometry.getCoordinates();
