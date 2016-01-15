@@ -4,7 +4,7 @@
 (function() {
     'use strict';
 
-    function LineChartFact(BaseChart) {
+    function LineChartFact(BaseChart, Utils) {
 
 
 
@@ -12,8 +12,10 @@
             BaseChart.apply(this, [$scope]);
             this.setType('line');
             $scope.item.isBtnZero = true;
+            $scope.item.isBtnValues = true;
+            var ex = {};
             if (this.desc.type.toLowerCase() != "combochart") {
-                $scope.chartConfig.options.plotOptions = {
+                ex = {
                     series: {
                         lineWidth: 3,
                         marker: {
@@ -24,7 +26,7 @@
             }
 
             if (this.desc.type.toLowerCase() === "linechartmarkers") {
-                $scope.chartConfig.options.plotOptions = {
+                ex = {
                     series: {
                         marker: {
                             enabled: true
@@ -32,7 +34,7 @@
                     }
                 };
             }
-
+            Utils.merge($scope.chartConfig.options.plotOptions, ex);
             this.requestData();
         }
 
@@ -40,6 +42,6 @@
     }
 
     angular.module('widgets')
-        .factory('LineChart', ['BaseChart', LineChartFact]);
+        .factory('LineChart', ['BaseChart', 'Utils', LineChartFact]);
 
 })();

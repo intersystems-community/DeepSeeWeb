@@ -4,7 +4,7 @@
 (function() {
     'use strict';
 
-    function MapWidgetFact($rootScope, CONST, $timeout, Connector) {
+    function MapWidgetFact(Storage, CONST, $timeout, Connector) {
 
         function MapWidget($scope) {
             var _this = this;
@@ -35,13 +35,10 @@
             function requestPolygons() {
                 if (!_this.desc.properties || !_this.desc.properties.coordsJsFile) return;
                 var fileName = _this.desc.properties.coordsJsFile;
-                /*var fn = fileName.split(".");
-                fn.pop();
-                fn.push("json");
-                fileName = fn.join(".");*/
-
-                var url = "/csp/" + Connector.getNamespace() + "/" + fileName;
-                if (localStorage.connectorRedirect) url="rfpolygons.js";
+                var folder = Storage.serverSettings.DefaultApp || "/csp";
+                var url = folder + "/" + fileName;
+                if (localStorage.connectorRedirect) url="huPolygons.js";
+                //if (localStorage.connectorRedirect) url="rfpolygons.js";
                 //if (localStorage.connectorRedirect) url="mospolygons.js";
                 //if (localStorage.connectorRedirect) url = localStorage.connectorRedirect.replace("MDX2JSON/", "").split("/").slice(0, -1).join("/") + "/csp/" + Connector.getNamespace() + "/" + fileName;
                 Connector.getFile(url).success(onPolyFileLoaded);
@@ -56,24 +53,50 @@
                 buildPolygons();
             }
 
-            function getFeatureColor(name) {
+            function getFeatureColor(name, value) {
                 var item = _this.mapData.Cols[1].tuples.filter(function(el) { return el.caption === name; });
                 if (item.length === 0) return;
                 item = item[0];
+
+
+
                 var idx = _this.mapData.Cols[1].tuples.indexOf(item);
                 var l = _this.mapData.Cols[0].tuples.length;
                 var color = _this.mapData.Cols[0].tuples.filter(function(el) { return el.caption === _this.desc.properties.colorProperty; });
-                if (color.length === 0) return;
-                color = color[0];
-                var colorIdx = _this.mapData.Cols[0].tuples.indexOf(color);
-                var col = _this.mapData.Data[idx * l + colorIdx];
-                if (col.indexOf("rgba") === -1) {
-                    col = col.replace("rgb", "rgba");
-                    col = col.substr(0, col.length - 1) + ", 0)";
+                if (color.length !== 0) {
+                    color = color[0];
+                    var colorIdx = _this.mapData.Cols[0].tuples.indexOf(color);
+                    var col = _this.mapData.Data[idx * l + colorIdx];
+                    if (col.indexOf("rgba") === -1) {
+                        col = col.replace("rgb", "rgba");
+                        col = col.substr(0, col.length - 1) + ", 0)";
+                    }
+                    var parts = col.split(",");
+                    parts[3] = "0.4)";
+                    return parts.join(",");
+                } else {
+                    var f = "rgb(x, 255-x, 0)";
+                    var f = "hsl(x/255 * 120, 100%, 50%)";
+                    if (_this.desc.properties.colorFormula) f = _this.desc.properties.colorFormula;
+                    f = f.replace("rgb(", "");
+                    f = f.replace("hsl(", "");
+                    f = f.slice(0, -1);
+                    var parts = f.split(",");
+                    var x = value || 0;
+                    var tmp;
+                    for (var i = 0; i < parts.length; i++) {
+                        if (parts[i].indexOf("x") === -1) continue;
+                        parts[i] = parts[i].replace(/x/g, x.toString());
+                        eval("tmp = " + parts[i] + ";");
+                        if (tmp > 255) tmp = 255;
+                        if (tmp < 0) tmp = 0;
+                        parts[i] = Math.floor(tmp).toString();
+                    }
+
+                    //return "rgba(" + parts.join(",") + ", 0.3)";
+                    console.log("hsla(" + parts.join(",") + ", 0.3)");
+                    return "hsla(" + parts.join(",") + ", 0.5)";
                 }
-                var parts = col.split(",");
-                parts[3] = "0.4)";
-                return parts.join(",");
             }
 
             function centerView(min, max) {
@@ -105,6 +128,15 @@
                 var coordsProperty = _this.desc.properties.coordsProperty;
                 if (!polys || !_this.map || !_this.mapData) return;
                 var features = [];
+                var l = _this.mapData.Cols[0].tuples.length;
+                var minV = Number.MAX_VALUE;
+                var maxV = Number.MIN_VALUE;
+                var idx = parseInt(_this.desc.properties.colorProperty) || 0;
+                for (var t = 0; t < _this.mapData.Cols[1].tuples.length; t++) {
+                    var value = _this.mapData.Data[t * l + idx];
+                    if (value < minV) minV = value;
+                    if (value > maxV) maxV = value;
+                }
 
                 var min = [Number.MAX_VALUE, Number.MAX_VALUE];
                 var max = [Number.MIN_VALUE, Number.MIN_VALUE];
@@ -113,7 +145,6 @@
                 //polyCoordProp  = _this.desc.proper Polygon Coords property
 
                 // TODO: new iteration
-                var l = _this.mapData.Cols[0].tuples.length;
                 idx = -1;
                 item = _this.mapData.Cols[0].tuples.filter(function(el) { return el.caption === coordsProperty; });
                 if (item.length != 0) {
@@ -207,16 +238,17 @@
                         title:  polyTitle
                     });
 
+                    var value = _this.mapData.Data[t * l + (_this.desc.properties.colorProperty || 0)];
                     feature.setStyle(new ol.style.Style({
                         fill: new ol.style.Fill({
-                            color: getFeatureColor(key) || "none"
+                            color: (getFeatureColor(key, ((maxV - value) * 255) / (maxV - minV))) || "none"
                         }),
                         stroke: new ol.style.Stroke({
                             color: 'rgba(0, 0, 0, 0.3)',
                             width: 1
                         })
                     }));
-
+                    //console.log(getFeatureColor(key, ((maxV - value) * 255) / (maxV - minV)));
                     features.push(feature);
 
                     if (parseFloat(lon) < min[0]) min[0] = parseFloat(lon);
@@ -659,6 +691,6 @@
     }
 
     angular.module('widgets')
-        .factory('MapWidget', ['$rootScope', 'CONST', '$timeout', 'Connector', MapWidgetFact]);
+        .factory('MapWidget', ['Storage', 'CONST', '$timeout', 'Connector', MapWidgetFact]);
 
 })();

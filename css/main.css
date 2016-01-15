@@ -576,7 +576,7 @@ body::-webkit-scrollbar {
 }
 
 .map-tooltip {
-    padding-left: 2px;
+    /*padding-left: 2px;
     padding-right: 2px;
     -webkit-box-shadow: 1px 1px 9px 0px rgba(50, 50, 50, 0.5);
     -moz-box-shadow:    1px 1px 9px 0px rgba(50, 50, 50, 0.5);
@@ -587,7 +587,20 @@ body::-webkit-scrollbar {
     z-index: 1000;
     position: absolute;
     background-color: white;
-    border: 1px solid #888888;
+    border: 1px solid black;
+    background-color: #fcf8e3;*/
+    margin-top: 24px;
+    z-index: 1000;
+    position: absolute;
+    border: solid 1px #000000;
+    color: #000000;
+    background-color: #ffffe1;
+    white-space: nowrap;
+    font-family: Tahoma, sans-serif;
+    fontSize: 13px;
+    -moz-box-shadow: 2px 2px 4px #7f7f7f;
+    box-shadow: 2px 2px 4px #7f7f7f;
+    padding: 2px 3px;
 }
 
 .arrow_box {

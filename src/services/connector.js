@@ -4,7 +4,7 @@
 (function() {
     'use strict';
 
-    function ConnectorSvc($http, CONST, $cookieStore, $location, $routeParams) {
+    function ConnectorSvc($http, CONST, $cookieStore, $location, $routeParams, $route) {
         var _this = this;
         this.firstRun = true;
         this.username = localStorage.userName || "";
@@ -25,6 +25,7 @@
         this.saveConfig = saveConfig;
         this.loadConfig = loadConfig;
         this.execAction = execAction;
+        this.getSettings = getSettings;
 
         // for local testing
         /*
@@ -47,7 +48,7 @@
          * @returns {string} Namespace
          */
         function getNamespace() {
-            return $routeParams.ns || "samples";
+            return $route.current.params.ns || "samples";
         }
 
         /**
@@ -299,10 +300,18 @@
             });
         }
 
+        function getSettings() {
+            return $http({
+                method: 'GET',
+                url: _this.url + 'Test?Namespace=' + getNamespace(),
+                timeout: CONST.timeout,
+                withCredentials: true
+            });
+        }
 
     }
 
     angular.module('app')
-        .service('Connector', ['$http', 'CONST', '$cookieStore', '$location', '$routeParams', ConnectorSvc]);
+        .service('Connector', ['$http', 'CONST', '$cookieStore', '$location', '$routeParams', '$route', ConnectorSvc]);
 
 })();

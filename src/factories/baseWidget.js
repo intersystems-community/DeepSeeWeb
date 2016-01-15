@@ -91,6 +91,10 @@
             $scope.item.toolbarView = 'src/views/filters.html';
             var filterListener = $scope.$on('drillFilter:' + _this.desc.name, onDrillFilter);
             var filterAllListener = $scope.$on('drillFilter:*', onDrillFilter);
+
+            var colSpecListener = $scope.$on('setColSpec:' + _this.desc.name, onColSpecChanged);
+            var colSpecAllListener = $scope.$on('setColSpec:*', onColSpecChanged);
+
             $scope.$on('$destroy', function () {
                 filterListener();
                 filterAllListener();
@@ -307,6 +311,11 @@
                 requestPivotData();
             }
 
+            function onColSpecChanged(sc, path) {
+                _this.customColSpec = path;
+                _this.requestData();
+            }
+
             /**
              * Change current row spec
              * @param {string} path Path
@@ -315,6 +324,17 @@
                 console.log(path);
                 if (!path) _this.customRowSpec = ""; else _this.customRowSpec = path;
                 _this.requestData();
+            }
+
+            /**
+             * Change current col spec
+             * @param {string} path Path
+             */
+            function changeColumnSpec(path, item) {
+                var colSpec = "";
+                if (path) colSpec = path.replace(/\\/g, "");
+                var target = item.control.target;
+                $rootScope.$broadcast("setColSpec:" + target, colSpec);
             }
 
             /**
@@ -345,8 +365,9 @@
                     if (idx !== -1) val = item.values[idx];
                 }
                 switch (item.action) {
-                    case 'chooseDataSource': changeDataSource(val); break;
-                    case 'chooseRowSpec': changeRowSpec(val); break;
+                    case 'chooseDataSource': changeDataSource(val, item); break;
+                    case 'chooseRowSpec': changeRowSpec(val, item); break;
+                    case 'chooseColumnSpec': changeColumnSpec(val, item); break;
                 }
             }
             /**
@@ -370,7 +391,7 @@
                 }
 
                 if (!_this.desc.controls || _this.desc.controls.length === 0) return;
-                var chosers = _this.desc.controls.filter(function(el) { return el.action === 'chooseDataSource' || el.action === 'chooseRowSpec'; });
+                var chosers = _this.desc.controls.filter(function(el) { return el.action === 'chooseDataSource' || el.action === 'chooseRowSpec' || el.action === 'chooseColumnSpec';; });
                 if (chosers.length === 0) return;
                 _this.hasDatasourceChoser = true;
                 $scope.item.dsItems = [];
@@ -382,7 +403,8 @@
                     prop = a.join(".");
                     var item = {
                         action: chosers[i].action,
-                        label: chosers[i].label || Lang.get("dataSource")
+                        label: chosers[i].label || Lang.get("dataSource"),
+                        control: chosers[i]
                     };
                     $scope.item.dsItems.push(item);
                     Connector.getTermList(prop).then(getSetter(item));

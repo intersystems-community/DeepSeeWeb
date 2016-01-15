@@ -16,14 +16,16 @@
 
         $scope.model = {
             addMode:   false,
-            settingsNames: Storage.getSettingsNames(),
+            settingsNames:    Storage.getSettingsNames(),
             selectedSettings: Storage.currentSettings,
-            settingsName:      "",
-            showFolders:   !settings.hideFolders,
-            isMetro:       settings.isMetro,
-            showImages:    settings.showImages,
-            langs:         Lang.getLanguages(),
-            language:      Lang.current
+            settingsName:     "",
+            showFolders:      !settings.hideFolders,
+            isMetro:          settings.isMetro,
+            showImages:       settings.showImages,
+            langs:            Lang.getLanguages(),
+            language:         Lang.current,
+            colCount:         settings.colCount,
+            widgetHeight:     settings.widgetHeight
         };
 
         $scope.applySettrings    = applySettrings;
@@ -92,16 +94,20 @@
          * Apply settings
          */
         function applySettrings() {
-            var old              = Utils.merge({}, settings);
-            settings.language    = $scope.model.language || "en";
-            settings.hideFolders = !$scope.model.showFolders ? true : false;
-            settings.showImages  = $scope.model.showImages ? true : false;
-            settings.isMetro     = $scope.model.isMetro ? true : false;
+            var old               = Utils.merge({}, settings);
+            settings.language     = $scope.model.language || "en";
+            settings.hideFolders  = !$scope.model.showFolders ? true : false;
+            settings.showImages   = $scope.model.showImages ? true : false;
+            settings.isMetro      = $scope.model.isMetro ? true : false;
+            settings.colCount     = $scope.model.colCount;
+            settings.widgetHeight = $scope.model.widgetHeight;
 
-            if (old.language    !== settings.language)    shouldRefresh = true;
-            if (old.isMetro     !== settings.isMetro)     shouldRefresh = true;
-            if (old.hideFolders !== settings.hideFolders) shouldRefresh = true;
-            if (old.showImages  !== settings.showImages)  shouldRefresh = true;
+            if (old.language     !== settings.language)     shouldRefresh = true;
+            if (old.isMetro      !== settings.isMetro)      shouldRefresh = true;
+            if (old.hideFolders  !== settings.hideFolders)  shouldRefresh = true;
+            if (old.showImages   !== settings.showImages)   shouldRefresh = true;
+            if (old.colCount     !== settings.colCount)     shouldRefresh = true;
+            if (old.widgetHeight !== settings.widgetHeight) shouldRefresh = true;
 
             if ($scope.editor) Storage.setAddons($scope.editor.getText());
 

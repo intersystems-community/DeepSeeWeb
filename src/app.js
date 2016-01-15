@@ -75,15 +75,14 @@
         }
     }
 
-    function loadAddons(deffered, Storage, $q, $ocLazyLoad) {
+    function loadAddons(Storage, $q, $ocLazyLoad) {
         var addons;
         try {
             addons = JSON.parse(Storage.getAddons() || "{}");
         }
         catch (e) { }
         if (!addons || !addons.widgets || addons.widgets.length === 0) {
-            deffered.resolve();
-            return;
+            return $q.when();
         }
         var defers = [];
         for (var i = 0; i < addons.widgets.length; i++) {
@@ -109,9 +108,12 @@
                 })(defer));*/
             }
         }
-        if (defers.length === 0) deffered.resolve(); else {
+        if (defers.length === 0) return $q.when(); else return $q.all(defers);
+
+
+            /*deffered.resolve(); else {
             $q.all(defers).then(function() { deffered.resolve(); });
-        }
+        }*/
     }
 
     /**
@@ -132,7 +134,14 @@
             $rootScope.$broadcast('toggleMenu', true);
             Storage.loadConfig(result);
 
-            loadAddons(deffered, Storage, $q, $ocLazyLoad);
+            $q.all([
+                loadAddons(Storage, $q, $ocLazyLoad),
+                loadSettings(Storage, $q, Connector)
+            ]).then(function() {
+                deffered.resolve();
+            });
+
+
 
         }).error(function(result) {
             deffered.resolve();
@@ -140,6 +149,17 @@
         return deffered.promise;
     }
 
+
+    function loadSettings(Storage, $q, Connector)  {
+        var deffered = $q.defer();
+        Connector.getSettings().then(function(res) {
+            Storage.loadServerSettings(res.data);
+            deffered.resolve();
+        }).catch(function(result) {
+            deffered.resolve();
+        });
+        return deffered.promise;
+    }
 /*
     function loadConfig($q,$http) {
         var deffered = $q.defer();

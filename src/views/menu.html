@@ -42,9 +42,15 @@
             </form>
 
             <form class="navbar-form navbar-right">
-
                 <span ng-show="model.devMode" style="vertical-align: -webkit-baseline-middle; background-color: pink"><i class="fa fa-link"></i>&nbsp;Dev mode: {{model.devMode}}&nbsp;</span>
-                <span style="vertical-align: -webkit-baseline-middle;"><i class="fa fa-database"></i>&nbsp;{{model.namespace}}&nbsp;</span>
+                <ul class="nav navbar-nav">
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="fa fa-database"></i> {{model.namespace}}<span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li ng-class="{active: ns.toLowerCase() === model.namespace.toLowerCase()}" ng-repeat="ns in model.namespaces track by $index"><a ng-click="changeNamespace(ns)">{{ns}}</a></li>
+                        </ul>
+                    </li>
+                </ul>
                 <div class="btn-group">
                     <button type="button" title="{{'signout' | lang}}" class="btn btn-default" ng-click="onSingoutClick()">{{model.username}} <i class="fa fa-sign-out"></i></button>
                 </div>

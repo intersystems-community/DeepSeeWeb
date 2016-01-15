@@ -12,6 +12,12 @@
         $scope.model = {
             items: []
         };
+        var settings = Storage.getAppSettings();
+        $scope.gridsterOpts = {
+            columns: parseInt(settings.colCount) || 12,
+            rowHeight: parseInt(settings.widgetHeight) || "match"
+        };
+
         $scope.getDesc = getDesc;
         $scope.onCtxMenuShow = onCtxMenuShow;
         $scope.refreshItem = refreshItem;

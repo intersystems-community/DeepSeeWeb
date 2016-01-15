@@ -10,6 +10,7 @@
             BaseChart.apply(this, [$scope]);
             this.setType('area');
             $scope.item.isBtnZero = true;
+            $scope.item.isBtnValues = true;
             var ex = {
                 plotOptions: {
                     series: {

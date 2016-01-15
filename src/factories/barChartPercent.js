@@ -10,7 +10,7 @@
             BaseChart.apply(this, [$scope]);
 
             $scope.item.menuDisabled = true;
-
+            $scope.item.isBtnValues = true;
             var _this            = this;
             _this.oldParseData   = this.parseData;
             _this.parseData      = parseData;

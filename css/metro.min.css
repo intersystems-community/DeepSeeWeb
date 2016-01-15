@@ -195,3 +195,12 @@ input.form-control {
     border: 1px solid #CCC;
     color: black;
 }
+
+.navbar-default .navbar-nav>li>a {
+    color: #FFF;
+}
+
+.navbar-default .navbar-nav>li>a:focus, .navbar-default .navbar-nav>li>a:hover {
+    color: #FFF;
+    background-color: transparent;
+}

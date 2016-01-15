@@ -29,9 +29,14 @@
             var firstRun = true;
             var settings = Storage.getAppSettings();
 
+
             $scope.item.isLegend = true;
             var widgetsSettings = Storage.getWidgetsSettings();
-            if (widgetsSettings[_this.desc.key]) {
+            loadToolbarButton(widgetsSettings, "isLegend");
+            loadToolbarButton(widgetsSettings, "isTop");
+            loadToolbarButton(widgetsSettings, "showZero");
+            loadToolbarButton(widgetsSettings, "showValues");
+            /*if (widgetsSettings[_this.desc.key]) {
                 if (widgetsSettings[_this.desc.key].isLegend !== undefined)  $scope.item.isLegend = widgetsSettings[_this.desc.key].isLegend;
             }
             $scope.item.isTop = false;
@@ -41,15 +46,17 @@
             $scope.item.showZero = false;
             if (widgetsSettings[_this.desc.key]) {
                 if (widgetsSettings[_this.desc.key].showZero !== undefined)  $scope.item.showZero = widgetsSettings[_this.desc.key].showZero;
-            }
+            }*/
             widgetsSettings = null;
 
             $scope.item.isChart = true;
             $scope.item.displayAsPivot = displayAsPivot;
             $scope.item.toggleLegend = toggleLegend;
             $scope.item.toggleTop = toggleTop;
+            $scope.item.toggleValues = toggleValues;
             $scope.item.showZeroOnAxis = showZeroOnAxis;
             $scope.item.isBtnZero = false;
+            $scope.item.isBtnValues = false;
 
 
             $scope.$on("print:" + $scope.item.$$hashKey, function(){ if (_this.chart) _this.chart.print();});
@@ -82,6 +89,10 @@
                                 events: {
                                     click: onPointClick
                                 }
+                            },
+                            dataLabels: {
+                                enabled: $scope.item.showValues === true,
+                                formatter: labelsFormatter
                             }
                         }
                     }
@@ -143,18 +154,59 @@
                 }
             }
 
+            function loadToolbarButton(settings, name) {
+                if (settings[_this.desc.key]) {
+                    if (settings[_this.desc.key][name] !== undefined)  $scope.item[name] = widgetsSettings[_this.desc.key][name];
+                }
+            }
+
+            function toggleValues() {
+                toggleButton("showValues");
+                $scope.chartConfig.options.plotOptions.series.dataLabels.enabled = $scope.item.showValues === true;
+            }
+
+            function toggleButton(name) {
+                $scope.item[name] = !$scope.item[name];
+                var widgetsSettings = Storage.getWidgetsSettings();
+                if (!widgetsSettings[_this.desc.key]) widgetsSettings[_this.desc.key] = {};
+                widgetsSettings[_this.desc.key][name] = $scope.item[name];
+                Storage.setWidgetsSettings(widgetsSettings);
+            }
+
+            function setYAxisMinToZero() {
+                if ($scope.chartConfig.yAxis instanceof Array) {
+                    for (var i = 0; i < $scope.chartConfig.yAxis.length; i++) {
+                        $scope.chartConfig.yAxis[i].prevMin = $scope.chartConfig.yAxis[i].currentMin;
+                        $scope.chartConfig.yAxis[i].currentMin = 0;
+                        //$scope.chartConfig.yAxis[i].min = 0;
+                    }
+                } else {
+                    $scope.chartConfig.yAxis.prevMin = $scope.chartConfig.yAxis.currentMin;
+                    $scope.chartConfig.yAxis.currentMin = 0;
+                    //$scope.chartConfig.yAxis.min = 0;
+                }
+            }
+
             function showZeroOnAxis() {
-                $scope.item.showZero = !$scope.item.showZero;
+                /*$scope.item.showZero = !$scope.item.showZero;
                 var widgetsSettings = Storage.getWidgetsSettings();
                 if (!widgetsSettings[_this.desc.key]) widgetsSettings[_this.desc.key] = {};
                 widgetsSettings[_this.desc.key].showZero = $scope.item.showZero;
-                Storage.setWidgetsSettings(widgetsSettings);
+                Storage.setWidgetsSettings(widgetsSettings);*/
+                toggleButton("showZero");
 
                 if ($scope.item.showZero) {
-                    $scope.chartConfig.yAxis.prevMin = $scope.chartConfig.yAxis.currentMin;
-                    $scope.chartConfig.yAxis.currentMin = 0;
+                    setYAxisMinToZero();
                 } else {
-                    $scope.chartConfig.yAxis.currentMin = $scope.chartConfig.yAxis.prevMin;
+                    if ($scope.chartConfig.yAxis instanceof Array) {
+                        for (var i = 0; i < $scope.chartConfig.yAxis.length; i++) {
+                            $scope.chartConfig.yAxis[i].currentMin = $scope.chartConfig.yAxis[i].prevMin;
+                            //delete $scope.chartConfig.yAxis[i].min;
+                        }
+                    } else {
+                        $scope.chartConfig.yAxis.currentMin = $scope.chartConfig.yAxis.prevMin;
+                        //delete $scope.chartConfig.yAxis.min;
+                    }
                 }
             }
 
@@ -207,12 +259,17 @@
                 }
             }
 
+            function showValues() {
+                toggleButton("showValues");
+            }
+
             function toggleTop() {
-                $scope.item.isTop = !$scope.item.isTop;
+                /*$scope.item.isTop = !$scope.item.isTop;
                 var widgetsSettings = Storage.getWidgetsSettings();
                 if (!widgetsSettings[_this.desc.key]) widgetsSettings[_this.desc.key] = {};
                 widgetsSettings[_this.desc.key].isTop = $scope.item.isTop;
-                Storage.setWidgetsSettings(widgetsSettings);
+                Storage.setWidgetsSettings(widgetsSettings);*/
+                toggleButton("isTop");
 
                 limitSeriesAndData();
             }
@@ -231,11 +288,12 @@
              * Toggles chart legend and save state in storage
              */
             function toggleLegend() {
-                $scope.item.isLegend = !$scope.item.isLegend;
+                /*$scope.item.isLegend = !$scope.item.isLegend;
                 var widgetsSettings = Storage.getWidgetsSettings();
                 if (!widgetsSettings[_this.desc.key]) widgetsSettings[_this.desc.key] = {};
                 widgetsSettings[_this.desc.key].isLegend = $scope.item.isLegend;
-                Storage.setWidgetsSettings(widgetsSettings);
+                Storage.setWidgetsSettings(widgetsSettings);*/
+                toggleButton("isLegend");
                 if (_this.chart) {
                     if ($scope.item.isLegend) _this.chart.legendShow(); else _this.chart.legendHide();
                 }
@@ -286,6 +344,16 @@
                 return a;
             }
 
+            function labelsFormatter() {
+                /* jshint ignore:start */
+                var t = this;
+                /* jshint ignore:end */
+                var fmt = t.series.options.format;
+                var val = t.y;
+                if (fmt) val = _this.formatNumber(val, fmt);
+                return val;
+            }
+
             function initFormatForSeries(d) {
                 var series = $scope.chartConfig.series;
                 for (var i = 0; i < series.length; i++) {
@@ -334,10 +402,7 @@
                      */
                     var min = _this.getMinValue(result.Data);
                     if (min > 0 && min <= 10) $scope.chartConfig.yAxis.currentMin = 0;
-                    if ($scope.item.showZero) {
-                        $scope.chartConfig.yAxis.prevMin = $scope.chartConfig.yAxis.currentMin;
-                        $scope.chartConfig.yAxis.currentMin = 0;
-                    }
+
                     if (!result.Cols) return;
 
                     if (result.Cols[0].tuples.length === 0) {
@@ -358,6 +423,11 @@
                                 text: $scope.chartConfig.series[i].name
                             };
                         }
+                    }
+                    if ($scope.item.showZero) {
+                        setYAxisMinToZero();
+                        //$scope.chartConfig.yAxis.prevMin = $scope.chartConfig.yAxis.currentMin;
+                        //$scope.chartConfig.yAxis.currentMin = 0;
                     }
                     if (firstRun) {
                         firstRun = false;

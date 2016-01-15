@@ -11,7 +11,7 @@
             var _this = this;
 
             $scope.item.toggleLegend = toggleLegend;
-
+            $scope.item.isBtnValues = true;
             var opt = {series: {allowPointSelect: true, stickyTracking: false}};
             if (!$scope.chartConfig.options.plotOptions) $scope.chartConfig.options.plotOptions = {};
             Utils.merge($scope.chartConfig.options.plotOptions, opt);

@@ -10,6 +10,7 @@
             BaseChart.apply(this, [$scope]);
             this.setType('bar');
             $scope.item.isBtnZero = true;
+            $scope.item.isBtnValues = true;
             if (this.desc.type.toLowerCase() === "barchartstacked") this.enableStacking();
             this.requestData();
         }

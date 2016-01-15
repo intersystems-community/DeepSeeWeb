@@ -10,9 +10,7 @@
                 <div role="tabpanel" class="tab-pane active settings-content" id="main">
                     <div class="container-fluid">
                         <div class="row">
-                            <div class="col-md-6">
-                                <div class="row">
-                                    <div class="col-md-6">
+                                    <div class="col-md-4">
                                         <div class="form-group">
                                             {{'language' | lang}}
                                             <select ng-model="model.language">
@@ -35,14 +33,21 @@
                                             </label>
                                         </div>
                                     </div>
-                                    <div class="col-md-6">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            {{'dashColumns' | lang}}
+                                            <input class="input-xs" type="text" ng-model="model.colCount">
+                                            {{'widgetHeight' | lang}}
+                                            <input class="input-xs" type="text" ng-model="model.widgetHeight">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
                                         <div class="form-group">
                                             <button type="button" class="btn btn-default btn-xs" ng-click="resetWidgets()">{{'resetWidgets' | lang}}</button>
                                             <button type="button" class="btn btn-default btn-xs" ng-click="resetTiles()">{{'resetTiles' | lang}}</button>
                                         </div>
                                     </div>
-                                </div>
-                            </div>
+
                         </div>
                     </div>
                 </div>

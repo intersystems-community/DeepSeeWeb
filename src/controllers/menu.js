@@ -5,7 +5,7 @@
 (function(){
     'use strict';
 
-    function MenuCtrl($scope, $routeParams, Connector, $window, $rootScope, $location, CONST, ngDialog, Lang) {
+    function MenuCtrl($scope, $routeParams, Connector, Storage, $rootScope, $location, CONST, ngDialog, Lang) {
         var _this = this;
         this.favs = [];
         loadFav();
@@ -26,7 +26,8 @@
             //showImages: CONST.showImages,
             devMode: localStorage.connectorRedirect,
             btnHome: Lang.get("home"),
-            lblSearch: Lang.get("search")
+            lblSearch: Lang.get("search"),
+            namespaces: []
         };
         $scope.search = search;
         $scope.gotoDeepSee = gotoDeepSee;
@@ -36,16 +37,31 @@
         $scope.removeFromFav = removeFromFav;
         $scope.navigateFav = navigateFav;
         $scope.showSettings = showSettings;
+        $scope.changeNamespace = changeNamespace;
         $rootScope.$on('toggleMenu', toggleMenu);
       //  $rootScope.$on('menu:toggleLoading', toggleLoading);
         $rootScope.$on('menu:changeTitle', changeTitle);
         $scope.$on('$routeChangeSuccess', onRouteChange);
-
+        $scope.$on('servSettings:loaded', onServerSettingsLoaded);
 
         $rootScope.$on('lang:changed', function() {
             $scope.model.btnHome = Lang.get("home");
             $scope.model.lblSearch = Lang.get("search");
         });
+
+        function changeNamespace(name) {
+            $routeParams.ns = name;
+            $location.path("/").url("?ns="+name);
+            //console.log(name);
+        }
+
+        function onServerSettingsLoaded() {
+            if (Storage.serverSettings.Mappings && Storage.serverSettings.Mappings.Mapped) {
+                $scope.model.namespaces = Storage.serverSettings.Mappings.Mapped.filter(function (el) {
+                    return el.charAt(0) !== "%";
+                });
+            }
+        }
         /**
          * Toggles loading indicator
          */
@@ -76,7 +92,8 @@
             if (!isOnDashboard()) return;
             var host = "";
             //if ($location.connectorRedirect) host = "http://146.185.143.59";
-            var url = "/csp/" + Connector.getNamespace() + "/_DeepSee.UserPortal.DashboardViewer.zen?DASHBOARD=" + $routeParams.path;
+            var folder = Storage.serverSettings.DefaultApp || "/csp";
+            var url = folder + "/" + Connector.getNamespace() + "/_DeepSee.UserPortal.DashboardViewer.zen?DASHBOARD=" + $routeParams.path;
             window.open(host + url);
         }
 
@@ -228,6 +245,6 @@
     }
 
     angular.module('app')
-        .controller('menu', ['$scope', '$routeParams', 'Connector', '$window', '$rootScope', '$location', 'CONST', 'ngDialog', 'Lang', MenuCtrl] );
+        .controller('menu', ['$scope', '$routeParams', 'Connector', 'Storage', '$rootScope', '$location', 'CONST', 'ngDialog', 'Lang', MenuCtrl] );
 
 })();

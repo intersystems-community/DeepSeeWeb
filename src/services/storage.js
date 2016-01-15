@@ -11,6 +11,7 @@
             Default: {}
         };
         this.temp = {}; // used to store all changes in settings
+        this.serverSettings = {};
 
         this.currentSettings     = localStorage.currentSettings || "Default";
         this.configLoaded        = false;
@@ -29,6 +30,7 @@
         this.getAllSettings      = getAllSettings;
         this.setAddons           = setAddons;
         this.getAddons           = getAddons;
+        this.loadServerSettings  = loadServerSettings;
 
 
         /**
@@ -84,8 +86,8 @@
                     },
                     lang: {
                         loading: "<div class='loader'></div>",
-                        //months: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
-                        //weekdays: ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'],
+                        //months: ['Janeiro', 'Fevereiro', 'Marï¿½o', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
+                        //weekdays: ['Domingo', 'Segunda', 'Terï¿½a', 'Quarta', 'Quinta', 'Sexta', 'Sï¿½bado'],
                         shortMonths: Lang.get("shortMonths"),
                         rangeSelectorZoom: Lang.get("zoom"),
                         rangeSelectorFrom: Lang.get("from"),
@@ -94,7 +96,7 @@
                          exportButtonTitle: "Exportar",
                          printButtonTitle: "Imprimir",
                          rangeSelectorFrom: "De",
-                         rangeSelectorTo: "Até",
+                         rangeSelectorTo: "Atï¿½",
                          rangeSelectorZoom: "??????????",
                          downloadPNG: 'Download imagem PNG',
                          downloadJPEG: 'Download imagem JPEG',
@@ -221,6 +223,11 @@
          */
         function getAllSettings() {
            return _this.settings;
+        }
+
+        function loadServerSettings(settings) {
+            _this.serverSettings = settings || {};
+            $rootScope.$broadcast('servSettings:loaded');
         }
     }
 
