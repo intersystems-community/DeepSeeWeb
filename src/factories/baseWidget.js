@@ -15,6 +15,8 @@
             this.titles          = [];
             this.baseTitle       = $scope.item ? $scope.item.title : $scope.$parent.title;
             this.drillFilter     = "";
+            this.showLoading     = showLoading;
+            this.hideLoading     = hideLoading;
             // Array of widget names that shall be filtered during drill down
             this.drillFilterWidgets = null;
 
@@ -36,7 +38,7 @@
             $scope.item.dsSelected = "";
             if (_this.desc && _this.desc.dataSource) $scope.item.dsSelected = Utils.removeExt(_this.desc.dataSource.split("/").pop());
             $scope.onDataSourceChange = onDataSourceChange;
-            $scope.item.drillUp = drillUp;
+            $scope.item.drillUp = doDrillUp;
             $scope.performAction = performAction;
 
             this.customColSpec = "";
@@ -51,7 +53,7 @@
             this._retrieveData = function(){};
             this._retriveDataSource = onDataSourceReceived;
             this.doDrill = doDrill;
-            this.onDrilldownReceived = onDrilldownReceived;
+            //this.onDrilldownReceived = onDrilldownReceived;
             this.onInit = function(){};
             this.getMDX = getMDX;
             this.clearError = clearError;
@@ -66,7 +68,7 @@
             this.broadcastDependents = broadcastDependents;
             this.destroy = destroy;
             this.getDrillTitle = getDrillTitle;
-            this.drillUp = drillUp;
+            this.drillUp = doDrillUp;
             this.liveUpdateInterval = null;
             this.onResize = function(){};
 
@@ -144,49 +146,94 @@
                 }
             }
 
-            function getDrillTitle(path, name, category) {
-                var p = path.split(".");
+            function getDrillTitle(drill) {
+                if (!drill) return _this.baseTitle || "";
+                var p = drill.path.split(".");
                 p.pop();
-                return (_this.baseTitle ? (_this.baseTitle + " - ") : "") + (name ? (p[p.length - 1] + " - ") : "") + (name || category)
+                return (_this.baseTitle ? (_this.baseTitle + " - ") : "") + (drill.name ? (p[p.length - 1] + " - ") : "") + (drill.name || drill.category);
             }
 
-            function doDrill(path, name, category) {
-                doDrillFilter(path);
-
-                var mdx = _this.getDrillMDX(path);
-                if (!mdx) return;
-
-                $q.all({
-                    drillInfo: $q.when({mdx: mdx, path: path, name: name, category: category}),
-                    response: Connector.execMDX(mdx)
-                }).catch(_this._onRequestError).then(_this.onDrilldownReceived);
-                //Connector.execMDX(mdx).error(_this._onRequestError).success(_this.onDrilldownReceived);
+            function isEmptyData(data) {
+                return !data || !data.Cols || !data.Cols[1] ||
+                    !data.Cols[1] || !data.Cols[1].tuples || data.Cols[1].tuples.length === 0 ||
+                    !data.Data || data.Data.length === 0 || data.Data[0] === "@NOPROPERTY";
             }
+
 
             /**
              * Makes drillup
              */
-            function drillUp() {
-                var path = _this.drills[_this.drills.length - 2];
-                doDrillFilter(path);
+            function doDrillUp() {
+                /*var path = _this.drills[_this.drills.length - 2];
+                 doDrillFilter(path);
 
-                _this.clearError();
-                _this.storedData.pop();
-                var data = _this.storedData.pop();
-                $scope.item.backButton = _this.storedData.length !== 0;
+                 _this.clearError();
+                 _this.storedData.pop();
+                 var data = _this.storedData.pop();
+                 $scope.item.backButton = _this.storedData.length !== 0;
 
-                doDrillUp();
-                _this._retrieveData(data);
+                 doDrillUp();
+                 _this._retrieveData(data);*/
             }
+
+            /**
+             * Back button click handler
+             */
+            function doDrillUp() {
+                doDrill();
+            }
+
+
+            /**
+             * Makes drill down or drill up if path is empty
+             * @param {string} [path] Drill path. If empty then drill up is happens
+             * @param {string} [name] Name
+             * @param {string} [category] Category
+             * @returns {IPromise<T>}
+             */
+            function doDrill(path, name, category) {
+                var defer = $q.defer();
+                doDrillFilter(path);
+                _this.clearError();
+
+                var old = _this.drills.slice();
+                if (path) _this.drills.push({path: path, name: name, category: category}); else _this.drills.pop();
+                var mdx = _this.getMDX();
+                _this.drills = old;
+
+                _this.showLoading();
+                Connector.execMDX(mdx)
+                    .error(_this._onRequestError)
+                    .success(function(data) {
+                        if (isEmptyData(data) && path) return;
+
+                        // Drill can be done, store new level and pass received data
+                        if (path) _this.drills.push({path: path, name: name, category: category}); else _this.drills.pop();
+                        $scope.item.backButton = _this.drills.length !== 0;
+                        $scope.item.title = _this.getDrillTitle(_this.drills[_this.drills.length - 1]);
+                        _this.broadcastDependents(mdx);
+                        _this._retrieveData(data);
+                    })
+                    .finally(function() {
+                        _this.hideLoading();
+                        defer.resolve();
+                    });
+
+
+                return defer.promise;
+            }
+
+
 
             /**
              * Callback for drilldown data request
              * @param {object} result Drilldown data
              */
-            function onDrilldownReceived(params) {
+            /*function onDrilldownReceived(params) {
                 var drillInfo = params.drillInfo;
                 var result = params.response.data;
                 if (!result) return;
+                if (result.Cols[1].tuples.length === 0) return;
 
                 // Store current widget data
                 _this.widgetData = {};
@@ -221,20 +268,44 @@
                 }
 
                 _this._retrieveData(result);
-            }
+            }*/
 
-            /**
-             * Back button click handler
-             */
-            function doDrillUp() {
-                _this.drillLevel--;
-                _this.drills.pop();
-                _this.drillsMDX.pop();
-                _this.broadcastDependents(_this.drillsMDX[_this.drillsMDX.length - 1]);
-                var tit = _this.titles.pop();
-                if (!tit) $scope.item.title = _this.baseTitle; else $scope.item.title = tit;
-            }
 
+            function applyDrill(mdx) {
+                var i;
+                if (_this.drills.length === 0) return mdx;
+                var drills = _this.drills;
+                var customDrills = [];
+                if (_this.pivotData && _this.pivotData.rowAxisOptions && _this.pivotData.rowAxisOptions.drilldownSpec) {
+                    customDrills = _this.pivotData.rowAxisOptions.drilldownSpec.split("^");
+                }
+                for (i = 0; i < drills.length; i++) {
+                    if (drills[i].path) mdx += " %FILTER " + drills[i].path;
+                }
+
+                var customDrill = customDrills[drills.length - 1];
+                var path = customDrill || drills[drills.length - 1].path;
+
+                // Remove all functions
+                // TODO: dont replace %Label
+                var match = mdx.match(/ON 0,(.*)ON 1/);
+                if (match && match.length === 2) {
+                    var str = match[1];
+                    var isNonEmpty = str.indexOf("NON EMPTY") !== -1;
+                    mdx = mdx.replace(str, (isNonEmpty ? "NON EMPTY " : " ") + path + " ");
+                }
+
+                if ((!customDrill && customDrills.length !== 0) || (customDrills.length === 0)) {
+                    mdx = mdx.replace(" ON 1 FROM", " .children ON 1 FROM");
+                    return mdx;
+                }
+
+                if (_this.drillFilter) {
+                    mdx = mdx + " %FILTER " + _this.drillFilter;
+                }
+
+                return mdx;
+            }
 
             /**
              * Returns MDX for drilldown
@@ -386,12 +457,16 @@
                                 item.labels.push(k);
                                 item.values.push(data.data[k]);
                             }
+                            // Set selection to first item, if current item is wrong
+                            if (item.labels.indexOf($scope.item.dsSelected) === -1) {
+                                $scope.item.dsSelected = item.labels[0];
+                            }
                         }
                     }
                 }
 
                 if (!_this.desc.controls || _this.desc.controls.length === 0) return;
-                var chosers = _this.desc.controls.filter(function(el) { return el.action === 'chooseDataSource' || el.action === 'chooseRowSpec' || el.action === 'chooseColumnSpec';; });
+                var chosers = _this.desc.controls.filter(function(el) { return el.action === 'chooseDataSource' || el.action === 'chooseRowSpec' || el.action === 'chooseColumnSpec'; });
                 if (chosers.length === 0) return;
                 _this.hasDatasourceChoser = true;
                 $scope.item.dsItems = [];
@@ -425,8 +500,7 @@
              * @param {string} mdx MDX to set
              */
             function onSetLinkedMdx(sc, mdx) {
-                $scope.item.backButton = false;
-                if (_this.storedData) _this.storedData = [];
+                //if (_this.storedData) _this.storedData = [];
                 // Store in scope to have ability get it after wiget type is changed dynamically
                 _this.desc.linkedMdx = mdx;
                 _this.linkedMdx = mdx;
@@ -480,10 +554,9 @@
              */
             function requestData() {
                 if (!_this.supported) return;
-                $scope.item.backButton = false;
-                $scope.item.title = _this.baseTitle;
-                _this.drillLevel = 0;
-                _this.drills = [];
+                //$scope.item.title = _this.baseTitle;
+                //_this.drillLevel = 0;
+                //_this.drills = [];
                 var mdx = _this.getMDX();
                 if (mdx === "") return;
                 _this.clearError();
@@ -564,7 +637,7 @@
                 if (_this.isLinked()) {
                     var str = _this.linkedMdx || this.desc.linkedMdx || "";
                     str = checkColSpec(str);
-                    return str;
+                    return applyDrill(str);
                 }
 
                 // Check for active filters on widget
@@ -600,7 +673,7 @@
 
                 // Don't use filters in widgets placed on tiles
                 // TODO: fix this
-                if (!filterActive || _this.desc.tile) return mdx;
+                if (!filterActive || _this.desc.tile) return applyDrill(mdx);
 
                 // Find all interval filters
                 var where = "";
@@ -652,7 +725,7 @@
                     }
                 }
 
-                return mdx;
+                return applyDrill(mdx);
             }
 
             /**
@@ -707,6 +780,14 @@
                 _this.liveUpdateInterval = null;
 
                 _this = null;
+            }
+
+            function showLoading() {
+                $scope.item.isLoading = true;
+            }
+
+            function hideLoading() {
+                $scope.item.isLoading = false;
             }
         }
 

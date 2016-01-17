@@ -281,7 +281,10 @@
             function onPointClick(e) {
                 if (!e.point) return;
                 $scope.chartConfig.loading = true;
-                _this.doDrill(e.point.path, e.point.name, e.point.category);
+                _this.doDrill(e.point.path, e.point.name, e.point.category)
+                    .then(function() {
+                        $scope.chartConfig.loading = false;
+                    })
             }
 
             /**
@@ -339,7 +342,7 @@
                 var fmt = t.series.options.format;
                 var val = t.y;
                 if (fmt) val = _this.formatNumber(val, fmt);
-                var a = t.point.name + '<br>' + t.series.name + ': <b>' + val + "</b><br>";
+                var a = t.point.name + '<br>' + (t.point.title ? (t.point.title + "<br>") : "")  + t.series.name + ': <b>' + val + "</b><br>";
                 if (t.point.percentage) a += parseFloat(t.point.percentage).toFixed(2).toString() + "%";
                 return a;
             }
@@ -559,7 +562,8 @@
                                     y: data.Data[data.Cols[0].tuples.length * data.Cols[0].tuples[t].children.length * g + t * data.Cols[0].tuples[t].children.length + c],
                                     cube: data.Info.cubeName,
                                     drilldown: true,
-                                    path: data.Cols[1].tuples[g].path
+                                    path: data.Cols[1].tuples[g].path,
+                                    title: data.Cols[1].tuples[g].title
                                 });
                                 k++;
                             }
@@ -600,7 +604,8 @@
                                 drilldown: true,
                                 cube: data.Info.cubeName,
                                 path: data.Cols[1].tuples[i].path,
-                                name: data.Cols[1].tuples[i].caption
+                                name: data.Cols[1].tuples[i].caption,
+                                title: data.Cols[1].tuples[i].title,
                             });
                         }
                         fixData(tempData);

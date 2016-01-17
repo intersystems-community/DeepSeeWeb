@@ -25,7 +25,7 @@
                             //drillThrough: scope.item.onDrillDown
                         },
                         columnResizeAnimation: true,
-                        showSummary: true,
+                        //showSummary: true,
                         //loadingMessageHTML: '<div class="loader"></div>',
                         locale: Lang.current,
                         formatNumbers: "#,###.##"

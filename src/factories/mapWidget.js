@@ -76,7 +76,7 @@
                     return parts.join(",");
                 } else {
                     var f = "rgb(x, 255-x, 0)";
-                    var f = "hsl(x/255 * 120, 100%, 50%)";
+                    //var f = "hsl((255-x)/255 * 120, 100%, 50%)";
                     if (_this.desc.properties.colorFormula) f = _this.desc.properties.colorFormula;
                     f = f.replace("rgb(", "");
                     f = f.replace("hsl(", "");
@@ -93,9 +93,9 @@
                         parts[i] = Math.floor(tmp).toString();
                     }
 
-                    //return "rgba(" + parts.join(",") + ", 0.3)";
-                    console.log("hsla(" + parts.join(",") + ", 0.3)");
-                    return "hsla(" + parts.join(",") + ", 0.5)";
+                    return "rgba(" + parts.join(",") + ", 0.4)";
+                    //console.log("hsla(" + parts.join(",") + ", 0.3)");
+                    //return "hsla(" + parts.join(",") + ", 0.5)";
                 }
             }
 
@@ -104,7 +104,7 @@
                 var lon = parseFloat(_this.desc.properties.longitude);
                 var zoom = parseFloat(_this.desc.properties.zoom);
 
-                if (_this.drillLevel === 0 && (!isNaN(lat) && !isNaN(lon) && !isNaN(zoom)) && (lat !== undefined && lon !== undefined && zoom !== undefined)) {
+                if (_this.drills.length === 0 && (!isNaN(lat) && !isNaN(lon) && !isNaN(zoom)) && (lat !== undefined && lon !== undefined && zoom !== undefined)) {
                     _this.map.getView().setCenter(ol.proj.transform([lon, lat], 'EPSG:4326', 'EPSG:900913'));
                     _this.map.getView().setZoom(zoom);
                 } else {
@@ -241,7 +241,7 @@
                     var value = _this.mapData.Data[t * l + (_this.desc.properties.colorProperty || 0)];
                     feature.setStyle(new ol.style.Style({
                         fill: new ol.style.Fill({
-                            color: (getFeatureColor(key, ((maxV - value) * 255) / (maxV - minV))) || "none"
+                            color: (getFeatureColor(key, ((value - minV) * 255) / (maxV - minV))) || "none"
                         }),
                         stroke: new ol.style.Stroke({
                             color: 'rgba(0, 0, 0, 0.3)',

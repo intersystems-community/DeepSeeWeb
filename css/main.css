@@ -672,3 +672,20 @@ select.input-sm {
     -moz-box-shadow: 1px 1px 9px 0px rgba(50, 50, 50, 0.5);
     box-shadow: 1px 1px 9px 0px rgba(50, 50, 50, 0.5);
 }
+
+.widget-loader {
+    height: calc(100% - 37px);
+}
+
+.widget-loader > .loader {
+    top: calc(50% - 40px);
+}
+
+.widget-loader > .loader::before, .widget-loader > .loader::after {
+    color: white;
+}
+
+/* fix for multi line html table cells in pivot with "p" tag */
+/*.lpt-tableBlock * td * p {
+    margin: 0px;
+}*/

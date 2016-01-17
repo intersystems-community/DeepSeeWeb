@@ -23,10 +23,11 @@
             _this.items = [];
             _this.isFiltersOnToolbarExists = false;
             for (var i = 0; i < filterArray.length; i++) {
+                if (filterArray[i].type === "hidden") continue;
                 _this.items.push(filterArray[i]);
                 var flt =  _this.items[_this.items.length - 1];
                 flt.targetArray = [];
-                if ((flt.target !== "*") && (flt.target !== "")) flt.targetArray = flt.target.split(",");
+                if ((flt.target !== "*") && (flt.target !== "")) flt.targetArray = flt.target.split(",").concat(["emptyWidget"]);
                 flt.sourceArray = [];
                 if ((flt.source !== "*") && (flt.source !== "") && (flt.location !== "dashboard")) flt.sourceArray = flt.source.split(",");
                 if (flt.source === "" || flt.location === "dashboard") _this.isFiltersOnToolbarExists = true;
