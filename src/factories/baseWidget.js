@@ -502,6 +502,7 @@
             function onSetLinkedMdx(sc, mdx) {
                 //if (_this.storedData) _this.storedData = [];
                 // Store in scope to have ability get it after wiget type is changed dynamically
+
                 _this.desc.linkedMdx = mdx;
                 _this.linkedMdx = mdx;
                 _this.requestData();

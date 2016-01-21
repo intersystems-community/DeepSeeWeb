@@ -37,8 +37,8 @@
                 var fileName = _this.desc.properties.coordsJsFile;
                 var folder = Storage.serverSettings.DefaultApp || "/csp";
                 var url = folder + "/" + fileName;
-                if (localStorage.connectorRedirect) url="huPolygons.js";
-                //if (localStorage.connectorRedirect) url="rfpolygons.js";
+                //if (localStorage.connectorRedirect) url="huPolygons.js";
+                if (localStorage.connectorRedirect) url="rfpolygons.js";
                 //if (localStorage.connectorRedirect) url="mospolygons.js";
                 //if (localStorage.connectorRedirect) url = localStorage.connectorRedirect.replace("MDX2JSON/", "").split("/").slice(0, -1).join("/") + "/csp/" + Connector.getNamespace() + "/" + fileName;
                 Connector.getFile(url).success(onPolyFileLoaded);
