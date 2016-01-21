@@ -240,6 +240,7 @@
 
                     var value = _this.mapData.Data[t * l + (_this.desc.properties.colorProperty || 0)];
                     feature.setStyle(new ol.style.Style({
+                        zIndex: 0,
                         fill: new ol.style.Fill({
                             color: (getFeatureColor(key, ((value - minV) * 255) / (maxV - minV))) || "none"
                         }),
@@ -323,6 +324,7 @@
                     });
 
                     feature.setStyle(new ol.style.Style({
+                        zIndex: 0,
                         fill: new ol.style.Fill({
                             color: getFeatureColor(p) || "none"
                         }),
@@ -361,6 +363,7 @@
              * @param {object} result Result of MDX query
              */
             function retrieveData(result) {
+                _this.markers.clear();
                 _this.storedData.push(result);
                 _this.mapData = result;
                 buildPolygons();
@@ -384,10 +387,11 @@
                     if (lonIdx === -1 || latIdx === -1) return;
 
                     for (var i = 0; i < result.Cols[1].tuples.length; i++) {
+                        if (result.Data[k+latIdx] === "" || result.Data[k+latIdx] === undefined ||
+                            result.Data[k+lonIdx] === "" || result.Data[k+lonIdx] === undefined) continue;
                         var lat = parseFloat(result.Data[k+latIdx] || 0);
                         var lon = parseFloat(result.Data[k+lonIdx] || 0);
                         var name = result.Cols[1].tuples[i].caption;
-
                         ///var point = new ol.geom.Point([lon, lat]);
                         var point = new ol.geom.Point([lat, lon]);
                         //var point = new ol.geom.Point([48.584626, 53.1613304]);
@@ -407,10 +411,10 @@
                             values: values,
                             k: k
                         });
-                        if (parseFloat(lon) < min[0]) min[0] = parseFloat(lon);
-                        if (parseFloat(lat) < min[1]) min[1] = parseFloat(lat);
-                        if (parseFloat(lon) > max[0]) max[0] = parseFloat(lon);
-                        if (parseFloat(lat) > max[1]) max[1] = parseFloat(lat);
+                        if (parseFloat(lon) < min[1]) min[1] = parseFloat(lon);
+                        if (parseFloat(lat) < min[0]) min[0] = parseFloat(lat);
+                        if (parseFloat(lon) > max[1]) max[1] = parseFloat(lon);
+                        if (parseFloat(lat) > max[0]) max[0] = parseFloat(lat);
 
                         if (min[0] == max[0]) {
                             min[0] -= 0.25;
@@ -425,7 +429,7 @@
                         k += size;
                     }
 
-                    _this.markers.clear();
+
                     _this.markers.addFeatures(features);
 
                     centerView(min, max);
@@ -468,6 +472,7 @@
 
                 // Create style for marker
                 _this.iconStyle = new ol.style.Style({
+                    zIndex: 100,
                     image: new ol.style.Icon({
                         anchor: [0.5, 40],
                         anchorXUnits: 'fraction',
@@ -479,6 +484,7 @@
 
 
                 _this.polyStyle = new ol.style.Style({
+                    zIndex: 0,
                     stroke: new ol.style.Stroke({
                         color: 'rgba(0, 0, 0, 0.5)',
                         width: 1
@@ -489,6 +495,7 @@
                 });
 
                 _this.hoverStyle = new ol.style.Style({
+                    zIndex: 1,
                     stroke: new ol.style.Stroke({
                         color: 'blue',
                         width: 2
@@ -503,7 +510,7 @@
                     source: _this.polys,
                     style: _this.polyStyle
                 });
-                vectorLayer.setZIndex(0);
+                vectorLayer.setZIndex(1);
                 _this.map.addLayer(vectorLayer);
 
                 // Setup clustering
@@ -514,23 +521,6 @@
                     distance: _this.CLUSTER_RANGE,
                     source: _this.markers
                 });*/
-
-                // Create layer for markers
-                var vectorLayer = new ol.layer.Vector({
-                    source: _this.markers,
-                    style: _this.iconStyle
-                });
-                _this.map.addLayer(vectorLayer);
-                vectorLayer.setZIndex(10);
-
-                // Create popup
-                _this.popup = new ol.Overlay({
-                    element: $scope.tooltipElement,
-                    positioning: 'bottom-center',
-                    offset: [0, -40],
-                    stopEvent: false
-                });
-                _this.map.addOverlay(_this.popup);
 
                 // Create overlay for hover
                 var collection = new ol.Collection();
@@ -544,9 +534,29 @@
                     updateWhileAnimating: true, // optional, for instant visual feedback
                     updateWhileInteracting: true // optional, for instant visual feedback
                 });
+                _this.featureOverlay.setZIndex(10);
+                _this.featureOverlay.setMap(_this.map);
+                //_this.map.addLayer(_this.featureOverlay);
 
-                _this.map.addLayer(_this.featureOverlay);
-                vectorLayer.setZIndex(2);
+
+                // Create layer for markers
+                var vectorLayer = new ol.layer.Vector({
+                    source: _this.markers,
+                    style: _this.iconStyle
+                });
+                vectorLayer.setZIndex(100);
+                _this.map.addLayer(vectorLayer);
+
+
+                // Create popup
+                _this.popup = new ol.Overlay({
+                    element: $scope.tooltipElement,
+                    positioning: 'bottom-center',
+                    offset: [0, -40],
+                    stopEvent: false
+                });
+                _this.map.addOverlay(_this.popup);
+
 
                 _this.map.on('click', onMapClick);
                 _this.map.on('pointermove', onPointerMove);
@@ -609,7 +619,9 @@
                  _this.map.getTarget().style.cursor = hit ? 'pointer' : '';
 
                 _this.featureOverlay.getSource().clear();
-                if (feature) _this.featureOverlay.getSource().addFeature(feature);
+                if (feature) {
+                    _this.featureOverlay.getSource().addFeature(feature);
+                }
             }
 
             function getTooltipData(name) {
