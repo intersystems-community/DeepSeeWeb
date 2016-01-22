@@ -11,6 +11,7 @@
             var _this = this;
 
             $scope.item.toggleLegend = toggleLegend;
+            $scope.item.toggleValues = toggleValues;
             $scope.item.isBtnValues = true;
             var opt = {series: {allowPointSelect: true, stickyTracking: false}};
             if (!$scope.chartConfig.options.plotOptions) $scope.chartConfig.options.plotOptions = {};
@@ -54,12 +55,25 @@
                         allowPointSelect: true,
                         cursor: 'pointer',
                         dataLabels: {
-                            enabled: localStorage["widget:" + _this.desc.key + ":legend"] === "true"
+                            enabled: $scope.item.showValues
                         }
                     }
                 }
             };
             Utils.merge($scope.chartConfig.options, po);
+
+
+            $scope.chartConfig.options.plotOptions.series.dataLabels.enabled = $scope.item.isLegend
+
+            if (!$scope.item.showValues) {
+                delete $scope.chartConfig.options.plotOptions.series.dataLabels.formatter;
+                delete $scope.chartConfig.options.plotOptions.pie.dataLabels.formatter;
+            }
+            /*if ($scope.chartConfig.options.plotOptions.pie.dataLabels.enabled)
+            {
+                $scope.chartConfig.options.plotOptions.series.dataLabels.enabled = false;
+            }
+*/
 
             this.setType('pie');
             this.requestData();
@@ -68,10 +82,23 @@
              * Toggles legend of pie chart
              */
             function toggleLegend() {
-                $scope.item.isLegend = !$scope.item.isLegend;
-                localStorage["widget:" + _this.desc.key + ":legend"] = $scope.item.isLegend;
+                _this.toggleButton("isLegend");
                 if (_this.chart) {
-                    $scope.chartConfig.options.plotOptions.pie.dataLabels.enabled = $scope.item.isLegend;
+                    $scope.chartConfig.options.plotOptions.series.dataLabels = {
+                        enabled: $scope.item.isLegend
+                    };
+                }
+            }
+
+            function toggleValues() {
+                _this.toggleButton("showValues");
+                $scope.chartConfig.options.plotOptions.pie.dataLabels = {
+                    enabled: $scope.item.showValues,
+                    formatter: _this.labelsFormatter
+                };
+                if (!$scope.item.showValues) {
+                    delete $scope.chartConfig.options.plotOptions.series.dataLabels.formatter;
+                    delete $scope.chartConfig.options.plotOptions.pie.dataLabels.formatter;
                 }
             }
 

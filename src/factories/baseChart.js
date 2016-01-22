@@ -21,10 +21,11 @@
             this._retrieveData       = retrieveData;
             this.formatNumber        = formatNumber;
             this.initFormatForSeries = initFormatForSeries;
-            this.limitSeriesAndData = limitSeriesAndData;
+            this.limitSeriesAndData  = limitSeriesAndData;
+            this.toggleButton        = toggleButton;
             this.dataInfo            = null;
             this.widgetData          = null;
-
+            this.labelsFormatter     = labelsFormatter;
             var _this    = this;
             var firstRun = true;
             var settings = Storage.getAppSettings();

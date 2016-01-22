@@ -92,8 +92,8 @@
             if (!isOnDashboard()) return;
             var host = "";
             //if ($location.connectorRedirect) host = "http://146.185.143.59";
-            var folder = Storage.serverSettings.DefaultApp || "/csp";
-            var url = folder + "/" + Connector.getNamespace() + "/_DeepSee.UserPortal.DashboardViewer.zen?DASHBOARD=" + $routeParams.path;
+            var folder = Storage.serverSettings.DefaultApp || "/csp/" + Connector.getNamespace();
+            var url = folder + "/_DeepSee.UserPortal.DashboardViewer.zen?DASHBOARD=" + $routeParams.path;
             window.open(host + url);
         }
 
