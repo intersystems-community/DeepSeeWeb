@@ -63,7 +63,9 @@ gulp.task('copyfiles', function () {
 
 // Create single tamplates file from *.html views
 gulp.task('templates', function() {
+    var p = require('./package.json');
     return gulp.src(['src/views/*.html'])
+        .pipe(replace('{{package.json.version}}', p.version))
         .pipe(templateCache({root:"src/views/"}))
         .pipe(gulp.dest('build/src'));
 });

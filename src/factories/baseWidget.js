@@ -8,15 +8,15 @@
 
         function BaseWidget($scope) {
             var _this = this;
-            this.drillLevel      = 0;
-            this.drills          = [];
-            this.drillsMDX       = [];
-            this.storedData      = [];
-            this.titles          = [];
-            this.baseTitle       = $scope.item ? $scope.item.title : $scope.$parent.title;
+            //this.drillLevel      = 0;
+            // Restore drills. stored in scope to be able change widget type without lose of drills
+            this.drills          = $scope.item.drills || [];
+            if ($scope.item.baseTitle === undefined) $scope.item.baseTitle = $scope.item ? $scope.item.title : $scope.$parent.title;
             this.drillFilter     = "";
             this.showLoading     = showLoading;
             this.hideLoading     = hideLoading;
+            this.restoreWidgetType = restoreWidgetType;
+            this.changeWidgetType = changeWidgetType;
             // Array of widget names that shall be filtered during drill down
             this.drillFilterWidgets = null;
 
@@ -27,7 +27,6 @@
             if ($scope.item) this.desc = $scope.getDesc($scope.item.idx);
             var firstRun = true;
             this.supported = true;
-
 
             // Setup for actions
             $scope.item.acItems = [];
@@ -48,7 +47,7 @@
             this.linkedMdx = "";
             this.hasDatasourceChoser = false;
             this.hasActions = false;
-            this.getDrillMDX = getDrillMDX;
+            //this.getDrillMDX = getDrillMDX;
             this._onRequestError = onRequestError;
             this._retrieveData = function(){};
             this._retriveDataSource = onDataSourceReceived;
@@ -69,6 +68,9 @@
             this.destroy = destroy;
             this.getDrillTitle = getDrillTitle;
             this.drillUp = doDrillUp;
+            this.doDrillFilter = doDrillFilter;
+            this.getDataByColumnName = getDataByColumnName;
+            this.getDrillthroughMdx = getDrillthroughMdx;
             this.liveUpdateInterval = null;
             this.onResize = function(){};
 
@@ -118,10 +120,17 @@
             setupActions();
             requestPivotData();
 
+            function getDataByColumnName(data, columnName, dataIndex) {
+                if (!data || !data.Data || !data.Cols || !data.Cols[0] || !data.Cols[0].tuples) return;
+                var col = data.Cols[0].tuples.filter(function(el) { return el.caption.toLowerCase() === columnName.toLowerCase(); });
+                if (col.length === 0) return;
+                var idx = data.Cols[0].tuples.indexOf(col[0]);
+                return data.Data[dataIndex + idx];
+            }
+
             function setupDrillFilter() {
-                if (_this.desc.properties && _this.desc.properties.drillFilterProperty) {
-                    _this.drillFilterWidgets = _this.desc.properties.drillFilterProperty.split(",");
-                }
+                var flt = Filters.getClickFilterTarget(_this.desc.name);
+                if (flt) _this.drillFilterWidgets = flt.split(",");
             }
 
             function doDrillFilter(path) {
@@ -147,10 +156,10 @@
             }
 
             function getDrillTitle(drill) {
-                if (!drill) return _this.baseTitle || "";
+                if (!drill) return $scope.item.baseTitle || "";
                 var p = drill.path.split(".");
                 p.pop();
-                return (_this.baseTitle ? (_this.baseTitle + " - ") : "") + (drill.name ? (p[p.length - 1] + " - ") : "") + (drill.name || drill.category);
+                return ($scope.item.baseTitle ? ($scope.item.baseTitle + " - ") : "") + (drill.name ? (p[p.length - 1] + " - ") : "") + (drill.name || drill.category);
             }
 
             function isEmptyData(data) {
@@ -163,7 +172,7 @@
             /**
              * Makes drillup
              */
-            function doDrillUp() {
+            //function doDrillUp() {
                 /*var path = _this.drills[_this.drills.length - 2];
                  doDrillFilter(path);
 
@@ -174,15 +183,54 @@
 
                  doDrillUp();
                  _this._retrieveData(data);*/
+            //}
+
+
+            function changeWidgetType(newType) {
+                _this.desc.oldType = _this.desc.type;
+                _this.desc.type = newType;
+                $scope.item.drills = _this.drills;
+                $scope.$broadcast("typeChanged");
+            }
+
+            function restoreWidgetType() {
+                delete $scope.item.pivotMdx;
+                delete $scope.item.pivotData;
+                $scope.item.backButton = _this.drills.length !== 0;
+                _this.desc.type = _this.desc.oldType;
+                $scope.$broadcast("typeChanged");
             }
 
             /**
              * Back button click handler
              */
             function doDrillUp() {
-                doDrill();
+                if ($scope.item.isDrillthrough) {
+                    restoreWidgetType();
+                    $scope.item.isDrillthrough = false;
+                } else doDrill();
             }
 
+
+            function getDrillthroughMdx(mdx) {
+                mdx = mdx.toLowerCase();
+                var selTxt = "select non empty";
+                var idx1 = mdx.indexOf(selTxt);
+                if (idx1 === -1) {
+                    selTxt = "select";
+                    idx1 = mdx.indexOf(selTxt);
+                }
+                var idx2 = mdx.indexOf("from");
+                if (idx1 === -1) {
+                    console.warn("Can't find 'select' in MDX during calulation drillthrough mdx");
+                    return;
+                }
+                if (idx2 === -1) {
+                    console.warn("Can't find 'from' in MDX during calulation drillthrough mdx");
+                    return;
+                }
+                return "DRILLTHROUGH " + mdx.substring(0, idx1 + selTxt.length) + " " +  mdx.substring(idx2, mdx.length);
+            }
 
             /**
              * Makes drill down or drill up if path is empty
@@ -193,8 +241,9 @@
              */
             function doDrill(path, name, category) {
                 var defer = $q.defer();
-                doDrillFilter(path);
                 _this.clearError();
+                // Apply drill filter if clickfilter is exists
+                doDrillFilter(path);
 
                 var old = _this.drills.slice();
                 if (path) _this.drills.push({path: path, name: name, category: category}); else _this.drills.pop();
@@ -205,12 +254,28 @@
                 Connector.execMDX(mdx)
                     .error(_this._onRequestError)
                     .success(function(data) {
-                        if (isEmptyData(data) && path) return;
+                        if (isEmptyData(data) && path) {
+                            var ddMdx = getDrillthroughMdx(mdx);
+
+                            Connector.execMDX(ddMdx)
+                                .success(function(data2) {
+                                    if (!data2 || !data2.children || data2.children.length === 0) return;
+                                    $scope.item.isDrillthrough = true;
+                                    $scope.item.backButton = true;
+                                    $scope.item.pivotData = data2;
+                                    $scope.item.displayAsPivot(ddMdx);
+                                });
+                            /*Connector.execMDX(getDrillthroughMdx(mdx)).success(function(dd) {
+                                _this._retrieveData(dd);
+                            });*/
+                            return;
+                        }
 
                         // Drill can be done, store new level and pass received data
                         if (path) _this.drills.push({path: path, name: name, category: category}); else _this.drills.pop();
                         $scope.item.backButton = _this.drills.length !== 0;
                         $scope.item.title = _this.getDrillTitle(_this.drills[_this.drills.length - 1]);
+
                         _this.broadcastDependents(mdx);
                         _this._retrieveData(data);
                     })
@@ -312,7 +377,7 @@
              * @param {string} path Drilldown path
              * @returns {string} Drilldown MDX
              */
-            function getDrillMDX(path) {
+            /*function getDrillMDX(path) {
                 var pos = path.indexOf("&");
                 var p = path.substr(0, pos) + "Members";
 
@@ -369,7 +434,7 @@
                 mdx = mdx + " %FILTER " + path;
                 return mdx;
             }
-
+*/
             /**
              * Changes current datasource
              * @param {string} pivot Pivot name
@@ -538,7 +603,7 @@
 
             function requestPivotData() {
                 var ds = _this.customDataSource || _this.desc.dataSource;
-                if (ds) Connector.getPivotData(ds).error(_this._onRequestError).success(_this._retriveDataSource);
+                if (ds) Connector.getPivotData(ds).success(_this._retriveDataSource);
             }
 
             function onDataSourceReceived(data) {

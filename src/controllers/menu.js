@@ -38,6 +38,7 @@
         $scope.navigateFav = navigateFav;
         $scope.showSettings = showSettings;
         $scope.changeNamespace = changeNamespace;
+        $scope.about = about;
         $rootScope.$on('toggleMenu', toggleMenu);
       //  $rootScope.$on('menu:toggleLoading', toggleLoading);
         $rootScope.$on('menu:changeTitle', changeTitle);
@@ -95,6 +96,13 @@
             var folder = Storage.serverSettings.DefaultApp || "/csp/" + Connector.getNamespace();
             var url = folder + "/_DeepSee.UserPortal.DashboardViewer.zen?DASHBOARD=" + $routeParams.path;
             window.open(host + url);
+        }
+
+        /**
+         * Show about modal dialog
+         */
+        function about() {
+            ngDialog.open({template: 'src/views/about.html', data: {}, showClose: true, className: "ngdialog-theme-default" });
         }
 
         /**

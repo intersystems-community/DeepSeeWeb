@@ -1,7 +1,7 @@
 {
   "name": "DeepSeeWeb",
   "author": "Gnibeda A.A",
-  "version": "1.2.86",
+  "version": "1.3.3",
   "description": "Renderer for DeepSee Dashboards in Browser with MDX2JSON as a Serverside and JS web-client",
   "repository": {
     "type": "git",

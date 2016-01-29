@@ -15,7 +15,7 @@
 
             var ex = {
                 legend: {
-                    enabled: false
+                    enabled: true
                 },
                 plotOptions: {
                     series: {
@@ -24,10 +24,13 @@
                             events: {
                                 click: null
                             }
-                        }
+                        },
                     },
                     treemap: {
-                        colorByPoint: true
+                        colorByPoint: true,
+                        dataLabels: {
+                            enabled: true
+                        }
                     }
                 },
                 tooltip: {
@@ -42,9 +45,10 @@
                 }
             };
             Utils.merge($scope.chartConfig.options, ex);
+            delete $scope.chartConfig.options.plotOptions.series.dataLabels;
 
-
-            $scope.chartConfig.options.legend = {enabled: false};
+            //$scope.chartConfig.options.plotOptions.treemap.dataLabels = { enabled: true };
+            //$scope.chartConfig.options.legend = {enabled: false};
 
             /**
              * Treemap chart data parser function. Creates series for treemap chart from data

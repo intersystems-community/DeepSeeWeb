@@ -14,6 +14,7 @@
         this.applyFilter = applyFilter;
         this.getFilter = getFilter;
         this.clear = clear;
+        this.getClickFilterTarget = getClickFilterTarget;
 
         /**
          * Initialize service with filter array
@@ -35,6 +36,14 @@
             }
         }
 
+        function getClickFilterTarget(widgetName) {
+            for (var i = 0; i < _this.items.length; i++) {
+                var flt = _this.items[i];
+                if (flt.location !== "click") continue;
+                if (flt.source.toLowerCase() === widgetName.toLowerCase() || flt.source === "*") return flt.target;
+            }
+        }
+
         /**
          * Returns filter display text
          * @param {object} flt Filter
@@ -42,9 +51,15 @@
          */
         function findDisplayText(flt) {
             if (flt.value === "" || flt.value === undefined) return "";
-            for (var i = 0; i < flt.values.length; i++) if (flt.values[i].path == flt.value) {
+            var value = flt.value;
+            var isExclude = value.toUpperCase().endsWith(".%NOT");
+            if (isExclude) value = value.substr(0, value.length - 5);
+            flt.value = value;
+            for (var i = 0; i < flt.values.length; i++) if (flt.values[i].path === value) {
                 flt.values[i].checked = true;
                 flt.values[i].default = true;
+                flt.defaultExclude = isExclude;
+                flt.isExclude = isExclude;
                 return flt.values[i].name;
             }
             return "";
@@ -59,6 +74,7 @@
             var res = [];
             for (var i = 0; i < _this.items.length; i++) {
                 //if ((_this.items[i].target === "*") || (_this.items[i].targetArray.indexOf(widgetName) !== -1)) {
+                if (_this.items[i].location === "click") continue;
                 if (widgetName === "emptyWidget") {
                     if (_this.items[i].source === "" || _this.items[i].location === "dashboard") {
                         res.push({ idx: i, label: _this.items[i].label, text: _this.items[i].valueDisplay, info: _this.items[i].info });

@@ -11,6 +11,12 @@
 
     angular.module('app', ['oc.lazyLoad', 'ngRoute', 'ngCookies', 'cgNotify', 'gridster', 'highcharts-ng', 'ng-context-menu', 'ngDialog', 'utils', 'dashboard', 'widgets', 'templates'])
 
+    // This filter is used with ng-bind-htm to insert html
+    .filter("sanitize", ['$sce', function($sce) {
+        return function(htmlCode){
+            return $sce.trustAsHtml(htmlCode);
+        }
+    }])
     .constant('CONST', {
         css: {
             classic: "css/metro.min.css",
@@ -229,5 +235,7 @@
 
         });*/
     }
+
+
 
 })();

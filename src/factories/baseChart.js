@@ -307,17 +307,17 @@
             /**
              * Displays chart as pivot widget
              */
-            function displayAsPivot() {
+            function displayAsPivot(customMdx) {
                 if (_this.desc.type === "pivot") {
-                    delete $scope.item.pivotMdx;
-                    _this.desc.type = _this.desc.oldType;
-                    $scope.$broadcast("typeChanged");
-                    //$scope.$destroy();
+                    $scope.item.isDrillthrough = null;
+                   _this.restoreWidgetType();
                 } else {
-                    _this.desc.oldType = _this.desc.type;
-                    _this.desc.type = "pivot";
-                    $scope.item.pivotMdx = _this.getMDX();
-                    $scope.$broadcast("typeChanged");
+                    $scope.item.pivotMdx = customMdx || _this.getMDX();
+                    _this.changeWidgetType("pivot");
+                    //_this.desc.oldType = _this.desc.type;
+                    //_this.desc.type = "pivot";
+
+                    ///$scope.$broadcast("typeChanged");
                     //$scope.$destroy();
                 }
             }
@@ -397,7 +397,6 @@
                     _this.showError(result.Error);
                     return;
                 }
-                _this.storedData.push(result);
                 if (result) {
                     /*
                      this is fix for incorrect minimum value calculation in bar chart
@@ -560,7 +559,7 @@
                             tempData = [];
                             for (var g = 0; g < data.Cols[1].tuples.length; g++) {
                                 tempData.push({
-                                    y: data.Data[data.Cols[0].tuples.length * data.Cols[0].tuples[t].children.length * g + t * data.Cols[0].tuples[t].children.length + c],
+                                    y: +data.Data[data.Cols[0].tuples.length * data.Cols[0].tuples[t].children.length * g + t * data.Cols[0].tuples[t].children.length + c],
                                     cube: data.Info.cubeName,
                                     drilldown: true,
                                     path: data.Cols[1].tuples[g].path,
@@ -601,7 +600,7 @@
                         tempData = [];
                         for (i = 0; i < data.Cols[1].tuples.length; i++) {
                             tempData.push({
-                                y: data.Data[i * data.Cols[0].tuples.length + j],
+                                y: +data.Data[i * data.Cols[0].tuples.length + j],
                                 drilldown: true,
                                 cube: data.Info.cubeName,
                                 path: data.Cols[1].tuples[i].path,

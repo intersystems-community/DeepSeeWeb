@@ -11,6 +11,7 @@
                     var desc = scope.getDesc(scope.item.idx);
 
                     var setup = {
+                        initialData: scope.item.pivotData,
                         container: element[0],
                         dataSource: {
                             pivot: desc.dataSource,

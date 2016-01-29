@@ -16,9 +16,8 @@
             this.popup = null;
             _this.featureOverlay = null;
             $scope.model.tooltip = {
-                items: [],
                 visible: false,
-                name: ""
+                content: ""
             };
             this.onInit = onInit;
             this.onResize = onResize;
@@ -26,19 +25,30 @@
             this.requestData();
             _this.mapData = null;
 
+            $scope.item.drillUp = doDrillUp;
             $scope.model.tooltip.name = "";
             $scope.model.tooltip.items = [];
 
             var polys = null;
             requestPolygons();
 
+            /**
+             * Back button click handler
+             */
+            function doDrillUp() {
+                hideTooltip();
+                _this.doDrill();
+            }
+
+
             function requestPolygons() {
                 if (!_this.desc.properties || !_this.desc.properties.coordsJsFile) return;
-                var fileName = _this.desc.properties.coordsJsFile;
+                var fileName = _this.desc.properties.coordsJsFile || (_this.desc.name + ".js");
                 var folder = Storage.serverSettings.DefaultApp || "/csp";
                 var url = folder + "/" + fileName;
-                //if (localStorage.connectorRedirect) url="huPolygons.js";
-                if (localStorage.connectorRedirect) url="rfpolygons.js";
+
+                if (localStorage.connectorRedirect) url="huPolygons.js";
+                //if (localStorage.connectorRedirect) url="rfpolygons.js";
                 //if (localStorage.connectorRedirect) url="mospolygons.js";
                 //if (localStorage.connectorRedirect) url = localStorage.connectorRedirect.replace("MDX2JSON/", "").split("/").slice(0, -1).join("/") + "/csp/" + Connector.getNamespace() + "/" + fileName;
                 Connector.getFile(url).success(onPolyFileLoaded);
@@ -62,7 +72,7 @@
 
                 var idx = _this.mapData.Cols[1].tuples.indexOf(item);
                 var l = _this.mapData.Cols[0].tuples.length;
-                var color = _this.mapData.Cols[0].tuples.filter(function(el) { return el.caption === _this.desc.properties.colorProperty; });
+                var color = _this.mapData.Cols[0].tuples.filter(function(el) { return el.caption === (_this.desc.properties.colorProperty || "ColorValue"); });
                 if (color.length !== 0) {
                     color = color[0];
                     var colorIdx = _this.mapData.Cols[0].tuples.indexOf(color);
@@ -78,9 +88,9 @@
                     var f = "rgb(x, 255-x, 0)";
                     //var f = "hsl((255-x)/255 * 120, 100%, 50%)";
                     if (_this.desc.properties.colorFormula) f = _this.desc.properties.colorFormula;
-                    f = f.replace("rgb(", "");
-                    f = f.replace("hsl(", "");
-                    f = f.slice(0, -1);
+                    var fidx = f.indexOf("(");
+                    var firstPart = f.substring(0, fidx).toLowerCase();
+                    f = f.substring(fidx + 1, f.length - 1);
                     var parts = f.split(",");
                     var x = value || 0;
                     var tmp;
@@ -93,7 +103,8 @@
                         parts[i] = Math.floor(tmp).toString();
                     }
 
-                    return "rgba(" + parts.join(",") + ", 0.4)";
+
+                    return firstPart + "a(" + parts.join(",") + ", 0.4)";
                     //console.log("hsla(" + parts.join(",") + ", 0.3)");
                     //return "hsla(" + parts.join(",") + ", 0.5)";
                 }
@@ -221,7 +232,7 @@
                     var polyTitle = key;
                     if (_this.desc.properties.polygonTitleProperty) {
                         var it = _this.mapData.Cols[0].tuples.filter(function (el) {
-                            return el.caption === _this.desc.properties.polygonTitleProperty;
+                            return el.caption === (_this.desc.properties.polygonTitleProperty || "Name");
                         });
                         if (it.length != 0) {
                             var tidx = _this.mapData.Cols[0].tuples.indexOf(it[0]);
@@ -363,8 +374,8 @@
              * @param {object} result Result of MDX query
              */
             function retrieveData(result) {
+                hideTooltip();
                 _this.markers.clear();
-                _this.storedData.push(result);
                 _this.mapData = result;
                 buildPolygons();
 
@@ -409,7 +420,8 @@
                             name: name,
                             labels: labels,
                             values: values,
-                            k: k
+                            dataIdx: k,
+                            path: result.Cols[1].tuples[i].path
                         });
                         if (parseFloat(lon) < min[1]) min[1] = parseFloat(lon);
                         if (parseFloat(lat) < min[0]) min[0] = parseFloat(lat);
@@ -429,10 +441,12 @@
                         k += size;
                     }
 
+                    if (features.length !== 0) {
+                        _this.markers.addFeatures(features);
+                        centerView(min, max);
+                    }
 
-                    _this.markers.addFeatures(features);
 
-                    centerView(min, max);
                    /* var p1 = ol.proj.transform([min[0], min[1]], 'EPSG:4326', 'EPSG:900913');
                     var p2 = ol.proj.transform([max[0], max[1]], 'EPSG:4326', 'EPSG:900913');
                     if (features.length !== 0) _this.map.getView().fit([p1[0], p1[1], p2[0], p2[1]], _this.map.getSize());
@@ -600,13 +614,22 @@
                         return feature;
                     });
                 if (feature) {
-                    var str = feature.getProperties().title || "";
-                    if (str) {
-                        /*$scope.model.tooltip.name = str;
-                        var coord = _this.map.getCoordinateFromPixel(e.pixel);
-                        _this.popup.setPosition(coord);
-                        showTooltip();*/
-                        $scope.showTooltip(str, e.originalEvent.pageX, e.originalEvent.pageY);
+
+                    if (feature.getGeometry().getType().toLowerCase() === "polygon") {
+                        var str = feature.getProperties().title || "";
+                        if (str) {
+                            $scope.showTooltip(str, e.originalEvent.pageX, e.originalEvent.pageY);
+                        }
+                    } else {
+                        var dataIdx = feature.get("dataIdx");
+                        var title;
+                        var titleProp = _this.desc.properties.markerTitleProperty;
+                        title = _this.getDataByColumnName(_this.mapData, titleProp || "Name", dataIdx);
+                        if (!title) title = (_this.mapData.Cols[1].tuples[Math.floor(dataIdx / _this.mapData.Cols[0].tuples.length)].caption || "");
+
+                        //         "<br>" + (_this.mapData.Cols[1].tuples[Math.floor(dataIdx / _this.mapData.Cols[0].tuples.length)].title || "");
+
+                        $scope.showTooltip(title, e.originalEvent.pageX, e.originalEvent.pageY);
                     }
                 }
 
@@ -658,19 +681,31 @@
                         _this.doDrill(item[0].path, key);
                         //_this.doDrillFilter(item[0].path);
                     } else {
+                        var dataIdx = feature.get("dataIdx");
+                        var title, content;
+                        var contentProp = _this.desc.properties.markerPopupContentProperty;
+                        if (contentProp) content = _this.getDataByColumnName(_this.mapData, contentProp, dataIdx);
+                        else
+                            content = _this.mapData.Cols[1].tuples[Math.floor(dataIdx / _this.mapData.Cols[0].tuples.length)].caption || ""
+
+                        /*var key = feature.get("key");
                         var labels = feature.get("labels");
                         var values = feature.get("values");
                         $scope.model.tooltip.items = [];
                         for (var i = 0; i < labels.length; i++) $scope.model.tooltip.items.push({
                             label: labels[i] + ": ",
                             value: values[i]
-                        });
-                        $scope.model.tooltip.name = feature.get("name");
+                        })*/;
+                        //$scope.model.tooltip.name = feature.get("name");
+                        $scope.model.tooltip.content = content;
 
                         var geometry = feature.getGeometry();
                         var coord = geometry.getCoordinates();
                         coord[0] += Math.floor((_this.map.getCoordinateFromPixel(evt.pixel)[0] / 40075016.68) + 0.5) * 20037508.34 * 2;
                         _this.popup.setPosition(coord);
+
+                        _this.doDrillFilter(feature.get("path"));
+
                         /*$(element).popover({
                          'placement': 'top',
                          'html': true,

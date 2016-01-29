@@ -11,6 +11,7 @@
             error: "",
             filters: Filters.getWidgetModelFilters(this.desc.name)
         };
+        _this.updateFiltersText();
         var type = TypeMap.getClass(_this.desc.type);
         if (type) type.apply(this, [$scope]); else {
             _this.supported = false;

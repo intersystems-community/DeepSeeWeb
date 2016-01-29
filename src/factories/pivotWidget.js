@@ -13,7 +13,7 @@
             this.requestData = requestData;
             this.onResize = onResize;
 
-            $scope.item.pivotMdx = _this.getMDX();
+            if (!$scope.item.pivotMdx) $scope.item.pivotMdx = _this.getMDX();
             $scope.$on("print:" + $scope.item.$$hashKey, print);
             $scope.item.onDrillDown = onDrillDown;
 

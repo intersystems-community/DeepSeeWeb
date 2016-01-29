@@ -71,6 +71,7 @@
      */
         .constant('LANGSTR', {
             en: {
+                about: "About",
                 cancel: "Cancel",
                 save: "Save",
                 load: "Load",
@@ -147,6 +148,7 @@
                 shortMonths: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
             },
             ru: {
+                about: "О программе",
                 cancel: "Отмена",
                 save: "Сохранить",
                 load: "Загрузить",
