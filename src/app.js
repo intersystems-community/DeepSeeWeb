@@ -141,6 +141,7 @@
             Storage.loadConfig(result);
 
             $q.all([
+                //loadNamespaceConfig(Storage, $q, Connector, $route.current.params.ns),
                 loadAddons(Storage, $q, $ocLazyLoad),
                 loadSettings(Storage, $q, Connector)
             ]).then(function() {
@@ -155,6 +156,20 @@
         return deffered.promise;
     }
 
+    /*function loadNamespaceConfig(Storage, $q, Connector, ns) {
+        var deffered = $q.defer();
+        if (Storage.isNamespaceConfigLoaded(ns)) {
+            deffered.resolve();
+        } else {
+            Connector.loadNamespaceConfig(ns).then(function (res) {
+                Storage.loadNamespaceSettings(res.data, ns);
+                deffered.resolve();
+            }).catch(function (result) {
+                deffered.resolve();
+            });
+        }
+        return deffered.promise;
+    }*/
 
     function loadSettings(Storage, $q, Connector)  {
         var deffered = $q.defer();

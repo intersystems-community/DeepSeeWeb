@@ -61,8 +61,11 @@
 
         function onLoadClick() {
             var name = $scope.model.selectedSettings;
-            if (Storage.isSettingsExists(name)) {
+            var ns = Connector.getNamespace();
+            if (Storage.isSettingsExists(name) || Storage.nsSettings[ns]) {
                 delete localStorage.userSettings;
+                //Storage.nsSettings[ns] = {};
+                Storage.setTilesSettings(undefined, ns);
                 Storage.setCurrentSettings(name);
                 reloadPage();
             }
@@ -116,7 +119,10 @@
             Storage.setCurrentSettings($scope.model.selectedSettings);
 
             Connector.saveConfig(Storage.settings).then(function(){
-                if (shouldRefresh) reloadPage(); else $scope.closeThisDialog();
+                var ns = Connector.getNamespace();
+                Connector.saveNamespaceConfig(Storage.nsSettings[ns] || {}, ns).then(function() {
+                    if (shouldRefresh) reloadPage(); else $scope.closeThisDialog();
+                });
             });
         }
 
@@ -131,7 +137,7 @@
          * Reset tiles options(position, sizes, icons, etc.)
          */
         function resetTiles() {
-            Storage.removeTilesSettings();
+            Storage.removeTilesSettings(Connector.getNamespace());
             reloadPage();
         }
 

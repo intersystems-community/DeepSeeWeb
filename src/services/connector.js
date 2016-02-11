@@ -26,6 +26,8 @@
         this.loadConfig = loadConfig;
         this.execAction = execAction;
         this.getSettings = getSettings;
+        this.loadNamespaceConfig = loadNamespaceConfig;
+        this.saveNamespaceConfig = saveNamespaceConfig;
 
         // for local testing
         /*
@@ -48,7 +50,8 @@
          * @returns {string} Namespace
          */
         function getNamespace() {
-            return $route.current.params.ns || "samples";
+            var ns =$route.current.params.ns || "samples";
+            return ns.toUpperCase();
         }
 
         /**
@@ -225,7 +228,20 @@
             return $http({
                 method: 'Get',
                 data: {},
-                url: _this.url + 'Config/DeepSeeWeb?Namespace=' + (cutomNamespace || getNamespace()),
+                url: _this.url + 'Config/DeepSeeWeb?Namespace=MDX2JSON',
+                withCredentials: true
+            });
+        }
+
+        /**
+         * Loads configuration for namespace
+         * @returns {object} $http promise
+         */
+        function loadNamespaceConfig(ns) {
+            return $http({
+                method: 'Get',
+                data: {},
+                url: _this.url + 'Config/' + ns + '?Namespace=MDX2JSON',
                 withCredentials: true
             });
         }
@@ -239,7 +255,22 @@
             return $http({
                 method: 'POST',
                 data: { Application: "DeepSeeWeb", Config: JSON.stringify(config) },
-                url: _this.url + 'Config?Namespace=' + getNamespace(),
+                url: _this.url + 'Config?Namespace=MDX2JSON',
+                withCredentials: true
+            });
+        }
+
+        /**
+         * Saves configuration to server
+         * @param {object} config Configuration to save
+         * @param {string} ns Namespace
+         * @returns {object} $http promise
+         */
+        function saveNamespaceConfig(config, ns) {
+            return $http({
+                method: 'POST',
+                data: { Application: ns, Config: JSON.stringify(config) },
+                url: _this.url + 'Config?Namespace=MDX2JSON',
                 withCredentials: true
             });
         }

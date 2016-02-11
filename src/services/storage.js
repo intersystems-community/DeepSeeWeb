@@ -13,6 +13,10 @@
         this.temp = {}; // used to store all changes in settings
         this.serverSettings = {};
 
+        // Settings for namespace
+        this.nsSettings = {};
+        if (localStorage.namespaceUserSettings) this.nsSettings = JSON.parse(localStorage.namespaceUserSettings);
+
         this.currentSettings     = localStorage.currentSettings || "Default";
         this.configLoaded        = false;
         this.saveCurrentSettings = saveCurrentSettings;
@@ -31,6 +35,8 @@
         this.setAddons           = setAddons;
         this.getAddons           = getAddons;
         this.loadServerSettings  = loadServerSettings;
+        this.isNamespaceConfigLoaded  = isNamespaceConfigLoaded;
+        this.loadNamespaceSettings  = loadNamespaceSettings;
 
 
         /**
@@ -59,15 +65,16 @@
                         }
                         _this.settings = o;
                     }
-                    if (localStorage.userSettings) {
-                        _this.temp = JSON.parse(localStorage.userSettings);
-                        if (!_this.settings[_this.currentSettings]) _this.currentSettings = "Default";
-                    } else
-                    {
-                        _this.temp = {};
-                        if (!_this.settings[_this.currentSettings]) _this.currentSettings = "Default";
-                        if (_this.settings[_this.currentSettings]) Utils.merge(_this.temp, _this.settings[_this.currentSettings]);
-                    }
+                }
+
+                if (localStorage.userSettings) {
+                    _this.temp = JSON.parse(localStorage.userSettings);
+                    if (!_this.settings[_this.currentSettings]) _this.currentSettings = "Default";
+                } else
+                {
+                    _this.temp = {};
+                    if (!_this.settings[_this.currentSettings]) _this.currentSettings = "Default";
+                    if (_this.settings[_this.currentSettings]) Utils.merge(_this.temp, _this.settings[_this.currentSettings]);
                 }
 
                 var settings = _this.getAppSettings();
@@ -197,25 +204,27 @@
          * Returns tiles settings(placement, sizes, icons, colors etc.)
          * @returns {object} Tiles settings
          */
-        function getTilesSettings() {
-            return _this.temp.tiles || {};
+        function getTilesSettings(ns) {
+            if (_this.nsSettings[ns]) return _this.nsSettings[ns]; else return {};
         }
 
         /**
          * Save tiles settings to storage
          * @param {object} tiles Tiles settings to store
          */
-        function setTilesSettings(tiles) {
-            _this.temp.tiles = tiles;
-            localStorage.userSettings = JSON.stringify(_this.temp);
+        function setTilesSettings(tiles, ns) {
+            if (!_this.nsSettings[ns]) _this.nsSettings[ns] = {};
+            _this.nsSettings[ns] = angular.copy(tiles);
+            localStorage.namespaceUserSettings = JSON.stringify(_this.nsSettings);
         }
 
         /**
          * Removes tiles settings
+         * @param {string} ns Namespace
          */
-        function removeTilesSettings() {
-            _this.temp.tiles = {};
-            localStorage.userSettings = JSON.stringify(_this.temp);
+        function removeTilesSettings(ns) {
+            _this.nsSettings[ns] = {};
+            localStorage.namespaceUserSettings = JSON.stringify(_this.nsSettings);
         }
 
         /**
@@ -228,6 +237,31 @@
         function loadServerSettings(settings) {
             _this.serverSettings = settings || {};
             $rootScope.$broadcast('servSettings:loaded');
+        }
+
+        function isNamespaceConfigLoaded(ns) {
+            return _this.nsSettings[ns] !== undefined;
+        }
+
+        function loadNamespaceSettings(data, ns) {
+            if (!data || !data.Config) return;
+            var conf = null;
+            try {
+                conf = JSON.parse(data.Config);
+            } catch(ex) {
+                console.error(ex);
+                return;
+            }
+            if (!conf) return;
+
+            // Convert old format of config to new
+            if (conf.Default && conf.Default.tiles) {
+                _this.nsSettings[ns] = angular.copy(conf.Default.tiles);
+            } else {
+                // this is new format
+                _this.nsSettings[ns] = angular.copy(conf);
+            }
+            localStorage.namespaceUserSettings = JSON.stringify(_this.nsSettings);
         }
     }
 

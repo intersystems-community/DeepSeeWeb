@@ -245,7 +245,8 @@
             $scope.model.namespace = $routeParams.ns || "Samples";
             var ns = localStorage.namespace;
             if (ns) ns = ns.toLowerCase();
-            if (ns !== $scope.model.namespace) {
+            if (ns !== $scope.model.namespace.toLowerCase()) {
+                // Namespace changed
                 localStorage.namespace = $scope.model.namespace;
                 Connector.firstRun = true;
             }

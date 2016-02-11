@@ -5,7 +5,7 @@
 (function() {
     'use strict';
 
-    function DashboardListCtrl($scope, $location, $routeParams, Connector, Error, CONST, Lang, Filters, Storage) {
+    function DashboardListCtrl($scope, $location, $routeParams, Connector, Error, CONST, Lang, Filters, Storage, $q) {
         var _this = this;
         var settings = Storage.getAppSettings();
         var icons = CONST.icons;
@@ -48,15 +48,35 @@
         $scope.$on("search:dashboard", onSearchDashboard);
 
         this.setCurrentFolder();
-        this.requestData();
+
+
+        // Load tile settings first, then request data
+        loadNamespaceConfig(Storage, $q, Connector, Connector.getNamespace()).then(requestData);
+
+        //this.requestData();
+
+        function loadNamespaceConfig(Storage, $q, Connector, ns) {
+            var deffered = $q.defer();
+            if (Storage.isNamespaceConfigLoaded(ns)) {
+                deffered.resolve();
+            } else {
+                Connector.loadNamespaceConfig(ns).then(function (res) {
+                    Storage.loadNamespaceSettings(res.data, ns);
+                    deffered.resolve();
+                }).catch(function (result) {
+                    deffered.resolve();
+                });
+            }
+            return deffered.promise;
+        }
 
         /**
          * Save tiles configuration to storage
          */
         function saveTiles() {
-            var t = Storage.getTilesSettings();
+            var t = Storage.getTilesSettings(Connector.getNamespace());
             var path = "/";
-            if (!settings.hideFolders) path = _this.curFolder;
+            if (!settings.hideFolders && settings.hideFolders !== undefined) path = _this.curFolder;
             for (var i = 0; i < $scope.dashboards.length; i++) {
                 var item = $scope.dashboards[i];
                 if (!t[path]) t[path] = {};
@@ -74,7 +94,7 @@
                 if (item.customTitle !== undefined) t[path][item.title].title = item.customTitle;
             }
 
-            Storage.setTilesSettings(t);
+            Storage.setTilesSettings(t, Connector.getNamespace());
 
             // Refresh only if widget id changed
             for (i = 0; i < $scope.dashboards.length; i++) {
@@ -257,8 +277,10 @@
             var item;
             var path;
             var c;
-            var conf = Storage.getTilesSettings();
-            conf = conf[(settings.hideFolders || settings.hideFolders === undefined) ? '\\' : _this.curFolder] || {};
+            var conf = Storage.getTilesSettings(Connector.getNamespace());
+            var cc = conf[settings.hideFolders ? '/' : (_this.curFolder || "/")] || {};
+            if (!cc || angular.equals({}, cc)) cc = conf[settings.hideFolders ? '/' : (_this.curFolder)] || {};
+            conf = cc;
 
             if (settings.hideFolders || _this.search) {
                 for (i = 0; i < data.children.length; i++) {
@@ -378,6 +400,6 @@
     }
 
     var dashboard = angular.module('dashboard');
-    dashboard.controller('home', ['$scope', '$location', '$routeParams', 'Connector', 'Error', 'CONST', 'Lang', 'Filters', 'Storage', DashboardListCtrl]);
+    dashboard.controller('home', ['$scope', '$location', '$routeParams', 'Connector', 'Error', 'CONST', 'Lang', 'Filters', 'Storage', '$q', DashboardListCtrl]);
 
 })();

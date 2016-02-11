@@ -60,6 +60,7 @@
                         }
                     }
                 }
+                if (!search.ns) search.ns = $scope.model.namespace;
                 $location.path(from).search(search);
             }
             else $location.path("/").search({ns: $scope.model.namespace});

@@ -10,8 +10,10 @@
             var _this = this;
             //this.drillLevel      = 0;
             // Restore drills. stored in scope to be able change widget type without lose of drills
-            this.drills          = $scope.item.drills || [];
-            if ($scope.item.baseTitle === undefined) $scope.item.baseTitle = $scope.item ? $scope.item.title : $scope.$parent.title;
+            this.drills = [];
+            if ($scope.item && $scope.item.drills) this.drills = $scope.item.drills;
+
+            if ($scope.item && $scope.item.baseTitle === undefined) $scope.item.baseTitle = $scope.item ? $scope.item.title : $scope.$parent.title;
             this.drillFilter     = "";
             this.showLoading     = showLoading;
             this.hideLoading     = hideLoading;
