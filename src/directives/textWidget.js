@@ -14,7 +14,7 @@
                 link: function(scope, element, attrs) {
                     element.removeAttr('text-widget');
                     element[0].innerHTML =  "<div resize-after-render ng-repeat='item in model.textData' style='display: none; height: {{(100 / (model.textData.length || 1))}}%'><div class='text-widget-label' style='top: {{100 / (model.textData.length || 1) * $index}}%; color: {{item.color}}'>{{item.label}}</div><svg class='text-widget'>"+
-                                                "<text style='fill: {{item.color}}'>{{item.value}}<tspan dy='-3px' style='font-size: 4px;fill:red'>{{item.deltaNeg}}</tspan><tspan dy='-3px' style='font-size: 4px;fill:green'>{{item.delta}}</tspan></text>"+
+                                                "<text style='fill: {{item.color}}'>{{item.value}}<tspan style='font-size: 4px;fill:red'>{{item.deltaNeg}}</tspan><tspan style='font-size: 4px;fill:green'>{{item.delta}}</tspan></text>"+
                                             "</svg></div>";
                     $compile(element)(scope);
                 }
