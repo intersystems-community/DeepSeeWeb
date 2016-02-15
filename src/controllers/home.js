@@ -278,9 +278,9 @@
             var path;
             var c;
             var conf = Storage.getTilesSettings(Connector.getNamespace());
-            var cc = conf[settings.hideFolders ? '/' : (_this.curFolder || "/")] || {};
-            if (!cc || angular.equals({}, cc)) cc = conf[settings.hideFolders ? '/' : (_this.curFolder)] || {};
-            conf = cc;
+            var conf  = conf[settings.hideFolders ? '/' : (_this.curFolder)] || {};
+            //if (!cc || angular.equals({}, cc)) cc = conf[settings.hideFolders ? '/' : (_this.curFolder)] || {};
+            //conf = cc;
 
             if (settings.hideFolders || _this.search) {
                 for (i = 0; i < data.children.length; i++) {

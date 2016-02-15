@@ -51,8 +51,18 @@
                                 caption = prop.label || caption;
                         }
 
-                        // Add parameter
-                        $scope.model.textData.push({ label: caption, value: v, color: color });
+                        if (caption.substr(0, 5).toLowerCase() === "delta") {
+                            var idx = parseInt(caption.substring(5, caption.length)) - 1;
+                            if (!isNaN(idx) && $scope.model.textData[idx]) {
+                                if (v >= 0)
+                                    $scope.model.textData[idx].delta = "+" + v.toString();
+                                else
+                                    $scope.model.textData[idx].deltaNeg = v.toString();
+                            }
+                        } else {
+                            // Add parameter
+                            $scope.model.textData.push({label: caption, value: v, color: color});
+                        }
                     }
                 }
             }
