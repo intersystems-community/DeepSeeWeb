@@ -71,6 +71,11 @@
      */
         .constant('LANGSTR', {
             en: {
+                export: 'Export',
+                pngImage: 'Image (*.png)',
+                svgImage: 'Image (*.svg)',
+                jpgImage: 'Image (*.jpg)',
+                pdfDoc: 'Document (*.pdf)',
                 about: "About",
                 cancel: "Cancel",
                 save: "Save",
@@ -148,6 +153,11 @@
                 shortMonths: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
             },
             ru: {
+                export: 'Экспорт',
+                pngImage: 'Картинка (*.png)',
+                svgImage: 'Картинка (*.svg)',
+                jpgImage: 'Картинка (*.jpg)',
+                pdfDoc: 'Документ (*.pdf)',
                 about: "О программе",
                 cancel: "Отмена",
                 save: "Сохранить",

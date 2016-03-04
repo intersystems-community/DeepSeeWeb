@@ -18,14 +18,14 @@
                     enabled: true
                 },
                 plotOptions: {
-                    series: {
+                /*    series: {
                         cursor: null,
                         point: {
                             events: {
                                 click: null
                             }
                         },
-                    },
+                    },*/
                     treemap: {
                         colorByPoint: true,
                         dataLabels: {
@@ -78,7 +78,9 @@
                         tempData.push({
                             caption: data.Cols[1].tuples[i].caption,
                             id: data.Cols[1].tuples[i].caption + "<br>" + parseFloat(parseFloat(data.Data[i]) / total * 100).toFixed(2).toString() + "%",
-                            value: parseFloat(data.Data[i])
+                            value: parseFloat(data.Data[i]),
+                            path: data.Cols[1].tuples[i].path,
+                            name: data.Cols[1].tuples[i].caption
                         });
                         //cb.fixData(tempData);
                     }

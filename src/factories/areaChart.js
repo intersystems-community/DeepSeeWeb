@@ -14,13 +14,7 @@
             var ex = {
                 plotOptions: {
                     series: {
-                        colorByPoint: false,
-                        cursor: null,
-                        point: {
-                            events: {
-                                click: null
-                            }
-                        }
+                        colorByPoint: false
                     },
                     area: {
                         //stacking: 'percent',

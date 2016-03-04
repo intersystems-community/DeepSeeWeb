@@ -23,7 +23,10 @@
         $scope.refreshItem = refreshItem;
         $scope.printItem = printItem;
         $scope.setType = setType;
+
         $scope.$on("resetWidgets", function() { window.location.reload(); });
+
+
 
         /**
          * Sets widget type. Widget to change: this.ctxItem
@@ -40,6 +43,7 @@
          */
         function onCtxMenuShow(item) {
             _this.ctxItem = item.$$hashKey;
+            $scope.ctxItem = item;
         }
 
         /**

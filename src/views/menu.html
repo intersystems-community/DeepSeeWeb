@@ -30,6 +30,16 @@
                 <div class="btn-group">
                     <button class="btn btn-default" ng-click="gotoDeepSee()" ng-show="model.onDashboard" title="{{'gotoDeepSee'|lang}}"><i class="fa fa-mail-forward"></i></button>
                 </div>
+
+                <div class="btn-group">
+                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false" title="EN">
+                        {{model.lang}}
+                    </button>
+                    <ul class="dropdown-menu" role="menu" style="cursor: pointer">
+                        <li><a hreaf="" ng-click="setLang(lang)" ng-repeat="lang in model.langs">{{lang}}</a></li>
+                    </ul>
+                </div>
+
                 <div class="btn-group">
                     <button class="btn btn-default" ng-click="about()" title="{{'about'|lang}}"><i class="fa fa-question"></i></button>
                 </div>

@@ -5,7 +5,7 @@
 (function(){
     'use strict';
 
-    function MenuCtrl($scope, $routeParams, Connector, Storage, $rootScope, $location, CONST, ngDialog, Lang) {
+    function MenuCtrl($scope, $routeParams, Connector, Storage, $rootScope, $location, CONST, ngDialog, Lang, Utils) {
         var _this = this;
         this.favs = [];
         loadFav();
@@ -27,6 +27,8 @@
             devMode: localStorage.connectorRedirect,
             btnHome: Lang.get("home"),
             lblSearch: Lang.get("search"),
+            lang: Lang.current,
+            langs: Lang.getLanguages(),
             namespaces: []
         };
         $scope.search = search;
@@ -38,6 +40,7 @@
         $scope.navigateFav = navigateFav;
         $scope.showSettings = showSettings;
         $scope.changeNamespace = changeNamespace;
+        $scope.setLang = setLang;
         $scope.about = about;
         $rootScope.$on('toggleMenu', toggleMenu);
       //  $rootScope.$on('menu:toggleLoading', toggleLoading);
@@ -46,9 +49,24 @@
         $scope.$on('servSettings:loaded', onServerSettingsLoaded);
 
         $rootScope.$on('lang:changed', function() {
+            $scope.model.lang = Lang.current;
             $scope.model.btnHome = Lang.get("home");
             $scope.model.lblSearch = Lang.get("search");
         });
+
+        function setLang(lang) {
+            var settings = Storage.getAppSettings();
+            var old = Utils.merge({}, settings);
+            settings.language = lang || "en";
+
+            if (old.language !== settings.language) {
+                Storage.setAppSettings(settings);
+                Storage.saveCurrentSettings(Storage.currentSettings);
+                Connector.saveConfig(Storage.settings).then(function(){
+                    window.location.reload();
+                });
+            }
+        }
 
         function changeNamespace(name) {
             $routeParams.ns = name;
@@ -254,6 +272,6 @@
     }
 
     angular.module('app')
-        .controller('menu', ['$scope', '$routeParams', 'Connector', 'Storage', '$rootScope', '$location', 'CONST', 'ngDialog', 'Lang', MenuCtrl] );
+        .controller('menu', ['$scope', '$routeParams', 'Connector', 'Storage', '$rootScope', '$location', 'CONST', 'ngDialog', 'Lang', 'Utils', MenuCtrl] );
 
 })();

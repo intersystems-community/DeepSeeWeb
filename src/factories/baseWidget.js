@@ -239,9 +239,10 @@
              * @param {string} [path] Drill path. If empty then drill up is happens
              * @param {string} [name] Name
              * @param {string} [category] Category
+             * @param {function} [noDrillCallback] Function that called if no dill exists
              * @returns {IPromise<T>}
              */
-            function doDrill(path, name, category) {
+            function doDrill(path, name, category, noDrillCallback) {
                 var defer = $q.defer();
                 _this.clearError();
                 // Apply drill filter if clickfilter is exists
@@ -257,6 +258,7 @@
                     .error(_this._onRequestError)
                     .success(function(data) {
                         if (isEmptyData(data) && path) {
+                            if (noDrillCallback) noDrillCallback();
                             var ddMdx = getDrillthroughMdx(mdx);
 
                             Connector.execMDX(ddMdx)

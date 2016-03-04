@@ -12,7 +12,7 @@
         .directive('mapWidget', ['$templateCache', '$compile', function($templateCache, $compile) {
             return {
                 template: function(element, attrs) {
-                    return "<div ng-show='model.tooltip.visible'><div class='panel panel-default map-popup'>" +
+                    return "<div style='visibility: hidden'><div class='panel panel-default map-popup'>" +
                              //  "<div style='text-align: center;' ng-bind-html='model.tooltip.title | sanitize'></div>" +
                                "<div ng-bind-html='model.tooltip.content | sanitize'></div>" +
                            "</div>"+
@@ -24,7 +24,7 @@
                     // TODO: move this to separate template
                     //var tooltipTemplate = "<div class='panel panel-default map-tooltip'><div>{{model.tooltip.name}}</div></div>";
                     //var tooltip = $compile(tooltipTemplate)(scope);
-                    scope.tooltipElement = element.children()[0];
+                    scope.popupElement = element.children()[0];
                     //element.append(tooltip);
 
                     //$compile(element.contents())(scope);
@@ -67,6 +67,9 @@
                         scope.tooltip.hide();
                     };
 
+                    scope.rejectTooltipCreation = function() {
+                        clearTimeout(hintTimeout);
+                    };
 
                     scope.showTooltip = function(txt, x, y) {
                         if (hintTimeout) clearTimeout(hintTimeout);
@@ -79,6 +82,23 @@
                                 .show();
                         }, 600);
                     };
+
+                    scope.showPopup= function() {
+                        var $el = $(scope.popupElement);
+                        //if (x !== undefined) $el.css("left", x.toString() + "px");
+                        //if (y !== undefined) $el.css("top", y.toString() + "px");
+                        $el.css('visibility', 'hidden');
+                        setTimeout(function() {
+                            $el.css('visibility', 'visible');
+                            map.render();
+                        }, 0);
+                    };
+
+                    scope.hidePopup = function() {
+                        var $el = $(scope.popupElement);
+                        $el.css('visibility', 'hidden');
+                    };
+
                     if (scope.onInit) scope.onInit(map);
 
                     scope.$on("$destroy", function() {
