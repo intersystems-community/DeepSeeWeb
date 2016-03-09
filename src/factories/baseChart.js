@@ -56,6 +56,7 @@
             $scope.item.toggleTop = toggleTop;
             $scope.item.toggleValues = toggleValues;
             $scope.item.showZeroOnAxis = showZeroOnAxis;
+            $scope.item.doExport = doExport;
             $scope.item.isBtnZero = false;
             $scope.item.isBtnValues = false;
 
@@ -113,6 +114,7 @@
                     text: ''
                 },
                 func: function (chart) {
+                    if (_this.chart) return;
                     _this.chart = chart;
                     $timeout(function() {
                         if (!_this) return;
@@ -153,6 +155,23 @@
                     };
                     Utils.merge($scope.chartConfig, opt);
                 }
+            }
+
+
+
+            function doExport(type) {
+                var opt = {
+                    sourceWidth: Math.floor(screen.width/2),
+                    sourceHeight: Math.floor(screen.height/2),
+                    filename: $scope.item.title || "chart"
+                };
+                switch (type) {
+                    //case 'png':  _this.chart.exportChart(opt); break;
+                    case 'svg': opt.type = 'image/svg+xml'; break;
+                    case 'jpg': opt.type = 'image/jpeg'; break;
+                    case 'pdf': opt.type = 'application/pdf'; break;
+                }
+                _this.chart.exportChart(opt);
             }
 
             function loadToolbarButton(settings, name) {

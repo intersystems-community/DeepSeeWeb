@@ -53,15 +53,28 @@
 
                         if (caption.substr(0, 5).toLowerCase() === "delta") {
                             var idx = parseInt(caption.substring(5, caption.length)) - 1;
-                            if (!isNaN(idx) && $scope.model.textData[idx]) {
+                            if (!isNaN(idx) && $scope.model.textData[idx] && v.toString() !== "0") {
                                 if (v.toString()[0] !== "-")
                                     $scope.model.textData[idx].delta = "+" + v.toString();
                                 else
                                     $scope.model.textData[idx].deltaNeg = v.toString();
                             }
                         } else {
+                            var valueColor = color;
+                            if (prop) {
+                                var lower = prop.thresholdLower;
+                                var upper = prop.thresholdUpper;
+
+                                if (lower !== undefined && lower !== "" && _this.desc.properties.lowRangeColor) {
+                                    if (parseFloat(v) < lower) valueColor = _this.desc.properties.lowRangeColor;
+                                }
+                                if (upper !== undefined && upper !== "" && _this.desc.properties.highRangeColor) {
+                                    if (parseFloat(v) > upper) valueColor = _this.desc.properties.highRangeColor;
+                                }
+                            }
+
                             // Add parameter
-                            $scope.model.textData.push({label: caption, value: v, color: color});
+                            $scope.model.textData.push({label: caption, value: v, color: color, valueColor: valueColor});
                         }
                     }
                 }

@@ -28,6 +28,8 @@
             $scope.item.drillUp = doDrillUp;
             $scope.model.tooltip.name = "";
             $scope.model.tooltip.items = [];
+            $scope.item.displayAsPivot = displayAsPivot;
+            $scope.item.isMap = true;
 
             var polys = null;
             requestPolygons();
@@ -40,15 +42,34 @@
                 _this.doDrill();
             }
 
+            /**
+             * Displays chart as pivot widget
+             */
+            function displayAsPivot(customMdx) {
+                hideTooltip();
+                $scope.rejectTooltipCreation();
+                if (_this.desc.type === "pivot") {
+                    $scope.item.isDrillthrough = null;
+                    _this.restoreWidgetType();
+                } else {
+                    $scope.item.pivotMdx = customMdx || _this.getMDX();
+                    _this.changeWidgetType("pivot");
+                    //_this.desc.oldType = _this.desc.type;
+                    //_this.desc.type = "pivot";
+
+                    ///$scope.$broadcast("typeChanged");
+                    //$scope.$destroy();
+                }
+            }
 
             function requestPolygons() {
-                if (!_this.desc.properties || !_this.desc.properties.coordsJsFile) return;
-                var fileName = _this.desc.properties.coordsJsFile || (_this.desc.name + ".js");
+                var fileName = _this.desc.name + ".js";
+                if (_this.desc.properties && _this.desc.properties.coordsJsFile) fileName = _this.desc.properties.coordsJsFile;
                 var folder = Storage.serverSettings.DefaultApp || "/csp";
                 var url = folder + "/" + fileName;
 
                 if (localStorage.connectorRedirect) url="huPolygons.js";
-                //if (localStorage.connectorRedirect) url="rfpolygons.js";
+                if (localStorage.connectorRedirect) url="rfpolygons.js";
                 //if (localStorage.connectorRedirect) url="mospolygons.js";
                 //if (localStorage.connectorRedirect) url = localStorage.connectorRedirect.replace("MDX2JSON/", "").split("/").slice(0, -1).join("/") + "/csp/" + Connector.getNamespace() + "/" + fileName;
                 Connector.getFile(url).success(onPolyFileLoaded);
@@ -72,7 +93,9 @@
 
                 var idx = _this.mapData.Cols[1].tuples.indexOf(item);
                 var l = _this.mapData.Cols[0].tuples.length;
-                var color = _this.mapData.Cols[0].tuples.filter(function(el) { return el.caption === (_this.desc.properties.colorProperty || "ColorValue"); });
+                var colorProp = 'Color';
+                if (_this.desc.properties && _this.desc.properties.colorProperty) colorProp = _this.desc.properties.colorProperty;
+                var color = _this.mapData.Cols[0].tuples.filter(function(el) { return el.caption === colorProp; });
                 if (color.length !== 0) {
                     color = color[0];
                     var colorIdx = _this.mapData.Cols[0].tuples.indexOf(color);
@@ -86,8 +109,8 @@
                     return parts.join(",");
                 } else {
                     var f = "rgb(x, 255-x, 0)";
-                    //var f = "hsl((255-x)/255 * 120, 100%, 50%)";
-                    if (_this.desc.properties.colorFormula) f = _this.desc.properties.colorFormula;
+                    if (!_this.desc.properties || !_this.desc.properties.colorProperty) f = "hsl((255-x)/255 * 120, 100%, 50%)";
+                    if (_this.desc.properties && _this.desc.properties.colorFormula) f = _this.desc.properties.colorFormula;
                     var fidx = f.indexOf("(");
                     var firstPart = f.substring(0, fidx).toLowerCase();
                     f = f.substring(fidx + 1, f.length - 1);
@@ -111,9 +134,14 @@
             }
 
             function centerView(min, max) {
-                var lat = parseFloat(_this.desc.properties.latitude);
-                var lon = parseFloat(_this.desc.properties.longitude);
-                var zoom = parseFloat(_this.desc.properties.zoom);
+                var lat;
+                var lon;
+                var zoom;
+                if (_this.desc.properties) {
+                    var lat = parseFloat(_this.desc.properties.latitude);
+                    var lon = parseFloat(_this.desc.properties.longitude);
+                    var zoom = parseFloat(_this.desc.properties.zoom);
+                }
 
                 if (_this.drills.length === 0 && (!isNaN(lat) && !isNaN(lon) && !isNaN(zoom)) && (lat !== undefined && lon !== undefined && zoom !== undefined)) {
                     _this.map.getView().setCenter(ol.proj.transform([lon, lat], 'EPSG:4326', 'EPSG:900913'));
@@ -136,15 +164,25 @@
 
             function buildPolygons() {
                 var lon, lat, zoom, i, p, k, l;
-                var coordsProperty = _this.desc.properties.coordsProperty;
+                var colorProperty = "ColorValue";
+                if (_this.desc.properties && _this.desc.properties.colorProperty) colorProperty = _this.desc.properties.colorProperty;
+                var coordsProperty = 'Key';
+                if (_this.desc.properties && _this.desc.properties.coordsProperty) coordsProperty = _this.desc.properties.coordsProperty;
                 if (!polys || !_this.map || !_this.mapData) return;
                 var features = [];
                 var l = _this.mapData.Cols[0].tuples.length;
                 var minV = Number.MAX_VALUE;
                 var maxV = Number.MIN_VALUE;
-                var idx = parseInt(_this.desc.properties.colorProperty) || 0;
+                var colorPropertyIdx = 0;
+                if (isNaN(parseInt(colorProperty))) {
+                    item = _this.mapData.Cols[0].tuples.filter(function(el) { return el.caption === colorProperty; });
+                    colorPropertyIdx = _this.mapData.Cols[0].tuples.indexOf(item[0]);
+                } else {
+                    colorPropertyIdx = parseInt(_this.desc.properties.colorProperty) || 0;
+                }
+
                 for (var t = 0; t < _this.mapData.Cols[1].tuples.length; t++) {
-                    var value = _this.mapData.Data[t * l + idx];
+                    var value = _this.mapData.Data[t * l + colorPropertyIdx];
                     if (value < minV) minV = value;
                     if (value > maxV) maxV = value;
                 }
@@ -230,7 +268,7 @@
 
                     // Find poly title
                     var polyTitle = key;
-                    if (_this.desc.properties.polygonTitleProperty) {
+                    if (_this.desc.properties && _this.desc.properties.polygonTitleProperty) {
                         var it = _this.mapData.Cols[0].tuples.filter(function (el) {
                             return el.caption === (_this.desc.properties.polygonTitleProperty || "Name");
                         });
@@ -246,10 +284,13 @@
                         geometry: new ol.geom.Polygon(poly),
                         //geometry: new ol.geom.MultiPolygon([poly]),
                         key: key,
-                        title:  polyTitle
+                        title:  polyTitle,
+                        dataIdx: t * l,
+                        path: _this.mapData.Cols[1].tuples[t].path,
+                        desc: _this.mapData.Cols[1].tuples[t].title
                     });
 
-                    var value = _this.mapData.Data[t * l + (_this.desc.properties.colorProperty || 0)];
+                    var value = _this.mapData.Data[t * l + colorPropertyIdx];
                     feature.setStyle(new ol.style.Style({
                         zIndex: 0,
                         fill: new ol.style.Fill({
@@ -386,8 +427,10 @@
                     var size = result.Cols[0].tuples.length;
                     var k = 0;
                     var features = [];
-                    var latitudeProperty = _this.desc.properties.latitudeProperty || "latitude";
-                    var longitudeProperty  = _this.desc.properties.longitudeProperty || "longitude";
+                    var latitudeProperty = "latitude";
+                    if (_this.desc.properties && _this.desc.properties.latitudeProperty) latitudeProperty = _this.desc.properties.latitudeProperty;
+                    var longitudeProperty  = "longitude";
+                    if (_this.desc.properties && _this.desc.properties.longitudeProperty) longitudeProperty = _this.desc.properties.longitudeProperty;
                     var latIdx = -1;
                     var lonIdx = -1;
                     var item = result.Cols[0].tuples.filter(function(el) { return el.caption.toLowerCase() === latitudeProperty; });
@@ -421,7 +464,8 @@
                             labels: labels,
                             values: values,
                             dataIdx: k,
-                            path: result.Cols[1].tuples[i].path
+                            path: result.Cols[1].tuples[i].path,
+                            desc: result.Cols[1].tuples[i].title
                         });
                         if (parseFloat(lon) < min[1]) min[1] = parseFloat(lon);
                         if (parseFloat(lat) < min[0]) min[0] = parseFloat(lat);
@@ -564,7 +608,7 @@
 
                 // Create popup
                 _this.popup = new ol.Overlay({
-                    element: $scope.tooltipElement,
+                    element: $scope.popupElement,
                     positioning: 'bottom-center',
                     offset: [0, -40],
                     stopEvent: false
@@ -614,23 +658,32 @@
                         return feature;
                     });
                 if (feature) {
+                    var dataIdx = feature.get("dataIdx");
+                    var title;
+                    var titleProp = "TooltipValue";
+                    if (_this.desc.properties && _this.desc.properties.markerTitleProperty) titleProp = _this.desc.properties.markerTitleProperty;
+                    title = _this.getDataByColumnName(_this.mapData, titleProp || "Name", dataIdx);
+                    if (!title) title = _this.getDataByColumnName(_this.mapData, "Name", dataIdx);
+                    if (!title) title = (_this.mapData.Cols[1].tuples[Math.floor(dataIdx / _this.mapData.Cols[0].tuples.length)].caption || "");
+                    if (title) $scope.showTooltip(title, e.originalEvent.pageX, e.originalEvent.pageY);
 
-                    if (feature.getGeometry().getType().toLowerCase() === "polygon") {
-                        var str = feature.getProperties().title || "";
-                        if (str) {
-                            $scope.showTooltip(str, e.originalEvent.pageX, e.originalEvent.pageY);
-                        }
-                    } else {
-                        var dataIdx = feature.get("dataIdx");
-                        var title;
-                        var titleProp = _this.desc.properties.markerTitleProperty;
-                        title = _this.getDataByColumnName(_this.mapData, titleProp || "Name", dataIdx);
-                        if (!title) title = (_this.mapData.Cols[1].tuples[Math.floor(dataIdx / _this.mapData.Cols[0].tuples.length)].caption || "");
-
-                        //         "<br>" + (_this.mapData.Cols[1].tuples[Math.floor(dataIdx / _this.mapData.Cols[0].tuples.length)].title || "");
-
-                        $scope.showTooltip(title, e.originalEvent.pageX, e.originalEvent.pageY);
-                    }
+//                    if (feature.getGeometry().getType().toLowerCase() === "polygon") {
+//                        //var str = feature.getProperties().title || "";
+//                        if (title) $scope.showTooltip(title, e.originalEvent.pageX, e.originalEvent.pageY);
+//                        }
+//                    } else {
+//                       /* var dataIdx = feature.get("dataIdx");
+//                        var title;
+//                        var titleProp = "TooltipValue";
+//                        if (_this.desc.properties && _this.desc.properties.markerTitleProperty) titleProp = _this.desc.properties.markerTitleProperty;
+//                        title = _this.getDataByColumnName(_this.mapData, titleProp || "Name", dataIdx);
+//                        if (!title) title = _this.getDataByColumnName(_this.mapData, "Name", dataIdx);
+//                        if (!title) title = (_this.mapData.Cols[1].tuples[Math.floor(dataIdx / _this.mapData.Cols[0].tuples.length)].caption || "");
+//*/
+//                        //         "<br>" + (_this.mapData.Cols[1].tuples[Math.floor(dataIdx / _this.mapData.Cols[0].tuples.length)].title || "");
+//
+//                        $scope.showTooltip(title, e.originalEvent.pageX, e.originalEvent.pageY);
+//                    }
                 }
 
                 if (e.dragging) {
@@ -673,60 +726,98 @@
                         return feature;
                     });
                 if (feature) {
+
+
+                    _this.doDrill(feature.get("path"), feature.get("name") || feature.get("title"), undefined, function() {
+                        showPopup(feature);
+                    });
+                    //$scope.$apply();
+                    return;
+
                     if (feature.getGeometry().getType().toLowerCase() === "polygon") {
                         var key = feature.get("key");
                         var coordsProperty = _this.desc.properties.coordsProperty || "caption";
                         var item = _this.mapData.Cols[1].tuples.filter(function(el) { return el.caption == key } );
                         if (!item) return;
-                        _this.doDrill(item[0].path, key);
+                        _this.doDrill(item[0].path, key, undefined, function() {
+                            showPopup(feature);
+                        });
                         //_this.doDrillFilter(item[0].path);
                     } else {
-                        var dataIdx = feature.get("dataIdx");
-                        var title, content;
-                        var contentProp = _this.desc.properties.markerPopupContentProperty;
-                        if (contentProp) content = _this.getDataByColumnName(_this.mapData, contentProp, dataIdx);
-                        else
-                            content = _this.mapData.Cols[1].tuples[Math.floor(dataIdx / _this.mapData.Cols[0].tuples.length)].caption || ""
+                        showPopup(feature);
 
-                        /*var key = feature.get("key");
-                        var labels = feature.get("labels");
-                        var values = feature.get("values");
-                        $scope.model.tooltip.items = [];
-                        for (var i = 0; i < labels.length; i++) $scope.model.tooltip.items.push({
-                            label: labels[i] + ": ",
-                            value: values[i]
-                        })*/;
-                        //$scope.model.tooltip.name = feature.get("name");
-                        $scope.model.tooltip.content = content;
-
-                        var geometry = feature.getGeometry();
-                        var coord = geometry.getCoordinates();
-                        coord[0] += Math.floor((_this.map.getCoordinateFromPixel(evt.pixel)[0] / 40075016.68) + 0.5) * 20037508.34 * 2;
-                        _this.popup.setPosition(coord);
-
-                        _this.doDrillFilter(feature.get("path"));
-
-                        /*$(element).popover({
-                         'placement': 'top',
-                         'html': true,
-                         'content': feature.get('name')
-                         });*/
-                        //$(element).popover('show');
-                        showTooltip();
+                        //var dataIdx = feature.get("dataIdx");
+                        //var title, content;
+                        //var contentProp = _this.desc.properties.markerPopupContentProperty;
+                        //if (contentProp) content = _this.getDataByColumnName(_this.mapData, contentProp, dataIdx);
+                        //else
+                        //    content = _this.mapData.Cols[1].tuples[Math.floor(dataIdx / _this.mapData.Cols[0].tuples.length)].caption || ""
+                        //
+                        //
+                        //$scope.model.tooltip.content = content;
+                        //
+                        //var geometry = feature.getGeometry();
+                        //var coord = geometry.getCoordinates();
+                        //coord[0] += Math.floor((_this.map.getCoordinateFromPixel(evt.pixel)[0] / 40075016.68) + 0.5) * 20037508.34 * 2;
+                        //_this.popup.setPosition(coord);
+                        //
+                        //_this.doDrillFilter(feature.get("path"));
+                        //
+                        //showTooltip();
                     }
                 } else {
                     hideTooltip();
                     //$(element).popover('destroy');
                 }
                 $scope.$apply();
+
+                function showPopup(feature) {
+                    var dataIdx = feature.get("dataIdx");
+                    var title, content;
+                    var contentProp = 'PopupValue';
+                    if (_this.desc.properties && _this.desc.properties.markerPopupContentProperty) contentProp = _this.desc.properties.markerPopupContentProperty;
+                    if (contentProp) content = _this.getDataByColumnName(_this.mapData, contentProp, dataIdx);
+                    else {
+
+                        content = _this.mapData.Cols[1].tuples[Math.floor(dataIdx / _this.mapData.Cols[0].tuples.length)].caption ||
+                            _this.mapData.Cols[1].tuples[Math.floor(dataIdx / _this.mapData.Cols[0].tuples.length)].desc || "";
+                    }
+
+                    $scope.model.tooltip.content = content;
+
+                    var coord;
+                    if (feature.getGeometry().getType().toLowerCase() === "polygon") {
+                        evt.pixel[1] += 30;
+                        coord = _this.map.getCoordinateFromPixel(evt.pixel);
+                        //coord[0] = Math.floor((_this.map.getCoordinateFromPixel(evt.pixel)[0] / 40075016.68) + 0.5) * 20037508.34 * 2;
+                        //coord[0] += Math.floor((_this.map.getCoordinateFromPixel(evt.pixel)[0] / 40075016.68) + 0.5) * 20037508.34 * 2;
+                    } else {
+                        var geometry = feature.getGeometry();
+                        coord = geometry.getCoordinates();
+                        coord[0] += Math.floor((_this.map.getCoordinateFromPixel(evt.pixel)[0] / 40075016.68) + 0.5) * 20037508.34 * 2;
+                    }
+                    _this.popup.setPosition(coord);
+
+                    _this.doDrillFilter(feature.get("path"));
+
+                    /*$(element).popover({
+                     'placement': 'top',
+                     'html': true,
+                     'content': feature.get('name')
+                     });*/
+                    //$(element).popover('show');
+                    $scope.showPopup();
+
+                }
             }
 
-            function showTooltip() {
+            /*function showTooltip() {
                 $scope.model.tooltip.visible = true;
-            }
+            }*/
 
             function hideTooltip() {
-                $scope.model.tooltip.visible = false;
+                $scope.hidePopup();
+                //$scope.model.tooltip.visible = false;
             }
 
             function onResize() {

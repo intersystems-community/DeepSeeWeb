@@ -96,6 +96,10 @@
                 class: PivotWidget,
                 type: "pivot"
             },
+            "deepsee.lightpivottable": {
+                class: PivotWidget,
+                type: "pivot"
+            },
             textmeter: {
                 class: TextWidget,
                 type: "text"
