@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25" zv="Cache for Windows (x86-64) 2016.1 (Build 617)" ts="2016-03-09 23:21:21">
+<Class name="DSW.Installer">
+<IncludeCode>%occInclude</IncludeCode>
+<TimeChanged>63986,84078.433579</TimeChanged>
+<TimeCreated>63986,58811.369564</TimeCreated>
+
+<XData name="Install">
+<Description>
+You can see generated method in zsetup+1^App.Installer.1</Description>
+<XMLNamespace>INSTALLER</XMLNamespace>
+<Data><![CDATA[
+<Manifest>
+	<IfNotDef Var="Namespace">
+		<Var Name="Namespace" Value="DSW"/>
+		<Log Text="Set namespace to ${Namespace}" Level="0"/>
+	</IfNotDef>
+    <If Condition='(##class(Config.Namespaces).Exists("${Namespace}")=0)'>
+        <Log Text="Creating namespace ${Namespace}" Level="0"/>
+        <Namespace Name="${Namespace}" Create="yes" Code="${Namespace}" Ensemble="0" Data="${Namespace}">
+            <Configuration>
+                <Database Name="${Namespace}" Dir="${MGRDIR}${Namespace}" Create="yes"/>
+            </Configuration>
+        </Namespace>
+        <Log Text="End Creating namespace ${Namespace}" Level="0"/>
+    </If>
+
+    <Role Name="AppRole" Description="Role to access and use the App" Resources="%DB_CACHESYS:RW,%Admin_Secure:U" />
+    <Namespace Name="${Namespace}" Create="no">
+    	<!--<If Condition='(##class(Security.Applications).Exists("/"_"${Namespace}")=0)'>
+    	   <Log Text="Creating application" Level="0"/>-->
+           <CSPApplication Url="/csp/${Namespace}" Recurse="1" Directory="${CSPDIR}${Namespace}" AuthenticationMethods="64" IsNamespaceDefault="true" Grant="AppRole" />
+        <!--</If>-->
+   </Namespace>
+    
+    <Log Text="Copying web application files" Level="0"/>
+    <RunInstall Class="DSW.Installer" Method="CopyFiles"/>
+</Manifest>
+]]></Data>
+</XData>
+
+<Method name="setup">
+<Description>
+Entry point method, you need to call
+At class compile time it generate Cach? ObjectScript code from the manifest
+After that you can run this installer from a terminal:
+Do ##class(App.Installer).setup(.pVars)</Description>
+<Internal>1</Internal>
+<ClassMethod>1</ClassMethod>
+<CodeMode>objectgenerator</CodeMode>
+<FormalSpec><![CDATA[&pVars,pLogLevel:%Integer=0,pInstaller:%Installer.Installer]]></FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	
+    Quit ##class(%Installer.Manifest).%Generate(%compiledclass, %code, "Install")
+]]></Implementation>
+</Method>
+
+<Method name="CopyFiles">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>pVars,pLogLevel,tInstaller</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	s r = "\"
+	s ns = tInstaller.Evaluate("${Namespace}")
+	s csp = tInstaller.Evaluate("${CSPDIR}")
+	s path = csp _ ns _ r
+	s i = 0
+	while 1 {
+		s id = "DSW.InstallerData||File" _ i
+		if (##class(%Dictionary.CompiledXData).%ExistsId(id) = 0) Q
+		s file = ##class(%Dictionary.CompiledXData).%OpenId(id)
+		s data = $zcvt(file.Data.Read(file.Data.Size), "O", "UTF8")
+		s fileName = path _ file.Description
+		s dir = $p(fileName, r, 0, $l(fileName, r) - 1)
+		if ('##class(%File).DirectoryExists(dir)) d ##class(%File).CreateDirectory(dir)
+		
+		d tInstaller.Log(pLogLevel, "Creating file", fileName)
+		s f = ##class(%File).%New(fileName)
+		d f.Open("NW")
+		d f.Write($System.Encryption.Base64Decode(data))
+		d f.Close()
+				
+		s i = i + 1
+	}
+]]></Implementation>
+</Method>
+
+<Method name="update">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&pVars]]></FormalSpec>
+<Implementation><![CDATA[
+	s api = "https://api.github.com/repos/intersystems-ru/DeepSeeWeb/"
+	s latest = "releases/latest"
+	s SSLConfig = "GitHub"
+	
+	/*s ns = ""
+	if ('pVars && $d(pVars("Namespace"))) {
+		s ns = pVars("Namespace") 
+	}
+	if (ns = "") s ns = "DSW"*/
+	s ns = "DSW"
+ 	Set SSLConfig = "GitHub"
+
+ 	Zn "%SYS"
+ 	Do:'##class(Security.SSLConfigs).Exists(SSLConfig) ##class(Security.SSLConfigs).Create(SSLConfig)
+
+	s req=##class(%Net.HttpRequest).%New()
+ 	s req.Https=1
+	s req.SSLConfiguration=SSLConfig	
+	d req.SetHeader("Accept","application/vnd.github.v3+json") 
+	
+	s st = req.Get(api _ latest)		
+	zn ns
+	
+	Return:$$$ISERR(st) st
+	
+	s st = ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject(req.HttpResponse.Data,,.release,1)
+	Return:$$$ISERR(st) st
+	Return:(req.HttpResponse.StatusCode = 404) $$$ERROR($$$GeneralError,"Repository doesn't exist OR you don't have access")
+	Return:((req.HttpResponse.StatusCode = 403) && (req.HttpResponse.GetHeader("X-RATELIMIT-REMAINING")=0)) $$$ERROR($$$GeneralError,"API rate limit exceeded. Try logging in.")
+ 	Return:(req.HttpResponse.StatusCode '= 200) $$$ERROR($$$GeneralError,"Received " _ req.HttpResponse.StatusCode _ " status, expected 200")
+	
+	s url = release.assets.GetAt(1).%data("browser_download_url")
+	
+	s st = req.Get(url)	
+	
+	s temp = ##class(%File).TempFilename("xml")
+	
+	s f = ##class(%File).%New(temp)
+	d f.Open("NW")
+	d f.Write(req.HttpResponse.Data)
+	d f.Close()
+	
+	d $SYSTEM.OBJ.Load(temp)
+	
+	d ##class(DSW.Installer).setup()
+]]></Implementation>
+</Method>
+</Class>
+</Export>
