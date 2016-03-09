@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Export generator="Cache" version="25" zv="Cache for Windows (x86-64) 2016.1 (Build 617)" ts="2016-03-09 23:21:21">
+<Export generator="Cache" version="25" zv="Cache for Windows (x86-64) 2016.1 (Build 617)" ts="2016-03-09 23:28:38">
 <Class name="DSW.Installer">
 <IncludeCode>%occInclude</IncludeCode>
-<TimeChanged>63986,84078.433579</TimeChanged>
+<TimeChanged>63986,84416.256359</TimeChanged>
 <TimeCreated>63986,58811.369564</TimeCreated>
 
 <XData name="Install">
@@ -99,7 +99,7 @@ Do ##class(App.Installer).setup(.pVars)</Description>
 		s ns = pVars("Namespace") 
 	}
 	if (ns = "") s ns = "DSW"*/
-	s ns = "DSW"
+	s ns = $Namespace
  	Set SSLConfig = "GitHub"
 
  	Zn "%SYS"
