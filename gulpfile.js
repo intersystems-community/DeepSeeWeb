@@ -9,7 +9,8 @@ var gulp   = require('gulp'),
     zip = require('gulp-zip'),
     bump = require('gulp-bump'),
     replace = require('gulp-replace'),
-    release = require('gulp-github-release');
+    release = require('gulp-github-release'),
+    through = require('through2')
 
     // TODO: add html-min
     //jsdoc = require("gulp-jsdoc");
@@ -103,6 +104,45 @@ gulp.task('makerelease', ['zip'], function() {
     return gulp.src('./package.json')
         //.pipe(bump())
         .pipe(gulp.dest('./'));
+});
+
+var FILE_LIST;
+gulp.task('enum-files', function() {
+    FILE_LIST = [];
+    return gulp.src(['./build/**/*', '!./build/DSW.Installer.xml'])
+        .pipe(through.obj(function (chunk, enc, cb) {
+            if (!chunk.isDirectory()) FILE_LIST.push(chunk.relative);
+            cb(null, chunk);
+        }));
+});
+
+
+gulp.task('create-install-package', ['enum-files'], function() {
+    var fs = require('fs');
+    var append = '';
+    for (var i = 0; i < FILE_LIST.length; i++) {
+        console.log('Adding file:', FILE_LIST[i]);
+        var content = fs.readFileSync('./build/' + FILE_LIST[i], 'utf8');
+        content = new Buffer(content).toString('base64');
+        var step = 32767;
+        var k = step;
+        while (k < content.length) {
+            content = content.substring(0, k) + '\r\n' + content.substring(k, content.length);
+            k += step;
+        }
+        append += `
+<XData name="File${i}">
+    <Description>${FILE_LIST[i]}</Description>
+    <MimeType>text/plain</MimeType>
+    <Data><![CDATA[${content}]]></Data>
+</XData>`;
+    }
+
+    // Change exists Installer class
+    var installer = fs.readFileSync('./DSW.Installer.xml', 'utf8');
+    installer = installer.replace('</Class>', '</Class><Class name="DSW.InstallerData">' + append + '</Class>');
+    fs.writeFileSync('./build/DSW.Installer.xml', installer);
+    console.log('DSW.Installer.xml was created!')
 });
 
 
