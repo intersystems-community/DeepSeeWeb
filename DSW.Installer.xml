@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Export generator="Cache" version="25" zv="Cache for Windows (x86-64) 2016.1 (Build 617)" ts="2016-03-09 23:28:38">
+<Export generator="Cache" version="25" zv="Cache for Windows (x86-64) 2015.2.2 (Build 805)" ts="2016-03-17 09:43:20">
 <Class name="DSW.Installer">
 <IncludeCode>%occInclude</IncludeCode>
-<TimeChanged>63986,84416.256359</TimeChanged>
+<TimeChanged>63994,34993.059111</TimeChanged>
 <TimeCreated>63986,58811.369564</TimeCreated>
 
 <XData name="Install">
@@ -12,7 +12,7 @@ You can see generated method in zsetup+1^App.Installer.1</Description>
 <Data><![CDATA[
 <Manifest>
 	<IfNotDef Var="Namespace">
-		<Var Name="Namespace" Value="DSW"/>
+		<Var Name="Namespace" Value="mdx2json"/>
 		<Log Text="Set namespace to ${Namespace}" Level="0"/>
 	</IfNotDef>
     <If Condition='(##class(Config.Namespaces).Exists("${Namespace}")=0)'>
@@ -29,12 +29,15 @@ You can see generated method in zsetup+1^App.Installer.1</Description>
     <Namespace Name="${Namespace}" Create="no">
     	<!--<If Condition='(##class(Security.Applications).Exists("/"_"${Namespace}")=0)'>
     	   <Log Text="Creating application" Level="0"/>-->
-           <CSPApplication Url="/csp/${Namespace}" Recurse="1" Directory="${CSPDIR}${Namespace}" AuthenticationMethods="64" IsNamespaceDefault="true" Grant="AppRole" />
+           <CSPApplication Url="/${Namespace}" Recurse="1" Directory="${CSPDIR}dsw" AuthenticationMethods="64" IsNamespaceDefault="true" Grant="AppRole" />
         <!--</If>-->
+        <RunInstall Class="DSW.Installer" Method="CreateCSPUpdater"/>
+        <Log Text="Copying web application files" Level="0"/>
+    	<RunInstall Class="DSW.Installer" Method="CopyFiles"/>
+    
    </Namespace>
     
-    <Log Text="Copying web application files" Level="0"/>
-    <RunInstall Class="DSW.Installer" Method="CopyFiles"/>
+    
 </Manifest>
 ]]></Data>
 </XData>
@@ -56,26 +59,70 @@ Do ##class(App.Installer).setup(.pVars)</Description>
 ]]></Implementation>
 </Method>
 
-<Method name="CopyFiles">
+<Method name="CreateCSPUpdater">
 <ClassMethod>1</ClassMethod>
 <FormalSpec>pVars,pLogLevel,tInstaller</FormalSpec>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
-	s r = "\"
-	s ns = tInstaller.Evaluate("${Namespace}")
+	d tInstaller.Log(pLogLevel, "Creating CSPUpdater", "CSPUpdater.cls")
+	s file = ##class(%Dictionary.CompiledXData).%OpenId("DSW.Installer||CSPUpdater")
+	s data = $zcvt(file.Data.Read(file.Data.Size), "O", "UTF8")
+	s temp = ##class(%File).TempFilename("xml")
+	
+	s f = ##class(%File).%New(temp)
+	d f.Open("NW")
+	d f.Write(data)
+	
+	d f.Close()
+	w !,"Import classes"
+	s ns = $namespace
+	zn "mdx2json"
+	d $SYSTEM.OBJ.Load(temp, "c")
+	zn ns
+	d ##class(%File).Delete(temp)	
+	d tInstaller.Log(pLogLevel, "CSPUpdater created successfully", "CSPUpdater.cls")
+]]></Implementation>
+</Method>
+
+<Method name="CopyFiles">
+<Description>
+Copy files from XData placed inside DSW.InstallerData class</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>pVars,pLogLevel,tInstaller</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+		
 	s csp = tInstaller.Evaluate("${CSPDIR}")
-	s path = csp _ ns _ r
+	s path = ##class(%File).NormalizeDirectory(csp _ "dsw")	
+	
+	// Get path seporator
+	s r = ##class(%File).NormalizeDirectory("\")
+	if ($find(r, "/") = 0) { 
+		s r = "\"
+	} else {
+		 s r = "/"
+	}
+	
 	s i = 0
 	while 1 {
-		s id = "DSW.InstallerData||File" _ i
-		if (##class(%Dictionary.CompiledXData).%ExistsId(id) = 0) Q
+		s id = "DSW.InstallerData||File" _ i		
+		if (##class(%Dictionary.CompiledXData).%ExistsId(id) = 0) Q		
 		s file = ##class(%Dictionary.CompiledXData).%OpenId(id)
+		
 		s data = $zcvt(file.Data.Read(file.Data.Size), "O", "UTF8")
-		s fileName = path _ file.Description
-		s dir = $p(fileName, r, 0, $l(fileName, r) - 1)
-		if ('##class(%File).DirectoryExists(dir)) d ##class(%File).CreateDirectory(dir)
+		s fileName = ##class(%File).NormalizeFilename(path _ file.Description)
+		
+		
+		s fileName = $replace(fileName, "\", r)
+		s fileName = $replace(fileName, "/", r)
+		s dir = ##class(%File).ParentDirectoryName(fileName)
+		if ('##class(%File).DirectoryExists(dir)) {
+			d ##class(%File).CreateDirectory(dir)
+		}
 		
 		d tInstaller.Log(pLogLevel, "Creating file", fileName)
+		
+		
 		s f = ##class(%File).%New(fileName)
 		d f.Open("NW")
 		d f.Write($System.Encryption.Base64Decode(data))
@@ -87,31 +134,31 @@ Do ##class(App.Installer).setup(.pVars)</Description>
 </Method>
 
 <Method name="update">
+<Description>
+Update DSW from latest github release</Description>
 <ClassMethod>1</ClassMethod>
 <FormalSpec><![CDATA[&pVars]]></FormalSpec>
 <Implementation><![CDATA[
-	s api = "https://api.github.com/repos/intersystems-ru/DeepSeeWeb/"
+	w !,"Updating DSW"	
 	s latest = "releases/latest"
 	s SSLConfig = "GitHub"
 	
-	/*s ns = ""
-	if ('pVars && $d(pVars("Namespace"))) {
-		s ns = pVars("Namespace") 
-	}
-	if (ns = "") s ns = "DSW"*/
-	s ns = $Namespace
- 	Set SSLConfig = "GitHub"
+	s ns = $Namespace 	
 
- 	Zn "%SYS"
+ 	zn "%SYS"
+ 	s SSLConfig = "GitHub"
  	Do:'##class(Security.SSLConfigs).Exists(SSLConfig) ##class(Security.SSLConfigs).Create(SSLConfig)
+ 	zn ns
 
 	s req=##class(%Net.HttpRequest).%New()
  	s req.Https=1
 	s req.SSLConfiguration=SSLConfig	
 	d req.SetHeader("Accept","application/vnd.github.v3+json") 
+	w !,"Getting last release..."	
 	
-	s st = req.Get(api _ latest)		
-	zn ns
+	Set req.Server="api.github.com"
+	Set req.Location = "repos/intersystems-ru/DeepSeeWeb/" _ latest
+	s st = req.Get()	
 	
 	Return:$$$ISERR(st) st
 	
@@ -121,21 +168,67 @@ Do ##class(App.Installer).setup(.pVars)</Description>
 	Return:((req.HttpResponse.StatusCode = 403) && (req.HttpResponse.GetHeader("X-RATELIMIT-REMAINING")=0)) $$$ERROR($$$GeneralError,"API rate limit exceeded. Try logging in.")
  	Return:(req.HttpResponse.StatusCode '= 200) $$$ERROR($$$GeneralError,"Received " _ req.HttpResponse.StatusCode _ " status, expected 200")
 	
+	// Download release
+	s req=##class(%Net.HttpRequest).%New()
+ 	s req.Https=1
+	s req.SSLConfiguration=SSLConfig	
+	d req.SetHeader("Accept","application/vnd.github.v3+json") 	
 	s url = release.assets.GetAt(1).%data("browser_download_url")
+	w !,"Last relese is: ",url
+	w !,"Downloading..."
+	s req.Server = "github.com"
+	s req.Location = $replace(url, "https://github.com/" , "")	
+	s st = req.Get()	
 	
-	s st = req.Get(url)	
-	
-	s temp = ##class(%File).TempFilename("xml")
-	
+	// Copy data into file
+	s temp = ##class(%File).TempFilename("xml")	
 	s f = ##class(%File).%New(temp)
 	d f.Open("NW")
-	d f.Write(req.HttpResponse.Data)
+	s data = req.HttpResponse.Data
+	if (($IsObject(data)) && (data.%IsA("%Stream.GlobalBinary"))) {		
+		while 'data.AtEnd {
+			s str = data.Read(data.Size)
+			d f.Write(str)
+		}
+	} else {
+		d f.Write(data)
+	}
 	d f.Close()
+	w !,temp
+		
+	// Import file
+	w !,"Import classes"
+	d $SYSTEM.OBJ.Load(temp, "c")
+	d ##class(%File).Delete(temp)	
 	
-	d $SYSTEM.OBJ.Load(temp)
 	
 	d ##class(DSW.Installer).setup()
+	w !,"Update was done successfully!"
 ]]></Implementation>
 </Method>
+
+<XData name="CSPUpdater">
+<Description>
+CSPUpdater.cls</Description>
+<Data><![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25" zv="Cache for Windows (x86-64) 2015.2.2 (Build 805)" ts="2016-03-10 09:24:30">
+<Class name="DSW.CSPUpdater">
+<Super>%CSP.Page</Super>
+<TimeChanged>63987,33821.088242</TimeChanged>
+<TimeCreated>63987,33345.629914</TimeCreated>
+
+<Method name="OnPage">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	d ##class(DSW.Installer).update()
+	Quit $$$OK
+]]]]><![CDATA[></Implementation>
+</Method>
+</Class>
+</Export>
+]]></Data>
+</XData>
 </Class>
 </Export>
