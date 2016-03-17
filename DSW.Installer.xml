@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Export generator="Cache" version="25" zv="Cache for Windows (x86-64) 2015.2.2 (Build 805)" ts="2016-03-17 09:43:20">
+<Export generator="Cache" version="25" zv="Cache for Windows (x86-64) 2015.2.2 (Build 805)" ts="2016-03-17 11:26:06">
 <Class name="DSW.Installer">
 <IncludeCode>%occInclude</IncludeCode>
-<TimeChanged>63994,34993.059111</TimeChanged>
+<TimeChanged>63994,41154.391773</TimeChanged>
 <TimeCreated>63986,58811.369564</TimeCreated>
 
 <XData name="Install">
@@ -30,8 +30,7 @@ You can see generated method in zsetup+1^App.Installer.1</Description>
     	<!--<If Condition='(##class(Security.Applications).Exists("/"_"${Namespace}")=0)'>
     	   <Log Text="Creating application" Level="0"/>-->
            <CSPApplication Url="/${Namespace}" Recurse="1" Directory="${CSPDIR}dsw" AuthenticationMethods="64" IsNamespaceDefault="true" Grant="AppRole" />
-        <!--</If>-->
-        <RunInstall Class="DSW.Installer" Method="CreateCSPUpdater"/>
+        <!--</If>-->        
         <Log Text="Copying web application files" Level="0"/>
     	<RunInstall Class="DSW.Installer" Method="CopyFiles"/>
     
@@ -56,31 +55,6 @@ Do ##class(App.Installer).setup(.pVars)</Description>
 <Implementation><![CDATA[
 	
     Quit ##class(%Installer.Manifest).%Generate(%compiledclass, %code, "Install")
-]]></Implementation>
-</Method>
-
-<Method name="CreateCSPUpdater">
-<ClassMethod>1</ClassMethod>
-<FormalSpec>pVars,pLogLevel,tInstaller</FormalSpec>
-<ReturnType>%Status</ReturnType>
-<Implementation><![CDATA[
-	d tInstaller.Log(pLogLevel, "Creating CSPUpdater", "CSPUpdater.cls")
-	s file = ##class(%Dictionary.CompiledXData).%OpenId("DSW.Installer||CSPUpdater")
-	s data = $zcvt(file.Data.Read(file.Data.Size), "O", "UTF8")
-	s temp = ##class(%File).TempFilename("xml")
-	
-	s f = ##class(%File).%New(temp)
-	d f.Open("NW")
-	d f.Write(data)
-	
-	d f.Close()
-	w !,"Import classes"
-	s ns = $namespace
-	zn "mdx2json"
-	d $SYSTEM.OBJ.Load(temp, "c")
-	zn ns
-	d ##class(%File).Delete(temp)	
-	d tInstaller.Log(pLogLevel, "CSPUpdater created successfully", "CSPUpdater.cls")
 ]]></Implementation>
 </Method>
 
@@ -206,29 +180,5 @@ Update DSW from latest github release</Description>
 	w !,"Update was done successfully!"
 ]]></Implementation>
 </Method>
-
-<XData name="CSPUpdater">
-<Description>
-CSPUpdater.cls</Description>
-<Data><![CDATA[
-<?xml version="1.0" encoding="UTF-8"?>
-<Export generator="Cache" version="25" zv="Cache for Windows (x86-64) 2015.2.2 (Build 805)" ts="2016-03-10 09:24:30">
-<Class name="DSW.CSPUpdater">
-<Super>%CSP.Page</Super>
-<TimeChanged>63987,33821.088242</TimeChanged>
-<TimeCreated>63987,33345.629914</TimeCreated>
-
-<Method name="OnPage">
-<ClassMethod>1</ClassMethod>
-<ReturnType>%Status</ReturnType>
-<Implementation><![CDATA[
-	d ##class(DSW.Installer).update()
-	Quit $$$OK
-]]]]><![CDATA[></Implementation>
-</Method>
-</Class>
-</Export>
-]]></Data>
-</XData>
 </Class>
 </Export>

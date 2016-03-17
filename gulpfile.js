@@ -60,6 +60,8 @@ gulp.task('copyfiles', function () {
         .pipe(gulp.dest('build/fonts'));
     gulp.src(['img/*'])
         .pipe(gulp.dest('build/img'));
+    gulp.src(['updater.csp'])
+        .pipe(gulp.dest('build'));
 });
 
 // Create single tamplates file from *.html views
@@ -140,7 +142,8 @@ gulp.task('create-install-package', ['enum-files'], function() {
 
     // Change exists Installer class
     var installer = fs.readFileSync('./DSW.Installer.xml', 'utf8');
-    installer = installer.replace('</Class>', '</Class><Class name="DSW.InstallerData">' + append + '</Class>');
+    installer = installer.substring(0, installer.length - 11);
+    installer += '<Class name="DSW.InstallerData">' + append + '</Class></Export>';
     fs.writeFileSync('./build/DSW.Installer.xml', installer);
     console.log('DSW.Installer.xml was created!')
 });
