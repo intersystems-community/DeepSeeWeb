@@ -31,13 +31,14 @@
                 </a>
             </li>
             <li role="presentation" class="divider"></li>
-            <li class="dropdown-submenu" ng-show="ctxItem.isChart">
+            <li class="dropdown-submenu">
                 <a tabindex="-1">{{'export' | lang}}</a>
                 <ul class="dropdown-menu">
-                    <li><a ng-click="ctxItem.doExport('svg')">{{'svgImage' | lang}}</a></li>
-                    <li><a tabindex="-1" ng-click="ctxItem.doExport('png')">{{'pngImage' | lang}}</a></li>
-                    <li><a ng-click="ctxItem.doExport('jpg')">{{'jpgImage' | lang}}</a></li>
-                    <li><a ng-click="ctxItem.doExport('pdf')">{{'pdfDoc' | lang}}</a></li>
+                    <li><a ng-show="ctxItem.isChart" ng-click="ctxItem.doExport('svg')">{{'svgImage' | lang}}</a></li>
+                    <li><a ng-show="ctxItem.isChart" tabindex="-1" ng-click="ctxItem.doExport('png')">{{'pngImage' | lang}}</a></li>
+                    <li><a ng-show="ctxItem.isChart" ng-click="ctxItem.doExport('jpg')">{{'jpgImage' | lang}}</a></li>
+                    <li><a ng-show="ctxItem.isChart" ng-click="ctxItem.doExport('pdf')">{{'pdfDoc' | lang}}</a></li>
+                    <li><a ng-click="ctxItem.doExport('xls')">{{'xlsDoc' | lang}}</a></li>
                 </ul>
             </li>
             <li class="dropdown-submenu">

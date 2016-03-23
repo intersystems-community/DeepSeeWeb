@@ -70,6 +70,7 @@
 
                 if (localStorage.connectorRedirect) url="huPolygons.js";
                 if (localStorage.connectorRedirect) url="rfpolygons.js";
+                if (localStorage.connectorRedirect) url="polys/uspolygons.js";
                 //if (localStorage.connectorRedirect) url="mospolygons.js";
                 //if (localStorage.connectorRedirect) url = localStorage.connectorRedirect.replace("MDX2JSON/", "").split("/").slice(0, -1).join("/") + "/csp/" + Connector.getNamespace() + "/" + fileName;
                 Connector.getFile(url).success(onPolyFileLoaded);
@@ -201,6 +202,7 @@
                 }
 
                 for (var t = 0; t < _this.mapData.Cols[1].tuples.length; t++) {
+
                     var key = _this.mapData.Cols[1].tuples[t].caption;
                     var pkey = key;
                     if (idx !== -1) pkey = _this.mapData.Data[t * l + idx];
@@ -279,7 +281,7 @@
                             }
                         }
                     }
-
+                    //poly = poly.reverse();
                     var feature = new ol.Feature({
                         geometry: new ol.geom.Polygon(poly),
                         //geometry: new ol.geom.MultiPolygon([poly]),
@@ -653,7 +655,7 @@
 
 
 
-                var feature = _this.map.forEachFeatureAtPixel(e.pixel,
+                var feature = _this.map.forEachFeatureAtPixel(_this.map.getEventPixel(e),//e.pixel,
                     function (feature, layer) {
                         return feature;
                     });

@@ -4,7 +4,7 @@
 (function() {
     'use strict';
 
-    function BaseWidgetFact($rootScope, Lang, Connector, Filters, Utils, $q) {
+    function BaseWidgetFact($rootScope, Lang, Connector, Filters, Utils, $q, Storage) {
 
         function BaseWidget($scope) {
             var _this = this;
@@ -42,6 +42,7 @@
             $scope.item.drillUp = doDrillUp;
             $scope.performAction = performAction;
 
+            $scope.item.doExport = doExport;
             this.customColSpec = "";
             this.customRowSpec = "";
             this.customDataSource = "";
@@ -121,6 +122,28 @@
             setupChoseDataSource();
             setupActions();
             requestPivotData();
+
+
+            function doExport(type) {
+                var opt = {
+                    sourceWidth: Math.floor(screen.width/2),
+                    sourceHeight: Math.floor(screen.height/2),
+                    filename: $scope.item.title || "chart"
+                };
+                switch (type) {
+                    //case 'png':  _this.chart.exportChart(opt); break;
+                    case 'svg': opt.type = 'image/svg+xml'; break;
+                    case 'jpg': opt.type = 'image/jpeg'; break;
+                    case 'pdf': opt.type = 'application/pdf'; break;
+                    case 'xls': {
+                        var folder = Storage.serverSettings.DefaultApp || "/csp/" + Connector.getNamespace();
+                        var url = folder + "/_DeepSee.UI.MDXExcel.zen?MDX=" + escape(_this.getMDX());
+                        window.open(url);
+                        return;
+                    }
+                }
+                if (_this.chart) _this.chart.exportChart(opt);
+            }
 
             function getDataByColumnName(data, columnName, dataIndex) {
                 if (!data || !data.Data || !data.Cols || !data.Cols[0] || !data.Cols[0].tuples) return;
@@ -865,6 +888,6 @@
     }
 
     angular.module('widgets')
-        .factory('BaseWidget', ['$rootScope', 'Lang', 'Connector', 'Filters', 'Utils', '$q', BaseWidgetFact]);
+        .factory('BaseWidget', ['$rootScope', 'Lang', 'Connector', 'Filters', 'Utils', '$q', 'Storage', BaseWidgetFact]);
 
 })();
