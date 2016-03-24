@@ -14,6 +14,7 @@
             this.polys = null;
             this.iconStyle = null;
             this.popup = null;
+            this.isRGBColor = false;
             _this.featureOverlay = null;
             $scope.model.tooltip = {
                 visible: false,
@@ -94,7 +95,7 @@
 
                 var idx = _this.mapData.Cols[1].tuples.indexOf(item);
                 var l = _this.mapData.Cols[0].tuples.length;
-                var colorProp = 'Color';
+                var colorProp = 'ColorExplicitValue';
                 if (_this.desc.properties && _this.desc.properties.colorProperty) colorProp = _this.desc.properties.colorProperty;
                 var color = _this.mapData.Cols[0].tuples.filter(function(el) { return el.caption === colorProp; });
                 if (color.length !== 0) {
@@ -109,8 +110,11 @@
                     parts[3] = "0.4)";
                     return parts.join(",");
                 } else {
-                    var f = "rgb(x, 255-x, 0)";
-                    if (!_this.desc.properties || !_this.desc.properties.colorProperty) f = "hsl((255-x)/255 * 120, 100%, 50%)";
+                    var f = "hsl((255-x)/255 * 120, 100%, 50%)";
+                    if (_this.isRGBColor) {
+                        f = "rgb(x, 255-x, 0)";
+                    }
+                    //if (!_this.desc.properties || !_this.desc.properties.colorProperty) f = "hsl((255-x)/255 * 120, 100%, 50%)";
                     if (_this.desc.properties && _this.desc.properties.colorFormula) f = _this.desc.properties.colorFormula;
                     var fidx = f.indexOf("(");
                     var firstPart = f.substring(0, fidx).toLowerCase();
@@ -165,19 +169,27 @@
 
             function buildPolygons() {
                 var lon, lat, zoom, i, p, k, l;
-                var colorProperty = "ColorValue";
+                _this.isRGBColor = false;
+                var colorProperty = "ColorHSVValue";
                 if (_this.desc.properties && _this.desc.properties.colorProperty) colorProperty = _this.desc.properties.colorProperty;
-                var coordsProperty = 'Key';
+                var coordsProperty = 'CoordKeyValue';
                 if (_this.desc.properties && _this.desc.properties.coordsProperty) coordsProperty = _this.desc.properties.coordsProperty;
                 if (!polys || !_this.map || !_this.mapData) return;
                 var features = [];
                 var l = _this.mapData.Cols[0].tuples.length;
                 var minV = Number.MAX_VALUE;
                 var maxV = Number.MIN_VALUE;
+
                 var colorPropertyIdx = 0;
                 if (isNaN(parseInt(colorProperty))) {
                     item = _this.mapData.Cols[0].tuples.filter(function(el) { return el.caption === colorProperty; });
                     colorPropertyIdx = _this.mapData.Cols[0].tuples.indexOf(item[0]);
+                    if (colorPropertyIdx === -1) {
+                        _this.isRGBColor = true;
+                        colorProperty = "ColorRGBValue";
+                        item = _this.mapData.Cols[0].tuples.filter(function(el) { return el.caption === colorProperty; });
+                        colorPropertyIdx = _this.mapData.Cols[0].tuples.indexOf(item[0]);
+                    }
                 } else {
                     colorPropertyIdx = parseInt(_this.desc.properties.colorProperty) || 0;
                 }
@@ -197,6 +209,10 @@
                 // TODO: new iteration
                 idx = -1;
                 item = _this.mapData.Cols[0].tuples.filter(function(el) { return el.caption === coordsProperty; });
+                // If not found find by Key
+                if (item.length === 0) {
+                    item = _this.mapData.Cols[0].tuples.filter(function(el) { return el.caption === "Key"; });
+                }
                 if (item.length != 0) {
                     idx = _this.mapData.Cols[0].tuples.indexOf(item[0]);
                 }
