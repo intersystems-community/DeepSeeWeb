@@ -205,6 +205,14 @@
             function convertDateFromCache(s) {
                 if (s === "" && s === undefined || s === null) return null;
                 var str = s.toString();
+
+                // Week format - 2016W01, 2016W02,  etc.
+                if ((s.length === 7) && (s.charAt(4) === "W")) {
+                    var w = parseInt(s.substring(5, 7));
+                    var d = (1 + (w - 1) * 7);
+                    var y = parseInt(s.substring(0, 4));
+                    return Date.parse(new Date(y, 0, d));
+                }
                 if (str.length == 4) return getDate(s);
                 if (str.indexOf("-") != -1) return getDate(s);
                 if (str.indexOf(" ") != -1) return getDate(s);

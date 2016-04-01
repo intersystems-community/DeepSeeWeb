@@ -9,6 +9,7 @@
         this.firstRun = true;
         this.username = localStorage.userName || "";
         this.url = "";
+        this.newAPI = "";
         this.getDashboards = getDashboards;
         this.getPivotData = getPivotData;
         this.execMDX = execMDX;
@@ -39,10 +40,17 @@
          "http://192.168.1.20:57772/MDX2JSON/"
          "http://37.139.17.101/MDX2JSON/"
          */
-        if (localStorage.connectorRedirect) this.url = localStorage.connectorRedirect; else {
+        if (localStorage.connectorRedirect) {
+            this.url = localStorage.connectorRedirect;
+            this.newAPI = localStorage.connectorRedirect.replace("/MDX2JSON", '') + 'api/deepsee/Data/MDXExecute';
+        } else {
             this.url = $location.$$protocol + "://" + $location.$$host;
             if ($location.$$port) this.url += ":" + $location.$$port;
             this.url += "/MDX2JSON/";
+
+            this.newAPI = $location.$$protocol + "://" + $location.$$host;
+            if ($location.$$port) this.newAPI += ":" + $location.$$port;
+            this.newAPI += '/api/deepsee/Data//MDXExecute';
         }
 
         /**

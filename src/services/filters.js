@@ -24,7 +24,7 @@
             _this.items = [];
             _this.isFiltersOnToolbarExists = false;
             for (var i = 0; i < filterArray.length; i++) {
-                if (filterArray[i].type === "hidden") continue;
+                //if (filterArray[i].type === "hidden") continue;
                 _this.items.push(filterArray[i]);
                 var flt =  _this.items[_this.items.length - 1];
                 flt.targetArray = [];
@@ -73,6 +73,7 @@
         function getWidgetModelFilters(widgetName) {
             var res = [];
             for (var i = 0; i < _this.items.length; i++) {
+                if (_this.items[i].type === "hidden") continue;
                 //if ((_this.items[i].target === "*") || (_this.items[i].targetArray.indexOf(widgetName) !== -1)) {
                 if (_this.items[i].location === "click") continue;
                 if (widgetName === "emptyWidget") {
