@@ -29,7 +29,6 @@
 
             Utils.merge($scope.chartConfig.options, ex);
 
-
             function getDrillTitle(path, name, category) {
                 var tit = $scope.item.title;
                 return (tit ? (tit + " - ") : "") + category;

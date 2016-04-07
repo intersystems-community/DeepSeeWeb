@@ -213,7 +213,8 @@
             }
 
             function limitSeriesAndData() {
-                _this._retrieveData(_this.widgetData);
+                //_this._retrieveData(angular.copy({}, _this.widgetData));
+                _this.requestData();
                 return;
 
 
@@ -524,7 +525,41 @@
                     var cats = d.Cols[1].tuples;
                     var ser = d.Cols[0].tuples;
                     if ($scope.item.isTop) {
-                        cats.splice(rowCount, cats.length - rowCount);
+                        if (ser.length === 1) {
+                            var found = true;
+                            while (found) {
+                                found = false;
+                                var k;
+                                for (k = 0; k < d.Data.length - 1; k++) {
+                                    if (d.Data[k] < d.Data[k + 1]) {
+                                        found = true;
+                                        var tmp = d.Data[k];
+                                        d.Data[k] = d.Data[k + 1];
+                                        d.Data[k + 1] = tmp;
+                                        tmp = d.Cols[1].tuples[k];
+                                        d.Cols[1].tuples[k] = d.Cols[1].tuples[k+1];
+                                        d.Cols[1].tuples[k + 1] = tmp;
+                                    }
+                                }
+                            }
+                            d.Cols[1].tuples.splice(rowCount, d.Cols[1].tuples.length - rowCount);
+                            /*var values = d.Data.map(function(el, idx) {
+                               return { idx: idx, value: el}
+                            });
+                            values = values.sort(function(a, b) { return a.value > b.value ? -1 : 1; })
+                            var sortedCats = cats.sort(function(a, b) {
+                                var cidx1 = cats.indexOf(a);
+                                var cidx2 = cats.indexOf(b);
+                                var idx1 = values.find(function(v) {return v.idx == cidx1}).idx;
+                                var idx2 = values.find(function(v) {return v.idx == cidx2}).idx;
+                                return idx1 < idx2 ? 1: -1;
+                            });
+                            sortedCats.splice(rowCount, cats.length - rowCount);
+                            d.Cols[1].tuples = sortedCats;
+                            d.Data = values.map(function(v) { return v.value; });*/
+                        } else {
+                            cats.splice(rowCount, cats.length - rowCount);
+                        }
                     }
                 }
             }
