@@ -7,3 +7,7 @@
         </span>
     </div>
 </div>
+<div ng-repeat="choser in item.dsItems" class="pull-left flt-holder" ng-style="{width: item.viewSize + '%'}">
+    <label>{{choser.label}}</label>
+    <select class="form-control input-sm" ng-model="item.dsSelected" ng-options="el for el in choser.labels" ng-change="onDataSourceChange(choser)"></select>
+</div>

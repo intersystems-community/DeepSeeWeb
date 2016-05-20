@@ -58,7 +58,8 @@
          * @returns {string} Namespace
          */
         function getNamespace() {
-            var ns =$route.current.params.ns || "samples";
+            var lastNS = localStorage.namespace || "samples";
+            var ns =$route.current.params.ns || lastNS;
             return ns.toUpperCase();
         }
 

@@ -102,9 +102,12 @@
             var colSpecListener = $scope.$on('setColSpec:' + _this.desc.name, onColSpecChanged);
             var colSpecAllListener = $scope.$on('setColSpec:*', onColSpecChanged);
 
+            var changeDataSourceListener = $scope.$on('changeDataSource:' + _this.desc.name, function(sc, pivot) { changeDataSource(pivot);});
+
             $scope.$on('$destroy', function () {
                 filterListener();
                 filterAllListener();
+                changeDataSourceListener();
                 _this.destroy();
             });
 
@@ -137,7 +140,7 @@
                     case 'pdf': opt.type = 'application/pdf'; break;
                     case 'xls': {
                         var folder = Storage.serverSettings.DefaultApp || "/csp/" + Connector.getNamespace();
-                        var url = folder + "/_DeepSee.UI.MDXExcel.zen?MDX=" + escape(_this.getMDX());
+                        var url = folder + "/_DeepSee.UI.MDXExcel.zen?MDX=" + encodeURIComponent(_this.getMDX());
                         window.open(url);
                         return;
                     }
@@ -466,7 +469,15 @@
              * Changes current datasource
              * @param {string} pivot Pivot name
              */
-            function changeDataSource(pivot) {
+            function changeDataSource(pivot, item) {
+                if (item && item.control.target !== '') {
+                    var targets = item.control.target.split(',');
+                    for (var i = 0; i < targets.length; i++) {
+                        $rootScope.$broadcast("changeDataSource:"+ targets[i], pivot);
+                    }
+                    return;
+                }
+
                 if (pivot)
                     _this.customDataSource = pivot;
                 else
@@ -557,21 +568,51 @@
                     }
                 }
 
-                if (!_this.desc.controls || _this.desc.controls.length === 0) return;
-                var chosers = _this.desc.controls.filter(function(el) { return el.action === 'chooseDataSource' || el.action === 'chooseRowSpec' || el.action === 'chooseColumnSpec'; });
-                if (chosers.length === 0) return;
+                function filterChosers(el) {
+                    return el.action === 'chooseDataSource' || el.action === 'chooseRowSpec' || el.action === 'chooseColumnSpec';
+                }
+
+                var isEmptyWidget = _this.desc.type === "mdx2json.emptyportlet";
+
+                if (!isEmptyWidget && (!_this.desc.controls || _this.desc.controls.length === 0)) return;
+                var choosers = [];
+                if (_this.desc.controls) {
+                    // Get all chhosers that not placed on dashboard location
+                    choosers = _this.desc.controls.filter(filterChosers).filter(
+                        function(c) { return c.location !== 'dashboard'; }
+                    );
+                }
+
+                // If this is empty widget, find other choosers on other widgets with location = "dashboard"
+                if (isEmptyWidget) {
+                    var k = 0;
+                    var desc = $scope.getDesc(k);
+                    while (desc) {
+                        if (desc.controls){
+                            choosers = choosers.concat(
+                                desc.controls.filter(filterChosers).filter(
+                                    function(c) { return c.location === 'dashboard'; }
+                                )
+                            );
+                        }
+                        k++;
+                        desc = $scope.getDesc(k);
+                    }
+                }
+
+                if (choosers.length === 0) return;
                 _this.hasDatasourceChoser = true;
                 $scope.item.dsItems = [];
-                for (var i = 0; i < chosers.length; i++) {
-                    var prop = chosers[i].targetProperty;
+                for (var i = 0; i < choosers.length; i++) {
+                    var prop = choosers[i].targetProperty;
                     if (!prop) continue;
                     var a = prop.split(".");
                     a.pop();
                     prop = a.join(".");
                     var item = {
-                        action: chosers[i].action,
-                        label: chosers[i].label || Lang.get("dataSource"),
-                        control: chosers[i]
+                        action: choosers[i].action,
+                        label: choosers[i].label || Lang.get("dataSource"),
+                        control: choosers[i]
                     };
                     $scope.item.dsItems.push(item);
                     Connector.getTermList(prop).then(getSetter(item));

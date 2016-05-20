@@ -260,11 +260,12 @@
             $scope.model.title = $scope.model.title.replace(".dashboard", "");
             //var parts = $scope.model.title.split("/");
             //if (parts.length != "")
-            $scope.model.namespace = $routeParams.ns || "Samples";
+            $scope.model.namespace = $routeParams.ns || localStorage.namespace || "Samples";
             var ns = localStorage.namespace;
             if (ns) ns = ns.toLowerCase();
             if (ns !== $scope.model.namespace.toLowerCase()) {
                 // Namespace changed
+                delete sessionStorage.dashboarList;
                 localStorage.namespace = $scope.model.namespace;
                 Connector.firstRun = true;
             }

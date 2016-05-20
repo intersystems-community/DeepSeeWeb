@@ -7,7 +7,7 @@
 
     function LoginCtrl(Connector, Lang, $scope, $location, $rootScope, CONST) {
         var startTime = new Date().getTime();
-
+        delete sessionStorage.dashboarList;
         $scope.model = {
             ver: CONST.ver,
             login: "",

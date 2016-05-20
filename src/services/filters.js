@@ -32,6 +32,22 @@
                 flt.sourceArray = [];
                 if ((flt.source !== "*") && (flt.source !== "") && (flt.location !== "dashboard")) flt.sourceArray = flt.source.split(",");
                 if (flt.source === "" || flt.location === "dashboard") _this.isFiltersOnToolbarExists = true;
+
+                // Parse additional filter parameters placed in filter label as comment
+                if (flt.label) {
+                    // Find commented part as /* text */
+                    var parts = flt.label.match(/(\/\*([^*]|[\r\n]|(\*+([^*\/]|[\r\n])))*\*+\/)|(\/\/.*)/g);
+                    if (parts && parts.length !== 0) {
+                        var params = parts[0].substring(2, parts[0].length - 2);
+                        flt.additionalParams = params.toLowerCase().trim().split(',');
+                        console.log(params);
+
+                        if (flt.additionalParams.indexOf('inverseorder') !== -1) flt.values = flt.values.reverse();
+                        if (flt.additionalParams.indexOf('ignorenow') !== -1) flt.values = flt.values.filter(function(v) { return v.path.toLowerCase() !== '&[now]'})
+                    }
+                    flt.label = flt.label.replace(/(\/\*([^*]|[\r\n]|(\*+([^*\/]|[\r\n])))*\*+\/)|(\/\/.*)/g, '');
+                }
+
                 flt.valueDisplay = findDisplayText(flt);
             }
         }
@@ -52,7 +68,8 @@
         function findDisplayText(flt) {
             if (flt.value === "" || flt.value === undefined) return "";
             var value = flt.value;
-            var isExclude = value.toUpperCase().endsWith(".%NOT");
+            var isExclude = false;
+            if (typeof value === ' string') isExclude = value.toUpperCase().endsWith(".%NOT");
             if (isExclude) value = value.substr(0, value.length - 5);
             flt.value = value;
             for (var i = 0; i < flt.values.length; i++) if (flt.values[i].path === value) {
