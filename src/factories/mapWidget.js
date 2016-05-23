@@ -69,9 +69,9 @@
                 var folder = Storage.serverSettings.DefaultApp || "/csp";
                 var url = folder + "/" + fileName;
 
-                if (localStorage.connectorRedirect) url="huPolygons.js";
+//                if (localStorage.connectorRedirect) url="huPolygons.js";
                 //if (localStorage.connectorRedirect) url="rfpolygons.js";
-                //if (localStorage.connectorRedirect) url="polys/uspolygons.js";
+                if (localStorage.connectorRedirect) url="uspolygons.js";
                 //if (localStorage.connectorRedirect) url="polys/mapOrig.js";
 
                 //if (localStorage.connectorRedirect) url="mospolygons.js";

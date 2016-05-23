@@ -5,7 +5,7 @@
 (function (){
     'use strict';
 
-    function LoginCtrl(Connector, Lang, $scope, $location, $rootScope, CONST) {
+    function LoginCtrl(Connector, Lang, $scope, $location, $rootScope, CONST, Storage) {
         var startTime = new Date().getTime();
         delete sessionStorage.dashboarList;
         $scope.model = {
@@ -39,7 +39,8 @@
         /**
          * Callback for success login
          */
-        function onSuccess() {
+        function onSuccess(res) {
+            Storage.loadServerSettings(res);
             localStorage.namespace = $scope.model.namespace;
             localStorage.userName = Connector.username;
 
@@ -118,6 +119,6 @@
     }
 
     angular.module('app')
-        .controller('login', ['Connector', 'Lang', '$scope', '$location', '$rootScope', 'CONST', LoginCtrl]);
+        .controller('login', ['Connector', 'Lang', '$scope', '$location', '$rootScope', 'CONST', 'Storage', LoginCtrl]);
 
 })();

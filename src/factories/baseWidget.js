@@ -15,6 +15,7 @@
 
             if ($scope.item && $scope.item.baseTitle === undefined) $scope.item.baseTitle = $scope.item ? $scope.item.title : $scope.$parent.title;
             this.drillFilter     = "";
+            this.drillFilterDrills     = [];
             this.showLoading     = showLoading;
             this.hideLoading     = hideLoading;
             this.restoreWidgetType = restoreWidgetType;
@@ -161,16 +162,17 @@
                 if (flt) _this.drillFilterWidgets = flt.split(",");
             }
 
-            function doDrillFilter(path) {
+            function doDrillFilter(path, drills) {
                 if (!_this.drillFilterWidgets || !_this.drillFilterWidgets.length) return;
                 var i;
                 for (i = 0; i < _this.drillFilterWidgets.length; i++) {
-                    $rootScope.$broadcast("drillFilter:" + _this.drillFilterWidgets[i], path);
+                    $rootScope.$broadcast("drillFilter:" + _this.drillFilterWidgets[i], path, drills);
                 }
             }
 
-            function onDrillFilter(sc, path) {
+            function onDrillFilter(sc, path, drills) {
                 _this.drillFilter = path;
+                _this.drillFilterDrills = drills;
                 _this.requestData();
             }
 
@@ -272,7 +274,7 @@
                 var defer = $q.defer();
                 _this.clearError();
                 // Apply drill filter if clickfilter is exists
-                doDrillFilter(path);
+                doDrillFilter(path, _this.drills);
 
                 var old = _this.drills.slice();
                 if (path) _this.drills.push({path: path, name: name, category: category}); else _this.drills.pop();
@@ -368,6 +370,14 @@
 
             function applyDrill(mdx) {
                 var i;
+
+                // Drill filter drills
+                if (_this.drillFilterDrills.length) {
+                    for (i = 0; i < _this.drillFilterDrills.length; i++) {
+                        if (_this.drillFilterDrills[i].path) mdx += " %FILTER " + _this.drillFilterDrills[i].path;
+                    }
+                }
+
                 if (_this.drills.length === 0) return mdx;
                 var drills = _this.drills;
                 var customDrills = [];
@@ -377,6 +387,7 @@
                 for (i = 0; i < drills.length; i++) {
                     if (drills[i].path) mdx += " %FILTER " + drills[i].path;
                 }
+
 
                 var customDrill = customDrills[drills.length - 1];
                 var path = customDrill || drills[drills.length - 1].path;
