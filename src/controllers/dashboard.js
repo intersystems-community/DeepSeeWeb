@@ -9,6 +9,7 @@
         var _this = this;
         this.desc = []; // stores widget definition received from server
         this.ctxItem = undefined;
+        this.sharedWidget = $routeParams.widget;
         $scope.model = {
             items: []
         };
@@ -18,10 +19,24 @@
             rowHeight: parseInt(settings.widgetHeight) || "match"
         };
 
+        if (this.sharedWidget) {
+            $scope.gridsterOpts.columns = 1;
+            $scope.gridsterOpts.rowHeight = $routeParams.height || "match";
+            $scope.gridsterOpts.draggable = {
+                enabled: false,
+                handle: ''
+            };
+            $scope.gridsterOpts.resizable = {
+                enabled: false,
+                handles: []
+            };
+        }
+
         $scope.getDesc = getDesc;
         $scope.onCtxMenuShow = onCtxMenuShow;
         $scope.refreshItem = refreshItem;
         $scope.printItem = printItem;
+        $scope.shareItem = shareItem;
         $scope.setType = setType;
 
         $scope.$on("resetWidgets", function() { window.location.reload(); });
@@ -44,6 +59,14 @@
         function onCtxMenuShow(item) {
             _this.ctxItem = item.$$hashKey;
             $scope.ctxItem = item;
+        }
+
+        /**
+         * Shares widget and open dialog with iframe code
+         */
+        function shareItem() {
+            if (!_this.ctxItem) return;
+            $scope.$broadcast('share:' + _this.ctxItem);
         }
 
         /**
@@ -70,6 +93,7 @@
          */
         function retrieveData(result) {
             var i;
+
             if (!result) return;
             if (result.Error) {
                 Error.show(result.Error);
@@ -81,7 +105,7 @@
             }
             if (result.filters) Filters.init(result.filters);
             // TODO: Check if there is actions on toolbar
-            if (Filters.isFiltersOnToolbarExists) {
+            if (Filters.isFiltersOnToolbarExists && !_this.sharedWidget) {
                 // Check if there empty widget exists, if no - we should create it
                 var isExists = false;
                 for (i = 0; i < result.widgets.length; i++) if (result.widgets[i].type.toLowerCase() === CONST.emptyWidgetClass) isExists = true;
@@ -93,6 +117,7 @@
             $scope.model.items = [];
             _this.desc = [];
             for (i = 0; i < result.widgets.length; i++) {
+                if (_this.sharedWidget && i != _this.sharedWidget) continue;
                 // Create item for model
                 var item = {
                     idx: i,
@@ -124,16 +149,27 @@
                     delete item.col;
                 }
                 if (result.widgets[i].key) setWidgetSizeAndPos(item, result.widgets[i].key.toString());
+
+                // For shared widget set pos to zero and index too
+                if (_this.sharedWidget) {
+                    item.col = 0;
+                    item.row = 0;
+                    item.idx = 0;
+                    item.sizeX = 1;
+                    item.sizeY = 1;
+                    item.menuDisabled = true;
+                }
+
                 $scope.model.items.push(item);
 
                 // Create item for description
                 item = {};
                 Utils.merge(item, result.widgets[i]);
-                fillDependentWidgets(item, result.widgets);
+                if (!_this.sharedWidget) fillDependentWidgets(item, result.widgets);
                 _this.desc.push(item);
             }
 
-            setTimeout(broadcastDependents, 0);
+            if (!_this.sharedWidget) setTimeout(broadcastDependents, 0);
         }
 
         /**

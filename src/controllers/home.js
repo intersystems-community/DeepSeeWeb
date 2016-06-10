@@ -19,6 +19,7 @@
         this.requestData = requestData;
 
         $scope.model = {
+            widgetList: [],
             editing: false,
             colors: CONST.bgColorClasses,
             fontColors: settings.isMetro ? CONST.fontColorsMetro : CONST.fontColors,
@@ -183,6 +184,10 @@
         function onItemClicked(item) {
             if ($scope.model.editing) {
                 $scope.model.edItem = item;
+                $scope.model.widgetList = [];
+                if (!item.isFolder) {
+                    Connector.getWidgets(item.path).success(fillWidgetList);
+                }
                 return;
             }
             if (item.isFolder) {
@@ -197,6 +202,17 @@
                 }
             } else {
                 $location.path("/d/" + item.path);
+            }
+        }
+
+        /**
+         * Fills widget list
+         */
+        function fillWidgetList(data) {
+            if (data) {
+                $scope.model.widgetList = data.widgets.map(function (w, n) {
+                    return {idx: n, name: w.title || w.name }
+                });
             }
         }
 

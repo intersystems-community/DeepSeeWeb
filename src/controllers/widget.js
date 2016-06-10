@@ -37,6 +37,7 @@
         $scope.$watch('item.sizeY', onResizeVertical, true);
         $scope.$on("resetWidgets", resetWidget);
         $scope.$on("setType:" + $scope.item.$$hashKey, changeType);
+        $scope.$on("share:" + $scope.item.$$hashKey, share);
         $scope.$on('$destroy', function () {
             filterListener();
             filterAllListener();
@@ -69,6 +70,34 @@
             delete w.col;
             Storage.setWidgetsSettings(widgets);
         }
+
+
+        function share() {
+            var url = window.location.href;
+            if (url.indexOf('?') === -1)
+                url += '?widget=' + $scope.item.idx;
+            else
+                url += '&widget=' + $scope.item.idx;
+
+            var w, h;
+            if ($scope._elem && $scope._elem[0] && $scope._elem[0].offsetParent) {
+                w = $scope._elem[0].offsetParent.offsetWidth;
+                h = $scope._elem[0].offsetParent.offsetHeight;
+            }
+            if (h) {
+                url += '&height=' + h;
+            }
+
+            var html = '<iframe style="border: none" src="' + url + '" ';
+            if (w && h) {
+                html = html + 'width="' + w + '" ';
+                html = html + 'height="' + h + '" ';
+            }
+            html += '>';
+
+            ngDialog.open({template: 'src/views/share.html', data: { html: html }, controller: 'share', showClose: false, className: "ngdialog-theme-default" });
+        }
+
 
         /**
          * Widget resize callback

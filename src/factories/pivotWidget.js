@@ -30,6 +30,13 @@
              * @param {object} p Pivot
              */
             function onDrillDown(p) {
+                if (p.path) {
+                    _this.doDrillFilter(p.path, _this.drills);
+                    _this.drills.push({path: path, name: "", category: ""});
+                } else {
+                    _this.drills.pop();
+                }
+
                 _this.broadcastDependents(p.mdx);
             }
 

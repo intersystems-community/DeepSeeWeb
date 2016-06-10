@@ -4,7 +4,7 @@
 (function() {
     'use strict';
 
-    function BaseWidgetFact($rootScope, Lang, Connector, Filters, Utils, $q, Storage) {
+    function BaseWidgetFact($rootScope, Lang, Connector, Filters, Utils, $q, Storage, $routeParams) {
 
         function BaseWidget($scope) {
             var _this = this;
@@ -140,8 +140,14 @@
                     case 'jpg': opt.type = 'image/jpeg'; break;
                     case 'pdf': opt.type = 'application/pdf'; break;
                     case 'xls': {
+                        var mdx = _this.getMDX();
+                        if (_this.lpt) {
+                            //mdx = _this.lpt.getActualMDX();
+                            var lpt = _this.lpt;
+                            mdx = lpt._dataSourcesStack[lpt._dataSourcesStack.length - 1].BASIC_MDX + lpt.dataSource.FILTERS
+                        }
                         var folder = Storage.serverSettings.DefaultApp || "/csp/" + Connector.getNamespace();
-                        var url = folder + "/_DeepSee.UI.MDXExcel.zen?MDX=" + encodeURIComponent(_this.getMDX());
+                        var url = folder + "/_DeepSee.UI.MDXExcel.zen?MDX=" + encodeURIComponent(mdx);
                         window.open(url);
                         return;
                     }
@@ -370,16 +376,18 @@
 
             function applyDrill(mdx) {
                 var i;
-
+                if ($routeParams.filter) mdx = mdx + ' %FILTER ' + $routeParams.filter;
                 // Drill filter drills
-                if (_this.drillFilterDrills.length) {
-                    for (i = 0; i < _this.drillFilterDrills.length; i++) {
-                        if (_this.drillFilterDrills[i].path) mdx += " %FILTER " + _this.drillFilterDrills[i].path;
-                    }
-                }
+                // if (_this.drillFilterDrills.length) {
+                //     for (i = 0; i < _this.drillFilterDrills.length; i++) {
+                //         if (_this.drillFilterDrills[i].path) mdx += " %FILTER " + _this.drillFilterDrills[i].path;
+                //     }
+                //     mdx = mdx.replace(".Members ON 1 FROM", ".Children ON 1 FROM");
+                // }
 
-                if (_this.drills.length === 0) return mdx;
                 var drills = _this.drills;
+                if (drills.length === 0) drills = _this.drillFilterDrills;
+                if (drills.length === 0) return mdx;
                 var customDrills = [];
                 if (_this.pivotData && _this.pivotData.rowAxisOptions && _this.pivotData.rowAxisOptions.drilldownSpec) {
                     customDrills = _this.pivotData.rowAxisOptions.drilldownSpec.split("^");
@@ -877,6 +885,16 @@
              * Update displayed text on filter input controls, depending on active filters
              */
             function updateFiltersText() {
+                // For empty widget try to get initial filter values before
+                if (_this.desc.type === "mdx2json.emptyportlet") {
+                    for (var i = 0; i < _this.filterCount; i++) {
+                        var flt = _this.getFilter(i);
+                        if (!flt.valueDisplay && flt.value) {
+                            flt.valueDisplay = flt.value.replace('&[', '').replace(']', '');
+                        }
+                    }
+                }
+                
                 for (var i = 0; i < _this.filterCount; i++) {
                     var flt = _this.getFilter(i);
                     if (flt.isInterval) {
@@ -940,6 +958,6 @@
     }
 
     angular.module('widgets')
-        .factory('BaseWidget', ['$rootScope', 'Lang', 'Connector', 'Filters', 'Utils', '$q', 'Storage', BaseWidgetFact]);
+        .factory('BaseWidget', ['$rootScope', 'Lang', 'Connector', 'Filters', 'Utils', '$q', 'Storage', '$routeParams', BaseWidgetFact]);
 
 })();

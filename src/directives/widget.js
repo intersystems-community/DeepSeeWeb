@@ -21,7 +21,11 @@
                         elem.empty();
                         $compile(elem)($scope);
                     }
+                    $scope._elem = elem;
                     var removeOnChangeListener = $scope.$on('typeChanged', onTypeChanged);
+                    $scope.$on('$destroy', function() {
+                        $scope._elem = null;
+                    });
                 }
             };
         }]);

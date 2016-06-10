@@ -132,8 +132,17 @@
     function configResolver(Connector, $q, Storage, $rootScope, $route, $ocLazyLoad) {
         var deffered = $q.defer();
         if (Storage.configLoaded) {
-            $rootScope.$broadcast('toggleMenu', true);
-            deffered.resolve();
+            // Check if namespace was changed
+            if ($route.current.params.ns !== localStorage.namespace) {
+                loadSettings(Storage, $q, Connector)
+                .then(function() {
+                    $rootScope.$broadcast('toggleMenu', true);
+                    deffered.resolve();
+                });
+            } else {
+                $rootScope.$broadcast('toggleMenu', true);
+                deffered.resolve();
+            }
             return deffered.promise;
         }
         Connector.loadConfig($route.current.params.ns).success(function(result) {

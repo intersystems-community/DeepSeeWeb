@@ -48,8 +48,10 @@
             </div>
         </span>
         <span class="sidebar-block">
-            <label>{{'widgetId' | lang}}</label>
-            <input type="text" ng-model="model.edItem.widget" blur-on-enter>
+            <label>{{'widget' | lang}}</label>
+            <select ng-model="model.edItem.widget" style="min-width: 120px; height: 26px; border: 1px solid #A9A9A9;">
+                <option ng-repeat="opt in model.widgetList" value="{{opt.idx}}" ng-selected="opt.idx===model.edItem.widget">{{opt.name}}</option>
+            </select>
         </span>
         <span class="sidebar-block">
             <label>{{'hideTitle' | lang}}</label>

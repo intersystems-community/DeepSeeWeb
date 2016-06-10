@@ -3,8 +3,8 @@
     <div class="form-horizontal" style="width: 100%">
         <input style="width: 120px;height: 20px; margin-top: 5px; margin-right: 2px" class="form-control input-sm pull-left" type="search" placeholder="{{'search' | lang}}" ng-model="model.search" ng-change="onSearch()" ng-enter="searchFilters()" auto-focus>
         <div class="btn-group pull-right">
-            <button class="btn btn-default btn-sm" ng-click="acceptFilter()"><i class="fa fa-check"> {{'accept' | lang}}</i></button>
-            <button class="btn btn-default btn-sm" ng-click="removeFilter()"><i class="fa fa-eraser"> {{'dismiss' | lang}}</i></button>
+            <button class="btn btn-default btn-sm" ng-click="acceptFilter()"><i class="fa fa-check"></i>&nbsp;{{'accept' | lang}}</button>
+            <button class="btn btn-default btn-sm" ng-click="removeFilter()"><i class="fa fa-eraser"></i>&nbsp;{{'dismiss' | lang}}</button>
             <button class="btn btn-default btn-sm" ng-click="closeThisDialog()"><i class="fa fa-remove"></i></button>
         </div>
     </div>

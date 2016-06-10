@@ -59,7 +59,7 @@
          */
         function getNamespace() {
             var lastNS = localStorage.namespace || "samples";
-            var ns =$route.current.params.ns || lastNS;
+            var ns = $route.current.params.ns || lastNS;
             return ns.toUpperCase();
         }
 

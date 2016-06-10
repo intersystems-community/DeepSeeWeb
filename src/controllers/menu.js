@@ -237,7 +237,11 @@
         }
 
         function isEmbedded() {
-            return window.location.hash.replace("?", "").replace("#/", "").split("&").indexOf("embed=1") !== -1;
+            var params = window.location.hash.replace("?", "").replace("#/", "").split("&");
+            for (var i = 0; i < params.length; i++) {
+                if (params[i].indexOf('widget=') !== -1) return true;
+            }
+            return params.indexOf("embed=1") !== -1;
         }
 
         /**
@@ -248,6 +252,8 @@
             if (!$routeParams.path) return false;
             return $routeParams.path.indexOf(".dashboard") !== -1;
         }
+        
+        
 
         /**
          * Route change callback. Used to update title, check namespace, etc.
