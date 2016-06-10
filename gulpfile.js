@@ -118,14 +118,23 @@ gulp.task('enum-files', function() {
         }));
 });
 
+/*gulp.task('test', function() {
+    var fs = require('fs');
+    var content = fs.readFileSync('./build/fonts/FontAwesome.otf', 'binary');
+    console.log(content.charCodeAt(7));
+    content = new Buffer(content, 'binary').toString('base64');
+    var dec = new Buffer(content, 'base64').toString("ascii");
+    console.log(content.substring(0, 40));
+    console.log(dec.charCodeAt(7));
+});*/
 
 gulp.task('create-install-package', ['enum-files'], function() {
     var fs = require('fs');
     var append = '';
     for (var i = 0; i < FILE_LIST.length; i++) {
         console.log('Adding file:', FILE_LIST[i]);
-        var content = fs.readFileSync('./build/' + FILE_LIST[i], 'utf8');
-        content = new Buffer(content).toString('base64');
+        var content = fs.readFileSync('./build/' + FILE_LIST[i], 'binary');
+        content = new Buffer(content, 'binary').toString('base64');
         var step = 32767;
         var k = step;
         while (k < content.length) {
