@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Export generator="Cache" version="25" zv="Cache for Windows (x86-64) 2015.2.2 (Build 805)" ts="2016-03-17 11:49:04">
+<Export generator="Cache" version="25" zv="Cache for Windows (x86-64) 2016.1 (Build 656U)" ts="2016-06-13 09:17:47">
 <Class name="DSW.Installer">
 <IncludeCode>%occInclude</IncludeCode>
-<TimeChanged>63994,42538.132816</TimeChanged>
+<TimeChanged>64082,33185.871662</TimeChanged>
 <TimeCreated>63986,58811.369564</TimeCreated>
 
 <XData name="Install">
@@ -97,10 +97,15 @@ Copy files from XData placed inside DSW.InstallerData class</Description>
 		d tInstaller.Log(pLogLevel, "Creating file", fileName)
 		
 		
-		s f = ##class(%File).%New(fileName)
+		s f = ##class(%Stream.FileBinary).%New()
+    	d f.LinkToFile(fileName)
+    	d f.Write($System.Encryption.Base64Decode(data))
+    	d f.%Save()
+    
+		/*s f = ##class(%File).%New(fileName)
 		d f.Open("NW")
 		d f.Write($System.Encryption.Base64Decode(data))
-		d f.Close()
+		d f.Close()*/
 				
 		s i = i + 1
 	}
