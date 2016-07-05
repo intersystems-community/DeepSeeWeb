@@ -345,7 +345,7 @@
                 var fmt = t.series.options.format;
                 var val = t.y;
                 if (fmt) val = _this.formatNumber(val, fmt);
-                var a = t.point.name + '<br>' + (t.point.title ? (t.point.title + "<br>") : "")  + t.series.name + ': <b>' + val + "</b><br>";
+                var a = (t.point.name || t.x || '') + '<br>' + (t.point.title ? (t.point.title + "<br>") : "")  + t.series.name + ': <b>' + val + "</b><br>";
                 if (t.point.percentage) a += parseFloat(t.point.percentage).toFixed(2).toString() + "%";
                 return a;
             }

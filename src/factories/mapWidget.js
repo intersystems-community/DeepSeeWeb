@@ -71,7 +71,8 @@
 
 //                if (localStorage.connectorRedirect) url="huPolygons.js";
                 //if (localStorage.connectorRedirect) url="rfpolygons.js";
-                if (localStorage.connectorRedirect) url="uspolygons.js";
+                //if (localStorage.connectorRedirect) url="uspolygons.js";
+                if (localStorage.connectorRedirect) url="map.js";
                 //if (localStorage.connectorRedirect) url="polys/mapOrig.js";
 
                 //if (localStorage.connectorRedirect) url="mospolygons.js";
@@ -766,7 +767,7 @@
                     });
                 if (feature) {
 
-
+                    hideTooltip();
                     _this.doDrill(feature.get("path"), feature.get("name") || feature.get("title"), undefined, function() {
                         showPopup(feature);
                     });

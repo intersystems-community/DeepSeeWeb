@@ -171,8 +171,10 @@
             function doDrillFilter(path, drills) {
                 if (!_this.drillFilterWidgets || !_this.drillFilterWidgets.length) return;
                 var i;
+                var dr = drills.slice();
+                if (!path) dr.pop();
                 for (i = 0; i < _this.drillFilterWidgets.length; i++) {
-                    $rootScope.$broadcast("drillFilter:" + _this.drillFilterWidgets[i], path, drills);
+                    $rootScope.$broadcast("drillFilter:" + _this.drillFilterWidgets[i], path, dr);
                 }
             }
 
