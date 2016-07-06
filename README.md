@@ -20,17 +20,32 @@ Developed using AngularJS and Bootstrap.<br><br>
 * Speedometer
 * Fuel gauge
 
-#Build
-Project uses Gulp as build system. Install Gulp with following command:
-```
-npm install
-```
-To build project, simply run:
-```
-gulp
-```
-This should create folder "Build" with builded project
-
 #Installation
-Copy "Build" folder to your cache server to any web-application. No more configuration required.
+First be sure, that you have MDX2JSON installed. To test it open URL <server:port>/MDX2JSON/Test
+You should see something like this:
+{
+	"DefaultApp":"\/mdx2json",
+	"Mappings": {
+		"Mapped":["MDX2JSON","SAMPLES"
+		],
+		"Unmapped":["%SYS","DOCBOOK","USER"
+		]
+	},
+	"Status":"OK",
+	"User":"UnknownUser",
+	"Version":2.2
+}
+
+Download the latest release xml file.
+Import it to any namespace, f.e. to USER.
+Run in terminal:
+```
+USER> d ##class(DSW.Installer).setup()
+```
+It will:
+create /dsw web app, 
+create ...csp/dsw folder 
+put all the DeepSee Web files into /csp/dsw folder.
+
+To use DSW Open server:port/dsw/index.html
 
