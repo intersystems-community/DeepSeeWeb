@@ -36,16 +36,17 @@ You should see something like this:
 	"Version":2.2
 }
 
-Download the latest release xml file.
-Import it to any namespace, f.e. to USER.
+Download the latest release xml file: https://github.com/intersystems-ru/DeepSeeWeb/releases
+Import it to any Caché namespace, f.e. to USER.
 Run in terminal:
 ```
 USER> d ##class(DSW.Installer).setup()
 ```
 It will:
-create /dsw web app, 
-create ...csp/dsw folder 
-put all the DeepSee Web files into /csp/dsw folder.
+* create /dsw web app, 
+* create ...csp/dsw folder 
+* put all the necessary DeepSee Web files into .../csp/dsw folder.
 
 To use DSW Open server:port/dsw/index.html
 
+Demo: https://www.youtube.com/watch?v=-HplM12eNik
