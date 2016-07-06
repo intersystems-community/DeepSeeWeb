@@ -251,14 +251,14 @@
 
 
             function getDrillthroughMdx(mdx) {
-                mdx = mdx.toLowerCase();
+                var m = mdx.toLowerCase();
                 var selTxt = "select non empty";
-                var idx1 = mdx.indexOf(selTxt);
+                var idx1 = m.indexOf(selTxt);
                 if (idx1 === -1) {
                     selTxt = "select";
-                    idx1 = mdx.indexOf(selTxt);
+                    idx1 = m.indexOf(selTxt);
                 }
-                var idx2 = mdx.indexOf("from");
+                var idx2 = m.indexOf("from");
                 if (idx1 === -1) {
                     console.warn("Can't find 'select' in MDX during calulation drillthrough mdx");
                     return;
@@ -290,21 +290,28 @@
                 _this.drills = old;
 
                 _this.showLoading();
+
+                function requestDrillthrough() {
+                    if (noDrillCallback) noDrillCallback();
+                    var ddMdx = getDrillthroughMdx(mdx);
+
+                    Connector.execMDX(ddMdx)
+                        .error(_this._onRequestError)
+                        .success(function(data2) {
+                            if (!data2 || !data2.children || data2.children.length === 0) return;
+                            $scope.item.isDrillthrough = true;
+                            $scope.item.backButton = true;
+                            $scope.item.pivotData = data2;
+                            $scope.item.displayAsPivot(ddMdx);
+                        });
+                }
+
+
                 Connector.execMDX(mdx)
-                    .error(_this._onRequestError)
+                    .error(function() { requestDrillthrough(); })
                     .success(function(data) {
                         if (isEmptyData(data) && path) {
-                            if (noDrillCallback) noDrillCallback();
-                            var ddMdx = getDrillthroughMdx(mdx);
-
-                            Connector.execMDX(ddMdx)
-                                .success(function(data2) {
-                                    if (!data2 || !data2.children || data2.children.length === 0) return;
-                                    $scope.item.isDrillthrough = true;
-                                    $scope.item.backButton = true;
-                                    $scope.item.pivotData = data2;
-                                    $scope.item.displayAsPivot(ddMdx);
-                                });
+                            requestDrillthrough();
                             /*Connector.execMDX(getDrillthroughMdx(mdx)).success(function(dd) {
                                 _this._retrieveData(dd);
                             });*/
