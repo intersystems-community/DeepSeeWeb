@@ -21,7 +21,7 @@ Developed using AngularJS and Bootstrap.<br><br>
 * Fuel gauge
 
 #Installation
-1. First be sure, that you have MDX2JSON installed. To test it open URL <server:port>/MDX2JSON/Test
+1. First be sure, that you have [MDX2JSON](https://github.com/intersystems-ru/Cache-MDX2JSON) installed. To test it open URL `<server:port>/MDX2JSON/Test`
 You should see something like this:
 `
 {
