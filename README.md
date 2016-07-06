@@ -21,8 +21,9 @@ Developed using AngularJS and Bootstrap.<br><br>
 * Fuel gauge
 
 #Installation
-First be sure, that you have MDX2JSON installed. To test it open URL <server:port>/MDX2JSON/Test
+1. First be sure, that you have MDX2JSON installed. To test it open URL <server:port>/MDX2JSON/Test
 You should see something like this:
+`
 {
 	"DefaultApp":"\/mdx2json",
 	"Mappings": {
@@ -35,10 +36,11 @@ You should see something like this:
 	"User":"UnknownUser",
 	"Version":2.2
 }
+`
 
-Download the latest release xml file: https://github.com/intersystems-ru/DeepSeeWeb/releases
-Import it to any Caché namespace, f.e. to USER.
-Run in terminal:
+2. Download the latest release xml file: https://github.com/intersystems-ru/DeepSeeWeb/releases
+3. Import it to any Caché namespace, f.e. to USER.
+4. Run in terminal:
 ```
 USER> d ##class(DSW.Installer).setup()
 ```
@@ -47,6 +49,6 @@ It will:
 * create ...csp/dsw folder 
 * put all the necessary DeepSee Web files into .../csp/dsw folder.
 
-To use DSW Open server:port/dsw/index.html
+To use DSW Open `server:port/dsw/index.html`
 
 Demo: https://www.youtube.com/watch?v=-HplM12eNik
