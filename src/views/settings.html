@@ -45,9 +45,17 @@
                                         <div class="form-group">
                                             <button type="button" class="btn btn-default btn-xs" ng-click="resetWidgets()">{{'resetWidgets' | lang}}</button>
                                             <button type="button" class="btn btn-default btn-xs" ng-click="resetTiles()">{{'resetTiles' | lang}}</button>
+                                            <button type="button" class="btn btn-default btn-xs" ng-click="exportSettings()">{{'exportSettings' | lang}}</button>
                                         </div>
                                     </div>
-
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    {{'importSettings' | lang}}
+                                    <div id="uploader-block"><input id="uploader" class="fm-uploader" type="file" enctype="multipart/form-data"/></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

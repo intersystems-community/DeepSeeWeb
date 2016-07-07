@@ -34,9 +34,13 @@
         $scope.onAddClick   = onAddClick;
         $scope.onCancelClick = onCancelClick;
         $scope.onLoadClick = onLoadClick;
+        $scope.exportSettings = exportSettings;
+        $scope.importSettings = importSettings;
+        $scope.readSettings = readSettings;
 
         $scope.onInit = function() {
            $scope.editor.setText(Storage.getAddons());
+            document.getElementById('uploader').addEventListener('change', readSettings, false);
         };
         /**
          * Handler for "New view" button
@@ -124,6 +128,50 @@
                     if (shouldRefresh) reloadPage(); else $scope.closeThisDialog();
                 });
             });
+        }
+
+        function readSettings(evt) {
+            var f = evt.target.files[0];
+            if (f) {
+                var r = new FileReader();
+                r.onload = function(e) {
+                    var contents = JSON.parse(String.fromCharCode.apply(null, new Uint8Array(e.target.result)));
+                    var ns = Connector.getNamespace();
+                    Storage.setAllSettings(contents.all);
+                    Storage.setTilesSettings(contents.tiles, ns);
+                    Connector.saveConfig(Storage.settings).then(function(){
+                        var ns = Connector.getNamespace();
+                        Connector.saveNamespaceConfig(Storage.nsSettings[ns] || {}, ns).then(function() {
+                            if (shouldRefresh) reloadPage(); else $scope.closeThisDialog();
+                        });
+                    });
+                };
+                r.readAsArrayBuffer(f);
+            } else {
+                iasufr.alert("Помилка завантаження файла");
+            }
+        }
+
+        function exportSettings() {
+            var filename = "settings.json";
+            var ns = Connector.getNamespace();
+            var data = JSON.stringify({ all: Storage.getAllSettings(), tiles: Storage.getTilesSettings(ns) });
+
+            var download = document.createElement('a');
+            //if (type) {
+                download.setAttribute('href', 'data:attachment/json,' + data);
+              //  console.log("csv");
+            //} else {
+              //  download.setAttribute('href', 'data:application/octet-stream;charset=utf-8,' + encodeURIComponent(data));
+            //}
+            $(download).attr("download", filename);
+            download.setAttribute('download', filename);
+            download.click();
+            $(download).remove();
+        }
+
+        function importSettings() {
+
         }
 
         /**

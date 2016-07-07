@@ -37,6 +37,7 @@
         this.loadServerSettings  = loadServerSettings;
         this.isNamespaceConfigLoaded  = isNamespaceConfigLoaded;
         this.loadNamespaceSettings  = loadNamespaceSettings;
+        this.setAllSettings  = setAllSettings;
 
 
         /**
@@ -232,6 +233,13 @@
          */
         function getAllSettings() {
            return _this.settings;
+        }
+
+        /**
+         * Sets all settings
+         */
+        function setAllSettings(set) {
+            _this.settings = set;
         }
 
         function loadServerSettings(settings) {

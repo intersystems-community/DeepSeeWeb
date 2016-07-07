@@ -71,6 +71,8 @@
      */
         .constant('LANGSTR', {
             en: {
+                exportSettings: 'Export settings',
+                importSettings: 'Import settings',
                 export: 'Export',
                 pngImage: 'Image (*.png)',
                 svgImage: 'Image (*.svg)',
@@ -155,6 +157,8 @@
                 shortMonths: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
             },
             ru: {
+                exportSettings: 'Экспорт настроек',
+                importSettings: 'Импорт настроек',
                 export: 'Экспорт',
                 pngImage: 'Картинка (*.png)',
                 svgImage: 'Картинка (*.svg)',
