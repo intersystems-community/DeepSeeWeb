@@ -4,7 +4,7 @@
 (function(){
     'use strict';
 
-    function WidgetCtrl($scope, Lang, TypeMap, gridsterConfig, ngDialog, Filters, BaseWidget, Storage) {
+    function WidgetCtrl($scope, Lang, TypeMap, gridsterConfig, ngDialog, Filters, BaseWidget, Storage, Connector) {
         var _this = this;
         BaseWidget.apply(this, [$scope]);
         $scope.model = {
@@ -60,15 +60,15 @@
          * Reset widget position and size
          */
         function resetWidget() {
-            var widgets = Storage.getWidgetsSettings();
-            var k = _this.desc.key;
+            var widgets = Storage.getWidgetsSettings(_this.desc.dashboard, Connector.getNamespace());
+            var k = _this.desc.name;
             var w = widgets[k];
             if (!w) return;
             delete w.sizeX;
             delete w.sizeY;
             delete w.row;
             delete w.col;
-            Storage.setWidgetsSettings(widgets);
+            Storage.setWidgetsSettings(widgets, _this.desc.dashboard, Connector.getNamespace());
         }
 
 
@@ -140,11 +140,11 @@
         function onMoveHorizontal(a, b, $scope){
             if (!gridsterConfig.isDragging) return;
             if (!isNaN($scope.item.row)) {
-                var widgets = Storage.getWidgetsSettings();
-                var k = _this.desc.key;
+                var widgets = Storage.getWidgetsSettings(_this.desc.dashboard, Connector.getNamespace());
+                var k = _this.desc.name;
                 if (!widgets[k]) widgets[k] = {};
                 widgets[k].col = $scope.item.col;
-                Storage.setWidgetsSettings(widgets);
+                Storage.setWidgetsSettings(widgets, _this.desc.dashboard, Connector.getNamespace());
             }
         }
 
@@ -157,11 +157,11 @@
         function onMoveVertical(a, b, $scope){
             if (!gridsterConfig.isDragging) return;
             if (!isNaN($scope.item.row)) {
-                var widgets = Storage.getWidgetsSettings();
-                var k = _this.desc.key;
+                var widgets = Storage.getWidgetsSettings(_this.desc.dashboard, Connector.getNamespace());
+                var k = _this.desc.name;
                 if (!widgets[k]) widgets[k] = {};
                 widgets[k].row = $scope.item.row;
-                Storage.setWidgetsSettings(widgets);
+                Storage.setWidgetsSettings(widgets, _this.desc.dashboard, Connector.getNamespace());
             }
         }
 
@@ -174,11 +174,11 @@
         function onResizeHorizontal(a, b, $scope){
             if (!gridsterConfig.isResizing) return;
             if (!isNaN($scope.item.sizeX)) {
-                var widgets = Storage.getWidgetsSettings();
-                var k = _this.desc.key;
+                var widgets = Storage.getWidgetsSettings(_this.desc.dashboard, Connector.getNamespace());
+                var k = _this.desc.name;
                 if (!widgets[k]) widgets[k] = {};
                 widgets[k].sizeX = $scope.item.sizeX;
-                Storage.setWidgetsSettings(widgets);
+                Storage.setWidgetsSettings(widgets, _this.desc.dashboard, Connector.getNamespace());
             }
         }
 
@@ -191,11 +191,11 @@
         function onResizeVertical(a, b, $scope) {
             if (!gridsterConfig.isResizing) return;
             if (!isNaN($scope.item.sizeY)) {
-                var widgets = Storage.getWidgetsSettings();
-                var k = _this.desc.key;
+                var widgets = Storage.getWidgetsSettings(_this.desc.dashboard, Connector.getNamespace());
+                var k = _this.desc.name;
                 if (!widgets[k]) widgets[k] = {};
                 widgets[k].sizeY = $scope.item.sizeY;
-                Storage.setWidgetsSettings(widgets);
+                Storage.setWidgetsSettings(widgets, _this.desc.dashboard, Connector.getNamespace());
             }
         }
 
@@ -224,6 +224,6 @@
     }
 
     angular.module('widgets')
-        .controller('widget', ['$scope', 'Lang', 'TypeMap', 'gridsterConfig', 'ngDialog', 'Filters', 'BaseWidget', 'Storage', WidgetCtrl]);
+        .controller('widget', ['$scope', 'Lang', 'TypeMap', 'gridsterConfig', 'ngDialog', 'Filters', 'BaseWidget', 'Storage', 'Connector', WidgetCtrl]);
 
 })();

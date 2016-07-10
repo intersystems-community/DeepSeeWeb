@@ -14,8 +14,7 @@
         this.serverSettings = {};
 
         // Settings for namespace
-        this.nsSettings = {};
-        if (localStorage.namespaceUserSettings) this.nsSettings = JSON.parse(localStorage.namespaceUserSettings);
+        this.nsSettings = null;
 
         this.currentSettings     = localStorage.currentSettings || "Default";
         this.configLoaded        = false;
@@ -45,7 +44,9 @@
          * @param {name} name Settings name
          */
         function saveCurrentSettings(name) {
+            var nss = _this.nsSettings;
             _this.settings[name] = {};
+            if (nss) _this.settings[name].namespaces = angular.copy(nss);
             Utils.merge(_this.settings[name], _this.temp);
         }
 
@@ -77,6 +78,10 @@
                     if (!_this.settings[_this.currentSettings]) _this.currentSettings = "Default";
                     if (_this.settings[_this.currentSettings]) Utils.merge(_this.temp, _this.settings[_this.currentSettings]);
                 }
+
+                var nsSet = _this.settings[_this.currentSettings].namespaces;
+                if (localStorage.namespaceUserSettings) this.nsSettings = JSON.parse(localStorage.namespaceUserSettings); else
+                this.nsSettings = angular.copy(nsSet);
 
                 var settings = _this.getAppSettings();
                 if (settings.isMetro) {
@@ -188,17 +193,23 @@
          * Returns widget settings(placement, sizes etc.)
          * @returns {object} Widget settings
          */
-        function getWidgetsSettings() {
-            return _this.temp.widgets || {};
+        function getWidgetsSettings(dashboard, ns) {
+            if (_this.nsSettings &&
+                _this.nsSettings[ns] &&
+                _this.nsSettings[ns].widgets) return _this.nsSettings[ns].widgets[dashboard] || {};
+            else return {};
         }
 
         /**
          * Save widget settings to storage
          * @param {object} widgets Widget settings to store
          */
-        function setWidgetsSettings(widgets) {
-            _this.temp.widgets = widgets;
-            localStorage.userSettings = JSON.stringify(_this.temp);
+        function setWidgetsSettings(widgets, dashboard, ns) {
+            if (!_this.nsSettings) _this.nsSettings = {};
+            if (!_this.nsSettings[ns]) _this.nsSettings[ns] = {};
+            if (!_this.nsSettings[ns].widgets) _this.nsSettings[ns].widgets = {};
+            _this.nsSettings[ns].widgets[dashboard] = angular.copy(widgets);
+            localStorage.namespaceUserSettings = JSON.stringify(_this.nsSettings);
         }
 
         /**
@@ -206,7 +217,7 @@
          * @returns {object} Tiles settings
          */
         function getTilesSettings(ns) {
-            if (_this.nsSettings[ns]) return _this.nsSettings[ns]; else return {};
+            if (_this.nsSettings && _this.nsSettings[ns]) return _this.nsSettings[ns].tiles || {}; else return {}
         }
 
         /**
@@ -214,8 +225,9 @@
          * @param {object} tiles Tiles settings to store
          */
         function setTilesSettings(tiles, ns) {
+            if (!_this.nsSettings) _this.nsSettings = {};
             if (!_this.nsSettings[ns]) _this.nsSettings[ns] = {};
-            _this.nsSettings[ns] = angular.copy(tiles);
+            _this.nsSettings[ns].tiles = angular.copy(tiles);
             localStorage.namespaceUserSettings = JSON.stringify(_this.nsSettings);
         }
 
@@ -224,8 +236,10 @@
          * @param {string} ns Namespace
          */
         function removeTilesSettings(ns) {
-            _this.nsSettings[ns] = {};
-            localStorage.namespaceUserSettings = JSON.stringify(_this.nsSettings);
+            if (_this.nsSettings && _this.nsSettings[ns]) {
+                _this.nsSettings[ns].tiles = {};
+                localStorage.namespaceUserSettings = JSON.stringify(_this.nsSettings);
+            }
         }
 
         /**
@@ -263,12 +277,12 @@
             if (!conf) return;
 
             // Convert old format of config to new
-            if (conf.Default && conf.Default.tiles) {
-                _this.nsSettings[ns] = angular.copy(conf.Default.tiles);
-            } else {
+            //if (conf.Default && conf.Default.tiles) {
+//                _this.nsSettings[ns] = angular.copy(conf.Default.tiles);
+//            } else {
                 // this is new format
-                _this.nsSettings[ns] = angular.copy(conf);
-            }
+            _this.nsSettings[ns] = angular.copy(conf);
+  //          }
             localStorage.namespaceUserSettings = JSON.stringify(_this.nsSettings);
         }
     }

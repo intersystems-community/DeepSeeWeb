@@ -68,8 +68,9 @@
             var ns = Connector.getNamespace();
             if (Storage.isSettingsExists(name) || Storage.nsSettings[ns]) {
                 delete localStorage.userSettings;
+                delete localStorage.namespaceUserSettings;
                 //Storage.nsSettings[ns] = {};
-                Storage.setTilesSettings(undefined, ns);
+                //Storage.setTilesSettings(undefined, ns);
                 Storage.setCurrentSettings(name);
                 reloadPage();
             }

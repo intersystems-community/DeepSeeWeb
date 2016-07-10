@@ -4,7 +4,7 @@
 (function() {
     'use strict';
 
-    function EmptyWidgetFact($rootScope, Lang, Filters, Storage) {
+    function EmptyWidgetFact($rootScope, Lang, Filters, Storage, Connector) {
 
         function EmptyWidget($scope) {
             var _this = this;
@@ -50,20 +50,20 @@
              * @returns {number} Size
              */
             function getViewSize() {
-                var widgets = Storage.getWidgetsSettings();
-                if (!widgets[_this.desc.key]) return 100;
-                if (widgets[_this.desc.key].viewSize === undefined) return 100;
-                return widgets[_this.desc.key].viewSize;
+                var widgets = Storage.getWidgetsSettings(_this.desc.dashboard, Connector.getNamespace());
+                if (!widgets[_this.desc.name]) return 100;
+                if (widgets[_this.desc.name].viewSize === undefined) return 100;
+                return widgets[_this.desc.name].viewSize;
             }
 
             /**
              * Save filter block size to storage
              */
             function saveViewSize() {
-                var widgets = Storage.getWidgetsSettings();
-                if (!widgets[_this.desc.key]) widgets[_this.desc.key] = {};
-                widgets[_this.desc.key].viewSize = $scope.item.viewSize;
-                Storage.setWidgetsSettings(widgets);
+                var widgets = Storage.getWidgetsSettings(_this.desc.dashboard, Connector.getNamespace());
+                if (!widgets[_this.desc.name]) widgets[_this.desc.name] = {};
+                widgets[_this.desc.name].viewSize = $scope.item.viewSize;
+                Storage.setWidgetsSettings(widgets, _this.desc.dashboard, Connector.getNamespace());
             }
         }
 
@@ -71,6 +71,6 @@
     }
 
     angular.module('widgets')
-        .factory('EmptyWidget', ['$rootScope', 'Lang', 'Filters', 'Storage', EmptyWidgetFact]);
+        .factory('EmptyWidget', ['$rootScope', 'Lang', 'Filters', 'Storage', 'Connector', EmptyWidgetFact]);
 
 })();

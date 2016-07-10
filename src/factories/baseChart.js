@@ -32,7 +32,7 @@
 
 
             $scope.item.isLegend = true;
-            var widgetsSettings = Storage.getWidgetsSettings();
+            var widgetsSettings = Storage.getWidgetsSettings(_this.desc.dashboard, Connector.getNamespace());
             loadToolbarButton(widgetsSettings, "isLegend");
             loadToolbarButton(widgetsSettings, "isTop");
             loadToolbarButton(widgetsSettings, "showZero");
@@ -157,8 +157,8 @@
             }
 
             function loadToolbarButton(settings, name) {
-                if (settings[_this.desc.key]) {
-                    if (settings[_this.desc.key][name] !== undefined)  $scope.item[name] = widgetsSettings[_this.desc.key][name];
+                if (settings[_this.desc.name]) {
+                    if (settings[_this.desc.name][name] !== undefined)  $scope.item[name] = widgetsSettings[_this.desc.name][name];
                 }
             }
 
@@ -169,10 +169,10 @@
 
             function toggleButton(name) {
                 $scope.item[name] = !$scope.item[name];
-                var widgetsSettings = Storage.getWidgetsSettings();
-                if (!widgetsSettings[_this.desc.key]) widgetsSettings[_this.desc.key] = {};
-                widgetsSettings[_this.desc.key][name] = $scope.item[name];
-                Storage.setWidgetsSettings(widgetsSettings);
+                var widgetsSettings = Storage.getWidgetsSettings(_this.desc.dashboard, Connector.getNamespace());
+                if (!widgetsSettings[_this.desc.name]) widgetsSettings[_this.desc.name] = {};
+                widgetsSettings[_this.desc.name][name] = $scope.item[name];
+                Storage.setWidgetsSettings(widgetsSettings, _this.desc.dashboard, Connector.getNamespace());
             }
 
             function setYAxisMinToZero() {

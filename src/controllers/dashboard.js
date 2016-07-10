@@ -110,13 +110,14 @@
                 var isExists = false;
                 for (i = 0; i < result.widgets.length; i++) if (result.widgets[i].type.toLowerCase() === CONST.emptyWidgetClass) isExists = true;
                 if (!isExists) {
-                    result.widgets.push({autocreated: true, name: "emptyWidget", type: CONST.emptyWidgetClass, key: "emptyWidgetFor" + $routeParams.path});
+                    result.widgets.push({dashboard: $routeParams.path, autocreated: true, name: "emptyWidget", type: CONST.emptyWidgetClass, key: "emptyWidgetFor" + $routeParams.path});
                 }
             }
             if (result.info) $rootScope.$broadcast("menu:changeTitle", result.info.title);
             $scope.model.items = [];
             _this.desc = [];
             for (i = 0; i < result.widgets.length; i++) {
+                result.widgets[i].dashboard = $routeParams.path;
                 if (_this.sharedWidget && i != _this.sharedWidget) continue;
                 // Create item for model
                 var item = {
@@ -148,7 +149,7 @@
                     delete item.row;
                     delete item.col;
                 }
-                if (result.widgets[i].key) setWidgetSizeAndPos(item, result.widgets[i].key.toString());
+                if (result.widgets[i].name) setWidgetSizeAndPos(item, result.widgets[i].name.toString());
 
                 // For shared widget set pos to zero and index too
                 if (_this.sharedWidget) {
@@ -204,7 +205,7 @@
          * @param {string|number} k Widget key
          */
         function setWidgetSizeAndPos(item, k) {
-            var widgets = Storage.getWidgetsSettings();
+            var widgets = Storage.getWidgetsSettings($routeParams.path, Connector.getNamespace());
             var w = widgets[k];
             if (!w) return;
             if (w.sizeX !== undefined) item.sizeX = w.sizeX;

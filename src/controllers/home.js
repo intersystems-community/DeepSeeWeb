@@ -52,11 +52,11 @@
 
 
         // Load tile settings first, then request data
-        loadNamespaceConfig(Storage, $q, Connector, Connector.getNamespace()).then(requestData);
-
+        //loadNamespaceConfig(Storage, $q, Connector, Connector.getNamespace()).then(requestData);
+        requestData();
         //this.requestData();
 
-        function loadNamespaceConfig(Storage, $q, Connector, ns) {
+        /*function loadNamespaceConfig(Storage, $q, Connector, ns) {
             var deffered = $q.defer();
             if (Storage.isNamespaceConfigLoaded(ns)) {
                 deffered.resolve();
@@ -69,7 +69,7 @@
                 });
             }
             return deffered.promise;
-        }
+        }*/
 
         /**
          * Save tiles configuration to storage
@@ -294,7 +294,9 @@
             var path;
             var c;
             var conf = Storage.getTilesSettings(Connector.getNamespace());
-            var conf  = conf[settings.hideFolders ? '/' : (_this.curFolder)] || {};
+            var fld = settings.hideFolders ? '/' : (_this.curFolder);
+            if (fld === '' && !conf[fld]) fld = '/';
+            var conf  = conf[fld] || {};
             //if (!cc || angular.equals({}, cc)) cc = conf[settings.hideFolders ? '/' : (_this.curFolder)] || {};
             //conf = cc;
 
