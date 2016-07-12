@@ -41,7 +41,8 @@
                             //raster,
                             new ol.layer.Tile({
                                 //source: new ol.source.OSM({ wrapX: true })
-                                source: new ol.source.MapQuest({layer: 'osm'})
+                                //source: new ol.source.MapQuest({layer: 'osm', url: 'https://otile{1-4}-s.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.jpg?access_token=Z2AeMd4y8ipY2WAeYP2HQF9s51FDPZ0f' })
+                                source: new ol.source.OSM({ wrapX: true })
                             })
                         ],
                         controls: ol.control.defaults({

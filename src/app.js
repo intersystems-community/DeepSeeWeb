@@ -131,37 +131,43 @@
      */
     function configResolver(Connector, $q, Storage, $rootScope, $route, $ocLazyLoad) {
         var deffered = $q.defer();
-        if (Storage.configLoaded) {
             // Check if namespace was changed
             if ($route.current.params.ns !== localStorage.namespace) {
                 loadSettings(Storage, $q, Connector)
-                .then(function() {
-                    $rootScope.$broadcast('toggleMenu', true);
+                    .then(function () {
+                        loadConf();
+                        //$rootScope.$broadcast('toggleMenu', true);
+                        //deffered.resolve();
+                    });
+                return;
+            }
+            // } else {
+            //     $rootScope.$broadcast('toggleMenu', true);
+            //     deffered.resolve();
+            // }
+
+        loadConf();
+
+        function loadConf() {
+            Connector.loadConfig($route.current.params.ns).success(function (result) {
+                $rootScope.$broadcast('toggleMenu', true);
+                $rootScope.$broadcast('refresh', true);
+                Storage.loadConfig(result);
+
+                $q.all([
+                    //loadNamespaceConfig(Storage, $q, Connector, $route.current.params.ns),
+                    loadAddons(Storage, $q, $ocLazyLoad),
+                    loadSettings(Storage, $q, Connector)
+                ]).then(function () {
                     deffered.resolve();
                 });
-            } else {
-                $rootScope.$broadcast('toggleMenu', true);
-                deffered.resolve();
-            }
-            return deffered.promise;
-        }
-        Connector.loadConfig($route.current.params.ns).success(function(result) {
-            $rootScope.$broadcast('toggleMenu', true);
-            Storage.loadConfig(result);
 
-            $q.all([
-                //loadNamespaceConfig(Storage, $q, Connector, $route.current.params.ns),
-                loadAddons(Storage, $q, $ocLazyLoad),
-                loadSettings(Storage, $q, Connector)
-            ]).then(function() {
+
+            }).error(function (result) {
                 deffered.resolve();
             });
+        }
 
-
-
-        }).error(function(result) {
-            deffered.resolve();
-        });
         return deffered.promise;
     }
 

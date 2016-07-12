@@ -296,7 +296,7 @@
                     var ddMdx = getDrillthroughMdx(mdx);
 
                     Connector.execMDX(ddMdx)
-                        .error(_this._onRequestError)
+                        //.error(_this._onRequestError)
                         .success(function(data2) {
                             if (!data2 || !data2.children || data2.children.length === 0) return;
                             $scope.item.isDrillthrough = true;

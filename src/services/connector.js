@@ -237,7 +237,7 @@
             return $http({
                 method: 'Get',
                 data: {},
-                url: _this.url + 'Config/DeepSeeWeb?Namespace=MDX2JSON',
+                url: _this.url + 'Config/' + (cutomNamespace ? cutomNamespace : this.getNamespace()) + '?Namespace=MDX2JSON',
                 withCredentials: true
             });
         }
@@ -263,7 +263,7 @@
         function saveConfig(config) {
             return $http({
                 method: 'POST',
-                data: { Application: "DeepSeeWeb", Config: JSON.stringify(config) },
+                data: { Application: this.getNamespace(), Config: JSON.stringify(config) },
                 url: _this.url + 'Config?Namespace=MDX2JSON',
                 withCredentials: true
             });

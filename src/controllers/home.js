@@ -76,7 +76,7 @@
          */
         function saveTiles() {
             var t = Storage.getTilesSettings(Connector.getNamespace());
-            var path = "/";
+            var path = "";
             if (!settings.hideFolders && settings.hideFolders !== undefined) path = _this.curFolder;
             for (var i = 0; i < $scope.dashboards.length; i++) {
                 var item = $scope.dashboards[i];

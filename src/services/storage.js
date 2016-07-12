@@ -46,8 +46,8 @@
         function saveCurrentSettings(name) {
             var nss = _this.nsSettings;
             _this.settings[name] = {};
-            if (nss) _this.settings[name].namespaces = angular.copy(nss);
             Utils.merge(_this.settings[name], _this.temp);
+            if (nss) _this.settings[name].namespaces = angular.copy(nss);
         }
 
         /**
@@ -79,9 +79,13 @@
                     if (_this.settings[_this.currentSettings]) Utils.merge(_this.temp, _this.settings[_this.currentSettings]);
                 }
 
-                var nsSet = _this.settings[_this.currentSettings].namespaces;
-                if (localStorage.namespaceUserSettings) this.nsSettings = JSON.parse(localStorage.namespaceUserSettings); else
-                this.nsSettings = angular.copy(nsSet);
+                var nsSet;
+                if (_this.settings[_this.currentSettings]) {
+                    nsSet = _this.settings[_this.currentSettings].namespaces;
+                }
+                if (localStorage.namespaceUserSettings) this.nsSettings = JSON.parse(localStorage.namespaceUserSettings);
+                else if (nsSet) this.nsSettings = angular.copy(nsSet);
+
 
                 var settings = _this.getAppSettings();
                 if (settings.isMetro) {
@@ -195,8 +199,7 @@
          */
         function getWidgetsSettings(dashboard, ns) {
             if (_this.nsSettings &&
-                _this.nsSettings[ns] &&
-                _this.nsSettings[ns].widgets) return _this.nsSettings[ns].widgets[dashboard] || {};
+                _this.nsSettings.widgets) return _this.nsSettings.widgets[dashboard] || {};
             else return {};
         }
 
@@ -206,9 +209,8 @@
          */
         function setWidgetsSettings(widgets, dashboard, ns) {
             if (!_this.nsSettings) _this.nsSettings = {};
-            if (!_this.nsSettings[ns]) _this.nsSettings[ns] = {};
-            if (!_this.nsSettings[ns].widgets) _this.nsSettings[ns].widgets = {};
-            _this.nsSettings[ns].widgets[dashboard] = angular.copy(widgets);
+            if (!_this.nsSettings.widgets) _this.nsSettings.widgets = {};
+            _this.nsSettings.widgets[dashboard] = angular.copy(widgets);
             localStorage.namespaceUserSettings = JSON.stringify(_this.nsSettings);
         }
 
@@ -217,7 +219,7 @@
          * @returns {object} Tiles settings
          */
         function getTilesSettings(ns) {
-            if (_this.nsSettings && _this.nsSettings[ns]) return _this.nsSettings[ns].tiles || {}; else return {}
+            if (_this.nsSettings) return _this.nsSettings.tiles || {}; else return {}
         }
 
         /**
@@ -226,8 +228,7 @@
          */
         function setTilesSettings(tiles, ns) {
             if (!_this.nsSettings) _this.nsSettings = {};
-            if (!_this.nsSettings[ns]) _this.nsSettings[ns] = {};
-            _this.nsSettings[ns].tiles = angular.copy(tiles);
+            _this.nsSettings.tiles = angular.copy(tiles);
             localStorage.namespaceUserSettings = JSON.stringify(_this.nsSettings);
         }
 
@@ -236,8 +237,8 @@
          * @param {string} ns Namespace
          */
         function removeTilesSettings(ns) {
-            if (_this.nsSettings && _this.nsSettings[ns]) {
-                _this.nsSettings[ns].tiles = {};
+            if (_this.nsSettings) {
+                _this.nsSettings.tiles = {};
                 localStorage.namespaceUserSettings = JSON.stringify(_this.nsSettings);
             }
         }
@@ -262,7 +263,7 @@
         }
 
         function isNamespaceConfigLoaded(ns) {
-            return _this.nsSettings[ns] !== undefined;
+            return _this.nsSettings !== undefined;
         }
 
         function loadNamespaceSettings(data, ns) {
@@ -281,7 +282,7 @@
 //                _this.nsSettings[ns] = angular.copy(conf.Default.tiles);
 //            } else {
                 // this is new format
-            _this.nsSettings[ns] = angular.copy(conf);
+            _this.nsSettings = angular.copy(conf);
   //          }
             localStorage.namespaceUserSettings = JSON.stringify(_this.nsSettings);
         }

@@ -124,10 +124,11 @@
             Storage.setCurrentSettings($scope.model.selectedSettings);
 
             Connector.saveConfig(Storage.settings).then(function(){
-                var ns = Connector.getNamespace();
+                if (shouldRefresh) reloadPage(); else $scope.closeThisDialog();
+                /*var ns = Connector.getNamespace();
                 Connector.saveNamespaceConfig(Storage.nsSettings[ns] || {}, ns).then(function() {
                     if (shouldRefresh) reloadPage(); else $scope.closeThisDialog();
-                });
+                });*/
             });
         }
 
@@ -138,13 +139,18 @@
                 r.onload = function(e) {
                     var contents = JSON.parse(String.fromCharCode.apply(null, new Uint8Array(e.target.result)));
                     var ns = Connector.getNamespace();
-                    Storage.setAllSettings(contents.all);
-                    Storage.setTilesSettings(contents.tiles, ns);
+                    if (contents.ns) {
+                        Storage.nsSettings = contents.ns;
+                        localStorage.namespaceUserSettings = JSON.stringify(Storage.nsSettings);
+                    }
+                    //Storage.setAllSettings(contents.settings);
+                    Storage.saveCurrentSettings(Storage.currentSettings);
                     Connector.saveConfig(Storage.settings).then(function(){
-                        var ns = Connector.getNamespace();
-                        Connector.saveNamespaceConfig(Storage.nsSettings[ns] || {}, ns).then(function() {
-                            if (shouldRefresh) reloadPage(); else $scope.closeThisDialog();
-                        });
+                        reloadPage();
+                        //var ns = Connector.getNamespace();
+                        // Connector.saveNamespaceConfig(Storage.nsSettings[ns] || {}, ns).then(function() {
+                        //     if (shouldRefresh) reloadPage(); else $scope.closeThisDialog();
+                        // });
                     });
                 };
                 r.readAsArrayBuffer(f);
@@ -154,13 +160,15 @@
         }
 
         function exportSettings() {
-            var filename = "settings.json";
+            var filename = Connector.getNamespace() + "." + new Date().toLocaleDateString() + ".json";
             var ns = Connector.getNamespace();
-            var data = JSON.stringify({ all: Storage.getAllSettings(), tiles: Storage.getTilesSettings(ns) });
+            var nset = localStorage.namespaceUserSettings ? JSON.parse(localStorage.namespaceUserSettings) : Storage.nsSettings;
+            var data = JSON.stringify({ ns: nset });
 
             var download = document.createElement('a');
             //if (type) {
-                download.setAttribute('href', 'data:attachment/json,' + data);
+            download.setAttribute('href', 'data:application/octet-stream;charset=utf-8,' + encodeURIComponent(data));
+                //download.setAttribute('href', 'data:attachment/text,' + data);
               //  console.log("csv");
             //} else {
               //  download.setAttribute('href', 'data:application/octet-stream;charset=utf-8,' + encodeURIComponent(data));
