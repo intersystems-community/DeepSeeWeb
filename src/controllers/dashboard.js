@@ -16,7 +16,7 @@
         var settings = Storage.getAppSettings();
         $scope.gridsterOpts = {
             columns: parseInt(settings.colCount) || 12,
-            rowHeight: parseInt(settings.widgetHeight) || "match"
+            rowHeight: parseInt(settings.widgetHeight) || (Math.floor((parseInt($(window).height()) - 78)/10))
         };
 
         if (this.sharedWidget) {
