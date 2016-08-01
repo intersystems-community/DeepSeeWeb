@@ -60,6 +60,8 @@ Sometimes after installation you can see umlyauts in the client. like in the sho
 To fix this there are tow ways:
 * Copy index.html to index.csp and try to connect to it same way you do with index.html page. Symbols should go in Unicode now.
 
+Or:
+
 * Write your current codepage setting in CSP Gateway for the files:
 ```
 zw ^%SYS("CSP","DefaultFileCharset")
