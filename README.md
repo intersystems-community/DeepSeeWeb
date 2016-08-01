@@ -52,3 +52,21 @@ It will:
 To use DSW Open `server:port/dsw/index.html`
 
 Demo: https://www.youtube.com/watch?v=-HplM12eNik
+
+#Known issues:
+
+Sometimes after installation you can see umlyauts in the client. likn in the shot:
+
+To fix this:
+1. Copy index.html to index.csp and try to connect to it same way you do with index.html page. Symbols should go in Unicode now.
+
+2.  Write your current codepage setting in CSP Gateway for the files:
+```
+zw ^%SYS("CSP","DefaultFileCharset")
+```
+This setting should be "utf-8". If there is another setting, save it somewhere and change to "utf-8" 
+
+So this should fix it:
+```
+set ^%SYS("CSP","DefaultFileCharset")="utf-8"
+```
