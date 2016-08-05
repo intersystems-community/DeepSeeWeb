@@ -105,5 +105,5 @@ For all available options please go to highcharts official documentation page: h
    
 * **directive** - Angular directive that used by custom widget. Make sense only when type is set to "custom".
 
-For custom widget example, please look at `src/factories/customWidget.js`. This is simple custom widget that represents html5 canvas for drawing.
+For custom widget example, please look at [src/factories/customWidget.js](src/factories/customWidget.js). This is simple custom widget that represents html5 canvas for drawing.
 If you use widget json from example above, you'll get custom canvas widget that replaces exists areachart widget. 
