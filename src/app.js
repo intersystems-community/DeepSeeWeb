@@ -140,17 +140,17 @@
                         //$rootScope.$broadcast('toggleMenu', true);
                         //deffered.resolve();
                     });
-                return;
+                return deffered.promise;
             }
             // } else {
             //     $rootScope.$broadcast('toggleMenu', true);
             //     deffered.resolve();
             // }
-
         loadConf();
 
         function loadConf() {
-            Connector.loadConfig($route.current.params.ns).success(function (result) {
+            Connector.loadConfig($route.current.params.ns)
+            .success(function (result) {
                 $rootScope.$broadcast('toggleMenu', true);
                 $rootScope.$broadcast('refresh', true);
                 Storage.loadConfig(result);
@@ -171,8 +171,6 @@
                 ]).then(function () {
                     deffered.resolve();
                 });*/
-
-
             }).error(function (result) {
                 deffered.resolve();
             });
