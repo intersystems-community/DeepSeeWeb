@@ -74,6 +74,8 @@ set ^%SYS("CSP","DefaultFileCharset")="utf-8"
 ```
 # Creating custom widgets
 DeepSeeWeb allows modification of exist widgets and custom widget registration as well.
+For base widget class methods and properties description please read [Addons](Addons.md).
+
 To setup custom widget user should define simple json with widget description like this:
 ```
 {
