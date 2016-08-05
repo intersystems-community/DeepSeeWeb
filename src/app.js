@@ -97,7 +97,8 @@
                 var defer = $q.defer();
                 defers.push(defer.promise);
 
-                $ocLazyLoad.load(url + "?timestamp=" + Date.now().toString()).then((function(d){
+                $ocLazyLoad.load(url).then((function(d){
+                //$ocLazyLoad.load(url + "?timestamp=" + Date.now().toString()).then((function(d){
                     return function() {
                         d.resolve();
                     };
@@ -154,13 +155,22 @@
                 $rootScope.$broadcast('refresh', true);
                 Storage.loadConfig(result);
 
+                loadAddons(Storage, $q, $ocLazyLoad)
+                    .then(function() {
+                        $rootScope.$broadcast('addons:loaded');
+                    })
+                    .then(loadSettings(Storage, $q, Connector))
+                    .then(function () {
+                        deffered.resolve();
+                    });
+                /*
                 $q.all([
                     //loadNamespaceConfig(Storage, $q, Connector, $route.current.params.ns),
                     loadAddons(Storage, $q, $ocLazyLoad),
                     loadSettings(Storage, $q, Connector)
                 ]).then(function () {
                     deffered.resolve();
-                });
+                });*/
 
 
             }).error(function (result) {

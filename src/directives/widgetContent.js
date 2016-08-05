@@ -40,6 +40,13 @@
                                 element.attr("map-widget", '');
                                 break;
                             }
+                            case "custom": {
+                                var ai = TypeMap.getDesc(directiveGetter(scope)).addonInfo;
+                                if (ai) {
+                                    element.attr(ai.directive, '');
+                                }
+                                break;
+                            }
                             case "empty": {
                                 //element.attr("ng-include", 'src/views/filters.html');
                                 element.append("<div class='empty-widget' ng-include=\"'src/views/emptyWidgetContent.html'\"></div>");

@@ -83,7 +83,7 @@
                 if (_this.settings[_this.currentSettings]) {
                     nsSet = _this.settings[_this.currentSettings].namespaces;
                 }
-                if (localStorage.namespaceUserSettings) this.nsSettings = JSON.parse(localStorage.namespaceUserSettings);
+                    if (localStorage.namespaceUserSettings) this.nsSettings = JSON.parse(localStorage.namespaceUserSettings);
                 else if (nsSet) this.nsSettings = angular.copy(nsSet);
 
 
@@ -127,6 +127,8 @@
                 });
                 // Listened in menu.js
                 //$rootScope.$broadcast('menu:toggleLoading', false);
+
+            //$rootScope.$broadcast('config:loaded');
         }
 
         /**

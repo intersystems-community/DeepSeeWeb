@@ -6,7 +6,7 @@
 
     function TypeMapSvc(CONST, AreaChart, BarChart, LineChart, ColumnChart, PieChart, XyChart, TimeChart, PivotWidget,
                         TextWidget, HiLowChart, TreeMapChart, BubbleChart, BullseyeChart, SpeedometerChart,
-                        FuelGaugeChart, EmptyWidget, BarChartPercent, MapWidget, Storage, $injector) {
+                        FuelGaugeChart, EmptyWidget, BarChartPercent, MapWidget, Storage, $injector, $rootScope) {
         var types = {
             fuelgauge: {
                 class: FuelGaugeChart,
@@ -127,12 +127,14 @@
          * Register new widget type
          * @param {string} name name in TypeMap
          * @param {string} type Widget type. "chart", "pivot", "map"
-         * @param {string} cl Widget ckass
+         * @param {string} cl Widget class
+         * @param {object} [addonInfo] Addon information
          */
-        this.register = function(name, type, cl) {
+        this.register = function(name, type, cl, addonInfo) {
             types[name] = {
                 class: cl,
-                type: type
+                type: type,
+                addonInfo: addonInfo
             };
         };
 
@@ -147,6 +149,15 @@
         };
 
         /**
+         * Get description for type
+         * @param {string} name Type name
+         * @returns {object} Type description
+         */
+        this.getDesc = function(name) {
+            return types[name.toLowerCase()];
+        };
+
+        /**
          * Returns type group based on type name
          * @param {string} name Type name
          * @returns {string|undefined} Type group
@@ -157,22 +168,42 @@
         };
 
         var _this = this;
-        // Register custom types
         var addons;
         try {
             addons = JSON.parse(Storage.getAddons() || "{}");
-        } catch (e) {}
-        if (addons && addons.widgets && addons.widgets.length !== 0) {
-            for (var i = 0; i < addons.widgets.length; i++) {
-                _this.register(addons.widgets[i].name, addons.widgets[i].type, $injector.get(addons.widgets[i].class));
-            }
+        } catch (e) {
         }
+
+        if (addons) {
+            if (addons && addons.widgets && addons.widgets.length !== 0) {
+                for (var i = 0; i < addons.widgets.length; i++) {
+                    _this.register(addons.widgets[i].name, addons.widgets[i].type, $injector.get(addons.widgets[i].class), addons.widgets[i]);
+                }
+
+            }
+        } else {
+            // Register custom types
+            $rootScope.$on('addons:loaded', function() {
+                try {
+                    addons = JSON.parse(Storage.getAddons() || "{}");
+                } catch (e) {
+                }
+                if (addons && addons.widgets && addons.widgets.length !== 0) {
+                    for (var i = 0; i < addons.widgets.length; i++) {
+                        _this.register(addons.widgets[i].name, addons.widgets[i].type, $injector.get(addons.widgets[i].class), addons.widgets[i]);
+                    }
+
+                }
+
+            });
+        }
+
 
     }
 
     angular.module('widgets')
         .service('TypeMap', ['CONST', 'AreaChart', 'BarChart', 'LineChart', 'ColumnChart', 'PieChart', 'XyChart', 'TimeChart',
             'PivotWidget', 'TextWidget', 'HiLowChart', 'TreeMapChart', 'BubbleChart', 'BullseyeChart', 'SpeedometerChart',
-            'FuelGaugeChart', 'EmptyWidget', 'BarChartPercent', 'MapWidget', 'Storage', '$injector', TypeMapSvc]);
+            'FuelGaugeChart', 'EmptyWidget', 'BarChartPercent', 'MapWidget', 'Storage', '$injector', '$rootScope', TypeMapSvc]);
 
 })();
