@@ -5,7 +5,7 @@
 (function(){
     'use strict';
 
-    function DashboardCtrl($scope, $rootScope, $routeParams, Connector, Error, Filters, Lang, Utils, CONST, Storage) {
+    function DashboardCtrl($scope, $rootScope, $routeParams, Connector, Error, Filters, Lang, Utils, CONST, Storage, Variables) {
         var _this = this;
         this.desc = []; // stores widget definition received from server
         this.ctxItem = undefined;
@@ -86,7 +86,7 @@
             $scope.$broadcast('refresh:' + _this.ctxItem);
             _this.ctxItem = undefined;
         }
-
+        
         /**
          * Retrieve data callback. Builds widget list
          * @param {object} result Widget list
@@ -103,9 +103,11 @@
                 Error.show(Lang.get('errNoWidgets'));
                 return;
             }
+            Variables.init(result);
+
             if (result.filters) Filters.init(result.filters);
             // TODO: Check if there is actions on toolbar
-            if (Filters.isFiltersOnToolbarExists && !_this.sharedWidget) {
+            if ((Filters.isFiltersOnToolbarExists || Variables.isExists()) && !_this.sharedWidget) {
                 // Check if there empty widget exists, if no - we should create it
                 var isExists = false;
                 for (i = 0; i < result.widgets.length; i++) if (result.widgets[i].type.toLowerCase() === CONST.emptyWidgetClass) isExists = true;
@@ -228,6 +230,6 @@
     }
 
     angular.module('dashboard')
-        .controller('dashboard', ['$scope', '$rootScope', '$routeParams', 'Connector', 'Error', 'Filters', 'Lang', 'Utils', 'CONST', 'Storage', DashboardCtrl]);
+        .controller('dashboard', ['$scope', '$rootScope', '$routeParams', 'Connector', 'Error', 'Filters', 'Lang', 'Utils', 'CONST', 'Storage', 'Variables', DashboardCtrl]);
 
 })();

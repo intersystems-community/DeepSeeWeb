@@ -4,7 +4,7 @@
 (function() {
     'use strict';
 
-    function BaseWidgetFact($rootScope, Lang, Connector, Filters, Utils, $q, Storage, $routeParams) {
+    function BaseWidgetFact($rootScope, Lang, Connector, Filters, Utils, $q, Storage, $routeParams, Variables) {
 
         function BaseWidget($scope) {
             var _this = this;
@@ -16,6 +16,7 @@
             if ($scope.item && $scope.item.baseTitle === undefined) $scope.item.baseTitle = $scope.item ? $scope.item.title : $scope.$parent.title;
             this.drillFilter     = "";
             this.drillFilterDrills     = [];
+            this.pivotVariables = null;
             this.showLoading     = showLoading;
             this.hideLoading     = hideLoading;
             this.restoreWidgetType = restoreWidgetType;
@@ -34,12 +35,16 @@
             // Setup for actions
             $scope.item.acItems = [];
 
+            // Pivot variables items
+            $scope.item.pvItems = [];
+
             // Setup for datasource choser
             $scope.item.dsItems = [];
             $scope.item.dsLabel = "";
             $scope.item.dsSelected = "";
             if (_this.desc && _this.desc.dataSource) $scope.item.dsSelected = Utils.removeExt(_this.desc.dataSource.split("/").pop());
             $scope.onDataSourceChange = onDataSourceChange;
+            $scope.emitVarChange = emitVarChange;
             $scope.item.drillUp = doDrillUp;
             $scope.performAction = performAction;
 
@@ -102,12 +107,18 @@
 
             var colSpecListener = $scope.$on('setColSpec:' + _this.desc.name, onColSpecChanged);
             var colSpecAllListener = $scope.$on('setColSpec:*', onColSpecChanged);
+            var pivotVarListener = $scope.$on('updatePivotVar:' + _this.desc.name, onPivotVarChanged);
+            var pivotVarAllListener = $scope.$on('updatePivotVar:*', onPivotVarChanged);
 
             var changeDataSourceListener = $scope.$on('changeDataSource:' + _this.desc.name, function(sc, pivot) { changeDataSource(pivot);});
 
             $scope.$on('$destroy', function () {
                 filterListener();
                 filterAllListener();
+                colSpecListener();
+                colSpecAllListener();
+                pivotVarListener();
+                pivotVarAllListener();
                 changeDataSourceListener();
                 _this.destroy();
             });
@@ -121,11 +132,50 @@
             }
             if (this.isLinked()) $scope.$on("setLinkedMDX:" + _this.desc.key, onSetLinkedMdx);
             if (this.hasDependents()) $scope.$on("widget:" + _this.desc.key + ":refreshDependents", onRefreshDependents);
-
+            
             setupDrillFilter();
             setupChoseDataSource();
             setupActions();
+            setupPivotVariables();
             requestPivotData();
+
+            /**
+             * Initializes pivot variables
+             */
+            function setupPivotVariables() {
+                var isEmptyWidget = _this.desc.type === "mdx2json.emptyportlet";
+
+                var items = [];
+                if (!Variables.isExists()) return;
+
+                items = Variables.items.filter(
+                    function (c) {
+                        return isEmptyWidget ? (c.location === 'dashboard') : (
+                            (c.location !== 'dashboard') &&
+                            (c.location === '*' || c.location === _this.desc.name)
+                        );
+                    }
+                );
+
+                $scope.item.pvItems = items;
+                showToolbar();
+                //if (items.length !== 0) showToolbar();
+            }
+
+            /**
+             * Callback for pivot variable change
+             */
+            function emitVarChange(v) {
+                var target = v.target;
+                $rootScope.$broadcast("updatePivotVar:" + target);
+            }
+
+            /**
+             * Callback for pivot variable changes
+             */
+            function onPivotVarChanged() {
+               _this.requestData();
+            }
 
 
             function doExport(type) {
@@ -724,6 +774,15 @@
                 _this.clearError();
                 if (!firstRun) broadcastDependents();
                 firstRun = false;
+
+                // Check for variables
+                if (mdx.indexOf('$') !== -1 && !this.pivotVariables) {
+                    Connector.getPivotVariables(_this.desc.cube).success(function(d) {
+                        _this.pivotVariables = d;
+                        console.log(d);
+                    });
+                }
+
                 Connector.execMDX(mdx).error(_this._onRequestError).success(_this._retrieveData);
             }
 
@@ -785,6 +844,23 @@
                 }
                 return mdx;
             }
+
+            function replaceMDXVariables(mdx) {
+                if (!Variables.items.length || mdx.indexOf('$') === -1) return mdx;
+
+                for (var i = 0; i < Variables.items.length; i++) {
+                    var v = Variables.items[i];
+                    if (v.value === '') continue;
+                    var p = v.targetProperty.toLowerCase();
+                    //v.value = 2014;
+                    var idx;
+                    while ((idx = mdx.toLowerCase().indexOf(p)) !== -1) {
+                        mdx = mdx.substr(0, idx) + v.value + mdx.substr(idx + p.length, mdx.length);
+                    }
+                }
+                return mdx;
+            }
+
             /**
              * Return widget MDX depending on active filters
              * @returns {string}
@@ -797,7 +873,7 @@
 
                 // If widget is linked, use linkedMDX
                 if (_this.isLinked()) {
-                    var str = _this.linkedMdx || this.desc.linkedMdx || "";
+                    var str = replaceMDXVariables(_this.linkedMdx || this.desc.linkedMdx || "");
                     str = checkColSpec(str);
                     return applyDrill(str);
                 }
@@ -819,7 +895,7 @@
                         break;
                     }
                 }
-                var mdx = _this.desc.mdx;
+                var mdx = replaceMDXVariables(_this.desc.mdx);
                 if (!mdx) console.warn("Widget without MDX");
 
                 if (_this.customRowSpec) {
@@ -967,6 +1043,6 @@
     }
 
     angular.module('widgets')
-        .factory('BaseWidget', ['$rootScope', 'Lang', 'Connector', 'Filters', 'Utils', '$q', 'Storage', '$routeParams', BaseWidgetFact]);
+        .factory('BaseWidget', ['$rootScope', 'Lang', 'Connector', 'Filters', 'Utils', '$q', 'Storage', '$routeParams', 'Variables', BaseWidgetFact]);
 
 })();

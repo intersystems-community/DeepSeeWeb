@@ -27,6 +27,7 @@
         this.loadConfig = loadConfig;
         this.execAction = execAction;
         this.getSettings = getSettings;
+        this.getPivotVariables = getPivotVariables;
         this.loadNamespaceConfig = loadNamespaceConfig;
         this.saveNamespaceConfig = saveNamespaceConfig;
 
@@ -171,6 +172,19 @@
                     Search: searchStr
                 },
                 url: _this.url + 'Filters?Namespace=' + getNamespace(),
+                withCredentials: true
+            });
+        }
+
+        /**
+         * Requests pivot variables
+         * @param {string} cube Cube name
+         * @returns {object} $http promise
+         */
+        function getPivotVariables(cube) {
+            return $http({
+                method: 'GET',
+                url: _this.url + 'PivotVariables/' + cube + '?Namespace=' + getNamespace(),
                 withCredentials: true
             });
         }

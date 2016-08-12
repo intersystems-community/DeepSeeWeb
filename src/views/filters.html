@@ -1,3 +1,8 @@
+<span ng-repeat="var in item.pvItems" class="pull-left flt-holder">
+    <label>{{var.label}}</label>
+    <input class="form-control input-xs" ng-model="var.value" ng-enter="emitVarChange(var)">
+</span>
+
 <span ng-repeat="choser in item.dsItems" class="pull-left flt-holder">
     <label>{{choser.label}}</label>
     <select class="form-control input-sm" ng-model="item.dsSelected" ng-options="el for el in choser.labels" ng-change="onDataSourceChange(choser)"></select>

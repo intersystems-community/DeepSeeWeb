@@ -17,7 +17,7 @@
             _this.supported = false;
             _this.showError(Lang.get("errWidgetNotSupported") + ": " + _this.desc.type);
         }
-        if ($scope.model.filters.length === 0 && !this.hasDatasourceChoser && !this.hasActions) this.hideToolbar();
+        if ($scope.model.filters.length === 0 && !this.hasDatasourceChoser && !this.hasActions && !$scope.item.pvItems.length) this.hideToolbar();
 
 
         $scope.onInit = this.onInit;
