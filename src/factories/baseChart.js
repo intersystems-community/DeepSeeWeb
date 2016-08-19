@@ -558,8 +558,53 @@
                             d.Cols[1].tuples = sortedCats;
                             d.Data = values.map(function(v) { return v.value; });*/
                         } else {
-                            cats.splice(rowCount, cats.length - rowCount);
-                        }
+                            var value = ser.length;
+                            var found = true;
+                            while (found) {
+                                found = false;
+                                var k;
+                                var tmpData=[];
+                                var counter = 0;
+								
+                                for(k=0;k<d.Data.length-1;k=k++){
+                                    var tmbObjOne =[];
+                                    for(var t = 0;t<value;t++){
+                                        tmbObjOne.push(d.Data[k]);
+                                        k++;
+                                    }
+									
+                                    var count = 0;
+                                    for(t = 0; t < tmbObjOne.length; t++)
+                                    {
+                                        count = count + +tmbObjOne[t];
+                                    }
+                                    tmbObjOne.push(count);
+                                    tmbObjOne.push(d.Cols[1].tuples[counter]);
+                                    counter++;
+                                    tmpData.push(
+                                        tmbObjOne
+                                    );
+                                }
+								
+                                for (k = 0; k < tmpData.length - 1; k++) {
+                                    if(tmpData[k][value]<tmpData[k+1][value]){
+                                        found = true;
+                                        var tmp1 = tmpData[k];
+                                        tmpData[k] =  tmpData[k + 1];
+                                        tmpData[k + 1] = tmp1;
+                                    }
+                                }
+                                counter = 0;
+                                for(k = 0; counter < tmpData.length; k=k++){
+                                    for(t =0;t<value;t++){
+                                        d.Data[k] = tmpData[counter][t];
+                                        k++;
+                                    }
+                                    d.Cols[1].tuples[counter] = tmpData[counter][value+1];
+                                    counter++;
+                                }
+                            }
+                       }
                     }
                 }
             }
