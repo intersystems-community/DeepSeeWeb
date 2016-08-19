@@ -7,6 +7,8 @@ For more detailed description, please read JSDOC comments in source file.
 Widget have different properties stored in angular $scope. Here is description of mostly used:
  
  * `$scope.item` - Widget description info object. Such as widget size, position, etc.
+
+ * `$scope.chartConfig` - Highcharts configuration. Some properties should be changed in $scope.chartConfig.options. For more info please check highcharts documentation page.
  
  * `this.desc` - Widget data received from MDX2JSON. Sych as widget type, MDX, etc.
  
