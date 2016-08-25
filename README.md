@@ -97,7 +97,7 @@ Description object consists of:
 
 * **class** - Angular factory class name. This name is written in javascript file when calling `angular.module('widgets').factory('CustomWidget', ...`
 
-* **name** - DeepSee widget type in lowercase(e.g. "barchart", "areachart", "piechart", "pivot"). This widget will be replaced with custom. If you want leave exists DSW widgets, you can register custom portlet in DeepSee and use it name.
+* **name** - DeepSee widget type in lowercase(e.g. "barchart", "areachart", "piechart", "pivot"). This widget will be replaced with custom. If you want leave exists DSW widgets, you can register custom portlet in DeepSee as described here: [Custom DSW Addons](https://github.com/intersystems-ru/dswaddons).
 
 * **type** - Widget type, can be: "chart", "pivot", "text", "map". Defines type of exists widget. You can use "chart" for Highcarts, "map" for Open Street Map, "pivot" for simple pivot table and "text" for text widget.
 Using exists widget you'll get access to all widget properties and ability to configure it. E.g. for Highcharts you can use `$scope.chartConfig` to setup chart, change type, etc.
