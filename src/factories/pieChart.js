@@ -62,8 +62,10 @@
             };
             Utils.merge($scope.chartConfig.options, po);
 
-
-            $scope.chartConfig.options.plotOptions.series.dataLabels.enabled = $scope.item.isLegend
+            if (!$scope.chartConfig.options.plotOptions.series.dataLabels) {
+                $scope.chartConfig.options.plotOptions.series.dataLabels = {};
+            }
+            $scope.chartConfig.options.plotOptions.series.dataLabels.enabled = $scope.item.isLegend;
 
             if (!$scope.item.showValues) {
                 delete $scope.chartConfig.options.plotOptions.series.dataLabels.formatter;

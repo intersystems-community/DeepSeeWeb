@@ -134,6 +134,8 @@
         var deffered = $q.defer();
             // Check if namespace was changed
             if ($route.current.params.ns !== localStorage.namespace) {
+                // Clear dashboard list
+                delete sessionStorage.dashboarList;
                 loadSettings(Storage, $q, Connector)
                     .then(function () {
                         loadConf();
