@@ -105,7 +105,7 @@
             }
             Variables.init(result);
 
-            if (result.filters) Filters.init(result.filters);
+            if (result.filters) Filters.init(result.filters, $routeParams.path);
             // TODO: Check if there is actions on toolbar
             if ((Filters.isFiltersOnToolbarExists || Variables.isExists()) && !_this.sharedWidget) {
                 // Check if there empty widget exists, if no - we should create it

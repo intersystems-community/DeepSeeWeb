@@ -4,7 +4,7 @@
 (function() {
     'use strict';
 
-    function FiltersSvc($rootScope) {
+    function FiltersSvc($rootScope, Connector, Storage) {
         var _this = this;
         this.items = [];
         this.isFiltersOnToolbarExists = false;
@@ -15,12 +15,13 @@
         this.getFilter = getFilter;
         this.clear = clear;
         this.getClickFilterTarget = getClickFilterTarget;
-
+        this.dashboard = '';
         /**
          * Initialize service with filter array
          * @param {Array} filterArray Filter array
          */
-        function init(filterArray) {
+        function init(filterArray, dashboard) {
+            _this.dashboard = dashboard;
             _this.items = [];
             _this.isFiltersOnToolbarExists = false;
             for (var i = 0; i < filterArray.length; i++) {
@@ -49,6 +50,38 @@
                 }
 
                 flt.valueDisplay = findDisplayText(flt);
+            }
+
+            loadFiltersFromSettings();
+        }
+
+        /**
+         * Load saved filter values from settings
+         */
+        function loadFiltersFromSettings() {
+            var found = false;
+            var widgets = Storage.getWidgetsSettings(_this.dashboard, Connector.getNamespace());
+            if (widgets._filters) {
+                for (var i = 0; i < widgets._filters.length; i++) {
+                    var flt = widgets._filters[i];
+
+                    var exists = _this.items.filter(function(el) { return el.targetProperty === flt.targetProperty; })[0];
+                    if (exists) {
+                        // Check for single value
+                        exists.value = flt.value;
+                        var values = flt.value.split('|');
+                        // Multiple values was selected
+                        exists.values.forEach(function(v) {
+                            if (values.indexOf(v.path) !== -1) v.checked = true;
+                        });
+                        if (values.length > 1) {
+                            exists.valueDisplay = flt.value.split('|').map(function(el) { return el.replace('&[', '').replace(']', ''); }).join(',');
+                        } else {
+                            exists.valueDisplay = findDisplayText(exists);
+                        }
+                        found = true;
+                    }
+                }
             }
         }
 
@@ -151,6 +184,30 @@
                     if (flt.target === "*") $rootScope.$broadcast("filterAll");
                 }
             }
+            saveFilters();
+        }
+
+        /**
+         * Saves dashboard filters
+         */
+        function saveFilters() {
+            var i, flt;
+            var active = [];
+            for (i = 0; i < _this.items.length; i++) {
+                flt = _this.items[i];
+                if (flt.value !== "" || flt.isInterval) {
+                    active.push(flt);
+                }
+            }
+            var res = active.map(function(e) { return { targetProperty: e.targetProperty, value: e.value }});
+
+            var widgets = Storage.getWidgetsSettings(_this.dashboard, Connector.getNamespace());
+            if (res.length) {
+                widgets._filters = res;
+            } else {
+                delete widgets._filters;
+            }
+            Storage.setWidgetsSettings(widgets, _this.dashboard, Connector.getNamespace());
         }
 
         /**
@@ -172,6 +229,6 @@
     }
 
     angular.module('app')
-        .service('Filters', ['$rootScope', FiltersSvc]);
+        .service('Filters', ['$rootScope', 'Connector', 'Storage', FiltersSvc]);
 
 })();

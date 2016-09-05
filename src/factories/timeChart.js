@@ -9,7 +9,7 @@
         function TimeChart($scope) {
             BaseChart.apply(this, [$scope]);
             var _this = this;
-
+            $scope.item.isBtnValues = true;
             var opt = {
                 options: {
                     chart: {

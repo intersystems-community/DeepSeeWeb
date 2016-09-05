@@ -94,6 +94,11 @@
                             dataLabels: {
                                 enabled: $scope.item.showValues === true,
                                 formatter: labelsFormatter
+                            },
+                            events: {
+                                legendItemClick: function(event) {
+                                    toggleSeries(this.index, !this.visible);
+                                }
                             }
                         }
                     }
@@ -172,6 +177,19 @@
                 var widgetsSettings = Storage.getWidgetsSettings(_this.desc.dashboard, Connector.getNamespace());
                 if (!widgetsSettings[_this.desc.name]) widgetsSettings[_this.desc.name] = {};
                 widgetsSettings[_this.desc.name][name] = $scope.item[name];
+                Storage.setWidgetsSettings(widgetsSettings, _this.desc.dashboard, Connector.getNamespace());
+            }
+
+            function toggleSeries(index, visiblility) {
+                $scope.item[name] = !$scope.item[name];
+                var widgetsSettings = Storage.getWidgetsSettings(_this.desc.dashboard, Connector.getNamespace());
+                if (!widgetsSettings[_this.desc.name]) widgetsSettings[_this.desc.name] = {};
+                if (!widgetsSettings[_this.desc.name].series) widgetsSettings[_this.desc.name].series = {};
+                if (!visiblility) {
+                    widgetsSettings[_this.desc.name].series[index] = false;
+                } else {
+                    delete widgetsSettings[_this.desc.name].series[index];
+                }
                 Storage.setWidgetsSettings(widgetsSettings, _this.desc.dashboard, Connector.getNamespace());
             }
 
@@ -435,6 +453,18 @@
                         //$scope.chartConfig.yAxis.currentMin = 0;
                     }
                     if (firstRun) {
+
+                        // Load series toggle from settings
+                        var widgetsSettings = Storage.getWidgetsSettings(_this.desc.dashboard, Connector.getNamespace());
+                        if (widgetsSettings[_this.desc.name] && widgetsSettings[_this.desc.name].series) {
+                            for (var i = 0; i < $scope.chartConfig.series.length; i++) {
+                                if (widgetsSettings[_this.desc.name].series[i] === false) {
+                                    $scope.chartConfig.series[i].visible = false;
+                                }
+                            }
+                        }
+                        widgetsSettings = null;
+
                         firstRun = false;
                         _this.onResize();
                     }
