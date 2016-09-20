@@ -47,6 +47,7 @@
                 if (_this.lpt) {
                     var newMdx = _this.getMDX();
                     if (_this.lpt.isListing()) {
+                        delete _this.lpt.CONFIG.initialData;
                         newMdx = _this.getDrillthroughMdx(newMdx);
                     }
                     if (newMdx === "") return;
