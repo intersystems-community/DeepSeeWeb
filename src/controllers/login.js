@@ -16,18 +16,35 @@
             error: ""
         };
 
+        var from = $location.search().from;
+        if (from) {
+            var str = decodeURIComponent(from);
+            var ns = getParameterByName("ns", str);
+            if (ns)  $scope.model.namespace = ns;
+        }
+
         $scope.onLoginClick = onLoginClick;
         $scope.$on('signinerror', onError);
         // Listened in menu.js
         $rootScope.$broadcast('toggleMenu', false);
+
+
+        function getParameterByName(name, url) {
+            name = name.replace(/[\[\]]/g, "\\$&");
+            var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+                results = regex.exec(url);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, " "));
+        }
 
         /**
          * Click event gandler for login button
          */
         function onLoginClick() {
             clearError();
-            if (!$scope.model.login) { showError(Lang.get('errLoginRequired')); return; }
-            if (!$scope.model.password) { showError(Lang.get('errPassRequired')); return; }
+            //if (!$scope.model.login) { showError(Lang.get('errLoginRequired')); return; }
+            //if (!$scope.model.password) { showError(Lang.get('errPassRequired')); return; }
 
             startTime = new Date().getTime();
             Connector

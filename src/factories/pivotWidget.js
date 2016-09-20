@@ -46,10 +46,13 @@
             function requestData() {
                 if (_this.lpt) {
                     var newMdx = _this.getMDX();
+                    if (_this.lpt.isListing()) {
+                        newMdx = _this.getDrillthroughMdx(newMdx);
+                    }
                     if (newMdx === "") return;
                     _this.broadcastDependents();
                     if (_this.lpt.getActualMDX() != newMdx) _this.lpt.changeBasicMDX(newMdx);
-                    _this.lpt.refresh();
+                    //_this.lpt.refresh();
                 }
             }
 

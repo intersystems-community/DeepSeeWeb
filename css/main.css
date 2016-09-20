@@ -322,13 +322,19 @@
     outline: none;
 }
 
+.text-widget-item {
+    display: flex;
+    flex-direction: column;
+}
+
 .text-widget {
+    flex: 1 1 auto;
     display: block;
     width: 100%;
     height: 100%;
     font-family: monospace;
-    position: relative;
-    padding-top: 20px;
+    //position: relative;
+    //padding-top: 20px;
     -webkit-user-select: initial;
     user-select: initial;
 }
@@ -338,7 +344,7 @@
     width: 100%;
     text-align: center;
     font-family: monospace;
-    position: absolute;
+    //position: absolute;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
