@@ -82,8 +82,13 @@
             this.getDrillthroughMdx = getDrillthroughMdx;
             this.liveUpdateInterval = null;
             this.onResize = function(){};
+            this.canDoDrillthrough = false;
 
-            this.canDoDrillthrough = _this.desc.controls.find(function(c) { return c.action === "showListing"; }) !== undefined;
+            if (_this.desc.controls && _this.desc.controls.length) {
+                this.canDoDrillthrough = _this.desc.controls.find(function (c) {
+                        return c.action === "showListing";
+                    }) !== undefined;
+            }
 
             //this.liveUpdateInterval = setInterval(_this.requestData, 5000);
             // Find refresh controls with timeout
