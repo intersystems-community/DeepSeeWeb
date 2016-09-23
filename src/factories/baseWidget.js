@@ -83,6 +83,8 @@
             this.liveUpdateInterval = null;
             this.onResize = function(){};
 
+            this.canDoDrillthrough = _this.desc.controls.find(function(c) { return c.action === "showListing"; }) !== undefined;
+
             //this.liveUpdateInterval = setInterval(_this.requestData, 5000);
             // Find refresh controls with timeout
             if (_this.desc && _this.desc.controls) {
@@ -342,6 +344,7 @@
                 _this.showLoading();
 
                 function requestDrillthrough() {
+                    if (!_this.canDoDrillthrough) return;
                     if (noDrillCallback) noDrillCallback();
                     var ddMdx = getDrillthroughMdx(mdx);
 
@@ -360,7 +363,7 @@
                 Connector.execMDX(mdx)
                     .error(function() { requestDrillthrough(); })
                     .success(function(data) {
-                        if (isEmptyData(data) && path) {
+                        if (isEmptyData(data) && path && _this.canDoDrillthrough) {
                             requestDrillthrough();
                             /*Connector.execMDX(getDrillthroughMdx(mdx)).success(function(dd) {
                                 _this._retrieveData(dd);
