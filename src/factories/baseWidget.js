@@ -23,6 +23,7 @@
             this.changeWidgetType = changeWidgetType;
             // Array of widget names that shall be filtered during drill down
             this.drillFilterWidgets = null;
+            this._currentData = null;
 
             if ($scope.tile) {
                 $scope.item = {};
@@ -208,8 +209,73 @@
                         window.open(url);
                         return;
                     }
+                    case 'csv': {
+                        exportToCsv();
+                        return;
+                    }
                 }
                 if (_this.chart) _this.chart.exportChart(opt);
+            }
+
+            function exportToCsv() {
+                var d = _this._currentData;
+                if (!_this.lpt && !d) return;
+                var cats, ser, data;
+                if (_this.lpt) {
+                    ser = _this.lpt.dataController.getData().dimensions[0];
+                    cats = _this.lpt.dataController.getData().dimensions[1];
+                    data = _this.lpt.dataController.getData().dataArray;
+                } else {
+                    cats = d.Cols[1].tuples;
+                    ser = d.Cols[0].tuples;
+                    data = d.Data;
+                }
+                var nl = "\r\n";
+                var sep = "|";
+                var csvFile = '"sep=' + sep + '"' + nl;
+
+                // if (ser.length === 1) {
+                //
+                // } else {
+                    // Build header
+                    if (cats[0] && cats[0].dimension) csvFile += cats[0].dimension + sep;
+                    for (var j = 0; j < ser.length; j++) {
+                        csvFile +=ser[j].caption;
+                        if (j !== ser.length - 1) csvFile += sep;
+                    }
+                    csvFile += nl;
+
+                    // Build data
+                    for (var i = 0; i < (cats.length || (data.length / ser.length)); i++) {
+                        if (cats[i] && cats[i].caption) csvFile += cats[i].caption + sep;
+                        for (var j = 0; j < ser.length; j++) {
+                            csvFile += data[i * ser.length + j] || '0';
+                            if (j !== ser.length - 1) csvFile += sep;
+                        }
+                        csvFile += nl;
+                    }
+               // }
+
+                var filename = (_this.desc.title || 'data') + '.csv';
+                var blob = new Blob([csvFile], { type: 'text/csv;charset=utf-8;' });
+                if (navigator.msSaveBlob) { // IE 10+
+                    navigator.msSaveBlob(blob, filename);
+                } else {
+                    var link = document.createElement("a");
+                    if (link.download !== undefined) { // feature detection
+                        // Browsers that support HTML5 download attribute
+                        var url = URL.createObjectURL(blob);
+                        link.setAttribute("href", url);
+                        link.setAttribute("download", filename);
+                        link.style.visibility = 'hidden';
+                        document.body.appendChild(link);
+                        setTimeout(function() {
+                            link.click();
+                            document.body.removeChild(link);
+                        }, 10);
+                    }
+                }
+
             }
 
             function getDataByColumnName(data, columnName, dataIndex) {
@@ -368,6 +434,7 @@
                 Connector.execMDX(mdx)
                     .error(function() { requestDrillthrough(); })
                     .success(function(data) {
+                        if ($scope.chartConfig) $scope.chartConfig.loading = false;
                         if (isEmptyData(data) && path && _this.canDoDrillthrough) {
                             requestDrillthrough();
                             /*Connector.execMDX(getDrillthroughMdx(mdx)).success(function(dd) {
@@ -375,6 +442,7 @@
                             });*/
                             return;
                         }
+                        if (isEmptyData(data)) return;
 
                         // Drill can be done, store new level and pass received data
                         if (path) _this.drills.push({path: path, name: name, category: category}); else _this.drills.pop();
@@ -477,7 +545,12 @@
                 }
 
                 if ((!customDrill && customDrills.length !== 0) || (customDrills.length === 0)) {
-                    mdx = mdx.replace(" ON 1 FROM", " .children ON 1 FROM");
+                    var idx = mdx.indexOf(".Members ON 1 FROM");
+                    if (idx === -1) {
+                        mdx = mdx.replace(" ON 1 FROM", " .children ON 1 FROM");
+                    } else {
+                        mdx = mdx.replace(".Members ON 1 FROM", "." + path.split('.').pop() + ".children ON 1 FROM");
+                    }
                     return mdx;
                 }
 
@@ -791,7 +864,10 @@
                     });
                 }
 
-                Connector.execMDX(mdx).error(_this._onRequestError).success(_this._retrieveData);
+                Connector.execMDX(mdx).error(_this._onRequestError).success(function(data) {
+                    _this._currentData = data;
+                    _this._retrieveData(data);
+                });
             }
 
             /**
@@ -1031,6 +1107,7 @@
              * Called before widget was destroyed
              */
             function destroy() {
+                this._currentData = null;
                 // Removing interval updates of widget
                 if (_this.liveUpdateInterval) clearInterval(_this.liveUpdateInterval);
                 _this.liveUpdateInterval = null;
