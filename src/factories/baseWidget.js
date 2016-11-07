@@ -61,6 +61,7 @@
             this._onRequestError = onRequestError;
             this._retrieveData = function(){};
             this._retriveDataSource = onDataSourceReceived;
+            this._retriveKPI = onDataKPIReceived;
             this.doDrill = doDrill;
             //this.onDrilldownReceived = onDrilldownReceived;
             this.onInit = function(){};
@@ -830,7 +831,51 @@
 
             function requestPivotData() {
                 var ds = _this.customDataSource || _this.desc.dataSource;
-                if (ds) Connector.getPivotData(ds).success(_this._retriveDataSource);
+                // Check if this KPI
+                if (_this.desc.kpitype) {
+                    if (ds) Connector.getKPIData(ds).success(_this._retriveKPI);
+                } else {
+                    if (ds) Connector.getPivotData(ds).success(_this._retriveDataSource);
+                }
+            }
+
+            function convertKPIToMDXData(d) {
+                var orig = d;
+                d = d.Result;
+                var res = {Info: {cubeName: orig.Info.KpiName}, Cols: [], Data: []};
+                var i, j;
+                var cats = [];
+                for (i = 0; i < d.Properties.length; i++) {
+                    cats.push({caption: d.Properties[i].caption});
+                }
+                res.Cols.push({tuples: cats});
+
+                var ser = [];
+                for (i = 0; i < d.Series.length; i++) {
+                    for (j = 0; j < d.Properties.length; j++) {
+                        res.Data.push(d.Series[i][d.Properties[j].name]);
+                    }
+                    ser.push({
+                        title: d.Series[i]['%series'],
+                        caption: d.Series[i]['%series']
+                    });
+                }
+                res.Cols.push({tuples: ser});
+                return res;
+            }
+
+            /**
+             * Callback for retrieving KPI data
+             * @param {object} data KPI data
+             */
+            function onDataKPIReceived(data) {
+                if (_this.lpt) {
+                    _this.lpt.dataController.setData(_this.lpt.dataSource._convert(convertKPIToMDXData(data)));
+                    //_this.lpt.refresh();
+                    return;
+                }
+                _this._retrieveData(convertKPIToMDXData(data));
+                //console.log(data);
             }
 
             function onDataSourceReceived(data) {
@@ -851,7 +896,7 @@
                 //_this.drillLevel = 0;
                 //_this.drills = [];
                 var mdx = _this.getMDX();
-                if (mdx === "") return;
+                if (!mdx) return;
                 _this.clearError();
                 if (!firstRun) broadcastDependents();
                 firstRun = false;
