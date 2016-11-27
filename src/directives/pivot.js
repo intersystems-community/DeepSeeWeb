@@ -22,7 +22,8 @@
                         },
                         triggers: {
                             drillDown: scope.item.onDrillDown,
-                            back: scope.item.onDrillDown
+                            back: scope.item.onDrillDown,
+                            cellDrillThrough: scope.item.onDrillThrough
                             //drillThrough: scope.item.onDrillDown
                         },
                         columnResizeAnimation: true,

@@ -69,8 +69,8 @@
                     }
                 }
 
-                if (localStorage.userSettings) {
-                    _this.temp = JSON.parse(localStorage.userSettings);
+                if (sessionStorage.userSettings) {
+                    _this.temp = JSON.parse(sessionStorage.userSettings);
                     if (!_this.settings[_this.currentSettings]) _this.currentSettings = "Default";
                 } else
                 {
@@ -83,7 +83,7 @@
                 if (_this.settings[_this.currentSettings]) {
                     nsSet = _this.settings[_this.currentSettings].namespaces;
                 }
-                    if (localStorage.namespaceUserSettings) this.nsSettings = JSON.parse(localStorage.namespaceUserSettings);
+                    if (sessionStorage.namespaceUserSettings) this.nsSettings = JSON.parse(sessionStorage.namespaceUserSettings);
                 else if (nsSet) this.nsSettings = angular.copy(nsSet);
 
 
@@ -164,12 +164,12 @@
         }
 
         /**
-         * Returns application settings stored in localstorage
+         * Returns application settings stored in sessionStorage
          * @returns {object} Application settings
          */
         function getAppSettings() {
             return _this.temp.app || {};
-            //return JSON.parse(localStorage.settings || "{}");
+            //return JSON.parse(sessionStorage.settings || "{}");
         }
 
         /**
@@ -183,16 +183,16 @@
          */
         function setAppSettings(settings) {
             _this.temp.app = settings;
-            localStorage.userSettings = JSON.stringify(_this.temp);
+            sessionStorage.userSettings = JSON.stringify(_this.temp);
         }
 
         function setAddons(addons) {
             _this.temp.addons = addons;
-            localStorage.userSettings = JSON.stringify(_this.temp);
+            sessionStorage.userSettings = JSON.stringify(_this.temp);
         }
 
         function getAddons() {
-            return localStorage.devAddons || _this.temp.addons || {};
+            return sessionStorage.devAddons || _this.temp.addons || {};
         }
 
         /**
@@ -213,7 +213,7 @@
             if (!_this.nsSettings) _this.nsSettings = {};
             if (!_this.nsSettings.widgets) _this.nsSettings.widgets = {};
             _this.nsSettings.widgets[dashboard] = angular.copy(widgets);
-            localStorage.namespaceUserSettings = JSON.stringify(_this.nsSettings);
+            sessionStorage.namespaceUserSettings = JSON.stringify(_this.nsSettings);
         }
 
         /**
@@ -231,7 +231,7 @@
         function setTilesSettings(tiles, ns) {
             if (!_this.nsSettings) _this.nsSettings = {};
             _this.nsSettings.tiles = angular.copy(tiles);
-            localStorage.namespaceUserSettings = JSON.stringify(_this.nsSettings);
+            sessionStorage.namespaceUserSettings = JSON.stringify(_this.nsSettings);
         }
 
         /**
@@ -241,7 +241,7 @@
         function removeTilesSettings(ns) {
             if (_this.nsSettings) {
                 _this.nsSettings.tiles = {};
-                localStorage.namespaceUserSettings = JSON.stringify(_this.nsSettings);
+                sessionStorage.namespaceUserSettings = JSON.stringify(_this.nsSettings);
             }
         }
 
@@ -286,7 +286,7 @@
                 // this is new format
             _this.nsSettings = angular.copy(conf);
   //          }
-            localStorage.namespaceUserSettings = JSON.stringify(_this.nsSettings);
+            sessionStorage.namespaceUserSettings = JSON.stringify(_this.nsSettings);
         }
     }
 

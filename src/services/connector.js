@@ -12,6 +12,7 @@
         this.newAPI = "";
         this.getDashboards = getDashboards;
         this.getPivotData = getPivotData;
+        this.getKPIData = getKPIData;
         this.execMDX = execMDX;
         this.getWidgets = getWidgets;
         this.signIn = signIn;
@@ -75,6 +76,21 @@
                 method: 'POST',
                 data: {Folder: ""},
                 url: _this.url + 'Dashboards?Namespace=' + getNamespace(),
+                withCredentials: true
+            });
+        }
+
+        /**
+         * Request KPI data
+         * @param {string} name Name of KPI
+         * @returns {object} $http promise
+         */
+        function getKPIData(name) {
+            return $http({
+                method: 'POST',
+                url: _this.url + 'KPI?Namespace=' + getNamespace(),
+                data: {KPI: name},
+                timeout: CONST.timeout,
                 withCredentials: true
             });
         }

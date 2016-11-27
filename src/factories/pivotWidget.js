@@ -12,17 +12,31 @@
             this.onInit = onInit;
             this.requestData = requestData;
             this.onResize = onResize;
+            this._oldMdx = "";
 
             if (!$scope.item.pivotMdx) $scope.item.pivotMdx = _this.getMDX();
             $scope.$on("print:" + $scope.item.$$hashKey, print);
             $scope.item.onDrillDown = onDrillDown;
-
+            $scope.item.onDrillThrough = onDrillThrough;
+            $scope.item.drillUp = doDrillUp;
             /**
              * Called after pivot table was initialized
              * @param {object} lpt Pivot table object
              */
             function onInit(lpt) {
                 _this.lpt = lpt;
+            }
+
+            function doDrillUp() {
+                if (!_this._oldMdx) { return; }
+                _this.lpt.changeBasicMDX(_this._oldMdx);
+                $scope.item.backButton = false;
+            }
+
+            function onDrillThrough() {
+                _this._oldMdx = _this.lpt.getActualMDX();
+                $scope.item.backButton = true;
+                return true;
             }
 
             /**
@@ -48,7 +62,7 @@
                     var newMdx = _this.getMDX();
                     if (_this.lpt.isListing()) {
                         delete _this.lpt.CONFIG.initialData;
-                        newMdx = _this.getDrillthroughMdx(newMdx);
+                        if (newMdx.toLowerCase().substr(0, 12) !== 'drillthrough') newMdx = _this.getDrillthroughMdx(newMdx);
                     }
                     if (newMdx === "") return;
                     _this.broadcastDependents();

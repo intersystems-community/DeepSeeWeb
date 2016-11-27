@@ -67,8 +67,8 @@
             var name = $scope.model.selectedSettings;
             var ns = Connector.getNamespace();
             if (Storage.isSettingsExists(name) || Storage.nsSettings[ns]) {
-                delete localStorage.userSettings;
-                delete localStorage.namespaceUserSettings;
+                delete sessionStorage.userSettings;
+                delete sessionStorage.namespaceUserSettings;
                 //Storage.nsSettings[ns] = {};
                 //Storage.setTilesSettings(undefined, ns);
                 Storage.setCurrentSettings(name);
@@ -141,7 +141,7 @@
                     var ns = Connector.getNamespace();
                     if (contents.ns) {
                         Storage.nsSettings = contents.ns;
-                        localStorage.namespaceUserSettings = JSON.stringify(Storage.nsSettings);
+                        sessionStorage.namespaceUserSettings = JSON.stringify(Storage.nsSettings);
                     }
                     //Storage.setAllSettings(contents.settings);
                     Storage.saveCurrentSettings(Storage.currentSettings);
@@ -162,7 +162,7 @@
         function exportSettings() {
             var filename = Connector.getNamespace() + "." + new Date().toLocaleDateString() + ".json";
             var ns = Connector.getNamespace();
-            var nset = localStorage.namespaceUserSettings ? JSON.parse(localStorage.namespaceUserSettings) : Storage.nsSettings;
+            var nset = sessionStorage.namespaceUserSettings ? JSON.parse(sessionStorage.namespaceUserSettings) : Storage.nsSettings;
             var data = JSON.stringify({ ns: nset });
 
             var download = document.createElement('a');
