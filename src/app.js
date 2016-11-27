@@ -1,3 +1,4 @@
+window.dsw = {};
 /**
  * Main application module
  */
@@ -81,24 +82,18 @@
         }
     }
 
-    function loadAddons(Storage, $q, $ocLazyLoad) {
-        var addons;
-        try {
-            addons = JSON.parse(Storage.getAddons() || "{}");
-        }
-        catch (e) { }
-        if (!addons || !addons.widgets || addons.widgets.length === 0) {
+    function loadAddons(addons, $q, $ocLazyLoad) {
+        if (!addons || !addons.length) {
             return $q.when();
         }
         var defers = [];
-        for (var i = 0; i < addons.widgets.length; i++) {
-            var url = addons.widgets[i].url;
+        for (var i = 0; i < addons.length; i++) {
+            var url = 'addons/' + addons[i] + '?tmp=' + Date.parse(new Date());
             if (url) {
                 var defer = $q.defer();
                 defers.push(defer.promise);
 
                 $ocLazyLoad.load(url).then((function(d){
-                //$ocLazyLoad.load(url + "?timestamp=" + Date.now().toString()).then((function(d){
                     return function() {
                         d.resolve();
                     };
@@ -156,10 +151,22 @@
                 $rootScope.$broadcast('toggleMenu', true);
                 $rootScope.$broadcast('refresh', true);
                 Storage.loadConfig(result);
-
-                loadAddons(Storage, $q, $ocLazyLoad)
+                var addons = null;
+                Connector.loadAddons()
+                    .then(function(res) {
+                        addons = res.data;
+                        if (addons) {
+                            dsw.addons = addons.slice();
+                            for (var i = 0; i < dsw.addons.length; i++) {
+                                var a = dsw.addons[i].split('.');
+                                a.pop();
+                                dsw.addons[i] = a.join('.');
+                            }
+                        }
+                        return loadAddons(addons, $q, $ocLazyLoad)
+                    })
                     .then(function() {
-                        $rootScope.$broadcast('addons:loaded');
+                        $rootScope.$broadcast('addons:loaded', addons);
                     })
                     .then(loadSettings(Storage, $q, Connector))
                     .then(function () {
