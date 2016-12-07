@@ -173,7 +173,7 @@
         if (addons) {
             if (addons && addons.length) {
                 for (var i = 0; i < addons.length; i++) {
-                    this.register(addons[i].toLowerCase(),  $injector.get(addons[i]).type, $injector.get(addons[i]), addons[i]);
+                    this.register(addons[i].toLowerCase(),  $injector.get(addons[i]).type || 'custom', $injector.get(addons[i]), $injector.get(addons[i]));
                 }
 
             }
@@ -182,7 +182,7 @@
             $rootScope.$on('addons:loaded', function(addons) {
                 if (addons && addons.length) {
                     for (var i = 0; i < addons.length; i++) {
-                        _this.register(addons[i].toLowerCase(), $injector.get(addons[i]).type, $injector.get(addons[i]), addons[i]);
+                        _this.register(addons[i].toLowerCase(), $injector.get(addons[i]).type || 'custom', $injector.get(addons[i]), $injector.get(addons[i]));
                     }
 
                 }
