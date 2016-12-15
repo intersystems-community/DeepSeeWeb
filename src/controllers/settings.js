@@ -21,12 +21,15 @@
             settingsName:     "",
             showFolders:      !settings.hideFolders,
             isMetro:          settings.isMetro,
+            isSaveFilters:    settings.isSaveFilters === undefined ? true : settings.isSaveFilters,
             showImages:       settings.showImages,
             langs:            Lang.getLanguages(),
             language:         Lang.current,
             colCount:         settings.colCount,
             widgetHeight:     settings.widgetHeight
         };
+
+        console.log($scope.model.isSaveFilters);
 
         $scope.applySettrings    = applySettrings;
         $scope.resetWidgets      = resetWidgets;
@@ -107,11 +110,13 @@
             settings.hideFolders  = !$scope.model.showFolders ? true : false;
             settings.showImages   = $scope.model.showImages ? true : false;
             settings.isMetro      = $scope.model.isMetro ? true : false;
+            settings.isSaveFilters= $scope.model.isSaveFilters ? true : false;
             settings.colCount     = $scope.model.colCount;
             settings.widgetHeight = $scope.model.widgetHeight;
 
             if (old.language     !== settings.language)     shouldRefresh = true;
             if (old.isMetro      !== settings.isMetro)      shouldRefresh = true;
+            if (old.isSaveFilters!== settings.isSaveFilters)shouldRefresh = true;
             if (old.hideFolders  !== settings.hideFolders)  shouldRefresh = true;
             if (old.showImages   !== settings.showImages)   shouldRefresh = true;
             if (old.colCount     !== settings.colCount)     shouldRefresh = true;

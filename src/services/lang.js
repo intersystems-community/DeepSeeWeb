@@ -71,6 +71,7 @@
      */
         .constant('LANGSTR', {
             en: {
+                saveFilters: "Save filters",
                 exportSettings: 'Export settings',
                 importSettings: 'Import settings',
                 export: 'Export',
@@ -158,6 +159,7 @@
                 shortMonths: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
             },
             ru: {
+                saveFilters: "Сохранять фильтры",
                 exportSettings: 'Экспорт настроек',
                 importSettings: 'Импорт настроек',
                 export: 'Экспорт',

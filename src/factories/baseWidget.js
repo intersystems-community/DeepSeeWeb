@@ -1011,11 +1011,13 @@
                 var filters = Filters.getWidgetFilters(_this.desc.name);
                 // Add filter for drillFilter feature
                 if (_this.drillFilter) {
-                    var parts = _this.drillFilter.split("&");
-                    filters.push({
-                        targetProperty: parts[0].slice(0, -1),
-                        value: "&" + parts[1]
-                    });
+                    var idx = _this.drillFilter.indexOf("&");
+                    if (idx !== -1) {
+                        filters.push({
+                            targetProperty: _this.drillFilter.substring(0, idx - 1),
+                            value: "&" + this.drillFilter.substring(idx + 1, _this.drillFilter.length)
+                        });
+                    }
                 }
                 for (i = 0; i < filters.length; i++) {
                     flt = filters[i];
