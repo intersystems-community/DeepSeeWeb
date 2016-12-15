@@ -31,6 +31,7 @@
         this.getPivotVariables = getPivotVariables;
         this.loadNamespaceConfig = loadNamespaceConfig;
         this.saveNamespaceConfig = saveNamespaceConfig;
+        this.loadAddons = loadAddons;
 
         // for local testing
         /*
@@ -268,6 +269,19 @@
                 method: 'Get',
                 data: {},
                 url: _this.url + 'Config/' + (cutomNamespace ? cutomNamespace : this.getNamespace()) + '?Namespace=MDX2JSON',
+                withCredentials: true
+            });
+        }
+
+        /**
+         * Loads configuration from server
+         * @returns {object} $http promise
+         */
+        function loadAddons(cutomNamespace) {
+            return $http({
+                method: 'Get',
+                data: {},
+                url: _this.url + 'Addons?Namespace=MDX2JSON',
                 withCredentials: true
             });
         }

@@ -168,29 +168,21 @@
         };
 
         var _this = this;
-        var addons;
-        try {
-            addons = JSON.parse(Storage.getAddons() || "{}");
-        } catch (e) {
-        }
+        var addons = dsw.addons;
 
         if (addons) {
-            if (addons && addons.widgets && addons.widgets.length !== 0) {
-                for (var i = 0; i < addons.widgets.length; i++) {
-                    _this.register(addons.widgets[i].name, addons.widgets[i].type, $injector.get(addons.widgets[i].class), addons.widgets[i]);
+            if (addons && addons.length) {
+                for (var i = 0; i < addons.length; i++) {
+                    this.register(addons[i].toLowerCase(),  $injector.get(addons[i]).type || 'custom', $injector.get(addons[i]), $injector.get(addons[i]));
                 }
 
             }
         } else {
             // Register custom types
-            $rootScope.$on('addons:loaded', function() {
-                try {
-                    addons = JSON.parse(Storage.getAddons() || "{}");
-                } catch (e) {
-                }
-                if (addons && addons.widgets && addons.widgets.length !== 0) {
-                    for (var i = 0; i < addons.widgets.length; i++) {
-                        _this.register(addons.widgets[i].name, addons.widgets[i].type, $injector.get(addons.widgets[i].class), addons.widgets[i]);
+            $rootScope.$on('addons:loaded', function(addons) {
+                if (addons && addons.length) {
+                    for (var i = 0; i < addons.length; i++) {
+                        _this.register(addons[i].toLowerCase(), $injector.get(addons[i]).type || 'custom', $injector.get(addons[i]), $injector.get(addons[i]));
                     }
 
                 }
