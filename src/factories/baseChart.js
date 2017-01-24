@@ -672,11 +672,12 @@
                 if (hasChildren) {
                     var k = 0;
                     for(var t = 0; t < data.Cols[0].tuples.length; t++) {
-                        for (var c = 0; c < data.Cols[0].tuples[t].children.length; c++) {
+                        var len = data.Cols[0].tuples[t].children ? data.Cols[0].tuples[t].children.length : 1;
+                        for (var c = 0; c < len; c++) {
                             tempData = [];
                             for (var g = 0; g < data.Cols[1].tuples.length; g++) {
                                 tempData.push({
-                                    y: +data.Data[data.Cols[0].tuples.length * data.Cols[0].tuples[t].children.length * g + t * data.Cols[0].tuples[t].children.length + c],
+                                    y: +data.Data[data.Cols[0].tuples.length * len * g + t * len + c],
                                     cube: data.Info.cubeName,
                                     drilldown: true,
                                     path: data.Cols[1].tuples[g].path,
@@ -685,11 +686,19 @@
                                 k++;
                             }
                             fixData(tempData);
-                            _this.addSeries({
-                                data: tempData,
-                                name: data.Cols[0].tuples[t].caption + "/" + data.Cols[0].tuples[t].children[c].caption,
-                                format: data.Cols[0].tuples[t].children[c].format || getFormat(data)
-                            });
+                            if (data.Cols[0].tuples[t].children) {
+                                _this.addSeries({
+                                    data: tempData,
+                                    name: data.Cols[0].tuples[t].caption + "/" + data.Cols[0].tuples[t].children[c].caption,
+                                    format: data.Cols[0].tuples[t].children[c].format || getFormat(data)
+                                });
+                            } else {
+                                _this.addSeries({
+                                    data: tempData,
+                                    name: data.Cols[0].tuples[t].caption,
+                                    format: data.Cols[0].tuples[t].format || getFormat(data)
+                                });
+                            }
                         }
                     }
                     /*for(var t = 0; t < data.Cols[0].tuples.length; t++) {
