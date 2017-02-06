@@ -224,6 +224,7 @@ button {
 
 .home-tiles-list:after, .home-tiles-list:before {
     @include header-holder;
+    background-color: $themeColor;
 }
 
 .navbar {

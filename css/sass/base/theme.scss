@@ -51,6 +51,12 @@ html {
 
 
 }
+
+.navbar-nav {
+    display: flex;
+    flex-direction: column;
+}
+
 .navbar-default .navbar-nav > li > a {
     display: flex;
     align-items: center;
@@ -73,9 +79,9 @@ html {
     }
     & .btn {
         @include animBack;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        display: block;
+        //align-items: center;
+        //justify-content: center;
         min-width: $headerHeight;
         height: $headerHeight;
         background: transparent none;
@@ -106,7 +112,7 @@ input, .form-control {
 }
 
 .nav > .dropdown {
-    height: 100%;
+    flex: 1 1 100%;
     &:hover {
         @include hoverColor;
         color: $fontColor;
