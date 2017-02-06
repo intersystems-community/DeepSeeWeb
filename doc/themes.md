@@ -39,7 +39,7 @@ $fontColor: white;
 ```
 
 ## Tiles 
-You can predefined tile background and font color by changing styles `.cl1-.cl9` and `.fc1-.fc5`
+You can define tile background and font color by changing styles `.cl1-.cl9` and `.fc1-.fc5`
 To change tile background color, use `.cl` class:
 ```css
 /* Change first color style of tile */ 
