@@ -13,6 +13,7 @@
             return {
                 restrict: 'AC',
                 link: function (_scope, _element) {
+                    if (dsw.mobile) return;
                     $timeout(function () {
                         _element[0].focus();
                     }, 0);

@@ -23,9 +23,11 @@
                         // set directives depending on widget type
                         switch (type) {
                             case "chart": {
+                                //element[0].outerHTML = element[0].outerHTML.replace("<div", "<highchart").replace("</div>", "</highchart>")
                                 element.attr("highchart", '');
                                 element.attr("id", '{{"chart" + item.key}}');
                                 element.attr("config", "chartConfig");
+                                //element.append("<highchart id=\"{{'chart' + item.key}}\" config=\"chartConfig\"></highchart>");
                                 break;
                             }
                             case "pivot": {

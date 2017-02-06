@@ -105,7 +105,7 @@
                     scope.$on("$destroy", function() {
                         scope.tooltip.remove();
                         scope.tooltip = null;
-                    })
+                    });
                 }
             };
         }]);

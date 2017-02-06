@@ -4,10 +4,11 @@
         <div class="row">
             <ul class="nav nav-tabs settings-tabbar" role="tablist">
                 <li role="presentation" class="active settings-tab"><a data-target="#main" aria-controls="main" role="tab" data-toggle="tab">Main</a></li>
-                <li role="presentation" class="settings-tab"><a data-target="#addons" aria-controls="addons" role="tab" data-toggle="tab">Addons</a></li>
+                <!--<li role="presentation" class="settings-tab"><a data-target="#addons" aria-controls="addons" role="tab" data-toggle="tab">Addons</a></li>-->
             </ul>
             <div class="tab-content">
                 <div role="tabpanel" class="tab-pane active settings-content" id="main">
+                    <div class="mobile-header" desktop-hidden></div>
                     <div class="container-fluid">
                         <div class="row">
                                     <div class="col-md-4">
@@ -17,39 +18,50 @@
                                                 <option ng-repeat="l in ::model.langs" value="{{::l}}" ng-selected="{{::l==model.language}}">{{::l}}</option>
                                             </select>
                                         </div>
+                                        <div class="form-group" mobile-hidden>
+                                            {{'theme' | lang}}
+                                            <select ng-model="model.theme" ng-options="item.file as item.text for item in model.themes"></select>
+                                        </div>
                                         <div class="checkbox">
                                             <label>
-                                                <input type="checkbox" ng-model="model.showFolders">{{'showFolders' | lang}}
+                                                <input type="checkbox" ng-model="model.showFolders">
+                                                <span>
+                                                    {{'showFolders' | lang}}
+                                                </span>
                                             </label>
                                         </div>
                                         <div class="checkbox">
                                             <label>
-                                                <input type="checkbox" ng-model="model.showImages">{{'showImages' | lang}}
+                                                <input type="checkbox" ng-model="model.showImages">
+                                                <span>
+                                                {{'showImages' | lang}}
+                                                </span>
                                             </label>
                                         </div>
                                         <div class="checkbox">
                                             <label>
-                                                <input type="checkbox" ng-model="model.isMetro">{{'metroStyle' | lang}}
+                                                <input type="checkbox" ng-model="model.isSaveFilters"><span>{{'saveFilters' | lang}}</span>
                                             </label>
                                         </div>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-4" mobile-hidden>
                                         <div class="form-group">
-                                            {{'dashColumns' | lang}}
+                                            <span>{{'dashColumns' | lang}}</span>
                                             <input class="input-xs" type="text" ng-model="model.colCount">
-                                            {{'widgetHeight' | lang}}
+                                            <span>{{'widgetHeight' | lang}}</span>
                                             <input class="input-xs" type="text" ng-model="model.widgetHeight">
                                         </div>
                                     </div>
                                     <div class="col-md-4">
-                                        <div class="form-group">
+                                        <div class="form-group mobile-action-buttons">
                                             <button type="button" class="btn btn-default btn-xs" ng-click="resetWidgets()">{{'resetWidgets' | lang}}</button>
-                                            <button type="button" class="btn btn-default btn-xs" ng-click="resetTiles()">{{'resetTiles' | lang}}</button>
-                                            <button type="button" class="btn btn-default btn-xs" ng-click="exportSettings()">{{'exportSettings' | lang}}</button>
+                                            <button type="button" class="btn btn-default btn-xs" ng-click="resetTiles()" mobile-hidden>{{'resetTiles' | lang}}</button>
+                                            <button type="button" class="btn btn-default btn-xs" ng-click="exportSettings()" mobile-hidden>{{'exportSettings' | lang}}</button>
+                                            <button type="button" class="btn btn-default btn-xs" ng-click="showLog()" desktop-hidden="">{{'showLog' | lang}}</button>
                                         </div>
                                     </div>
                         </div>
-                        <div class="row">
+                        <div class="row" mobile-hidden>
                             <div class="col-md-4">
                                 <div class="form-group">
                                     {{'importSettings' | lang}}
@@ -60,16 +72,16 @@
                     </div>
                 </div>
                 <div role="tabpanel" class="tab-pane settings-content" id="addons">
-                    <div style="width:100%; height: 100%" json-editor></div>
+                    <div style="width:100%; height: 100%" mobile-hidden></div>
                 </div>
             </div>
         </div>
 
 
-        <div class="line-divider"></div>
+        <div class="line-divider" mobile-hidden></div>
 
-        <div class="row">
-            <div class="col-md-6">
+        <div class="row modal-mobile-footer">
+            <div class="col-md-6" mobile-hidden>
                 <div class="input-group">
                     <div class="float-left" ng-hide="model.addMode">
                         {{'curSettings' | lang}}&nbsp;
@@ -85,8 +97,8 @@
             <div class="col-md-6">
                 <div class="pull-right">
                     <button type="button" class="btn btn-default" ng-click="onLoadClick()">{{'load' | lang}}</button>
-                <button type="button" class="btn btn-success" ng-click="applySettrings()">{{'save' | lang}}</button>
-                <button type="button" class="btn btn-default" ng-click="closeThisDialog()">{{'close' | lang}}</button>
+                <button type="button" class="btn btn-default" ng-click="applySettrings()">{{'save' | lang}}</button>
+                <button type="button" class="btn btn-default" ng-click="closeThisDialog()" mobile-hidden>{{'close' | lang}}</button>
                 </div>
             </div>
         </div>

@@ -155,7 +155,7 @@ body::-webkit-scrollbar {
 
 .color-rect {
     float: left ;
-    color: white;
+    /*color: white;*/
     cursor: pointer;
     width: 32px;
     height: 32px;
@@ -232,4 +232,25 @@ body::-webkit-scrollbar {
 
 .flt-holder .input-group input {
     background-color: #FFF;
+}
+
+.fc1 {
+    color: #000;
+    fill:  #000;
+}
+.fc2 {
+    color: #FFF;
+    fill: #FFF;
+}
+.fc3 {
+    color: #F00;
+    fill: #F00;
+}
+.fc4 {
+    color: #0A0;
+    fill: #0A0;
+}
+.fc5 {
+    color: #00F;
+    fill: #00F;
 }

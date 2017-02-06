@@ -26,6 +26,8 @@
             this.dataInfo            = null;
             this.widgetData          = null;
             this.labelsFormatter     = labelsFormatter;
+            // Selected point for mobile version to make drill after second tap
+            this._selectedPoint      = null;
             var _this    = this;
             var firstRun = true;
             var settings = Storage.getAppSettings();
@@ -139,20 +141,19 @@
                 $scope.chartConfig.options.legend = {
                     enabled: false
                 };
-
                 if (_this.desc.tile) {
                      var opt = {
                         xAxis: {
                             labels: {
                                 style: {
-                                    color: settings.isMetro ? CONST.fontColorsMetro[_this.desc.tile.fontColor] : CONST.fontColors[_this.desc.tile.fontColor]
+                                    color: $('.'+CONST.fontColors[_this.desc.tile.fontColor]).css('color')
                                 }
                             }
                         },
                         yAxis: {
                          labels: {
                              style: {
-                                 color: settings.isMetro ? CONST.fontColorsMetro[_this.desc.tile.fontColor] : CONST.fontColors[_this.desc.tile.fontColor]
+                                 color: $('.'+CONST.fontColors[_this.desc.tile.fontColor]).css('color')
                              }
                          }
                         }
@@ -208,11 +209,6 @@
             }
 
             function showZeroOnAxis() {
-                /*$scope.item.showZero = !$scope.item.showZero;
-                var widgetsSettings = Storage.getWidgetsSettings();
-                if (!widgetsSettings[_this.desc.key]) widgetsSettings[_this.desc.key] = {};
-                widgetsSettings[_this.desc.key].showZero = $scope.item.showZero;
-                Storage.setWidgetsSettings(widgetsSettings);*/
                 toggleButton("showZero");
 
                 if ($scope.item.showZero) {
@@ -231,53 +227,7 @@
             }
 
             function limitSeriesAndData() {
-                //_this._retrieveData(angular.copy({}, _this.widgetData));
                 _this.requestData();
-                return;
-
-
-                var i, j, c;
-                var controls = _this.desc.controls || [];
-                var cont = controls.filter(function(el) { return el.action === "setRowCount"; })[0];
-                var ser = $scope.chartConfig.series;
-                var rowCount = cont ? (cont.value || DEF_ROW_COUNT) : DEF_ROW_COUNT;
-                var cont = controls.filter(function(el) { return el.action === "setColumnCount"; })[0];
-                var colCount = cont ? (cont.value || DEF_COL_COUNT) : DEF_COL_COUNT;
-                rowCount = 4;
-                if ($scope.chartConfig.options.plotOptions.series.stacking === "normal" ||
-                    !$scope.chartConfig.options.plotOptions.series.stacking) {
-                    var cats = $scope.chartConfig.xAxis.categories;
-                    if ($scope.item.isTop) {
-                        //_this.chart._backupSeries = Utils.merge([], ser);
-                        for (c = 0; c < cats.length; c++) {
-                            for (i = 0; i < ser.length; i++) {
-                                if (ser[i].data[c] instanceof Object) {
-                                   if (c + 1 > rowCount) delete ser[i].data[c];
-                                }//c < rowCount;
-                            }
-                        }
-                        /*for (i = 0; i < ser.length; i++) {
-                            for (j = 0; j < ser[i].data.length; j++) {
-                                delete ser[i].data[j];
-                            }
-                        }*/
-                        //_this.chart.xAxis[0].setCategories(cats.slice(0, rowCount));
-                    } else {
-                        //_this.parseData(_this.widgetData, true);
-
-                    }
-                } else {
-                    if ($scope.item.isTop) {
-                        for (i = 0; i < ser.length; i++) {
-                            if (i + 1 > rowCount) ser[i].visible = false;
-                            for (j = 0; j < ser[i].data.length; j++) {
-                                if (j + 1 > colCount && (ser[i].data[j] instanceof Object)) ser[i].data[j].visible = false;
-                            }
-                        }
-                    } else {
-                        for (i = 0; i < ser.length; i++) ser[i].visible = true;
-                    }
-                }
             }
 
             function showValues() {
@@ -285,13 +235,7 @@
             }
 
             function toggleTop() {
-                /*$scope.item.isTop = !$scope.item.isTop;
-                var widgetsSettings = Storage.getWidgetsSettings();
-                if (!widgetsSettings[_this.desc.key]) widgetsSettings[_this.desc.key] = {};
-                widgetsSettings[_this.desc.key].isTop = $scope.item.isTop;
-                Storage.setWidgetsSettings(widgetsSettings);*/
                 toggleButton("isTop");
-
                 limitSeriesAndData();
             }
 
@@ -301,25 +245,28 @@
              */
             function onPointClick(e) {
                 if (!e.point) return;
+                if (dsw.mobile) {
+                    if (_this._selectedPoint !== e.point) {
+                        _this._selectedPoint = e.point;
+                        return;
+                    }
+                }
                 $scope.chartConfig.loading = true;
                 _this.doDrill(e.point.path, e.point.name, e.point.category)
                     .then(function() {
                         $scope.chartConfig.loading = false;
-                    })
+                    });
             }
 
             /**
              * Toggles chart legend and save state in storage
              */
             function toggleLegend() {
-                /*$scope.item.isLegend = !$scope.item.isLegend;
-                var widgetsSettings = Storage.getWidgetsSettings();
-                if (!widgetsSettings[_this.desc.key]) widgetsSettings[_this.desc.key] = {};
-                widgetsSettings[_this.desc.key].isLegend = $scope.item.isLegend;
-                Storage.setWidgetsSettings(widgetsSettings);*/
                 toggleButton("isLegend");
                 if (_this.chart) {
-                    if ($scope.item.isLegend) _this.chart.legendShow(); else _this.chart.legendHide();
+                    try {
+                        if ($scope.item.isLegend) _this.chart.legendShow(); else _this.chart.legendHide();
+                    } catch(ex) {}
                 }
                 $scope.chartConfig.legend = {enabled: $scope.item.isLegend};
             }
@@ -407,7 +354,7 @@
              */
             function retrieveData(result) {
                 if (!_this) return;
-
+                var i;
                 // Store current widget data
                 _this.widgetData = {};
                 angular.copy(result, _this.widgetData);
@@ -436,10 +383,10 @@
                     if (_this.desc.type.toLowerCase() === "combochart") {
                         $scope.chartConfig.yAxis = [{},{ opposite: true}];
                         $scope.chartConfig.options.yAxis = [{},{}];
-                        for (var i = 0; i < $scope.chartConfig.series.length; i++) {
+                        for (i = 0; i < $scope.chartConfig.series.length; i++) {
                             switch (i % 3) {
-                                case 0: $scope.chartConfig.series[i].type="line";$scope.chartConfig.series[i].zIndex = 2; $scope.chartConfig.series[i].color ="#000000"; break;
-                                case 1: $scope.chartConfig.series[i].type="bar"; $scope.chartConfig.series[i].yAxis = 1;$scope.chartConfig.series[i].color = 'rgb(124, 181, 236)';$scope.chartConfig.series[i].zIndex = 0; break;
+                                case 0: $scope.chartConfig.series[i].type="line";$scope.chartConfig.series[i].zIndex = 2; $scope.chartConfig.series[i].color = Highcharts.getOptions().colors[1]; break;
+                                case 1: $scope.chartConfig.series[i].type="bar"; $scope.chartConfig.series[i].yAxis = 1;$scope.chartConfig.series[i].color =Highcharts.getOptions().colors[2];$scope.chartConfig.series[i].zIndex = 0; break;
                                 case 2: $scope.chartConfig.series[i].type="area"; break;
                             }
                             $scope.chartConfig.yAxis[i].title = {
@@ -457,7 +404,7 @@
                         // Load series toggle from settings
                         var widgetsSettings = Storage.getWidgetsSettings(_this.desc.dashboard, Connector.getNamespace());
                         if (widgetsSettings[_this.desc.name] && widgetsSettings[_this.desc.name].series) {
-                            for (var i = 0; i < $scope.chartConfig.series.length; i++) {
+                            for (i = 0; i < $scope.chartConfig.series.length; i++) {
                                 if (widgetsSettings[_this.desc.name].series[i] === false) {
                                     $scope.chartConfig.series[i].visible = false;
                                 }
@@ -653,16 +600,21 @@
                 var data = d;
                 var i;
 
+                // Add non exists axis as count
+                if (!data.Cols[1]) {
+                    data.Cols[1] = {tuples: []};
+                }
+                if (data.Cols[1].tuples.length === 0) {
+                    //TODO: lang
+                    data.Cols[1].tuples.push({caption: Lang.get("count")});
+                }
+
                 limitData(d);
 
                 if (d && d.Info) _this.dataInfo = d.Info;
                 $scope.chartConfig.yAxis.min = getMinValue(data.Data);
                 $scope.chartConfig.series = [];
                 $scope.chartConfig.xAxis.categories = [];
-                if (data.Cols[1].tuples.length === 0) {
-                    //TODO: lang
-                    data.Cols[1].tuples.push({caption: Lang.get("count")});
-                }
                 for (i = 0; i < data.Cols[1].tuples.length; i++) {
                     $scope.chartConfig.xAxis.categories.push(data.Cols[1].tuples[i].caption.toString());
                 }
@@ -672,11 +624,12 @@
                 if (hasChildren) {
                     var k = 0;
                     for(var t = 0; t < data.Cols[0].tuples.length; t++) {
-                        for (var c = 0; c < data.Cols[0].tuples[t].children.length; c++) {
+                        var len = data.Cols[0].tuples[t].children ? data.Cols[0].tuples[t].children.length : 1;
+                        for (var c = 0; c < len; c++) {
                             tempData = [];
                             for (var g = 0; g < data.Cols[1].tuples.length; g++) {
                                 tempData.push({
-                                    y: +data.Data[data.Cols[0].tuples.length * data.Cols[0].tuples[t].children.length * g + t * data.Cols[0].tuples[t].children.length + c],
+                                    y: +data.Data[data.Cols[0].tuples.length * len * g + t * len + c],
                                     cube: data.Info.cubeName,
                                     drilldown: true,
                                     path: data.Cols[1].tuples[g].path,
@@ -685,11 +638,19 @@
                                 k++;
                             }
                             fixData(tempData);
-                            _this.addSeries({
-                                data: tempData,
-                                name: data.Cols[0].tuples[t].caption + "/" + data.Cols[0].tuples[t].children[c].caption,
-                                format: data.Cols[0].tuples[t].children[c].format || getFormat(data)
-                            });
+                            if (data.Cols[0].tuples[t].children) {
+                                _this.addSeries({
+                                    data: tempData,
+                                    name: data.Cols[0].tuples[t].caption + "/" + data.Cols[0].tuples[t].children[c].caption,
+                                    format: data.Cols[0].tuples[t].children[c].format || getFormat(data)
+                                });
+                            } else {
+                                _this.addSeries({
+                                    data: tempData,
+                                    name: data.Cols[0].tuples[t].caption,
+                                    format: data.Cols[0].tuples[t].format || getFormat(data)
+                                });
+                            }
                         }
                     }
                     /*for(var t = 0; t < data.Cols[0].tuples.length; t++) {
@@ -740,15 +701,11 @@
                         });
                     }
                 }
-                //_this.chart._backupSeries = [];
-                //angular.copy($scope.chartConfig.series, _this.chart._backupSeries);
-
-                //if (ignoreRowLimit !== true) limitSeriesAndData();
             }
 
             function getFormat(data) {
                 if (!data.Info) return "";
-                return
+                return;
             }
 
             /**

@@ -22,7 +22,7 @@
             widgetList: [],
             editing: false,
             colors: CONST.bgColorClasses,
-            fontColors: settings.isMetro ? CONST.fontColorsMetro : CONST.fontColors,
+            fontColors: CONST.fontColors,
             icons: icons,
             edItem: null,
             optW: 0,
@@ -33,6 +33,7 @@
             minRows: 4,
             margins: [10,10],
             draggable: {
+                handle: '.metro-tile-icon',
                 enabled: false
             },
             resizable: {
@@ -126,7 +127,7 @@
 
         /**
          * Set tile font color
-         * @param {number} c Color index. Colors stored in CONST.fontColorsMetro or CONST.fontColors, depending on current ui style
+         * @param {number} c Color index. Colors stored in CONST.fontColors, depending on current ui style
          */
         function setFontColor(c) {
             if (!$scope.model.edItem) return;
@@ -186,7 +187,7 @@
                 $scope.model.edItem = item;
                 $scope.model.widgetList = [];
                 if (!item.isFolder) {
-                    Connector.getWidgets(item.path).success(fillWidgetList);
+                    Connector.getWidgets(item.path).then(fillWidgetList);
                 }
                 return;
             }
@@ -211,7 +212,7 @@
         function fillWidgetList(data) {
             if (data) {
                 $scope.model.widgetList = data.widgets.map(function (w, n) {
-                    return {idx: n, name: w.title || w.name }
+                    return {idx: n, name: w.title || w.name };
                 });
             }
         }
@@ -257,6 +258,9 @@
                 if (!settings.showImages) dashboards[i].Cover = "";
 
                 if (dashboards[i].Cover) {
+                    if (localStorage.connectorRedirect) {
+                        dashboards[i].Cover = localStorage.connectorRedirect.toLowerCase().replace('/mdx2json', '') + dashboards[i].Cover;
+                    }
                     //dashboards[i].Cover = "http://146.185.143.59/" + dashboards[i].Cover;
                     dashboards[i].icon = 0;
                 }
@@ -265,7 +269,7 @@
                     dashboards[i].Cover = "";
                     dashboards[i].icon = 0;
                     dashboards[i].requestedWidget = dashboards[i].widget;
-                    Connector.getWidgets(dashboards[i].path).success(createDataCallback(dashboards[i]));
+                    Connector.getWidgets(dashboards[i].path).then(createDataCallback(dashboards[i]));
                 }
             }
         }
@@ -296,7 +300,7 @@
             var conf = Storage.getTilesSettings(Connector.getNamespace());
             var fld = settings.hideFolders ? '/' : (_this.curFolder);
             if (fld === '' && !conf[fld]) fld = '/';
-            var conf  = conf[fld] || {};
+            conf  = conf[fld] || {};
             //if (!cc || angular.equals({}, cc)) cc = conf[settings.hideFolders ? '/' : (_this.curFolder)] || {};
             //conf = cc;
 
@@ -357,7 +361,7 @@
                     }
                     dashboards.push(item);
                 } else {
-                    if (dashboards.filter(filter).length === 0) {
+                    if (dashboards.filter(filter).length === 0 && parts[0] !== "") {
                         dashboards.push({title: parts[0], path: "", isFolder: true, Cover: "" });
                     }
                 }

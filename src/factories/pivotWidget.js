@@ -28,7 +28,14 @@
             }
 
             function doDrillUp() {
-                if (!_this._oldMdx) { return; }
+                if (!_this._oldMdx) {
+                    // Go back to chart if this is drillthrough from chart
+                    if ($scope.item.isDrillthrough && _this.restoreWidgetType) {
+                        $scope.item.isDrillthrough = null;
+                        _this.restoreWidgetType();
+                    }
+                    return;
+                }
                 _this.lpt.changeBasicMDX(_this._oldMdx);
                 $scope.item.backButton = false;
             }

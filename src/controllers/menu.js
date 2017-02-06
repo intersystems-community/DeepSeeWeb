@@ -16,19 +16,18 @@
             searchText: "",
             canAdd: !favExists($routeParams.path),
             username: localStorage.userName || "",
-            visible: false,
+            visible: Storage.configLoaded || false,
             favs: getFavs(),
             onDashboard: isOnDashboard(),
-            //hideFolders: CONST.hideFolders,
             namespace: $routeParams.ns || "Samples",
             title: $routeParams.folder,
-            //isMetro: localStorage.isMetro === "true" || false,
-            //showImages: CONST.showImages,
             devMode: localStorage.connectorRedirect,
             btnHome: Lang.get("home"),
             lblSearch: Lang.get("search"),
             lang: Lang.current,
             langs: Lang.getLanguages(),
+            filterButton: false,
+            filtersVisible: false,
             namespaces: []
         };
         $scope.search = search;
@@ -42,9 +41,11 @@
         $scope.changeNamespace = changeNamespace;
         $scope.setLang = setLang;
         $scope.about = about;
+        $scope.showGlobalFilter = showGlobalFilter;
         $rootScope.$on('toggleMenu', toggleMenu);
       //  $rootScope.$on('menu:toggleLoading', toggleLoading);
         $rootScope.$on('menu:changeTitle', changeTitle);
+        $rootScope.$on('menu:showFilterButton', showFilterButton);
         $scope.$on('$routeChangeSuccess', onRouteChange);
         $scope.$on('servSettings:loaded', onServerSettingsLoaded);
 
@@ -54,6 +55,19 @@
             $scope.model.lblSearch = Lang.get("search");
         });
 
+        // Remove header space holder if there is no menu
+        if (isEmbedded()) {
+            $('body').css('margin-top', '-50px');
+        }
+
+        function showFilterButton(e,visible) {
+            $scope.model.filterButton = visible;
+            $scope.model.filtersVisible = false;
+        }
+        function showGlobalFilter() {
+            $scope.model.filtersVisible = !$scope.model.filtersVisible;
+            $rootScope.$broadcast('globalShowFilters', $scope.model.filtersVisible);
+        }
         function setLang(lang) {
             var settings = Storage.getAppSettings();
             var old = Utils.merge({}, settings);
@@ -71,7 +85,6 @@
         function changeNamespace(name) {
             $routeParams.ns = name;
             $location.path("/").url("?ns="+name);
-            //console.log(name);
         }
 
         function onServerSettingsLoaded() {
@@ -92,7 +105,7 @@
          * Open settings modal window
          */
         function showSettings() {
-            ngDialog.open({template: 'src/views/settings.html', data: {}, controller: "settings", showClose: true, className: "ngdialog-theme-default wnd-settings" });
+            ngDialog.open({template: 'src/views/settings.html', data: {}, controller: "settings", disableAnimation: dsw.mobile, showClose: true, className: "ngdialog-theme-default wnd-settings" });
         }
 
         /**
@@ -120,7 +133,7 @@
          * Show about modal dialog
          */
         function about() {
-            ngDialog.open({template: 'src/views/about.html', data: {}, showClose: true, className: "ngdialog-theme-default" });
+            ngDialog.open({template: 'src/views/about.html', data: {}, showClose: true, className: "ngdialog-theme-default wnd-about" });
         }
 
         /**
@@ -259,10 +272,14 @@
          * Route change callback. Used to update title, check namespace, etc.
          */
         function onRouteChange() {
+            var appName = "InterSystems DeepSee™";
+            if (dsw.mobile) {
+                appName = "DeepSight";
+            }
             $scope.model.onDashboard = isOnDashboard();
             $scope.model.searchText = "";
             $scope.model.canAdd = !favExists($routeParams.path);
-            $scope.model.title = $routeParams.path || "InterSystems DeepSee™";
+            $scope.model.title = $routeParams.path || appName;
             $scope.model.title = $scope.model.title.replace(".dashboard", "");
             //var parts = $scope.model.title.split("/");
             //if (parts.length != "")

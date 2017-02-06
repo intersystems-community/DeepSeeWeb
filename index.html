@@ -2,7 +2,16 @@
 <html ng-app="app">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <link rel="icon" type="image/png" href="img/fav.png" />
+
+    <!-- Sets initial viewport load and disables zooming  -->
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui, width=device-width">
+
+    <!-- Makes your prototype chrome-less once bookmarked to your phone's home screen -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+
+    <link rel="icon" type="image/png" href="img/fav.png?v=2.0.0-b3" />
 
     <link rel="stylesheet" type="text/css" href="css/ol.min.css">
     <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
@@ -16,10 +25,10 @@
     <link rel="stylesheet" type="text/css" href="css/lightPivotTable.min.css">
     <link rel="stylesheet" type="text/css" href="css/main.css">
     <link rel="stylesheet" type="text/css" href="css/new.min.css">
+    <link rel="stylesheet" type="text/css" href="css/default.css">
+    <!--<link rel="stylesheet" type="text/css" href="css/contrast.css">-->
     <link rel="stylesheet" type="text/css" href="" id="pagestyle">
-<!--    <link rel="stylesheet" type="text/css" href="css/metro.min.css" id="metro-style-css" disabled>
-    <link rel="stylesheet" type="text/css" href="css/classic.min.css" id="classic-style-css" disabled>
-    -->
+    <!--<link rel="stylesheet" type="text/css" href="css/mobile.css">-->
 
     <script src="src/lib/ol.js"></script>
     <script src="src/lib/pdfmake.min.js"></script>
@@ -45,10 +54,12 @@
     <script src="src/lib/highcharts-ng.min.js"></script>
     <script src="src/lib/lightPivotTable.js"></script>
     <script src="src/lib/ocLazyLoad.min.js"></script>
+    <script src="src/lib/fastclick.js"></script>
     <!-- build:js src/app.js -->
     <script src="src/app.js"></script>
     <script src="src/services/utils.js"></script>
     <script src="src/directives/widget.js"></script>
+    <script src="src/directives/mobileSlider.js"></script>
     <script src="src/directives/widgetContent.js"></script>
     <script src="src/directives/jsonEditor.js"></script>
     <script src="src/services/storage.js"></script>
@@ -95,7 +106,26 @@
 </head>
 
 <body>
-<div ng-include="'src/views/menu.html'"></div>
-<div ng-view=""></div>
+<div ng-include="'src/views/menu.html'" class="main-menu"></div>
+<div ng-view="" class="main-content"></div>
+<!-- this needed to retrieve color from class like: $('.fc1').css('color')-->
+<div style="display: none">
+    <span class="fc1"></span>
+    <span class="fc2"></span>
+    <span class="fc3"></span>
+    <span class="fc4"></span>
+    <span class="fc5"></span>
+
+    <span class="hc1"></span>
+    <span class="hc2"></span>
+    <span class="hc3"></span>
+    <span class="hc4"></span>
+    <span class="hc5"></span>
+    <span class="hc6"></span>
+    <span class="hc7"></span>
+    <span class="hc8"></span>
+    <span class="hc9"></span>
+    <span class="hc10"></span>
+</div>
 </body>
 </html>

@@ -203,28 +203,29 @@
              * @returns {number} Date as number
              */
             function convertDateFromCache(s) {
+                var y, d;
                 if (s === "" && s === undefined || s === null) return null;
                 var str = s.toString();
 
                 // Week format - 2016W01, 2016W02,  etc.
                 if ((s.length === 7) && (s.charAt(4) === "W")) {
                     var w = parseInt(s.substring(5, 7));
-                    var d = (1 + (w - 1) * 7);
-                    var y = parseInt(s.substring(0, 4));
+                    d = (1 + (w - 1) * 7);
+                    y = parseInt(s.substring(0, 4));
                     return Date.parse(new Date(y, 0, d));
                 }
                 if (str.length == 4) return getDate(s);
                 if (str.indexOf("-") != -1) return getDate(s);
                 if (str.indexOf(" ") != -1) return getDate(s);
                 if (str.length == 6) {
-                    var y = str.substr(0, 4);
+                    y = str.substr(0, 4);
                     var m = str.substr(4, 2);
                     return Date.parse(new Date(parseInt(y), parseInt(m)-1, 1));
                 }
                 if (str.length == 5 && !isNaN(parseInt(str))) {
                     var base = new Date(1840, 11, 31);
                     var p = str.toString().split(",");
-                    var d = parseInt(p[0]);
+                    d = parseInt(p[0]);
                     var t = null;
                     if (p.length > 1) t = parseInt(p[1]);
                     base = addDays(base, parseInt(d));

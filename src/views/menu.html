@@ -1,14 +1,23 @@
 <div ng-controller="menu">
     <nav class="navbar navbar-default" ng-show="model.visible" ng-cloak>
-        <div class="ver">{{model.ver}}</div>
+        <div class="ver" mobile-hidden>{{model.ver}}</div>
 
         <div class="navbar-collapse">
-            <span class="navbar-brand">
+            <span class="navbar-brand" mobile-hidden>
                 {{model.title}}
+            </span>
+            <span class="mobile-navbar-brand" ng-show="!model.onDashboard" desktop-hidden>
+                {{model.title}}
+                <span style="position: absolute; right: 0; display: none">
+                    <button><i class="fa fa-search"></i>
+                        <input type="text" class="mobile-dashboard-search form-control" placeholder="{{model.lblSearch}}" ng-model="model.searchText" ng-change="search(model.searchText)">
+                    </button>
+
+                </span>
             </span>
             <form class="navbar-btn navbar-left">
                 <div class="btn-group">
-                    <button class="btn btn-default" ng-click="onHomeClick()">{{model.btnHome}}</button>
+                    <button class="btn btn-default" ng-click="onHomeClick()"><i class="fa fa-home"></i></button>
                 </div>
 
                 <div class="btn-group" ng-show="model.favs.length != 0 || model.onDashboard">
@@ -16,8 +25,8 @@
                         <i class="fa" ng-class="model.canAdd ? 'fa-star-o':'fa-star'"></i>
                     </button>
                     <ul class="dropdown-menu" role="menu" style="cursor: pointer">
-                        <li><a hreaf="" ng-click="addToFavorites()" ng-show="model.canAdd && model.onDashboard">{{'addToFavorites' | lang}}</a></li>
-                        <li><a hreaf="" ng-click="removeFromFav()" ng-show="!model.canAdd && model.onDashboard">{{'removeFromFav' | lang}}</a></li>
+                        <li ng-show="model.canAdd && model.onDashboard"><a hreaf="" ng-click="addToFavorites()"><span>{{'addToFavorites' | lang}}</span></a></li>
+                        <li ng-show="!model.canAdd && model.onDashboard"><a hreaf="" ng-click="removeFromFav()"><span>{{'removeFromFav' | lang}}</span></a></li>
                         <li class="divider" ng-show="model.favs.length != 0 && model.onDashboard"></li>
                         <li ng-repeat="fav in model.favs"><a hreaf="" ng-click="navigateFav(fav)">{{fav.label}}</a></li>
                     </ul>
@@ -27,25 +36,36 @@
                         <i class="fa fa-gear"></i>
                     </button>
                 </div>
-                <div class="btn-group">
-                    <button class="btn btn-default" ng-click="gotoDeepSee()" ng-show="model.onDashboard" title="{{'gotoDeepSee'|lang}}"><i class="fa fa-mail-forward"></i></button>
+                <div class="btn-group" ng-show="!model.onDashboard" desktop-hidden>
+                    <button type="button" title="{{'signout' | lang}}" class="btn btn-default" ng-click="onSingoutClick()"><span mobile-hidden>{{model.username}}&nbsp;</span><i class="fa fa-sign-out"></i></button>
                 </div>
 
-                <div class="btn-group">
-                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false" title="EN">
-                        {{model.lang}}
+                <div class="btn-group" ng-show="model.onDashboard" mobile-hidden>
+                    <button class="btn btn-default" ng-click="gotoDeepSee()" title="{{'gotoDeepSee'|lang}}"><i class="fa fa-mail-forward"></i></button>
+                </div>
+
+                <div class="btn-group" ng-show="model.onDashboard" desktop-hidden mobile-hidden>
+                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                        <i class="fa fa-list"></i>
                     </button>
                     <ul class="dropdown-menu" role="menu" style="cursor: pointer">
-                        <li><a hreaf="" ng-click="setLang(lang)" ng-repeat="lang in model.langs">{{lang}}</a></li>
+                        <li><a hreaf="" >dfsfds</a></li>
+                        <li><a hreaf="" >dfsfds</a></li>
+                        <li><a hreaf="" >dfsfds</a></li>
+                        <li><a hreaf="" >dfsfds</a></li>
                     </ul>
                 </div>
 
-                <div class="btn-group">
+                <div class="btn-group" ng-show="model.onDashboard && model.filterButton" desktop-hidden>
+                    <button class="btn btn-default" ng-class="model.filtersVisible ? ' active': ''" ng-click="showGlobalFilter()"><i class="fa fa-filter"></i></button>
+                </div>
+
+                <div class="btn-group" mobile-hidden>
                     <button class="btn btn-default" ng-click="about()" title="{{'about'|lang}}"><i class="fa fa-question"></i></button>
                 </div>
             </form>
 
-            <form class="navbar-form navbar-left" role="search" ng-show="!model.onDashboard">
+            <form class="navbar-form navbar-left" role="search" ng-show="!model.onDashboard" mobile-hidden>
                 <div class="input-group">
                     <input type="text" class="form-control" placeholder="{{model.lblSearch}}" ng-model="model.searchText" ng-change="search(model.searchText)">
                     <span class="input-group-btn">
@@ -54,8 +74,16 @@
                 </div>
             </form>
 
-            <form class="navbar-form navbar-right">
-                <span ng-show="model.devMode" style="vertical-align: -webkit-baseline-middle; background-color: pink"><i class="fa fa-link"></i>&nbsp;Dev mode: {{model.devMode}}&nbsp;</span>
+            <form class="navbar-form navbar-right" mobile-hidden>
+                <span class="info-dev" ng-show="model.devMode"><i class="fa fa-link"></i>&nbsp;Dev mode: {{model.devMode}}&nbsp;</span>
+                <div class="btn-group" mobile-hidden>
+                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false" title="EN">
+                        <i class="fa fa-comment"></i>&nbsp;{{model.lang}}
+                    </button>
+                    <ul class="dropdown-menu" role="menu" style="cursor: pointer">
+                        <li><a hreaf="" ng-click="setLang(lang)" ng-repeat="lang in model.langs">{{lang}}</a></li>
+                    </ul>
+                </div>
                 <ul class="nav navbar-nav">
                     <li class="dropdown">
                         <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="fa fa-database"></i> {{model.namespace}}<span class="caret"></span></a>
@@ -65,7 +93,7 @@
                     </li>
                 </ul>
                 <div class="btn-group">
-                    <button type="button" title="{{'signout' | lang}}" class="btn btn-default" ng-click="onSingoutClick()">{{model.username}} <i class="fa fa-sign-out"></i></button>
+                    <div title="{{'signout' | lang}}" class="btn-sign-out btn btn-default" ng-click="onSingoutClick()">{{model.username}} <i class="fa fa-sign-out"></i></div>
                 </div>
             </form>
         </div>

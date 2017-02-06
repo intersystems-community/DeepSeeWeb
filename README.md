@@ -75,37 +75,9 @@ set ^%SYS("CSP","DefaultFileCharset")="utf-8"
 # Creating custom widgets
 DeepSeeWeb allows modification of exist widgets and custom widget registration as well.
 For base widget class methods and properties description please read [Addons](Addons.md).
+To setup custom widget simply copy widget js file to `/addons` folder.
 
-To setup custom widget user should define simple json with widget description like this:
-```
-{
-	"widgets": [
-		{
-			"url": "src/factories/customWidget.js",
-			"class": "CustomWidget",
-			"name": "areachart",
-			"type": "custom",
-			"directive": "custom-directive"
-		}
-}
-```
-This json should be placed in "Addons" tab of DeepSeeWeb configuration window(can be opened from top menu by pressing on gear icon).
-Json contains simple array of objects, where each object describes separate widget.
-Description object consists of:
+For custom widget example, please look at [src/factories/customWidget.js](src/factories/customWidget.js). This is simple custom widget that represents html5 canvas for drawing. 
 
-* **url** - Relative or absolute path to javascript file with widget code(be careful with cross domain access, store widget code on same domain)
-
-* **class** - Angular factory class name. This name is written in javascript file when calling `angular.module('widgets').factory('CustomWidget', ...`
-
-* **name** - DeepSee widget class name in lowercase(e.g. "barchart", "areachart", "piechart", "pivot"). This widget will be replaced with custom. If you want leave exists DSW widgets, you can register custom portlet in DeepSee as described here: [Custom DSW Addons](https://github.com/intersystems-ru/dswaddons) and specify registered class name in this parameter.
-
-* **type** - Widget type, can be: "chart", "pivot", "text", "map". Defines type of exists widget. You can use "chart" for Highcarts, "map" for Open Street Map, "pivot" for simple pivot table and "text" for text widget.
-Using exists widget you'll get access to all widget properties and ability to configure it. E.g. for Highcharts you can use `$scope.chartConfig` to setup chart, change type, etc.
-For all available options please go to highcharts official documentation page: http://api.highcharts.com/highcharts
-   
-   Also type can have "custom" value. This allow to write custom widget that not exists in DeepSeeWeb. When using this type, field "directive" must be defined.
-   
-* **directive** - Angular directive that used by custom widget. Make sense only when type is set to "custom".
-
-For custom widget example, please look at [src/factories/customWidget.js](src/factories/customWidget.js). This is simple custom widget that represents html5 canvas for drawing.
-If you use widget json from example above(just correct js path), you'll get custom canvas widget that replaces exists areachart widget. 
+# Creating custom themes
+User can create or use custom themes, more about it here: [Custom themes](doc/themes.md).

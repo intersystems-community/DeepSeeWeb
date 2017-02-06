@@ -32,6 +32,8 @@
             };
         }
 
+        $scope.isMobile = dsw.mobile;
+
         $scope.getDesc = getDesc;
         $scope.onCtxMenuShow = onCtxMenuShow;
         $scope.refreshItem = refreshItem;
@@ -42,7 +44,9 @@
         $scope.$on("resetWidgets", function() { window.location.reload(); });
 
 
-
+        function mobileScroll(e) {
+            console.log(e);
+        }
         /**
          * Sets widget type. Widget to change: this.ctxItem
          * @param {string} t Widget type
@@ -103,17 +107,26 @@
                 Error.show(Lang.get('errNoWidgets'));
                 return;
             }
+
+            if (result.displayInfo && result.displayInfo.gridRows) {
+                $scope.gridsterOpts.rowHeight = Math.floor((window.innerHeight - 60)/(result.displayInfo.gridRows));
+            }
+
             Variables.init(result);
 
             if (result.filters) Filters.init(result.filters, $routeParams.path);
             // TODO: Check if there is actions on toolbar
+            var isExists = false;
             if ((Filters.isFiltersOnToolbarExists || Variables.isExists()) && !_this.sharedWidget) {
                 // Check if there empty widget exists, if no - we should create it
-                var isExists = false;
                 for (i = 0; i < result.widgets.length; i++) if (result.widgets[i].type.toLowerCase() === CONST.emptyWidgetClass) isExists = true;
                 if (!isExists) {
                     result.widgets.push({dashboard: $routeParams.path, autocreated: true, name: "emptyWidget", type: CONST.emptyWidgetClass, key: "emptyWidgetFor" + $routeParams.path});
+                    isExists = true;
                 }
+            }
+            if (dsw.mobile) {
+                $rootScope.$broadcast('menu:showFilterButton', isExists);
             }
             if (result.info) $rootScope.$broadcast("menu:changeTitle", result.info.title);
             $scope.model.items = [];
@@ -139,13 +152,13 @@
                     if (result.displayInfo) {
                         tc = Math.floor(12 / result.displayInfo.gridCols);
                         if (tc < 1) tc = 1;
-                        tr = Math.floor(8 / result.displayInfo.gridRows);
+                        //tr = Math.floor(8 / result.displayInfo.gridRows);
                         if (tr < 1) tr = 1;
                     }
                     item.col = result.widgets[i].displayInfo.topCol * tc;
                     item.row = result.widgets[i].displayInfo.leftRow * tr;
                     item.sizeX = result.widgets[i].displayInfo.colWidth * tc;
-                    item.sizeY = result.widgets[i].displayInfo.rowHeight * tr;
+                    item.sizeY = result.widgets[i].displayInfo.rowHeight;
                 }
                 if (result.widgets[i].autocreated) {
                     delete item.row;
@@ -226,7 +239,7 @@
             return _this.desc[idx];
         }
 
-        Connector.getWidgets($routeParams.path).success(retrieveData);
+        Connector.getWidgets($routeParams.path).then(retrieveData);
     }
 
     angular.module('dashboard')

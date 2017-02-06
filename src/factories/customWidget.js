@@ -38,7 +38,7 @@
                         canvas.width = canvas.offsetWidth;
                         canvas.height = canvas.offsetHeight;
                         scope.drawWidget();
-                    }
+                    };
                 }
             };
         }]);

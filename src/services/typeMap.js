@@ -169,11 +169,12 @@
 
         var _this = this;
         var addons = dsw.addons;
-
+        var a;
         if (addons) {
             if (addons && addons.length) {
                 for (var i = 0; i < addons.length; i++) {
-                    this.register(addons[i].toLowerCase(),  $injector.get(addons[i]).type || 'custom', $injector.get(addons[i]), $injector.get(addons[i]));
+                    a = addons[i].split('/').pop();
+                    this.register(a.toLowerCase(),  $injector.get(a).type || 'custom', $injector.get(a), $injector.get(a));
                 }
 
             }
@@ -182,7 +183,8 @@
             $rootScope.$on('addons:loaded', function(addons) {
                 if (addons && addons.length) {
                     for (var i = 0; i < addons.length; i++) {
-                        _this.register(addons[i].toLowerCase(), $injector.get(addons[i]).type || 'custom', $injector.get(addons[i]), $injector.get(addons[i]));
+                        a = addons[i].split('/').pop();
+                        _this.register(a.toLowerCase(), $injector.get(a).type || 'custom', $injector.get(a), $injector.get(a));
                     }
 
                 }

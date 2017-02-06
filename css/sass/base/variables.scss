@@ -1,0 +1,24 @@
+$inverted: 0;
+$contrast: 1;
+
+$themeColor: #FAFAFA;
+$backColor: white;
+$fontColor: black;
+$headerHeight: 50px;
+$hoverSpeed: 0.2s;
+$iconSize: 24px;
+$controBorder: #ccc;
+$labelColor: $fontColor;
+$zIndexHeader: 100;
+$iconColor: #555555;
+
+// Home tile settings
+$tileBorder: #e0e0e0;
+
+// Widget tile settings
+$widgetHeader: $themeColor;
+$widgetHeaderFont: $fontColor;
+$widgetBorder: #ddd;
+
+$hoverColor: rgba(0, 0, 0, 0.15);
+$hoverColorInv: rgba(255, 255, 255, 0.15);

@@ -4,6 +4,7 @@ var gulp   = require('gulp'),
     jshint = require('gulp-jshint'),
     concat = require('gulp-concat'),
     cssmin = require('gulp-cssmin'),
+    sass = require('gulp-sass'),
     templateCache = require('gulp-angular-templatecache'),
     del = require('del'),
     zip = require('gulp-zip'),
@@ -13,7 +14,37 @@ var gulp   = require('gulp'),
     through = require('through2')
 
     // TODO: add html-min
+
     //jsdoc = require("gulp-jsdoc");
+
+gulp.task('sass-themes', function () {
+    return gulp.src(['./css/sass/themes/*.scss'])
+        .pipe(sass({
+            sourceComments: 'map',
+            sourceMap: 'sass',
+            outputStyle: 'nested'
+        }).on('error', sass.logError))
+        .pipe(gulp.dest('./css/themes/'));
+});
+
+// Build sass
+gulp.task('sass-dev', ['sass-themes'], function () {
+    return gulp.src(['./css/sass/*.scss'])
+        .pipe(sass({
+            sourceComments: 'map',
+            sourceMap: 'sass',
+            outputStyle: 'nested'
+        }).on('error', sass.logError))
+        .pipe(gulp.dest('./css/'));
+});
+
+// Sass watcher
+gulp.task('sass:watch', ['sass-dev'], function () {
+    var sassSrc = ['./css/sass/*.scss', './css/sass/themes/*.scss', './css/sass/base/*.scss'];
+    if (!(sassSrc instanceof Array)) { sassSrc += '*.scss'; }
+    gulp.watch(sassSrc, ['sass-dev']);
+});
+
 
 // Runing jshint an all source
 gulp.task('lint', function() {
@@ -43,25 +74,34 @@ gulp.task('concat-templates', ['templates', 'minify'], function() {
 });
 
 // Minify css files
-gulp.task('cssminify', function () {
-    gulp.src(['css/**/*.css', '!css/**/*.min.css'])
+gulp.task('cssminify', ['sass-dev'], function () {
+    gulp.src(['css/main.css', 'css/new.min.css', 'css/default.css'])
         .pipe(cssmin())
         .pipe(concat('main.css'))
         .pipe(gulp.dest('build/css'));
 });
 
 // Copy other files to dist (like fonts, libs, images)
-gulp.task('copyfiles', function () {
+gulp.task('copyfiles', ['sass-dev'], function () {
     gulp.src(['src/lib/*.js'])
         .pipe(gulp.dest('build/src/lib'));
     gulp.src(['css/*.min.css'])
         .pipe(gulp.dest('build/css'));
+    gulp.src(['css/mobile.css'])
+        .pipe(gulp.dest('build/css'));
+    gulp.src(['css/themes/*.css'])
+        .pipe(gulp.dest('build/css/themes'));
     gulp.src(['fonts/*'])
         .pipe(gulp.dest('build/fonts'));
     gulp.src(['img/*'])
         .pipe(gulp.dest('build/img'));
     gulp.src(['updater.csp'])
         .pipe(gulp.dest('build'));
+});
+
+gulp.task('copyfiles-mobile', ['copyfiles'], function () {
+    gulp.src(['mobile/**/*'])
+        .pipe(gulp.dest('build/'));
 });
 
 // Create single tamplates file from *.html views
@@ -76,7 +116,9 @@ gulp.task('templates', function() {
 // Remove temporary files
 gulp.task('cleanup', ['concat-templates'], function() {
     del(["build/src/templates.js"]);
+    //del(["build/css/**/*"]);
     del(["build/*.zip"]);
+    del(["build/res/**/*"]);
 });
 
 // Creates zip with builded project
@@ -163,7 +205,7 @@ gulp.task('jsdoc', function() {
     return gulp.src(['src/ * * /*.js', '!src/lib/*'])
         .pipe(jsdoc('./documentation'));
 });*/
-
+gulp.task('build-mobile', ['lint', 'minify', 'cssminify', 'concat-templates', 'copyfiles-mobile', 'cleanup'], function () {});
 
 gulp.task('default', ['lint', 'minify', 'cssminify', 'concat-templates', 'copyfiles', 'cleanup'], function () {});
 

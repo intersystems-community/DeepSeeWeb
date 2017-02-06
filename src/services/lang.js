@@ -71,6 +71,10 @@
      */
         .constant('LANGSTR', {
             en: {
+                theme: "Theme",
+                showLog: "Show log",
+                server: "Server",
+                saveFilters: "Save filters",
                 exportSettings: 'Export settings',
                 importSettings: 'Import settings',
                 export: 'Export',
@@ -101,7 +105,7 @@
                 search: "Search",
                 accept: "Accept",
                 close: "Close",
-                dismiss: "Dismiss",
+                dismiss: "Clear",
                 home: "Home",
                 zoom: "Zoom",
                 resetWidgets: "Reset widgets",
@@ -158,6 +162,10 @@
                 shortMonths: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
             },
             ru: {
+                theme: "Тема",
+                showLog: "Показать ошибки",
+                server: "Сервер",
+                saveFilters: "Сохранять фильтры",
                 exportSettings: 'Экспорт настроек',
                 importSettings: 'Импорт настроек',
                 export: 'Экспорт',

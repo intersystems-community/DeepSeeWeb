@@ -15,6 +15,8 @@
             this.iconStyle = null;
             this.popup = null;
             this.isRGBColor = false;
+            // Selected deature for mobile version to make drill after second tap
+            this._selectedFeature = null;
             _this.featureOverlay = null;
             $scope.model.tooltip = {
                 visible: false,
@@ -69,15 +71,26 @@
                 var folder = Storage.serverSettings.DefaultApp || "/csp";
                 var url = folder + "/" + fileName;
 
-//                if (localStorage.connectorRedirect) url="huPolygons.js";
-                //if (localStorage.connectorRedirect) url="rfpolygons.js";
-                //if (localStorage.connectorRedirect) url="uspolygons.js";
-                if (localStorage.connectorRedirect) url="map.js";
-                //if (localStorage.connectorRedirect) url="polys/mapOrig.js";
+                // For dev on locahost take connector redirect url
+                if (window.location.host.split(':')[0].toLowerCase()) {
+                    url = localStorage.connectorRedirect.split('/').slice(0, -2).join('/') + url;
+                } else {
 
-                //if (localStorage.connectorRedirect) url="mospolygons.js";
-                //if (localStorage.connectorRedirect) url = localStorage.connectorRedirect.replace("MDX2JSON/", "").split("/").slice(0, -1).join("/") + "/csp/" + Connector.getNamespace() + "/" + fileName;
-                Connector.getFile(url).success(onPolyFileLoaded);
+                    if (dsw.mobile) {
+                        url = localStorage.connectorRedirect.split('/').slice(0, -2).join('/') + url;
+                    } else {
+//                if (localStorage.connectorRedirect) url="huPolygons.js";
+                        //if (localStorage.connectorRedirect) url="rfpolygons.js";
+                        //if (localStorage.connectorRedirect) url="uspolygons.js";
+                        if (localStorage.connectorRedirect) url = "map.js";
+
+                        //if (localStorage.connectorRedirect) url="polys/mapOrig.js";
+
+                        //if (localStorage.connectorRedirect) url="mospolygons.js";
+                        //if (localStorage.connectorRedirect) url = localStorage.connectorRedirect.replace("MDX2JSON/", "").split("/").slice(0, -1).join("/") + "/csp/" + Connector.getNamespace() + "/" + fileName;
+                    }
+                }
+                Connector.getFile(url).then(onPolyFileLoaded);
             }
 
             function onPolyFileLoaded(result) {
@@ -93,7 +106,7 @@
                 var item = _this.mapData.Cols[1].tuples.filter(function(el) { return el.caption === name; });
                 if (item.length === 0) return;
                 item = item[0];
-
+                var parts;
 
 
                 var idx = _this.mapData.Cols[1].tuples.indexOf(item);
@@ -116,7 +129,7 @@
                         col = col.replace("rgb", "rgba");
                         col = col.substr(0, col.length - 1) + ", 0)";
                     }
-                    var parts = col.split(",");
+                    parts = col.split(",");
                     parts[3] = "0.4)";
                     return parts.join(",");
                 } else {
@@ -129,7 +142,7 @@
                     var fidx = f.indexOf("(");
                     var firstPart = f.substring(0, fidx).toLowerCase();
                     f = f.substring(fidx + 1, f.length - 1);
-                    var parts = f.split(",");
+                    parts = f.split(",");
                     var x = value || 0;
                     var tmp;
                     for (var i = 0; i < parts.length; i++) {
@@ -153,9 +166,9 @@
                 var lon;
                 var zoom;
                 if (_this.desc.properties) {
-                    var lat = parseFloat(_this.desc.properties.latitude);
-                    var lon = parseFloat(_this.desc.properties.longitude);
-                    var zoom = parseFloat(_this.desc.properties.zoom);
+                    lat = parseFloat(_this.desc.properties.latitude);
+                    lon = parseFloat(_this.desc.properties.longitude);
+                    zoom = parseFloat(_this.desc.properties.zoom);
                 }
 
                 if (_this.drills.length === 0 && (!isNaN(lat) && !isNaN(lon) && !isNaN(zoom)) && (lat !== undefined && lon !== undefined && zoom !== undefined)) {
@@ -178,7 +191,7 @@
             }
 
             function buildPolygons() {
-                var lon, lat, zoom, i, p, k, l;
+                var lon, lat, zoom, i, p, k, l, t, value, parts, idx, item;
                 _this.isRGBColor = false;
                 var colorProperty = "ColorHSLValue";
                 if (_this.desc.properties && _this.desc.properties.colorClientProperty) colorProperty = _this.desc.properties.colorClientProperty;
@@ -186,7 +199,7 @@
                 if (_this.desc.properties && _this.desc.properties.coordsProperty) coordsProperty = _this.desc.properties.coordsProperty;
                 if (!polys || !_this.map || !_this.mapData) return;
                 var features = [];
-                var l = _this.mapData.Cols[0].tuples.length;
+                l = _this.mapData.Cols[0].tuples.length;
                 var minV = Number.MAX_VALUE;
                 var maxV = Number.MIN_VALUE;
 
@@ -204,8 +217,8 @@
                     colorPropertyIdx = parseInt(_this.desc.properties.colorProperty) || 0;
                 }
 
-                for (var t = 0; t < _this.mapData.Cols[1].tuples.length; t++) {
-                    var value = _this.mapData.Data[t * l + colorPropertyIdx];
+                for (t = 0; t < _this.mapData.Cols[1].tuples.length; t++) {
+                    value = _this.mapData.Data[t * l + colorPropertyIdx];
                     if (value < minV) minV = value;
                     if (value > maxV) maxV = value;
                 }
@@ -223,11 +236,11 @@
                 if (item.length === 0) {
                     item = _this.mapData.Cols[0].tuples.filter(function(el) { return el.caption === "Key"; });
                 }
-                if (item.length != 0) {
+                if (item.length !== 0) {
                     idx = _this.mapData.Cols[0].tuples.indexOf(item[0]);
                 }
 
-                for (var t = 0; t < _this.mapData.Cols[1].tuples.length; t++) {
+                for (t = 0; t < _this.mapData.Cols[1].tuples.length; t++) {
                     //if (t !== 0) continue;
 
                     var key = _this.mapData.Cols[1].tuples[t].caption;
@@ -235,23 +248,15 @@
                     if (idx !== -1) pkey = _this.mapData.Data[t * l + idx];
                     if (!polys[pkey]) continue;
 
-                    var parts = polys[pkey].split(';');
+                    parts = polys[pkey].split(';');
                     var poly = [];
                     count++;
-                    //if (count > 2) continue;
 
 
                     for (k = 0; k < parts.length; k++) {
                         if (!parts[k]) continue;
                         var coords = parts[k].split(' ');
-                        /*
-                         if (coords.length > 500) {
-                         var h = 0;
-                         while (h < coords.length) {
-                         coords.splice(h, 3);
-                         h += 6;
-                         }
-                         }*/
+
                         var polyCoords = [];
                         for (i in coords) {
                             if (!coords[i]) continue;
@@ -259,19 +264,13 @@
                             if (c.length < 2) continue;
                             lon = parseFloat(c[0]);
                             lat = parseFloat(c[1]);
-                            //if (lon < 0) lon = 360 + lon;
 
                             if (isNaN(lon) || isNaN(lat)) {
                                 console.warn("Wrong poly coordinates: ", coords[i]);
                                 continue;
                             }
-                            //if (lon < 0) lon = 360 + lon;
-                            //if (lat < 0) lat = 360 + lat;
 
-                            //if (lat < 0) lat = 360 + lat;
-                            //var point = new ol.geom.Point([Math.abs(lon), lat]);
                             var point = new ol.geom.Point([lon, lat]);
-                            //point.transform('EPSG:4326', 'EPSG:900913');
                             point.transform('EPSG:4326', 'EPSG:3857');
 
                             var ll = lon;
@@ -281,33 +280,17 @@
                             if (parseFloat(ll) > max[0]) max[0] = parseFloat(ll);
                             if (parseFloat(lat) > max[1]) max[1] = parseFloat(lat);
 
-                            
-                            //point.v[0] = point.v[0] .toFixed(2);
-                            //point.v[1] = point.v[1] .toFixed(2);
-                            /*if (point.v[0] < -20037508.34 || point.v[0] > 20037508.34) {
-                                console.warn("Wrong poly coordinates: ", coords[i], "lon", point.v[0]);
-                                continue;
-                            }
-                            if (point.v[1] < -20037508.34 || point.v[1] > 20037508.34) {
-                                console.warn("Wrong poly coordinates: ", coords[i], "lat", point.v[1]);
-                                continue;
-                            }*/
                             polyCoords.push(point.getCoordinates());
                         }
                         poly.push(polyCoords);
 
                         if (poly.length >300) {
                             var tmp = [];
-                            for (var i = 0; i < poly.length; i+=2) {
+                            for (i = 0; i < poly.length; i+=2) {
                                 tmp.push(poly[i]);
                             }
                             poly = tmp;
                         }
-                    }
-                    //if (count === 23) console.log(JSON.stringify( poly));
-                    //for (var rr = 0; rr < poly.length; rr++) poly[rr] = poly[rr].reverse();
-                    if (poly.length !== 1) {
-                        //poly = poly.slice(0, 1);
                     }
 
                     // Find poly title
@@ -316,7 +299,7 @@
                         var it = _this.mapData.Cols[0].tuples.filter(function (el) {
                             return el.caption === (_this.desc.properties.polygonTitleProperty || "Name");
                         });
-                        if (it.length != 0) {
+                        if (it.length !== 0) {
                             var tidx = _this.mapData.Cols[0].tuples.indexOf(it[0]);
                             if (tidx !== -1) {
                                 polyTitle = _this.mapData.Data[t * l + tidx];
@@ -334,7 +317,7 @@
                         desc: _this.mapData.Cols[1].tuples[t].title
                     });
 
-                    var value = _this.mapData.Data[t * l + colorPropertyIdx];
+                    value = _this.mapData.Data[t * l + colorPropertyIdx];
                     feature.setStyle(new ol.style.Style({
                         zIndex: 0,
                         fill: new ol.style.Fill({
@@ -353,100 +336,6 @@
                 _this.polys.clear();
                 _this.polys.addFeatures(features);
                 centerView(min, max);
-
-                return;
-                for (p in polys) {
-                    var key = p;
-                    var item;
-                    if (coordsProperty) {
-                        item = _this.mapData.Cols[0].tuples.filter(function(el) { return el.caption === coordsProperty; });
-                        if (item.length === 0) continue;
-                        var idx = _this.mapData.Cols[0].tuples.indexOf(item[0]);
-                        var l = _this.mapData.Cols[0].tuples.length;
-                        var found = false;
-                        for (var e = idx; e < _this.mapData.Data.length; e += l) if (_this.mapData.Data[e] === key) {
-                            found = true;
-                            break;
-                        }
-                        if (!found) continue;
-                        //key = _this.mapData.Data[idx % l + Math.floor(idx / l)];
-                    } else {
-                        item = _this.mapData.Cols[1].tuples.filter(function (el) { return el.caption === p; });
-                        if (item.length === 0) continue;
-                    }
-
-                    var parts = polys[p].split(';');
-                    var poly = [];
-                    count++;
-                    //if (count > 2) continue;
-
-
-                    for (k = 0; k < parts.length; k++) {
-                        if (!parts[k]) continue;
-                        var coords = parts[k].split(' ');
-                        /*
-                        if (coords.length > 500) {
-                            var h = 0;
-                            while (h < coords.length) {
-                                coords.splice(h, 3);
-                                h += 6;
-                            }
-                        }*/
-                        var polyCoords = [];
-                        for (i in coords) {
-                            if (!coords[i]) continue;
-                            var c = coords[i].split(',');
-                            lon = parseFloat(c[0]);
-                            lat = parseFloat(c[1]);
-                            var point = new ol.geom.Point([lon, lat]);
-                            point.transform('EPSG:4326', 'EPSG:900913');
-                            polyCoords.push(point.getCoordinates());
-                        }
-                        poly.push(polyCoords);
-                    }
-                    //if (count === 23) console.log(JSON.stringify( poly));
-                    if (poly.length !== 1) {
-                        poly = poly.slice(0, 1);
-                    }
-
-                    var feature = new ol.Feature({
-                        geometry: new ol.geom.Polygon(poly),
-                        key: p
-                    });
-
-                    feature.setStyle(new ol.style.Style({
-                        zIndex: 0,
-                        fill: new ol.style.Fill({
-                            color: getFeatureColor(p) || "none"
-                        }),
-                        stroke: new ol.style.Stroke({
-                            color: 'rgba(0, 0, 0, 0.3)',
-                            width: 1
-                        })
-                    }));
-
-                    features.push(feature);
-
-                    if (parseFloat(lon) < min[0]) min[0] = parseFloat(lon);
-                    if (parseFloat(lat) < min[1]) min[1] = parseFloat(lat);
-                    if (parseFloat(lon) > max[0]) max[0] = parseFloat(lon);
-                    if (parseFloat(lat) > max[1]) max[1] = parseFloat(lat);
-
-                    /*if (min[0] == max[0]) {
-                        min[0] -= 0.05;
-                        max[0] += 0.05;
-                    }
-                    if (min[1] == max[1]) {
-                        min[1] -= 0.05;
-                        max[1] += 0.05;
-                    }*/
-                }
-
-                _this.featureOverlay.getSource().clear();
-                _this.polys.clear();
-                _this.polys.addFeatures(features);
-                centerView(min, max);
-
             }
 
             /**
@@ -637,7 +526,7 @@
 
 
                 // Create layer for markers
-                var vectorLayer = new ol.layer.Vector({
+                vectorLayer = new ol.layer.Vector({
                     source: _this.markers,
                     style: _this.iconStyle
                 });
@@ -688,8 +577,11 @@
             }*/
 
             function onPointerMove(e) {
-                $scope.hideTooltip();
+                if (dsw.mobile) {
+                    if (evt.originalEvent.touches && e.originalEvent.touches.length !== 1) return;
+                }
 
+                $scope.hideTooltip();
 
 
                 var feature = _this.map.forEachFeatureAtPixel(e.pixel,
@@ -743,7 +635,6 @@
             function getTooltipData(name) {
                 if (!_this.mapData) return;
                 var res = [];
-                //[{label: 'aa', value: 'ff'}]
                 var item = _this.mapData.Cols[1].tuples.filter(function(el) { return el.caption === name; });
                 if (item.length === 0) return;
                 item = item[0];
@@ -751,16 +642,16 @@
                 var l = _this.mapData.Cols[0].tuples.length;
                 var tooltip = _this.mapData.Cols[0].tuples.filter(function(el) { return el.caption === "tooltip"; });
                 if (tooltip.length === 0) return;
-                tooltip = tooltip[0]
+                tooltip = tooltip[0];
                 var tooltipIdx = _this.mapData.Cols[0].tuples.indexOf(tooltip);
                 res.push({label: "", value: _this.mapData.Data[idx * l + tooltipIdx].split(":")[1] || ""});
-                //for (var i = 0; i < l; i++) {
-                    //res.push({label: _this.mapData.Cols[0].tuples[i].caption, value: _this.mapData.Data[idx * l + i]});
-                //}
                 return res;
             }
 
             function onMapClick(evt) {
+                if (dsw.mobile) {
+                    if (evt.originalEvent.touches && evt.originalEvent.touches.length !== 1) return;
+                }
                 var feature = _this.map.forEachFeatureAtPixel(evt.pixel,
                     function (feature, layer) {
                         return feature;
@@ -768,46 +659,18 @@
                 if (feature) {
 
                     hideTooltip();
+                    if (dsw.mobile) {
+                        if (_this._selectedFeature !== feature) {
+                            _this._selectedFeature = feature;
+                            onPointerMove(evt);
+                            return;
+                        }
+                    }
                     _this.doDrill(feature.get("path"), feature.get("name") || feature.get("title"), undefined, function() {
                         showPopup(feature);
                     });
-                    //$scope.$apply();
-                    return;
-
-                    if (feature.getGeometry().getType().toLowerCase() === "polygon") {
-                        var key = feature.get("key");
-                        var coordsProperty = _this.desc.properties.coordsProperty || "caption";
-                        var item = _this.mapData.Cols[1].tuples.filter(function(el) { return el.caption == key } );
-                        if (!item) return;
-                        _this.doDrill(item[0].path, key, undefined, function() {
-                            showPopup(feature);
-                        });
-                        //_this.doDrillFilter(item[0].path);
-                    } else {
-                        showPopup(feature);
-
-                        //var dataIdx = feature.get("dataIdx");
-                        //var title, content;
-                        //var contentProp = _this.desc.properties.markerPopupContentProperty;
-                        //if (contentProp) content = _this.getDataByColumnName(_this.mapData, contentProp, dataIdx);
-                        //else
-                        //    content = _this.mapData.Cols[1].tuples[Math.floor(dataIdx / _this.mapData.Cols[0].tuples.length)].caption || ""
-                        //
-                        //
-                        //$scope.model.tooltip.content = content;
-                        //
-                        //var geometry = feature.getGeometry();
-                        //var coord = geometry.getCoordinates();
-                        //coord[0] += Math.floor((_this.map.getCoordinateFromPixel(evt.pixel)[0] / 40075016.68) + 0.5) * 20037508.34 * 2;
-                        //_this.popup.setPosition(coord);
-                        //
-                        //_this.doDrillFilter(feature.get("path"));
-                        //
-                        //showTooltip();
-                    }
                 } else {
                     hideTooltip();
-                    //$(element).popover('destroy');
                 }
                 $scope.$apply();
 

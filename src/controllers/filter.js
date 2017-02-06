@@ -106,8 +106,8 @@
             $scope.model.isLoading = true;
             Connector
                 .searchFilters(searchStr, _this.dataSource)
-                .error(onError)
-                .success(onFilterValuesReceived);
+                .catch(onError)
+                .then(onFilterValuesReceived);
         }
 
         /**

@@ -10,11 +10,16 @@
         delete sessionStorage.dashboarList;
         $scope.model = {
             ver: CONST.ver,
+            server: localStorage.DSWMobileServer || "146.185.143.59",
             login: "",
             password: "",
             namespace:  localStorage.namespace || "Samples",
             error: ""
         };
+        if (dsw.mobile) {
+            $scope.model.login = "web";
+            $scope.model.password = "dsweb";
+        }
 
         var from = $location.search().from;
         if (from) {
@@ -24,6 +29,7 @@
         }
 
         $scope.onLoginClick = onLoginClick;
+        $scope.scanSettings = scanSettings;
         $scope.$on('signinerror', onError);
         // Listened in menu.js
         $rootScope.$broadcast('toggleMenu', false);
@@ -43,20 +49,30 @@
          */
         function onLoginClick() {
             clearError();
-            //if (!$scope.model.login) { showError(Lang.get('errLoginRequired')); return; }
-            //if (!$scope.model.password) { showError(Lang.get('errPassRequired')); return; }
-
+            var s = getMobileUrl();
             startTime = new Date().getTime();
             Connector
-                .signIn($scope.model.login, $scope.model.password, $scope.model.namespace)
-                .error(onError)
-                .success(onSuccess);
+                .signIn($scope.model.login, $scope.model.password, $scope.model.namespace, dsw.mobile ? s : undefined)
+                .catch(onError)
+                .then(onSuccess);
+        }
+
+        function getMobileUrl() {
+            var s = $scope.model.server;
+            if (s.toLowerCase().indexOf('http') ==0 -1) s = "http://" + s;
+            s += "/MDX2JSON/";
+            return s;
         }
 
         /**
          * Callback for success login
          */
         function onSuccess(res) {
+            if (dsw.mobile) {
+                Connector.url = getMobileUrl();
+                localStorage.connectorRedirect = Connector.url;
+            }
+            localStorage.DSWMobileServer = $scope.model.server;
             Storage.loadServerSettings(res);
             localStorage.namespace = $scope.model.namespace;
             localStorage.userName = Connector.username;
@@ -82,6 +98,7 @@
                 $location.path(from).search(search);
             }
             else $location.path("/").search({ns: $scope.model.namespace});
+            $rootScope.$broadcast('toggleMenu', true);
         }
 
         /**
@@ -132,6 +149,28 @@
          */
         function showError(txt) {
             $scope.model.error = txt;
+        }
+
+        function scanSettings() {
+            cordova.plugins.barcodeScanner.scan(
+                function (result) {
+                    console.error(JSON.stringify(result));
+                    var str = result.text;
+                    var params = str.split('|');
+                    if (params[0].toLowerCase() !== 'dsw') {
+                        alert('Incorrect QR code');
+                        return;
+                    }
+                    $scope.model.server    = params[1];
+                    $scope.model.login     = params[2];
+                    $scope.model.password  = params[3];
+                    $scope.model.namespace = params[4];
+                    onLoginClick();
+                },
+                function (error) {
+                    alert("Scanning failed: " + error);
+                }
+            );
         }
     }
 

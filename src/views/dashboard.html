@@ -1,5 +1,4 @@
-<div ng-cloak>
-    <div gridster="gridsterOpts">
+<div ng-cloak><div gridster="gridsterOpts" ng-if="!isMobile">
         <ul>
             <li class="panel panel-default widget-holder noselect" gridster-item="item" ng-repeat="item in model.items">
                 <div class="panel-heading widget-title">
@@ -17,8 +16,27 @@
             </li>
         </ul>
     </div>
+    <div ng-if="isMobile" class="mobile-content" id="mobileDashboard" ng-style="{width: model.items.length*100 + 'vw' }" mobile-slider>
+        <!--  ng-style="{left: $last ? 0 : $index*100+'vw'}"-->
+        <div class="panel panel-default widget-holder noselect" ng-repeat="item in model.items">
+            <div class="widget-title-drag" ng-class="(!item.backButton && !(item.isChart || item.isMap) && !item.isChart && !item.isBtnValues && !item.isBtnZero) ? 'mobile-header-whole':''"><span>{{item.title}}</span></div>
+            <div class="panel-heading widget-title">
+                <div class="widget-title-btn-left" ng-show="item.backButton" ng-click="item.drillUp()">
+                    <i class="fa fa-chevron-left"></i>
+                </div>
+                <div class="widget-title-btn" ng-show="item.isChart || item.isMap" ng-click="item.displayAsPivot()" ng-class="item.pivotMdx ? 'active' : ''" title="{{'showPivot' | lang}}"><i class="fa fa-table"></i></div>
+                <div class="widget-title-btn" ng-show="item.isBtnValues" ng-click="item.toggleValues()" ng-class="item.showValues ? 'active' : ''" title="{{'showValues' | lang}}"><i class="fa fa-bar-chart"></i></div>
+                <div class="widget-title-btn" ng-show="item.isBtnZero" ng-click="item.showZeroOnAxis()" ng-class="item.showZero ? 'active' : ''" title="{{'showZero' | lang}}"><i class="fa fa-level-down"></i></div>
+                <div class="widget-title-btn" ng-show="item.isChart" ng-click="item.toggleTop()" ng-class="item.isTop ? 'active' : ''" title="{{'showTop' | lang}}"><i class="fa fa-sort-amount-desc"></i></div>
+                <div class="widget-title-btn" ng-show="item.isChart" ng-click="item.toggleLegend()" ng-class="item.isLegend ? '' : 'notActive'" title="{{'showLegend' | lang}}"><i class="fa fa-list-ul"></i></div>
+            </div>
+            <div class="mobile-header"></div>
+            <widget class="widget" ng-controller="widget"></widget>
+            <div class="mobile-header"></div>
+        </div>
+    </div>
 
-    <div class="dropdown position-fixed" id="ctx-item-menu">
+    <div class="dropdown position-fixed" id="ctx-item-menu" mobile-hidden>
         <ul class="dropdown-menu" role="menu">
             <li>
                 <a class="pointer" role="menuitem" tabindex="1" ng-click="refreshItem()">

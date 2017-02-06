@@ -1,16 +1,26 @@
+
 <span class="ver">{{model.ver}}</span>
-<div class="container" ng-cloak>
+<span class="qr-scanner-btn" desktop-hidden ng-click="scanSettings()"><i class="fa fa-camera"></i></span>
+<div class="container login-screen" ng-cloak>
     <div class="row logo">
         <div class="col-md-4 col-md-offset-4 center">
-            <img src="img/DeepSee.svg" height="100px" alt="logo" class="deepsee-logo">
+            <img src="img/DeepSee.svg" height="100px" alt="logo" class="deepsee-logo" mobile-hidden>
+            <img src="img/eye.svg" height="100px" alt="logo" class="deepsee-logo" desktop-hidden>
+            <!--<div class="mobile-logo fa fa-eye" desktop-hidden></div>-->
         </div>
     </div>
     <div class="row">
-        <form class="col-md-4 col-md-offset-4" ng-submit="onLoginClick()">
+        <form class="col-md-4 col-md-offset-4 login-form" ng-submit="onLoginClick()">
+                <div class="form-group" desktop-hidden="">
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="w16 fa fa-cloud"></i></span>
+                        <input type="text" name="server" class="form-control" ng-model="model.server" placeholder="{{'server' | lang}}" focus-next="username">
+                    </div>
+                </div>
                 <div class="form-group">
                     <div class="input-group">
                         <span class="input-group-addon"><i class="w16 fa fa-user"></i></span>
-                        <input type="text" name="username" class="form-control" ng-model="model.login" placeholder="{{'login' | lang}}" auto-focus focus-next="pass">
+                        <input id="username" type="text" name="username" class="form-control" ng-model="model.login" placeholder="{{'login' | lang}}" auto-focus focus-next="pass">
                     </div>
                 </div>
                 <div class="form-group">
@@ -25,7 +35,7 @@
                         <input id="ns" type="text" class="form-control" ng-model="model.namespace" placeholder="{{'namespace' | lang}}" focus-next="btnLogin" required>
                     </div>
                 </div>
-                <button id="btnLogin" class="btn btn-large btn-block btn-primary">{{'signin' | lang}}</button>
+                <button id="btnLogin" class="btn btn-large btn-block btn-success">{{'signin' | lang}}</button>
         </form>
     </div>
     <div class="row">

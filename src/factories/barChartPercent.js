@@ -134,12 +134,13 @@
                         }
                     }
                 }
+                var str, isNonEmpty;
                 if (customDrill) {
                     if (customDrill.indexOf('"ИТОГО"') === -1) customDrill = "{" + customDrill + ',%LABEL([podrReal].[All podrReal],"ИТОГО","")}';
                     var match = mdx.match(/ON 0,(.*)ON 1/);
                     if (match.length === 2) {
-                        var str = match[1];
-                        var isNonEmpty = str.indexOf("NON EMPTY") !== -1;
+                        str = match[1];
+                        isNonEmpty = str.indexOf("NON EMPTY") !== -1;
                         mdx = mdx.replace(str, (isNonEmpty ? "NON EMPTY " : " ") + p + " ");
                     }
                     mdx = mdx.replace(p, customDrill);
@@ -147,8 +148,8 @@
                     if (mdx.indexOf(p) === -1) {
                         match =  mdx.match(/SELECT(.*)ON 1/);
                         if (match && match.length === 2) {
-                            var str = match[1];
-                            var isNonEmpty = str.indexOf("NON EMPTY") !== -1;
+                            str = match[1];
+                            isNonEmpty = str.indexOf("NON EMPTY") !== -1;
                             mdx = mdx.replace(str, (isNonEmpty ? " NON EMPTY " : " ") + path + ".Children" + " ");
                         }
                     } else mdx = mdx.replace(p, path + ".Children");

@@ -1,0 +1,14 @@
+@import "../base/variables";
+
+// Override variables
+$inverted: 1;
+$themeColor: black;
+$iconColor: white;
+$fontColor: white;
+
+$widgetHeaderFont: black;
+
+@import "../base/theme";
+
+// Custom styles here
+// ...

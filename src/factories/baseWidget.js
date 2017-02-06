@@ -24,6 +24,7 @@
             // Array of widget names that shall be filtered during drill down
             this.drillFilterWidgets = null;
             this._currentData = null;
+            this._kpiData = null;
 
             if ($scope.tile) {
                 $scope.item = {};
@@ -203,7 +204,7 @@
                         if (_this.lpt) {
                             //mdx = _this.lpt.getActualMDX();
                             var lpt = _this.lpt;
-                            mdx = lpt._dataSourcesStack[lpt._dataSourcesStack.length - 1].BASIC_MDX + lpt.dataSource.FILTERS
+                            mdx = lpt._dataSourcesStack[lpt._dataSourcesStack.length - 1].BASIC_MDX + lpt.dataSource.FILTERS;
                         }
                         var folder = Storage.serverSettings.DefaultApp || "/csp/" + Connector.getNamespace();
                         var url = folder + "/_DeepSee.UI.MDXExcel.zen?MDX=" + encodeURIComponent(mdx);
@@ -234,22 +235,22 @@
                 var nl = "\r\n";
                 var sep = "|";
                 var csvFile = '"sep=' + sep + '"' + nl;
-
+                var i, j;
                 // if (ser.length === 1) {
                 //
                 // } else {
                     // Build header
                     if (cats[0] && cats[0].dimension) csvFile += cats[0].dimension + sep;
-                    for (var j = 0; j < ser.length; j++) {
+                    for (j = 0; j < ser.length; j++) {
                         csvFile +=ser[j].caption;
                         if (j !== ser.length - 1) csvFile += sep;
                     }
                     csvFile += nl;
 
                     // Build data
-                    for (var i = 0; i < (cats.length || (data.length / ser.length)); i++) {
+                    for (i = 0; i < (cats.length || (data.length / ser.length)); i++) {
                         if (cats[i] && cats[i].caption) csvFile += cats[i].caption + sep;
-                        for (var j = 0; j < ser.length; j++) {
+                        for (j = 0; j < ser.length; j++) {
                             csvFile += data[i * ser.length + j] || '0';
                             if (j !== ser.length - 1) csvFile += sep;
                         }
@@ -313,7 +314,7 @@
                     _this.customColSpec = action.targetProperty;
                     _this.requestData();
                 } else {
-                    Connector.execAction(action.action, _this.desc.cube).then(requestData);
+                    Connector.execAction(action.action, _this.desc.cube ? _this.desc.cube : _this.desc.dataSource.replace('.kpi', '')).then(requestData);
                 }
             }
 
@@ -422,7 +423,7 @@
 
                     Connector.execMDX(ddMdx)
                         //.error(_this._onRequestError)
-                        .success(function(data2) {
+                        .then(function(data2) {
                             if (!data2 || !data2.children || data2.children.length === 0) return;
                             $scope.item.isDrillthrough = true;
                             $scope.item.backButton = true;
@@ -433,8 +434,8 @@
 
 
                 Connector.execMDX(mdx)
-                    .error(function() { requestDrillthrough(); })
-                    .success(function(data) {
+                    .catch(function() { requestDrillthrough(); })
+                    .then(function(data) {
                         if ($scope.chartConfig) $scope.chartConfig.loading = false;
                         if (isEmptyData(data) && path && _this.canDoDrillthrough) {
                             requestDrillthrough();
@@ -725,7 +726,7 @@
                                 $scope.item.dsSelected = item.labels[0];
                             }
                         }
-                    }
+                    };
                 }
 
                 function filterChosers(el) {
@@ -833,9 +834,9 @@
                 var ds = _this.customDataSource || _this.desc.dataSource;
                 // Check if this KPI
                 if (_this.desc.kpitype) {
-                    if (ds) Connector.getKPIData(ds).success(_this._retriveKPI);
+                    if (ds) Connector.getKPIData(ds).then(_this._retriveKPI);
                 } else {
-                    if (ds) Connector.getPivotData(ds).success(_this._retriveDataSource);
+                    if (ds) Connector.getPivotData(ds).then(_this._retriveDataSource);
                 }
             }
 
@@ -869,6 +870,9 @@
              * @param {object} data KPI data
              */
             function onDataKPIReceived(data) {
+                if (!_this) return;
+                _this._kpiData = data;
+                //_this._desc.kpiName = data.Info;
                 if (_this.lpt) {
                     _this.lpt.dataController.setData(_this.lpt.dataSource._convert(convertKPIToMDXData(data)));
                     //_this.lpt.refresh();
@@ -895,6 +899,11 @@
                 //$scope.item.title = _this.baseTitle;
                 //_this.drillLevel = 0;
                 //_this.drills = [];
+                if (_this.desc.kpitype) {
+                    var ds = _this.customDataSource || _this.desc.dataSource;
+                    if (ds) Connector.getKPIData(ds).then(_this._retriveKPI);
+                    return;
+                }
                 var mdx = _this.getMDX();
                 if (!mdx) return;
                 _this.clearError();
@@ -903,13 +912,13 @@
 
                 // Check for variables
                 if (mdx.indexOf('$') !== -1 && !this.pivotVariables) {
-                    Connector.getPivotVariables(_this.desc.cube).success(function(d) {
+                    Connector.getPivotVariables(_this.desc.cube).then(function(d) {
                         _this.pivotVariables = d;
                         console.log(d);
                     });
                 }
 
-                Connector.execMDX(mdx).error(_this._onRequestError).success(function(data) {
+                Connector.execMDX(mdx).catch(_this._onRequestError).then(function(data) {
                     _this._currentData = data;
                     _this._retrieveData(data);
                 });
@@ -998,11 +1007,11 @@
                 var filterActive = false;
                 var i;
                 var flt;
-                var path;
+                var path, str;
 
                 // If widget is linked, use linkedMDX
                 if (_this.isLinked()) {
-                    var str = replaceMDXVariables(_this.linkedMdx || this.desc.linkedMdx || "");
+                    str = replaceMDXVariables(_this.linkedMdx || this.desc.linkedMdx || "");
                     str = checkColSpec(str);
                     return applyDrill(str);
                 }
@@ -1011,11 +1020,13 @@
                 var filters = Filters.getWidgetFilters(_this.desc.name);
                 // Add filter for drillFilter feature
                 if (_this.drillFilter) {
-                    var parts = _this.drillFilter.split("&");
-                    filters.push({
-                        targetProperty: parts[0].slice(0, -1),
-                        value: "&" + parts[1]
-                    });
+                    var idx = _this.drillFilter.indexOf("&");
+                    if (idx !== -1) {
+                        filters.push({
+                            targetProperty: _this.drillFilter.substring(0, idx - 1),
+                            value: "&" + this.drillFilter.substring(idx + 1, _this.drillFilter.length)
+                        });
+                    }
                 }
                 for (i = 0; i < filters.length; i++) {
                     flt = filters[i];
@@ -1030,7 +1041,7 @@
                 if (_this.customRowSpec) {
                     var match = mdx.match(/ON 0,(.*)ON 1/);
                     if (match.length === 2) {
-                        var str = match[1];
+                        str = match[1];
                         var isNonEmpty = str.indexOf("NON EMPTY") !== -1;
                         mdx = mdx.replace(str, (isNonEmpty ? "NON EMPTY " : " ") + _this.customRowSpec + " ");
                     }
@@ -1099,18 +1110,19 @@
              * Update displayed text on filter input controls, depending on active filters
              */
             function updateFiltersText() {
+                var flt, i;
                 // For empty widget try to get initial filter values before
                 if (_this.desc.type === "mdx2json.emptyportlet") {
-                    for (var i = 0; i < _this.filterCount; i++) {
-                        var flt = _this.getFilter(i);
+                    for (i = 0; i < _this.filterCount; i++) {
+                        flt = _this.getFilter(i);
                         if (!flt.valueDisplay && flt.value) {
                             flt.valueDisplay = flt.value.replace('&[', '').replace(']', '');
                         }
                     }
                 }
                 
-                for (var i = 0; i < _this.filterCount; i++) {
-                    var flt = _this.getFilter(i);
+                for (i = 0; i < _this.filterCount; i++) {
+                    flt = _this.getFilter(i);
                     if (flt.isInterval) {
                         $scope.model.filters[i].text = flt.values[flt.fromIdx].name + ":" + flt.values[flt.toIdx].name;
                         continue;

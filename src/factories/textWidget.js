@@ -41,7 +41,7 @@
                         // Change font color, if widget is displayed on tile
                         var color = "#000";
                         if (_this.desc.tile) {
-                            color =  settings.isMetro ? CONST.fontColorsMetro[_this.desc.tile.fontColor] : CONST.fontColors[_this.desc.tile.fontColor];
+                            color = $('.'+CONST.fontColors[_this.desc.tile.fontColor]).css('color')
                         }
 
                         var caption = result.Cols[0].tuples[i].caption;

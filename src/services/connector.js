@@ -32,6 +32,7 @@
         this.loadNamespaceConfig = loadNamespaceConfig;
         this.saveNamespaceConfig = saveNamespaceConfig;
         this.loadAddons = loadAddons;
+        this.gotoLoginPage = gotoLoginPage;
 
         // for local testing
         /*
@@ -57,6 +58,13 @@
         }
 
         /**
+         * Navigates to login page
+         */
+        function gotoLoginPage() {
+            $location.path("/login").search({});
+        }
+
+        /**
          * Returns current namespace
          * @returns {string} Namespace
          */
@@ -77,7 +85,7 @@
                 data: {Folder: ""},
                 url: _this.url + 'Dashboards?Namespace=' + getNamespace(),
                 withCredentials: true
-            });
+            });//.then(transformResponse);
         }
 
         /**
@@ -92,7 +100,7 @@
                 data: {KPI: name},
                 timeout: CONST.timeout,
                 withCredentials: true
-            });
+            }).then(transformResponse);
         }
 
         /**
@@ -107,7 +115,7 @@
                 data: {DataSource: name},
                 timeout: CONST.timeout,
                 withCredentials: true
-            });
+            }).then(transformResponse);
         }
 
         /**
@@ -140,7 +148,7 @@
                 data: {MDX: mdx},
                 timeout: CONST.timeout,
                 withCredentials: true
-            });
+            }).then(transformResponse);
         }
 
         /**
@@ -155,7 +163,7 @@
                 data: {MDX: mdx},
                 timeout: CONST.timeout,
                 withCredentials: true
-            });
+            }).then(transformResponse);
         }
 
         /**
@@ -171,7 +179,7 @@
                 timeout: CONST.timeout,
                 withCredentials: true,
                 headers: {'Content-Type': 'application/json'}
-            });
+            }).then(transformResponse);
         }
 
         /**
@@ -190,7 +198,7 @@
                 },
                 url: _this.url + 'Filters?Namespace=' + getNamespace(),
                 withCredentials: true
-            });
+            }).then(transformResponse);
         }
 
         /**
@@ -203,7 +211,7 @@
                 method: 'GET',
                 url: _this.url + 'PivotVariables/' + cube + '?Namespace=' + getNamespace(),
                 withCredentials: true
-            });
+            }).then(transformResponse);
         }
 
         /**
@@ -216,7 +224,7 @@
                 data: {},
                 url: url,
                 withCredentials: true
-            });
+            }).then(transformResponse);
         }
 
         /**
@@ -229,7 +237,7 @@
                 data: {},
                 url: _this.url + 'Favorites?Namespace=' + getNamespace(),
                 withCredentials: true
-            });
+            }).then(transformResponse);
         }
 
         /**
@@ -243,7 +251,7 @@
                 data: {},
                 url: _this.url + 'Favorites/'+ encodeURIComponent(path) + '?Namespace=' + getNamespace(),
                 withCredentials: true
-            });
+            }).then(transformResponse);
         }
 
         /**
@@ -257,7 +265,7 @@
                 data: {},
                 url: _this.url + 'Favorites/'+ encodeURIComponent(path) + '?Namespace=' + getNamespace(),
                 withCredentials: true
-            });
+            }).then(transformResponse);
         }
 
         /**
@@ -270,7 +278,16 @@
                 data: {},
                 url: _this.url + 'Config/' + (cutomNamespace ? cutomNamespace : this.getNamespace()) + '?Namespace=MDX2JSON',
                 withCredentials: true
-            });
+            }).then(transformResponse);
+        }
+
+        /**
+         * Transform responcs due to new angular 1.5+ response format
+         * @param {object} r Response
+         * @returns {object} Transformed response
+         */
+        function transformResponse(r) {
+            return r ? r.data : undefined;
         }
 
         /**
@@ -283,7 +300,7 @@
                 data: {},
                 url: _this.url + 'Addons?Namespace=MDX2JSON',
                 withCredentials: true
-            });
+            }).then(transformResponse);
         }
 
         /**
@@ -296,7 +313,7 @@
                 data: {},
                 url: _this.url + 'Config/' + ns + '?Namespace=MDX2JSON',
                 withCredentials: true
-            });
+            }).then(transformResponse);
         }
 
         /**
@@ -310,7 +327,7 @@
                 data: { Application: this.getNamespace(), Config: JSON.stringify(config) },
                 url: _this.url + 'Config?Namespace=MDX2JSON',
                 withCredentials: true
-            });
+            }).then(transformResponse);
         }
 
         /**
@@ -325,7 +342,7 @@
                 data: { Application: ns, Config: JSON.stringify(config) },
                 url: _this.url + 'Config?Namespace=MDX2JSON',
                 withCredentials: true
-            });
+            }).then(transformResponse);
         }
 
         /**
@@ -333,18 +350,19 @@
          * @param {string} login User login
          * @param {string} password User password
          * @param {string} namespace Namespace
+         * @param {string|undefined} [url] Custom server address
          * @returns {object} $http promise
          */
-        function signIn(login, password, namespace) {
+        function signIn(login, password, namespace, url) {
             _this.username = login;
             return $http({
                 method: 'GET',
-                url: _this.url + 'Test?Namespace=' + namespace,
+                url: url ? (url + 'Test?Namespace=' + namespace) : (_this.url + 'Test?Namespace=' + namespace),
                 timeout: CONST.timeout,
                 headers: {
                     'Authorization': 'Basic ' + btoa(login + ":" + password)
                 }
-            });
+            }).then(transformResponse);
         }
 
         /**
@@ -368,7 +386,7 @@
                 withCredentials: true
             }).then(function() {
                 $location.path("/login").search({});
-            });
+            }).then(transformResponse);
         }
 
         /**
@@ -381,7 +399,7 @@
                 data: {},
                 url: _this.url + 'Action/' + cube + '/' + action + '?Namespace=' + getNamespace(),
                 withCredentials: true
-            });
+            }).then(transformResponse);
         }
 
         function getSettings() {
@@ -390,7 +408,7 @@
                 url: _this.url + 'Test?Namespace=' + getNamespace(),
                 timeout: CONST.timeout,
                 withCredentials: true
-            });
+            }).then(transformResponse);
         }
 
     }

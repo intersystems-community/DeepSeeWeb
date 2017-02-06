@@ -126,9 +126,19 @@
             if (obj) {
                 var rect = obj.getBoundingClientRect();
                 changeStyle(".ngdialog.ngdialog-theme-plain .ngdialog-content", "margin-left", rect.left + "px");
-                changeStyle(".ngdialog.ngdialog-theme-plain .ngdialog-content", "margin-top", (rect.top + 16) + "px");
+                if (dsw.mobile) {
+                    changeStyle(".ngdialog.ngdialog-theme-plain .ngdialog-content", "margin-top", "0px");
+                    changeStyle(".ngdialog.ngdialog-theme-plain .ngdialog-content", "margin-left", "0px");
+                    changeStyle(".ngdialog.ngdialog-theme-plain .ngdialog-content", "width", window.innerWidth + "px");
+                    changeStyle(".ngdialog.ngdialog-theme-plain .ngdialog-content", "height", "100%");
+                } else {
+                    changeStyle(".ngdialog.ngdialog-theme-plain .ngdialog-content", "margin-top", (rect.top + 16) + "px");
+                }
             }
-            ngDialog.open({template: 'src/views/filter.html', data: {filter: flt, dataSource: _this.desc.dataSource}, controller: "filter", showClose: false, className: "ngdialog-theme-plain" });
+
+            var className = "ngdialog-theme-plain";
+            if (dsw.mobile) className += " ngdialog-mobile";
+            ngDialog.open({template: 'src/views/filter.html', data: {filter: flt, dataSource: _this.desc.dataSource}, controller: "filter", showClose: false, className: className });
         }
 
         /**

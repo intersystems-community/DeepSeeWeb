@@ -1,9 +1,16 @@
 window.dsw = {};
+window.dsw.mobile = false;
+
 /**
  * Main application module
  */
 (function() {
     'use strict';
+
+    if (window.dsw.mobile) {
+        //localStorage.connectorRedirect = "http://146.185.143.59/MDX2JSON/";
+        //localStorage.connectorRedirect = "http://37.139.17.101/MDX2JSON/";
+    }
 
     angular.module('dashboard', []);
     angular.module('widgets', []);
@@ -16,16 +23,17 @@ window.dsw = {};
     .filter("sanitize", ['$sce', function($sce) {
         return function(htmlCode){
             return $sce.trustAsHtml(htmlCode);
-        }
+        };
     }])
     .constant('CONST', {
-        css: {
-            classic: "css/metro.min.css",
-            metro: "css/classic.min.css"
-        },
+        themes: [
+            {text: 'Default', file: ''},
+            {text: 'Contrast', file: 'themes/contrast.css'},
+            {text: 'Metro', file: 'themes/metro.min.css'},
+            {text: 'Black', file: 'themes/black.css'}
+        ],
         bgColorClasses: ["", "cl1", "cl2", "cl3", "cl4", "cl5", "cl6", "cl7", "cl8", "cl9"],
-        fontColors: ["#000", "#FFF", "#F00", "#0A0", "#00F"],
-        fontColorsMetro: ["#FFF", "#000", "#F00", "#0A0", "#00F"],
+        fontColors: ["fc1", "fc2", "fc3", "fc4", "fc5"],
         icons: ["", "\uf0e4", "\uf114", "\uf080", "\uf1fe", "\uf200", "\uf201",
             "\uf153", "\uf155", "\uf158", "\uf0c5", "\uf03a", "\uf0ce", "\uf0d1",
             "\uf007", "\uf183", "\uf0c0", "\uf0b0", "\uf1c0", "\uf1b2", "\uf1b3",
@@ -88,7 +96,12 @@ window.dsw = {};
         }
         var defers = [];
         for (var i = 0; i < addons.length; i++) {
-            var url = 'addons/' + addons[i] + '?tmp=' + Date.parse(new Date());
+            var url = addons[i] + '?tmp=' + Date.parse(new Date());
+            if (localStorage.connectorRedirect) {
+                url = localStorage.connectorRedirect.split('/').slice(0, -2).join('/') + url;
+            } else {
+                url = window.location.host + url;
+            }
             if (url) {
                 var defer = $q.defer();
                 defers.push(defer.promise);
@@ -97,17 +110,12 @@ window.dsw = {};
                     return function() {
                         d.resolve();
                     };
-                })(defer)).catch((function(d){
-                    return function() {
+                })(defer)).catch((function(d, u){
+                    return function(e) {
+                        alert("Can't load addon: " + u + " " + e);
                         d.resolve();
                     };
-                })(defer));
-
-                /*loadjscssfile(url, "js", (function(d){
-                    return function() {
-                        d.resolve();
-                    }
-                })(defer));*/
+                })(defer, url));
             }
         }
         if (defers.length === 0) return $q.when(); else return $q.all(defers);
@@ -126,9 +134,14 @@ window.dsw = {};
      * @returns {IPromise<T>}
      */
     function configResolver(Connector, $q, Storage, $rootScope, $route, $ocLazyLoad) {
+        // In mobile version navigate to login if there is not connection set yet
+        if (dsw.mobile && !localStorage.connectorRedirect) {
+            Connector.gotoLoginPage();
+            return;
+        }
         var deffered = $q.defer();
             // Check if namespace was changed
-            if ($route.current.params.ns !== localStorage.namespace) {
+            if (($route.current.params.ns || '').toLowerCase() !== (localStorage.namespace || '').toLowerCase()) {
                 // Clear dashboard list
                 delete sessionStorage.dashboarList;
                 loadSettings(Storage, $q, Connector)
@@ -136,6 +149,9 @@ window.dsw = {};
                         loadConf();
                         //$rootScope.$broadcast('toggleMenu', true);
                         //deffered.resolve();
+                    })
+                    .catch(function() {
+                        Connector.gotoLoginPage();
                     });
                 return deffered.promise;
             }
@@ -143,19 +159,21 @@ window.dsw = {};
             //     $rootScope.$broadcast('toggleMenu', true);
             //     deffered.resolve();
             // }
-        loadConf();
+        if (Connector.firstRun) loadConf(); else deffered.resolve();
 
         function loadConf() {
             Connector.loadConfig($route.current.params.ns)
-            .success(function (result) {
+            .catch(function() {
+                Connector.gotoLoginPage();
+            })
+            .then(function (result) {
                 $rootScope.$broadcast('toggleMenu', true);
                 $rootScope.$broadcast('refresh', true);
                 Storage.loadConfig(result);
                 var addons = null;
                 Connector.loadAddons()
-                    .then(function(res) {
-                        addons = res.data;
-                        if (addons) {
+                    .then(function(addons) {
+                        if (addons && addons.length) {
                             dsw.addons = addons.slice();
                             for (var i = 0; i < dsw.addons.length; i++) {
                                 var a = dsw.addons[i].split('.');
@@ -163,7 +181,7 @@ window.dsw = {};
                                 dsw.addons[i] = a.join('.');
                             }
                         }
-                        return loadAddons(addons, $q, $ocLazyLoad)
+                        return loadAddons(addons, $q, $ocLazyLoad);
                     })
                     .then(function() {
                         $rootScope.$broadcast('addons:loaded', addons);
@@ -180,7 +198,7 @@ window.dsw = {};
                 ]).then(function () {
                     deffered.resolve();
                 });*/
-            }).error(function (result) {
+            }).catch(function (result) {
                 deffered.resolve();
             });
         }
@@ -206,7 +224,7 @@ window.dsw = {};
     function loadSettings(Storage, $q, Connector)  {
         var deffered = $q.defer();
         Connector.getSettings().then(function(res) {
-            Storage.loadServerSettings(res.data);
+            Storage.loadServerSettings(res);
             deffered.resolve();
         }).catch(function(result) {
             deffered.resolve();
@@ -248,6 +266,12 @@ window.dsw = {};
         gridsterConfig.isResizing = false;
         gridsterConfig.isDragging = false;
         gridsterConfig.margins = [5, 5];
+        gridsterConfig.isMobile = dsw.mobile; // stacks the grid items if true;
+        if (dsw.mobile) {
+            gridsterConfig.mobileBreakPoint = 2000;// if the screen is not wider that this, remove the grid layout and stack the items
+            //gridsterConfig.mobileModeEnabled = true;
+        }
+
 
         gridsterConfig.resizable.start = function() {
             gridsterConfig.isResizing = true;
@@ -282,7 +306,23 @@ window.dsw = {};
 
         });*/
     }
-
-
+    if (dsw.mobile) {
+        loadjscssfile("cordova.js", "js");
+        loadjscssfile("css/mobile.css", "css");
+        var oldError = console.error;
+        console.error = function(e) {
+            oldError.apply(this, arguments);
+            //alert(e);
+            if (!dsw.erros) dsw.errors = [];
+            dsw.errors.push(e);
+        };
+         //window.onerror = function(e) {
+         //    alert(e);
+         //};
+        document.addEventListener('DOMContentLoaded', function () {
+            document.body.style['background-color'] = 'black';
+            FastClick.attach(document.body);
+        }, false);
+    }
 
 })();

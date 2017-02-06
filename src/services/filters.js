@@ -44,7 +44,7 @@
                         console.log(params);
 
                         if (flt.additionalParams.indexOf('inverseorder') !== -1) flt.values = flt.values.reverse();
-                        if (flt.additionalParams.indexOf('ignorenow') !== -1) flt.values = flt.values.filter(function(v) { return v.path.toLowerCase() !== '&[now]'})
+                        if (flt.additionalParams.indexOf('ignorenow') !== -1) flt.values = flt.values.filter(function(v) { return v.path.toLowerCase() !== '&[now]';});
                     }
                     flt.label = flt.label.replace(/(\/\*([^*]|[\r\n]|(\*+([^*\/]|[\r\n])))*\*+\/)|(\/\/.*)/g, '');
                 }
@@ -69,6 +69,8 @@
                     if (exists) {
                         // Check for single value
                         exists.value = flt.value;
+                        if (flt.isExclude) exists.value += ".%NOT";
+
                         var values = flt.value.split('|');
                         // Multiple values was selected
                         exists.values.forEach(function(v) {
@@ -102,7 +104,7 @@
             if (flt.value === "" || flt.value === undefined) return "";
             var value = flt.value;
             var isExclude = false;
-            if (typeof value === ' string') isExclude = value.toUpperCase().endsWith(".%NOT");
+            if (typeof value === 'string') isExclude = value.toUpperCase().endsWith(".%NOT");
             if (isExclude) value = value.substr(0, value.length - 5);
             flt.value = value;
             for (var i = 0; i < flt.values.length; i++) if (flt.values[i].path === value) {
@@ -191,6 +193,9 @@
          * Saves dashboard filters
          */
         function saveFilters() {
+            var settings = Storage.getAppSettings();
+            if (settings.isSaveFilters === false) return;
+
             var i, flt;
             var active = [];
             for (i = 0; i < _this.items.length; i++) {
@@ -199,7 +204,7 @@
                     active.push(flt);
                 }
             }
-            var res = active.map(function(e) { return { targetProperty: e.targetProperty, value: e.value }});
+            var res = active.map(function(e) { return { targetProperty: e.targetProperty, value: e.value, isExclude: e.isExclude };});
 
             var widgets = Storage.getWidgetsSettings(_this.dashboard, Connector.getNamespace());
             if (res.length) {

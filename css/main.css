@@ -1,3 +1,10 @@
+[desktop-hidden] {
+    display: none;
+}
+.navbar-nav>li>a {
+    padding-top: 0;
+    padding-bottom: 0;
+}
 .w16 {
     width: 16px;
 }
@@ -102,8 +109,16 @@
     margin-bottom: 4px; !important;
 }
 
+
 .widget-holder {
     overflow: hidden;
+
+
+    /*
+        display: inline-block;
+    width: 100vw;
+    height: 100%;
+    */
 }
 
 .widget-toolbar {
@@ -120,6 +135,12 @@
     width: 100%;
     position: absolute;
     bottom: 0px;
+}
+
+@media only screen and (max-width : 600px) {
+    .widget-content {
+        position: inherit;
+    }
 }
 
 .widget-error {
@@ -691,7 +712,43 @@ select.input-sm {
     color: white;
 }
 
+.filter-items {
+    overflow-y: scroll;
+    max-height: 280px
+}
 /* fix for multi line html table cells in pivot with "p" tag */
 /*.lpt-tableBlock * td * p {
     margin: 0px;
 }*/
+
+
+.hc1 {
+    background-color: transparent;
+}
+.hc2 {
+    background-color: transparent;
+}
+.hc3 {
+    background-color: transparent;
+}
+.hc4 {
+    background-color: transparent;
+}
+.hc5 {
+    background-color: transparent;
+}
+.hc6 {
+    background-color: transparent;
+}
+.hc7 {
+    background-color: transparent;
+}
+.hc8 {
+    background-color: transparent;
+}
+.hc9 {
+    background-color: transparent;
+}
+.hc10 {
+    background-color: transparent;
+}

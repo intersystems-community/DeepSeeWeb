@@ -9,18 +9,20 @@
      * Controller to handle settings window
      * @constructor
      */
-    function SettingsCtrl($scope, $window, Storage, Utils, Error, Lang, $rootScope, Connector) {
+    function SettingsCtrl($scope, $window, Storage, Utils, Error, Lang, $rootScope, Connector, ngDialog, CONST) {
         var _this         = this;
         var settings      = Storage.getAppSettings();
         var shouldRefresh = false;
 
         $scope.model = {
             addMode:   false,
+            themes: CONST.themes,
             settingsNames:    Storage.getSettingsNames(),
             selectedSettings: Storage.currentSettings,
             settingsName:     "",
             showFolders:      !settings.hideFolders,
-            isMetro:          settings.isMetro,
+            theme:            settings.theme || '',
+            isSaveFilters:    settings.isSaveFilters === undefined ? true : settings.isSaveFilters,
             showImages:       settings.showImages,
             langs:            Lang.getLanguages(),
             language:         Lang.current,
@@ -37,6 +39,7 @@
         $scope.exportSettings = exportSettings;
         $scope.importSettings = importSettings;
         $scope.readSettings = readSettings;
+        $scope.showLog = showLog;
 
         $scope.onInit = function() {
            $scope.editor.setText(Storage.getAddons());
@@ -54,6 +57,12 @@
             } else {
                 addSettings($scope.model.settingsName);
             }
+        }
+
+        function showLog() {
+            var html = "";
+            if (dsw.errors) html += dsw.errors.join('<br/>');
+            ngDialog.open({template: 'src/views/log.html', data: { html: html }, controller: 'share', className: "ngdialog-theme-default wnd-error-log" });
         }
 
         /**
@@ -106,12 +115,14 @@
             settings.language     = $scope.model.language || "en";
             settings.hideFolders  = !$scope.model.showFolders ? true : false;
             settings.showImages   = $scope.model.showImages ? true : false;
-            settings.isMetro      = $scope.model.isMetro ? true : false;
+            settings.theme        = $scope.model.theme;
+            settings.isSaveFilters= $scope.model.isSaveFilters ? true : false;
             settings.colCount     = $scope.model.colCount;
             settings.widgetHeight = $scope.model.widgetHeight;
 
             if (old.language     !== settings.language)     shouldRefresh = true;
-            if (old.isMetro      !== settings.isMetro)      shouldRefresh = true;
+            if (old.theme        !== settings.theme)      shouldRefresh = true;
+            if (old.isSaveFilters!== settings.isSaveFilters)shouldRefresh = true;
             if (old.hideFolders  !== settings.hideFolders)  shouldRefresh = true;
             if (old.showImages   !== settings.showImages)   shouldRefresh = true;
             if (old.colCount     !== settings.colCount)     shouldRefresh = true;
@@ -207,6 +218,6 @@
     }
 
     angular.module('app')
-        .controller('settings', ['$scope', '$window', 'Storage', 'Utils', 'Error', 'Lang', '$rootScope', 'Connector', SettingsCtrl] );
+        .controller('settings', ['$scope', '$window', 'Storage', 'Utils', 'Error', 'Lang', '$rootScope', 'Connector', 'ngDialog', 'CONST', SettingsCtrl] );
 
 })();

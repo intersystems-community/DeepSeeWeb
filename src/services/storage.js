@@ -1,12 +1,14 @@
 /**
- * Service to work with local storage and store settings for app, widgets and tiles
+ * Service to work with local storage and store ings for app, widgets and tiles
  */
 (function() {
     'use strict';
 
     function StorageSvc(CONST, Lang, Utils, $rootScope, $location) {
         var _this = this;
-
+        /*if (window.dsw.mobile) {
+            document.getElementById('pagestyle').setAttribute('href', CONST.css.classic);
+        }*/
         this.settings            = {
             Default: {}
         };
@@ -88,47 +90,36 @@
 
 
                 var settings = _this.getAppSettings();
-                if (settings.isMetro) {
-                    document.getElementById('pagestyle').setAttribute('href', CONST.css.classic);
-                } else {
-                    document.getElementById('pagestyle').setAttribute('href', CONST.css.metro);
+                if (!window.dsw.mobile) {
+                    if (settings.theme) {
+                        document.getElementById('pagestyle').setAttribute('href', 'css/' + settings.theme);
+                    }
                 }
-
                 Lang.current = settings.language || "en";
                 $rootScope.$broadcast('lang:changed');
 
+                // Get colors from theme
+                var cols = Highcharts.getOptions().colors;
+                for (var i = 1; i <= cols.length; i++) {
+                    var c = $('.hc' + i.toString()).css('background-color');
+                    if (c !== 'rgba(0, 0, 0, 0)') {
+                        cols[i-1] = c;
+                    }
+                }
                 Highcharts.setOptions({
+                    colors: cols,
                     global: {
                         useUTC: false
                     },
                     lang: {
                         loading: "<div class='loader'></div>",
-                        //months: ['Janeiro', 'Fevereiro', 'Mar�o', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
-                        //weekdays: ['Domingo', 'Segunda', 'Ter�a', 'Quarta', 'Quinta', 'Sexta', 'S�bado'],
                         shortMonths: Lang.get("shortMonths"),
                         rangeSelectorZoom: Lang.get("zoom"),
                         rangeSelectorFrom: Lang.get("from"),
                         rangeSelectorTo: Lang.get("to"),
-                        noData: Lang.get("noData")/*
-                         exportButtonTitle: "Exportar",
-                         printButtonTitle: "Imprimir",
-                         rangeSelectorFrom: "De",
-                         rangeSelectorTo: "At�",
-                         rangeSelectorZoom: "??????????",
-                         downloadPNG: 'Download imagem PNG',
-                         downloadJPEG: 'Download imagem JPEG',
-                         downloadPDF: 'Download documento PDF',
-                         downloadSVG: 'Download imagem SVG'*/
-                        // resetZoom: "Reset",
-                        // resetZoomTitle: "Reset,
-                        // thousandsSep: ".",
-                        // decimalPoint: ','
+                        noData: Lang.get("noData")
                     }
                 });
-                // Listened in menu.js
-                //$rootScope.$broadcast('menu:toggleLoading', false);
-
-            //$rootScope.$broadcast('config:loaded');
         }
 
         /**
@@ -221,7 +212,7 @@
          * @returns {object} Tiles settings
          */
         function getTilesSettings(ns) {
-            if (_this.nsSettings) return _this.nsSettings.tiles || {}; else return {}
+            if (_this.nsSettings) return _this.nsSettings.tiles || {}; else return {};
         }
 
         /**
@@ -279,13 +270,7 @@
             }
             if (!conf) return;
 
-            // Convert old format of config to new
-            //if (conf.Default && conf.Default.tiles) {
-//                _this.nsSettings[ns] = angular.copy(conf.Default.tiles);
-//            } else {
-                // this is new format
             _this.nsSettings = angular.copy(conf);
-  //          }
             sessionStorage.namespaceUserSettings = JSON.stringify(_this.nsSettings);
         }
     }
