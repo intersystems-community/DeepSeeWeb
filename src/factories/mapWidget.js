@@ -72,10 +72,9 @@
                 var url = folder + "/" + fileName;
 
                 // For dev on locahost take connector redirect url
-                if (window.location.host.split(':')[0].toLowerCase()) {
+                if (window.location.host.split(':')[0].toLowerCase() === 'localhost') {
                     url = localStorage.connectorRedirect.split('/').slice(0, -2).join('/') + url;
                 } else {
-
                     if (dsw.mobile) {
                         url = localStorage.connectorRedirect.split('/').slice(0, -2).join('/') + url;
                     } else {
