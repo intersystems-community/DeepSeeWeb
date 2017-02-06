@@ -205,6 +205,7 @@
                 }
             }
             var res = active.map(function(e) { return { targetProperty: e.targetProperty, value: e.value, isExclude: e.isExclude };});
+            var res = active.map(function(e) { return { targetProperty: e.targetProperty, value: e.value, isExclude: e.isExclude }});
 
             var widgets = Storage.getWidgetsSettings(_this.dashboard, Connector.getNamespace());
             if (res.length) {
