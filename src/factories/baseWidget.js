@@ -1059,9 +1059,9 @@
                     flt = filters[i];
                     if (!flt.isInterval) continue;
                     path = flt.targetProperty;
-                    var v1 = flt.values[flt.fromIdx].path.replace("&[", "").replace("]", "");
-                    var v2 = flt.values[flt.toIdx].path.replace("&[", "").replace("]", "");
-                    where += " %SEARCH.&[(" + path + " >= '" + v1 + "') AND (" + path + " <= '" + v2 + "')]";
+					var v1 = flt.values[flt.fromIdx].path; 
+					var v2 = flt.values[flt.toIdx].path;
+					mdx += " %FILTER %OR(" + path + "." +  v1 + ":" + v2 + ")";
                 }
 
                 // Find other filters
