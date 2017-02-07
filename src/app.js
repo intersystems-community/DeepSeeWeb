@@ -141,7 +141,7 @@ window.dsw.mobile = false;
         }
         var deffered = $q.defer();
             // Check if namespace was changed
-            if (($route.current.params.ns || '').toLowerCase() !== (localStorage.namespace || '').toLowerCase()) {
+            if (($route.current.params.ns !== undefined) && ($route.current.params.ns || '').toLowerCase() !== (localStorage.namespace || '').toLowerCase()) {
                 // Clear dashboard list
                 delete sessionStorage.dashboarList;
                 loadSettings(Storage, $q, Connector)
