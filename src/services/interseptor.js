@@ -42,7 +42,9 @@
             if (e.data === null && e.status === 0) e.data = {Error: Lang.get("errTimeout")};
             if (e.status === 401) {
                 var url = $location.$$url;
-                if ($location.$$path !== "/login") $location.path("/login").search({from: url});
+                if ($location.$$path !== "/login") {
+                    $location.path("/login").search({from: encodeURIComponent(url)});
+                }
             }
             return $q.reject(e);
         }

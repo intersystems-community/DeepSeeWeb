@@ -59,6 +59,7 @@
          * Load saved filter values from settings
          */
         function loadFiltersFromSettings() {
+            if (!Storage.getAppSettings().isSaveFilters) return;
             var found = false;
             var widgets = Storage.getWidgetsSettings(_this.dashboard, Connector.getNamespace());
             if (widgets._filters) {

@@ -82,7 +82,7 @@
             var from = $location.search().from;
             var search = {};
             if (from) {
-                from = decodeURI(from);
+                from = decodeURIComponent(from);
                 if (~from.indexOf("?")) {
                     var parts = from.split("?");
                     from = parts[0];

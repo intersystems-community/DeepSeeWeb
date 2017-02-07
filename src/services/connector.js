@@ -61,7 +61,10 @@
          * Navigates to login page
          */
         function gotoLoginPage() {
-            $location.path("/login").search({});
+            var url = $location.$$url;
+            if ($location.$$path !== "/login") {
+                $location.path("/login").search({from: encodeURIComponent(url)});
+            }
         }
 
         /**
