@@ -4,7 +4,17 @@
 (function() {
     'use strict';
 
-    function BaseWidgetFact($rootScope, Lang, Connector, Filters, Utils, $q, Storage, $routeParams, Variables) {
+    function BaseWidgetFact(
+        $rootScope,
+        Lang,
+        Connector,
+        Filters,
+        Utils,
+        $q,
+        Storage,
+        $routeParams,
+        Variables,
+        $location) {
 
         function BaseWidget($scope) {
             var _this = this;
@@ -309,8 +319,39 @@
                 _this.requestData();
             }
 
+            function actionNewWindow(action) {
+                let url = action.targetProperty;
+                let idx = url.toUpperCase().indexOf('DASHBOARD=');
+                if (idx !== -1) {
+                    let dashboard = url.substring(idx + 10, url.length - 1);
+                    // Replace first & to ? if there is no ?
+                    if (dashboard.indexOf('?') == -1) dashboard = dashboard.replace('&', '?');
+                    let cur = $location.absUrl();
+                    let h = cur.indexOf('#');
+                    if (h !== -1) {
+                        url = cur.split('#')[0] + '#!/d/' + dashboard;
+                    } else {
+                        url += + '#!/d/' + dashboard;
+                    }
+                }
+
+                // Build filter string
+                let f = [];
+                for (let i = 0; i < _this.filterCount; i++) {
+                    let flt = _this.getFilter(i);
+                    if (!flt.value) continue;
+                    f.push(flt.targetProperty + '.' + flt.value);
+                }
+                url = url.replace('$$$FILTER', encodeURIComponent(f.join('~')));
+                window.open(url, '_blank');
+            }
+
             function performAction(action) {
-                if (action.action === 'setColumnSpec') {
+                let a = action.action.toLowerCase();
+
+                if (a === 'newwindow') {
+                    actionNewWindow(action);
+                } else if (a === 'setColumnSpec') {
                     _this.customColSpec = action.targetProperty;
                     _this.requestData();
                 } else {
@@ -679,8 +720,10 @@
                 if (!_this.desc.controls || _this.desc.controls.length === 0) return;
                 var stdList = ['applyfilter', 'setfilter', 'refresh', 'reloaddashboard', 'showlisting', 'showgeolisting', 'showbreakdown', 'setdatasource',
                     'choosedatasource', 'applyvariable', 'setrowspec', 'chooserowspec', 'setcolumnspec', 'choosecolumnspec', 'viewdashboard', 'navigate',
-                    'newwindow', 'setrowcount', 'seteowsort', 'setcolumncount', 'setcolumnsort'];
-                var actions = _this.desc.controls.filter(function(el) { return stdList.indexOf(el.action.toLowerCase()) === -1 && el.type !== "hidden"; });
+                    'newwindow', 'setrowcount', 'seteowsort', 'setcolumncount', 'setcolumnsort', 'newwindow'];
+                var actions = _this.desc.controls.filter(function(el) {
+                    return stdList.indexOf(el.action.toLowerCase()) !== -1 && el.type !== "hidden";
+                });
                 if (actions.length === 0) return;
                 _this.hasActions = true;
                 showToolbar();
@@ -1000,6 +1043,36 @@
             }
 
             /**
+             * Adds to mdx filters from query. Used in urls formed from "NewWindow" action*
+             * @param {string} mdx MDX to change
+             * @returns {string} MDX with filters
+             */
+            function addQueryFilters(mdx) {
+                let querySettings = $location.search().SETTINGS;
+                if (!querySettings) return mdx;
+                let params = querySettings.split(';');
+                let widgetName = null;
+                let filters = '';
+                for (let i = 0; i < params.length; i++) {
+                    let parts = params[i].split(':');
+                    if (parts[0].toLowerCase() === 'target') {
+                        widgetName = parts[1];
+                        continue;
+                    }
+                    if (parts[0].toLowerCase() === 'filter') {
+                        filters = parts[1];
+                    }
+                }
+                if (widgetName && _this.desc.name === widgetName && filters) {
+                    let f = filters.split('~');
+                    for (let i = 0; i < f.length; i++) {
+                        mdx += " %FILTER " + f[i];
+                    }
+                }
+
+                return mdx;
+            }
+            /**
              * Return widget MDX depending on active filters
              * @returns {string}
              */
@@ -1018,6 +1091,7 @@
 
                 // Check for active filters on widget
                 var filters = Filters.getWidgetFilters(_this.desc.name);
+
                 // Add filter for drillFilter feature
                 if (_this.drillFilter) {
                     var idx = _this.drillFilter.indexOf("&");
@@ -1088,6 +1162,9 @@
                         if (!flt.isExclude) mdx += ")";
                     }
                 }
+
+                // Add filters from query params if exists
+                mdx = addQueryFilters(mdx);
 
                 // Inserting "where" condition in appropriate part of mdx request
                 if (where) {
@@ -1185,6 +1262,17 @@
     }
 
     angular.module('widgets')
-        .factory('BaseWidget', ['$rootScope', 'Lang', 'Connector', 'Filters', 'Utils', '$q', 'Storage', '$routeParams', 'Variables', BaseWidgetFact]);
+        .factory('BaseWidget', [
+            '$rootScope',
+            'Lang',
+            'Connector',
+            'Filters',
+            'Utils',
+            '$q',
+            'Storage',
+            '$routeParams',
+            'Variables',
+            '$location',
+            BaseWidgetFact]);
 
 })();

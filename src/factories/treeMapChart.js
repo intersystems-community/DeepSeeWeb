@@ -64,6 +64,7 @@
                  this.config.xAxis.categories.push(data.Cols[1].tuples[i].caption.toString());
                  }*;*/
                 var tempData = [];
+                if (!data.Cols[0].tuples.length) return;
 
                 if (data.Cols[0].tuples[0].children) {
                     console.error("Data converter for this treemap chart not implemented!");
