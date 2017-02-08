@@ -173,6 +173,11 @@ window.dsw.mobile = false;
                 var addons = null;
                 Connector.loadAddons()
                     .then(function(addons) {
+                        if (localStorage.devAddons) {
+                            if (!addons) addons = [];
+                            var localAddons = JSON.parse(localStorage.devAddons);
+                            addons = addons.concat(localAddons);
+                        }
                         if (addons && addons.length) {
                             dsw.addons = addons.slice();
                             for (var i = 0; i < dsw.addons.length; i++) {
