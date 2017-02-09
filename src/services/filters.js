@@ -30,6 +30,15 @@
                 //if (filterArray[i].type === "hidden") continue;
                 _this.items.push(filterArray[i]);
                 var flt =  _this.items[_this.items.length - 1];
+
+                // Check for valueList
+                if (flt.valueList && flt.displayList) {
+                    let vals = flt.valueList.split(',');
+                    let txt =  flt.displayList.split(',');
+                    flt.values = [];
+                    for (let i = 0; i < vals.length; i++) flt.values.push({name: txt[i], path: vals[i]});
+                }
+
                 flt.targetArray = [];
                 if ((flt.target !== "*") && (flt.target !== "")) flt.targetArray = flt.target.split(",").concat(["emptyWidget"]);
                 flt.sourceArray = [];
