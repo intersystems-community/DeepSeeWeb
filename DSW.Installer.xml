@@ -34,6 +34,14 @@ You can see generated method in zsetup+1^App.Installer.1</Description>
             </Configuration>
         </Namespace>
     </If>
+    <If Condition='(##class(Config.Namespaces).Exists("%All")=1)'>
+        <Namespace Name="%All" Create="no" Code="CACHETEMP" Data="CACHETEMP" Ensemble="0">
+            <Configuration>
+                <Log Text="Mapping DSW and DSW.Addons packages to %All namespace" Level="0"/>
+                <ClassMapping From="${Namespace}" Package="DSW"/>
+            </Configuration>
+        </Namespace>
+    </If>
 
     <Log Text="Mapping DSW and DSW.Addons packages to Samples namespace" Level="0"/>
     <If Condition='##class(Config.Namespaces).Exists("Samples")'>
