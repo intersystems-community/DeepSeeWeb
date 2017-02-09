@@ -85,6 +85,8 @@ gulp.task('cssminify', ['sass-dev'], function () {
 
 // Copy other files to dist (like fonts, libs, images)
 gulp.task('copyfiles', ['sass-dev'], function () {
+    gulp.src(['src/addons/*.js'])
+        .pipe(gulp.dest('build/addons'));
     gulp.src(['src/lib/*.js'])
         .pipe(gulp.dest('build/src/lib'));
     gulp.src(['css/*.min.css'])
@@ -155,7 +157,7 @@ gulp.task('makerelease', ['zip'], function() {
 var FILE_LIST;
 gulp.task('enum-files', function() {
     FILE_LIST = [];
-    return gulp.src(['./build/**/*', '!./build/DSW.Installer.xml'])
+    return gulp.src(['./build/**/*', '!./build/DSW.Installer*.xml'])
         .pipe(through.obj(function (chunk, enc, cb) {
             if (!chunk.isDirectory()) FILE_LIST.push(chunk.relative);
             cb(null, chunk);
