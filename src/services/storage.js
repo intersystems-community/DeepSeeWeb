@@ -161,7 +161,7 @@
         function getAppSettings() {
             var lang = $location.search()['lang'];
             var settings = _this.temp.app || {};
-            settings.language = lang || 'en';
+            if (lang) settings.language = lang;
             return settings;
             //return JSON.parse(sessionStorage.settings || "{}");
         }
