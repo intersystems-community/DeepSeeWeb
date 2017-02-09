@@ -337,8 +337,9 @@
 
                 // Build filter string
                 let f = [];
-                for (let i = 0; i < _this.filterCount; i++) {
-                    let flt = _this.getFilter(i);
+                let widgetFilters = Filters.getAffectsFilters(_this.desc.name);
+                for (let i = 0; i < widgetFilters.length; i++) {
+                    let flt = widgetFilters[i];
                     if (!flt.value) continue;
                     f.push(flt.targetProperty + '.' + flt.value);
                 }

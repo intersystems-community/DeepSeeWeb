@@ -7,6 +7,7 @@
 
     function FilterCtrl($scope, Filters, Connector, Error) {
         var _this = this;
+        this.widget = $scope.ngDialogData.widget;
         this.source = $scope.ngDialogData.filter;
         this.dataSource = $scope.ngDialogData.dataSource;
 
@@ -171,6 +172,7 @@
                 delete _this.source.to;
             }
             Filters.applyFilter(_this.source);
+            _this.widget.updateFiltersText();
             $scope.closeThisDialog();
         }
     }

@@ -11,7 +11,8 @@ var gulp   = require('gulp'),
     bump = require('gulp-bump'),
     replace = require('gulp-replace'),
     release = require('gulp-github-release'),
-    through = require('through2')
+    through = require('through2'),
+    traceur = require('gulp-traceur-compiler');
 
     // TODO: add html-min
 
@@ -60,6 +61,7 @@ gulp.task('minify', function () {
     return gulp.src('index.html')
         .pipe(assets)
         .pipe(replace('"{{package.json.version}}"', '"' + p.version + '"'))
+        .pipe(traceur())
         .pipe(uglify())
         .pipe(assets.restore())
         .pipe(useref())

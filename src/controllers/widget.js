@@ -138,7 +138,7 @@
 
             var className = "ngdialog-theme-plain";
             if (dsw.mobile) className += " ngdialog-mobile";
-            ngDialog.open({template: 'src/views/filter.html', data: {filter: flt, dataSource: _this.desc.dataSource}, controller: "filter", showClose: false, className: className });
+            ngDialog.open({template: 'src/views/filter.html', data: {filter: flt, dataSource: _this.desc.dataSource, widget: _this}, controller: "filter", showClose: false, className: className });
         }
 
         /**

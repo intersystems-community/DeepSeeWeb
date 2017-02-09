@@ -25,6 +25,25 @@ You can see generated method in zsetup+1^App.Installer.1</Description>
         <Log Text="End Creating namespace ${Namespace}" Level="0"/>
     </If>
 
+    <If Condition='(##class(Config.Namespaces).Exists("%All")=0)'>
+        <Log Text="Creating namespace %All" Level="0"/>
+        <Namespace Name="%All" Create="yes" Code="CACHETEMP" Data="CACHETEMP" Ensemble="0">
+            <Configuration>
+                <Log Text="Mapping DSW and DSW.Addons packages to %All namespace" Level="0"/>
+                <ClassMapping From="${Namespace}" Package="DSW"/>
+            </Configuration>
+        </Namespace>
+    </If>
+
+    <Log Text="Mapping DSW and DSW.Addons packages to Samples namespace" Level="0"/>
+    <If Condition='##class(Config.Namespaces).Exists("Samples")'>
+        <Namespace Name="Samples" Create="no" Code="SAMPLES" Data="SAMPLES" Ensemble="0">
+            <Configuration>
+                <ClassMapping From="${Namespace}" Package="DSW"/>
+            </Configuration>
+        </Namespace>
+    </If>
+
     <Role Name="AppRole" Description="Role to access and use the App" Resources="%DB_CACHESYS:RW,%Admin_Secure:U" />
     <Namespace Name="${Namespace}" Create="no">
     	<!--<If Condition='(##class(Security.Applications).Exists("/"_"${Namespace}")=0)'>

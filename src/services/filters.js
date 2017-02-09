@@ -15,7 +15,9 @@
         this.getFilter = getFilter;
         this.clear = clear;
         this.getClickFilterTarget = getClickFilterTarget;
+        this.getAffectsFilters = getAffectsFilters;
         this.dashboard = '';
+
         /**
          * Initialize service with filter array
          * @param {Array} filterArray Filter array
@@ -94,6 +96,15 @@
                 if (flt.location !== "click") continue;
                 if (flt.source.toLowerCase() === widgetName.toLowerCase() || flt.source === "*") return flt.target;
             }
+        }
+
+        /**
+         * Return all filters that affects on widget
+         * @param {string} widgetName Widget name
+         * @returns {Array.<object>} Filter list
+         */
+        function getAffectsFilters(widgetName) {
+            return _this.items.filter(e => (e.target === "*" || e.targetArray.indexOf(widgetName) !== -1));
         }
 
         /**
