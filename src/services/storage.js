@@ -159,7 +159,10 @@
          * @returns {object} Application settings
          */
         function getAppSettings() {
-            return _this.temp.app || {};
+            var lang = $location.search()['lang'];
+            var settings = _this.temp.app || {};
+            settings.language = lang || 'en';
+            return settings;
             //return JSON.parse(sessionStorage.settings || "{}");
         }
 
