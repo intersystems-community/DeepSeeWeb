@@ -22,8 +22,14 @@
             namespace: $routeParams.ns || "Samples",
             title: $routeParams.folder,
             devMode: localStorage.connectorRedirect,
-            btnHome: Lang.get("home"),
+            lblHome: Lang.get("home"),
+            lblFav: Lang.get("fav"),
             lblSearch: Lang.get("search"),
+            lblSettings: Lang.get("options"),
+            lblAbout: Lang.get("about"),
+            lblLang: Lang.get("language"),
+            lblLogout: Lang.get("signout"),
+            lblFilter: Lang.get("filters"),
             lang: Lang.current,
             langs: Lang.getLanguages(),
             filterButton: false,
@@ -51,8 +57,14 @@
 
         $rootScope.$on('lang:changed', function() {
             $scope.model.lang = Lang.current;
-            $scope.model.btnHome = Lang.get("home");
+            $scope.model.lblHome = Lang.get("home");
             $scope.model.lblSearch = Lang.get("search");
+            $scope.model.lblFav = Lang.get("fav");
+            $scope.model.lblSettings = Lang.get("options");
+            $scope.model.lblAbout = Lang.get("about");
+            $scope.model.lblLang = Lang.get("language");
+            $scope.model.lblLogout = Lang.get("signout");
+            $scope.model.lblFilter = Lang.get("filters");
         });
 
         // Remove header space holder if there is no menu

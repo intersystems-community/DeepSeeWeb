@@ -79,7 +79,10 @@ html {
     }
     & .btn {
         @include animBack;
-        display: block;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
         //align-items: center;
         //justify-content: center;
         min-width: $headerHeight;
@@ -101,6 +104,11 @@ html {
 .navbar-default .navbar-brand {
     color: $iconColor;
     text-shadow: none;
+}
+
+// Make navbar buttons with text under icon
+.navbar-btn .btn {
+
 }
 
 form, .navbar-btn, .navbar-form, .navbar {
