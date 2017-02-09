@@ -100,7 +100,7 @@ window.dsw.mobile = false;
             if (localStorage.connectorRedirect) {
                 url = localStorage.connectorRedirect.split('/').slice(0, -2).join('/') + url;
             } else {
-                url = window.location.host + url;
+                //url = window.location.host + url;
             }
             if (url) {
                 var defer = $q.defer();
@@ -110,12 +110,12 @@ window.dsw.mobile = false;
                     return function() {
                         d.resolve();
                     };
-                })(defer)).catch((function(d, u){
+                })(defer)).catch((function(d, u, name){
                     return function(e) {
-                        alert("Can't load addon: " + a);
+                        alert("Can't load addon: " + name);
                         d.resolve();
                     };
-                })(defer, url));
+                })(defer, url, name));
             }
         }
 

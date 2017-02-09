@@ -133,7 +133,6 @@
          * @param {object} [addonInfo] Addon information
          */
         this.register = function(name, type, cl, addonInfo) {
-            if (name === 'dsw.addons.htmlviewer') name = 'user.planportlet';
             types[name] = {
                 class: cl,
                 type: type,
@@ -177,7 +176,7 @@
             if (addons && addons.length) {
                 for (var i = 0; i < addons.length; i++) {
                     a = addons[i].split('/').pop();
-                    a = ADDON_PREFIX + a.split('.').slice(0, -1);
+                    a = ADDON_PREFIX + a;
                     try {
                         this.register(a.toLowerCase(),  $injector.get(a).type || 'custom', $injector.get(a), $injector.get(a));
                     } catch (ex) {
