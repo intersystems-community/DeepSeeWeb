@@ -6,6 +6,8 @@
 
     function WidgetCtrl($scope, Lang, TypeMap, gridsterConfig, ngDialog, Filters, BaseWidget, Storage, Connector) {
         var _this = this;
+        this._applyFilter = _applyFilter;
+
         BaseWidget.apply(this, [$scope]);
         $scope.model = {
             error: "",
@@ -107,11 +109,18 @@
         }
 
         /**
+         * Private callback for filter applying. Can be overriden in custom widgets
+         * @private
+         */
+        function _applyFilter() {
+            _this.updateFiltersText();
+            _this.requestData();
+        }
+        /**
          * Apply filter callback
          */
         function applyFilter() {
-            _this.updateFiltersText();
-            _this.requestData();
+            _this._applyFilter.apply(_this, arguments);
         }
 
         /**

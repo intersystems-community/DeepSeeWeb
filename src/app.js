@@ -91,7 +91,7 @@ window.dsw.mobile = false;
     }
 
     function loadAddons(addons, $q, $ocLazyLoad) {
-        if (!addons || !addons.length) {
+        if (!addons || !addons.length && !localStorage.devAddons) {
             return $q.when();
         }
         var defers = [];
@@ -112,12 +112,34 @@ window.dsw.mobile = false;
                     };
                 })(defer)).catch((function(d, u){
                     return function(e) {
-                        alert("Can't load addon: " + u + " " + e);
+                        alert("Can't load addon: " + a);
                         d.resolve();
                     };
                 })(defer, url));
             }
         }
+
+        // Load dev addons from localhost if specified
+        if (localStorage.devAddons) {
+            var localAddons = JSON.parse(localStorage.devAddons);
+            localAddons.forEach(a => {
+                if (!dsw.addons) dsw.addons = [];
+                dsw.addons.push(a);
+                let defer = $q.defer();
+                defers.push(defer.promise);
+                $ocLazyLoad.load(a).then((function(d){
+                    return function() {
+                        d.resolve();
+                    };
+                })(defer)).catch((function(d, u){
+                    return function(e) {
+                        alert("Can't load addon: " + u + " " + e);
+                        d.resolve();
+                    };
+                })(defer, url));
+            });
+        }
+
         if (defers.length === 0) return $q.when(); else return $q.all(defers);
 
 
@@ -173,11 +195,6 @@ window.dsw.mobile = false;
                 var addons = null;
                 Connector.loadAddons()
                     .then(function(addons) {
-                        if (localStorage.devAddons) {
-                            if (!addons) addons = [];
-                            var localAddons = JSON.parse(localStorage.devAddons);
-                            addons = addons.concat(localAddons);
-                        }
                         if (addons && addons.length) {
                             dsw.addons = addons.slice();
                             for (var i = 0; i < dsw.addons.length; i++) {

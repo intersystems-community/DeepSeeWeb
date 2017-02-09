@@ -4,6 +4,8 @@
 (function() {
     'use strict';
 
+    const ADDON_PREFIX = 'DSW.Addons.';
+
     function TypeMapSvc(CONST, AreaChart, BarChart, LineChart, ColumnChart, PieChart, XyChart, TimeChart, PivotWidget,
                         TextWidget, HiLowChart, TreeMapChart, BubbleChart, BullseyeChart, SpeedometerChart,
                         FuelGaugeChart, EmptyWidget, BarChartPercent, MapWidget, Storage, $injector, $rootScope) {
@@ -131,6 +133,7 @@
          * @param {object} [addonInfo] Addon information
          */
         this.register = function(name, type, cl, addonInfo) {
+            if (name === 'dsw.addons.htmlviewer') name = 'user.planportlet';
             types[name] = {
                 class: cl,
                 type: type,
@@ -174,7 +177,12 @@
             if (addons && addons.length) {
                 for (var i = 0; i < addons.length; i++) {
                     a = addons[i].split('/').pop();
-                    this.register(a.toLowerCase(),  $injector.get(a).type || 'custom', $injector.get(a), $injector.get(a));
+                    a = ADDON_PREFIX + a.split('.').slice(0, -1);
+                    try {
+                        this.register(a.toLowerCase(),  $injector.get(a).type || 'custom', $injector.get(a), $injector.get(a));
+                    } catch (ex) {
+                        console.error(`Can't register addon: ${a}. Be aware that all names is case sensitive!`);
+                    }
                 }
 
             }
@@ -184,9 +192,13 @@
                 if (addons && addons.length) {
                     for (var i = 0; i < addons.length; i++) {
                         a = addons[i].split('/').pop();
-                        _this.register(a.toLowerCase(), $injector.get(a).type || 'custom', $injector.get(a), $injector.get(a));
+                        a = ADDON_PREFIX + a.split('.').slice(0, -1);
+                        try {
+                            _this.register(a.toLowerCase(), $injector.get(a).type || 'custom', $injector.get(a), $injector.get(a));
+                        } catch (ex) {
+                            console.error(`Can't register addon: ${a}. Be aware that all names is case sensitive!`);
+                        }
                     }
-
                 }
 
             });
