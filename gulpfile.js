@@ -97,7 +97,7 @@ gulp.task('copyfiles', ['sass-dev'], function () {
         .pipe(gulp.dest('build/css/themes'));
     gulp.src(['fonts/*'])
         .pipe(gulp.dest('build/fonts'));
-    gulp.src(['img/*'])
+    gulp.src(['img/**/*'])
         .pipe(gulp.dest('build/img'));
     gulp.src(['updater.csp'])
         .pipe(gulp.dest('build'));

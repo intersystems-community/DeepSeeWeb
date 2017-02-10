@@ -367,6 +367,24 @@
                         }
                     }
                 }
+
+                // Get values for $$$valuelist
+                if (_this.lpt) {
+                    if (_this.lpt.getSelectedRows().length) {
+                        let d = _this.lpt.dataController.getData();
+                        let rows = _this.lpt.getSelectedRows();
+                        let values = [];
+                        for (let j = 0; j < rows.length; j++) {
+                            let id = d.dataArray[(rows[j] - 1) * d.columnProps.length];
+                            values.push(id);
+                        }
+                        let idx = url.toLowerCase().indexOf('$$$valuelist');
+                        if (idx !== -1) {
+                            url = url.substring(0, idx) + values.join(',') + url.substring(idx + 12, url.length);
+                        }
+                    }
+                }
+
                 window.open(url, '_blank');
             }
 
@@ -742,9 +760,10 @@
              */
             function setupActions() {
                 if (!_this.desc.controls || _this.desc.controls.length === 0) return;
-                var stdList = ['applyfilter', 'setfilter', 'refresh', 'reloaddashboard', 'showlisting', 'showgeolisting', 'showbreakdown', 'setdatasource',
-                    'choosedatasource', 'applyvariable', 'setrowspec', 'chooserowspec', 'setcolumnspec', 'choosecolumnspec', 'viewdashboard', 'navigate',
-                    'newwindow', 'setrowcount', 'seteowsort', 'setcolumncount', 'setcolumnsort', 'newwindow'];
+                var stdList = ['applyfilter', 'setfilter', 'refresh', 'reloaddashboard', 'setdatasource',
+                    'choosedatasource', 'applyvariable', 'setrowspec', 'chooserowspec', 'setcolumnspec',
+                    'choosecolumnspec', 'viewdashboard', 'navigate',
+                    'newwindow', 'setrowcount', 'setrowsort', 'setcolumncount', 'setcolumnsort', 'newwindow'];
                 var actions = _this.desc.controls.filter(function(el) {
                     return stdList.indexOf(el.action.toLowerCase()) !== -1 && el.type !== "hidden";
                 });

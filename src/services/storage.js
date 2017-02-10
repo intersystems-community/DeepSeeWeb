@@ -101,8 +101,8 @@
                 // Get colors from theme
                 var cols = Highcharts.getOptions().colors;
                 for (var i = 1; i <= cols.length; i++) {
-                    var c = $('.hc' + i.toString()).css('background-color');
-                    if (c !== 'rgba(0, 0, 0, 0)') {
+                    var c = $('.hc' + i.toString()).css('background-color').toLowerCase();
+                    if (c !== 'rgba(0, 0, 0, 0)' &&  c !== 'transparent') {
                         cols[i-1] = c;
                     }
                 }

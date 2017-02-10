@@ -44,7 +44,7 @@
          "http://192.168.1.20:57772/MDX2JSON/"
          "http://37.139.17.101/MDX2JSON/"
          */
-        if (localStorage.connectorRedirect) {
+        if (localStorage.connectorRedirect && (dsw.mobile || location.host.split(':')[0].toLowerCase() === 'localhost')) {
             this.url = localStorage.connectorRedirect;
             this.newAPI = localStorage.connectorRedirect.replace("/MDX2JSON", '') + 'api/deepsee/Data/MDXExecute';
         } else {

@@ -194,6 +194,9 @@ window.dsw.mobile = false;
                 Storage.loadConfig(result);
                 var addons = null;
                 Connector.loadAddons()
+                    .catch(function(e) {
+                        console.log(`Can't load addons: ${e}`);
+                    })
                     .then(function(addons) {
                         if (addons && addons.length) {
                             dsw.addons = addons.slice();
