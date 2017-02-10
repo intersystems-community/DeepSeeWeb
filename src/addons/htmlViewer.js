@@ -25,11 +25,10 @@
 
         function HtmlViewer($scope) {
             var _this = this;
-            var url = 'http://147.178.206.54:57772/csp/healthshare/hsanalytics/mre/plan_details.html?treatment=$$$FILTER';
 
             $scope.getUrl = function() {
                 return _this.desc.properties.Data || '';
-            }
+            };
 
             this._applyFilter = function(sc, filter) {
                 $scope.showPage(url.replace('$$$FILTER', encodeURIComponent(filter.value)));

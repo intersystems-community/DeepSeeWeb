@@ -331,7 +331,7 @@
                     if (h !== -1) {
                         url = cur.split('#')[0] + '#!/d/' + dashboard;
                     } else {
-                        url += + '#!/d/' + dashboard;
+                        url += +'#!/d/' + dashboard;
                     }
                 }
 
@@ -341,9 +341,32 @@
                 for (let i = 0; i < widgetFilters.length; i++) {
                     let flt = widgetFilters[i];
                     if (!flt.value) continue;
-                    f.push(flt.targetProperty + '.' + flt.value);
+                    let v = '';
+                    if (flt.isInterval) {
+                        // Format filter string like path.v1:v2
+                        v = flt.targetProperty + '.' + flt.values[flt.fromIdx].path + ':' + flt.values[flt.toIdx].path;
+                    } else {
+                        v = flt.targetProperty + '.' + (flt.isExclude ? '%NOT ' : '') + flt.value;
+                    }
+                    // For many selected values make correct filter string {v1,v2,v3}
+                    if (v.indexOf('|') !== -1) {
+                        v = v.replace(/\|/g, ',').replace('&[', '{&[') + '}';
+                    }
+                    f.push(v);
                 }
                 url = url.replace('$$$FILTER', encodeURIComponent(f.join('~')));
+
+                // Get current value for $$$currvalue
+                if (_this.lpt) {
+                    if (_this.lpt.getSelectedRows().length) {
+                        let d = _this.lpt.dataController.getData();
+                        let id = d.dataArray[(_this.lpt.getSelectedRows()[0]-1) * d.columnProps.length];
+                        let idx = url.toLowerCase().indexOf('$$$currvalue');
+                        if (idx !== -1) {
+                            url = url.substring(0, idx) + id + url.substring(idx + 12, url.length);
+                        }
+                    }
+                }
                 window.open(url, '_blank');
             }
 
@@ -1061,13 +1084,25 @@
                         continue;
                     }
                     if (parts[0].toLowerCase() === 'filter') {
-                        filters = parts[1];
+                        filters = parts.slice(1).join(':');
                     }
                 }
                 if (widgetName && _this.desc.name === widgetName && filters) {
                     let f = filters.split('~');
                     for (let i = 0; i < f.length; i++) {
-                        mdx += " %FILTER " + f[i];
+                        let s = f[i];
+                        let isExclude = s.indexOf('%NOT') !== -1;
+                        if (s.indexOf('{') !== -1) {
+                            // Many values
+                            let path = s.substring(0, s.indexOf('{')).replace('%NOT ', '');
+                            let values = s.match(/\{([^)]+)\}/)[1].split(',');
+                            mdx += ' %FILTER %OR({';
+                            mdx += values.map(v => path + v + (isExclude ? '.%NOT' : '')).join(',');
+                            mdx += '})';
+                        } else {
+                            // One value
+                            mdx += " %FILTER " + s;
+                        }
                     }
                 }
 

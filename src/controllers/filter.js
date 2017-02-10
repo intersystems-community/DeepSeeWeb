@@ -155,6 +155,7 @@
         function removeFilter() {
             for (var i = 0; i < _this.source.values.length; i++) _this.source.values[i].checked = false;
             Filters.applyFilter(_this.source);
+            _this.widget.updateFiltersText();
             $scope.closeThisDialog();
         }
 
