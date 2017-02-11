@@ -204,7 +204,7 @@
                     for (i = 0; i < flt.targetArray.length; i++) $rootScope.$broadcast("filter" + flt.targetArray[i], flt);
                 } else {
                     // Listened in widget.js
-                    if (flt.target === "*") $rootScope.$broadcast("filterAll");
+                    if (flt.target === "*") $rootScope.$broadcast("filterAll", flt);
                 }
             }
             saveFilters();
