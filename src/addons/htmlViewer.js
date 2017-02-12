@@ -6,7 +6,7 @@
             return {
                 link: function (scope, element, attrs) {
                     element.removeAttr('html-viewer');
-                    element[0].innerHTML = "<iframe style='border: none; width:100%; height:100%;'></iframe>";
+                    element[0].innerHTML = "<iframe style='border: none; width:100%; height:100%; flex: 1 1 100%'></iframe>";
 
                     $compile(element)(scope);
                     var frame = element[0].children[0];

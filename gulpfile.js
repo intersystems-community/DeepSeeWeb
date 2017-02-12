@@ -195,11 +195,13 @@ gulp.task('create-install-package', ['enum-files'], function() {
 </XData>`;
     }
 
+    var p = require('./package.json');
+
     // Change exists Installer class
     var installer = fs.readFileSync('./DSW.Installer.xml', 'utf8');
     installer = installer.substring(0, installer.length - 11);
     installer += '<Class name="DSW.InstallerData">' + append + '</Class></Export>';
-    fs.writeFileSync('./build/DSW.Installer.xml', installer);
+    fs.writeFileSync('./build/DSW.Installer.' +  p.version + '.xml', installer);
     console.log('DSW.Installer.xml was created!')
 });
 
