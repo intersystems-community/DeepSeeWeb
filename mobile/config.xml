@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.gnibeda.deepsight" version="1.115" xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0">
+<widget id="com.gnibeda.deepsight" version="2.0.12" xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0">
     <name>DeepSight</name>
     <description>
         Deep See Mobile visualizer
@@ -9,7 +9,7 @@
     </author>
     <feature name="http://api.phonegap.com/1.0/device" />
         
-    <preference name="phonegap-version" value="cli-6.3.0" />
+    <preference name="phonegap-version" value="cli-6.5.0" />
     <preference name="permissions" value="none" />
     <preference name="orientation" value="default" />
     <preference name="target-device" value="universal" />
@@ -36,14 +36,31 @@
     <icon gap:density="xhdpi" gap:platform="android" src="res/icon/android/icon-96-xhdpi.png" />
     <icon gap:platform="blackberry" src="res/icon/blackberry/icon-80.png" />
     <icon gap:platform="blackberry" gap:state="hover" src="res/icon/blackberry/icon-80.png" />
-    <icon gap:platform="ios" height="57" src="res/icon/ios/icon-57.png" width="57" />
-    <icon gap:platform="ios" height="72" src="res/icon/ios/icon-72.png" width="72" />
-    <icon gap:platform="ios" height="114" src="res/icon/ios/icon-57-2x.png" width="114" />
-    <icon gap:platform="ios" height="144" src="res/icon/ios/icon-72-2x.png" width="144" />
-    
-    <icon gap:platform="ios" height="120" src="res/icon/ios/icon-120.png" width="120" />
-    <icon gap:platform="ios" height="76" src="res/icon/ios/icon-76.png" width="76" />
-    <icon gap:platform="ios" height="152" src="res/icon/ios/icon-76.png" width="152" />    
+   
+    <icon gap:platform="ios" width="20" height="20" src="res/icon/ios/Icon-App-20x20@1x.png" />
+    <icon gap:platform="ios" width="40" height="40" src="res/icon/ios/Icon-App-20x20@2x.png" />
+    <icon gap:platform="ios" width="60" height="60" src="res/icon/ios/Icon-App-20x20@3x.png" />
+    <icon gap:platform="ios" width="29" height="29" src="res/icon/ios/Icon-App-29x29@1x.png" />
+    <icon gap:platform="ios" width="58" height="58" src="res/icon/ios/Icon-App-29x29@2x.png" />
+    <icon gap:platform="ios" width="87" height="87" src="res/icon/ios/Icon-App-29x29@3x.png" />
+    <icon gap:platform="ios" width="40" height="40" src="res/icon/ios/Icon-App-40x40@1x.png" />
+    <icon gap:platform="ios" width="80" height="80" src="res/icon/ios/Icon-App-40x40@2x.png" />
+    <icon gap:platform="ios" width="120" height="120" src="res/icon/ios/Icon-App-40x40@3x.png" />
+    <icon gap:platform="ios" width="57" height="57" src="res/icon/ios/Icon-App-57x57@1x.png" />
+    <icon gap:platform="ios" width="114" height="114" src="res/icon/ios/Icon-App-57x57@2x.png" />
+    <icon gap:platform="ios" width="171" height="171" src="res/icon/ios/Icon-App-60x60@1x.png" />
+    <icon gap:platform="ios" width="120" height="120" src="res/icon/ios/Icon-App-60x60@2x.png" />
+    <icon gap:platform="ios" width="180" height="180" src="res/icon/ios/Icon-App-60x60@3x.png" />
+    <icon gap:platform="ios" width="72" height="72" src="res/icon/ios/Icon-App-72x72@1x.png" />
+    <icon gap:platform="ios" width="144" height="144" src="res/icon/ios/Icon-App-72x72@2x.png" />
+    <icon gap:platform="ios" width="76" height="76" src="res/icon/ios/Icon-App-76x76@1x.png" />
+    <icon gap:platform="ios" width="152" height="152" src="res/icon/ios/Icon-App-76x76@2x.png" />
+    <icon gap:platform="ios" width="228" height="228" src="res/icon/ios/Icon-App-76x76@3x.png" />
+    <icon gap:platform="ios" width="167" height="167" src="res/icon/ios/Icon-App-83.5x83.5@2x.png" />
+    <icon gap:platform="ios" width="50" height="50" src="res/icon/ios/Icon-Small-50x50@1x.png" />
+    <icon gap:platform="ios" width="100" height="100" src="res/icon/ios/Icon-Small-50x50@2x.png" />    
+
+
     
     <icon gap:platform="webos" src="res/icon/webos/icon-64.png" />
     <icon gap:platform="winphone" src="res/icon/windows-phone/icon-48.png" />
@@ -58,6 +75,8 @@
     <gap:splash gap:platform="ios" height="1024" src="res/screen/ios/screen-ipad-portrait.png" width="768" />
     <gap:splash gap:platform="ios" height="768" src="res/screen/ios/screen-ipad-landscape.png" width="1024" />
     <gap:splash gap:platform="winphone" src="res/screen/windows-phone/screen-portrait.jpg" />
+
+
     
     
     <gap:splash src="res/screen/ios/screen-iphone-portrait-568h.png" gap:platform="ios" width="640" height="1136" />
