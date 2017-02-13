@@ -157,8 +157,8 @@
                     }
                     item.col = result.widgets[i].displayInfo.topCol * tc;
                     item.row = result.widgets[i].displayInfo.leftRow * tr;
-                    item.sizeX = result.widgets[i].displayInfo.colWidth * tc;
-                    item.sizeY = result.widgets[i].displayInfo.rowHeight;
+                    item.sizeX = (result.widgets[i].displayInfo.colWidth || 1) * tc;
+                    item.sizeY = (result.widgets[i].displayInfo.rowHeight || 2);
                 }
                 if (result.widgets[i].autocreated) {
                     delete item.row;

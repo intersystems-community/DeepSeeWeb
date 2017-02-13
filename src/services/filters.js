@@ -4,7 +4,7 @@
 (function() {
     'use strict';
 
-    function FiltersSvc($rootScope, Connector, Storage) {
+    function FiltersSvc($rootScope, Connector, Storage, Lang) {
         var _this = this;
         this.items = [];
         this.isFiltersOnToolbarExists = false;
@@ -81,18 +81,27 @@
                     if (exists) {
                         // Check for single value
                         exists.value = flt.value;
-                        if (flt.isExclude) exists.value += ".%NOT";
+                        exists.isExclude = flt.isExclude;
+                        exists.isInterval = flt.isInterval;
 
-                        var values = flt.value.split('|');
-                        // Multiple values was selected
-                        exists.values.forEach(function(v) {
-                            if (values.indexOf(v.path) !== -1) v.checked = true;
-                        });
-                        if (values.length > 1) {
-                            exists.valueDisplay = flt.value.split('|').map(function(el) { return el.replace('&[', '').replace(']', ''); }).join(',');
+                        if (exists.isInterval) {
+                            exists.fromIdx = flt.fromIdx;
+                            exists.toIdx = flt.toIdx;
+                            exists.valueDisplay = exists.values[exists.fromIdx].name + ':' + exists.values[exists.toIdx].name;
                         } else {
-                            exists.valueDisplay = findDisplayText(exists);
+                            var values = flt.value.split('|');
+
+                            // Multiple values was selected
+                            exists.values.forEach(function (v) {
+                                if (values.indexOf(v.path) !== -1) v.checked = true;
+                            });
+
+                            exists.valueDisplay = flt.value.split('|').map(el => {
+                                let v = exists.values.find(e => e.path == el);
+                                return (v.name || '').toString();
+                            }).join(',');
                         }
+
                         found = true;
                     }
                 }
@@ -225,8 +234,16 @@
                     active.push(flt);
                 }
             }
-            var res = active.map(function(e) { return { targetProperty: e.targetProperty, value: e.value, isExclude: e.isExclude };});
-            var res = active.map(function(e) { return { targetProperty: e.targetProperty, value: e.value, isExclude: e.isExclude }});
+            var res = active.map(e => {
+                return {
+                    targetProperty: e.targetProperty,
+                    value: e.value,
+                    isExclude: e.isExclude,
+                    isInterval: e.isInterval,
+                    fromIdx: e.fromIdx,
+                    toIdx: e.toIdx
+                }
+            });
 
             var widgets = Storage.getWidgetsSettings(_this.dashboard, Connector.getNamespace());
             if (res.length) {
@@ -256,6 +273,6 @@
     }
 
     angular.module('app')
-        .service('Filters', ['$rootScope', 'Connector', 'Storage', FiltersSvc]);
+        .service('Filters', ['$rootScope', 'Connector', 'Storage', 'Lang', FiltersSvc]);
 
 })();
