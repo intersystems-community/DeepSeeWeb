@@ -63,7 +63,7 @@
         function gotoLoginPage() {
             var url = $location.$$url;
             if ($location.$$path !== "/login") {
-                $location.path("/login").search({from: encodeURIComponent(url)});
+                $location.path("/login").search({from: url});
             }
         }
 
