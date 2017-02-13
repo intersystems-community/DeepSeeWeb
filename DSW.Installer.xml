@@ -24,6 +24,13 @@ You can see generated method in zsetup+1^App.Installer.1</Description>
         </Namespace>
         <Log Text="End Creating namespace ${Namespace}" Level="0"/>
     </If>
+    
+    <Role Name="AppRole" Description="Role to access and use the App" Resources="%DB_CACHESYS:RW,%Admin_Secure:U" />
+    <Namespace Name="${Namespace}" Create="no">
+        <CSPApplication Url="/dsw" Recurse="1" Directory="${CSPDIR}dsw" AuthenticationMethods="64" IsNamespaceDefault="true" Grant="AppRole" /> 
+        <Log Text="Copying web application files" Level="0"/>
+        <RunInstall Class="DSW.Installer" Method="CopyFiles"/>  
+   </Namespace>
 
     <If Condition='(##class(Config.Namespaces).Exists("%All")=0)'>
         <Log Text="Creating namespace %All" Level="0"/>
@@ -51,19 +58,6 @@ You can see generated method in zsetup+1^App.Installer.1</Description>
             </Configuration>
         </Namespace>
     </If>
-
-    <Role Name="AppRole" Description="Role to access and use the App" Resources="%DB_CACHESYS:RW,%Admin_Secure:U" />
-    <Namespace Name="${Namespace}" Create="no">
-    	<!--<If Condition='(##class(Security.Applications).Exists("/"_"${Namespace}")=0)'>
-    	   <Log Text="Creating application" Level="0"/>-->
-           <CSPApplication Url="/dsw" Recurse="1" Directory="${CSPDIR}dsw" AuthenticationMethods="64" IsNamespaceDefault="true" Grant="AppRole" />
-        <!--</If>-->        
-        <Log Text="Copying web application files" Level="0"/>
-    	<RunInstall Class="DSW.Installer" Method="CopyFiles"/>
-    
-   </Namespace>
-    
-    
 </Manifest>
 ]]></Data>
 </XData>
