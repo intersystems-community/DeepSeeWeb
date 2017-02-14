@@ -12,24 +12,41 @@
             this.setType('treemap');
             this.parseData = treeMapDataConverter;
             this.requestData();
+            this.isPercent = true;
+            this.totalSum = 0;
+
+            // Check for percentage
+            if (this.desc.overrides && this.desc.overrides[0] && this.desc.overrides[0].showPercentage === 0) this.isPercent = false;
 
             var ex = {
                 legend: {
                     enabled: true
                 },
+
                 plotOptions: {
-                /*    series: {
-                        cursor: null,
-                        point: {
-                            events: {
-                                click: null
-                            }
-                        },
-                    },*/
+                    /*    series: {
+                            cursor: null,
+                            point: {
+                                events: {
+                                    click: null
+                                }
+                            },
+                        },*/
                     treemap: {
                         colorByPoint: true,
                         dataLabels: {
-                            enabled: true
+                            enabled: true,
+                            align: "center",
+                            formatter: function () {
+                                if (_this.isPercent && _this.totalSum) {
+                                    let percent = (this.point.value / _this.totalSum * 100).toFixed(2);
+                                    return `${this.point.caption} - ${percent}%`;
+                                } else {
+                                    return `${this.point.caption}`;
+                                }
+
+                            }
+                            //format: "{y}"
                         }
                     }
                 },
@@ -92,6 +109,7 @@
                         cap =  data.Cols[0].tuples[0].caption;
                         fmt =  data.Cols[0].tuples[0].format;
                     }
+                    _this.totalSum = data.Data.map(d => parseFloat(d) || 0).reduce((a,b) => a+b, 0);
                     _this.addSeries({
                         data: tempData,
                         layoutAlgorithm: 'squarified',

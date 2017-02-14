@@ -380,6 +380,9 @@
                         if (result.Data.length !== 0) result.Cols[0].tuples.push({caption: Lang.get("count")});
                     }
                     _this.parseData(result);
+
+                    buildAxisTitles(result);
+
                     if (_this.desc.type.toLowerCase() === "combochart") {
                         $scope.chartConfig.yAxis = [{},{ opposite: true}];
                         $scope.chartConfig.options.yAxis = [{},{}];
@@ -418,6 +421,52 @@
                 }
             }
 
+            /**
+             * Builds axis titles for chart
+             * @param {object} result MDX response from mdx2json
+             */
+            function buildAxisTitles(result) {
+                let isDimensionX = false;
+                let isDimensionY = false;
+                let mdx = _this.getMDX();
+                let idx = mdx.indexOf('ON');
+                let idx2 = -1;
+                if (idx !== -1) {
+                    idx2 = mdx.indexOf('FROM', idx);
+                    if (idx2 !== -1) {
+                        let part = mdx.substring(idx, idx2);
+                        isDimensionY = part.toLowerCase().lastIndexOf('.members') !== -1;
+                    }
+                }
+                if (idx2 !== -1) {
+                    idx = idx2;
+                    idx2 = mdx.indexOf('FROM', idx);
+                    let part = mdx.substring(idx, idx2);
+                    isDimensionX = part.toLowerCase().lastIndexOf('.members') !== -1;
+                }
+
+                // $scope.chartConfig.yAxis.title = {text: '' };
+                // if (isDimensionY) {
+                //     if (result.Cols[1] && result.Cols[1].tuples && result.Cols[1].tuples[0] && result.Cols[1].tuples[0].dimension) {
+                //         $scope.chartConfig.xAxis.title = {text: result.Cols[1].tuples[0].dimension};
+                //     }
+                // } else {
+                    if ($scope.chartConfig.yAxis && result.Cols[0] && result.Cols[0].tuples && result.Cols[0].tuples.length) {
+                        $scope.chartConfig.yAxis.title = {text: result.Cols[0].tuples.map(t => t.caption || '').join(' & ')};
+                    }
+                //}
+
+                // $scope.chartConfig.xAxis.title = {text: '' };
+                // if (isDimensionX) {
+                //     if (result.Cols[0] && result.Cols[0].tuples && result.Cols[0].tuples[0] && result.Cols[0].tuples[0].dimension) {
+                //         $scope.chartConfig.yAxis.title = {text: result.Cols[0].tuples[0].dimension};
+                //     }
+                // } else {
+                    if ($scope.chartConfig.xAxis && result.Cols[1] && result.Cols[1].tuples && result.Cols[1].tuples.length) {
+                        $scope.chartConfig.xAxis.title = {text: result.Cols[1].tuples.map(t => t.caption || '').join(' & ')};
+                    }
+                //}
+            }
             /**
              * Adds series to chart
              * @param {object} data Series data

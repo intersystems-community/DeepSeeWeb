@@ -323,7 +323,7 @@
                 let url = action.targetProperty;
                 let idx = url.toUpperCase().indexOf('DASHBOARD=');
                 if (idx !== -1) {
-                    let dashboard = url.substring(idx + 10, url.length - 1);
+                    let dashboard = url.substring(idx + 10, url.length);
                     // Replace first & to ? if there is no ?
                     if (dashboard.indexOf('?') == -1) dashboard = dashboard.replace('&', '?');
                     let cur = $location.absUrl();
@@ -1005,6 +1005,7 @@
                 }
 
                 Connector.execMDX(mdx).catch(_this._onRequestError).then(function(data) {
+                    if (!_this) return;
                     _this._currentData = data;
                     _this._retrieveData(data);
                 });
@@ -1176,10 +1177,12 @@
                     }
                 }
 
+                // Apply col spec
                 mdx = checkColSpec(mdx);
+                // Add filters from query params if exists
+                mdx = addQueryFilters(mdx);
 
                 // Don't use filters in widgets placed on tiles
-                // TODO: fix this
                 if (!filterActive || _this.desc.tile) return applyDrill(mdx);
 
                 // Find all interval filters
@@ -1217,9 +1220,6 @@
                         if (!flt.isExclude) mdx += ")";
                     }
                 }
-
-                // Add filters from query params if exists
-                mdx = addQueryFilters(mdx);
 
                 // Inserting "where" condition in appropriate part of mdx request
                 if (where) {

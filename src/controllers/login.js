@@ -17,8 +17,8 @@
             error: ""
         };
         if (dsw.mobile) {
-            $scope.model.login = "web";
-            $scope.model.password = "dsweb";
+            //$scope.model.login = "web";
+            //$scope.model.password = "dsweb";
         }
 
         var from = $location.search().from;
