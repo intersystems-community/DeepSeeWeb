@@ -354,7 +354,7 @@
                     }
                     f.push(v);
                 }
-                url = url.replace('$$$FILTER', encodeURIComponent(f.join('~')));
+                url = url.replace('$$$FILTERS', encodeURIComponent(f.join('~')));
 
                 // Get current value for $$$currvalue
                 if (_this.lpt) {

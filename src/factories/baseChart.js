@@ -381,7 +381,7 @@
                     }
                     _this.parseData(result);
 
-                    buildAxisTitles(result);
+                    //buildAxisTitles(result);
 
                     if (_this.desc.type.toLowerCase() === "combochart") {
                         $scope.chartConfig.yAxis = [{},{ opposite: true}];
@@ -426,7 +426,18 @@
              * @param {object} result MDX response from mdx2json
              */
             function buildAxisTitles(result) {
+                // if ($scope.chartConfig.options.chart.type === 'line') {
+                //     if ($scope.chartConfig.yAxis && result.Cols[0] && result.Cols[0].tuples && result.Cols[0].tuples.length) {
+                //         $scope.chartConfig.yAxis.title = {text: result.Cols[0].tuples[0].dimension};
+                //     }
+                //     if ($scope.chartConfig.xAxis && result.Cols[1] && result.Cols[1].tuples && result.Cols[1].tuples.length) {
+                //         $scope.chartConfig.xAxis.title = {text: result.Cols[1].tuples[0].dimension};
+                //     }
+                //
+                // }
                 if ($scope.chartConfig.options.chart.type !== 'column') return;
+
+
                 let isDimensionX = false;
                 let isDimensionY = false;
                 let mdx = _this.getMDX();

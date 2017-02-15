@@ -31,7 +31,7 @@
             };
 
             this._applyFilter = function(sc, filter) {
-                $scope.showPage($scope.getUrl().replace('$$$FILTER', encodeURIComponent(filter.value)));
+                $scope.showPage($scope.getUrl().replace('$$$FILTERS', encodeURIComponent(filter.value)));
             }
         }
 
