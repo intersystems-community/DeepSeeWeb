@@ -426,6 +426,7 @@
              * @param {object} result MDX response from mdx2json
              */
             function buildAxisTitles(result) {
+                if ($scope.chartConfig.options.chart.type !== 'column') return;
                 let isDimensionX = false;
                 let isDimensionY = false;
                 let mdx = _this.getMDX();

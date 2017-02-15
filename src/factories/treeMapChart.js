@@ -36,7 +36,6 @@
                         colorByPoint: true,
                         dataLabels: {
                             enabled: true,
-                            align: "center",
                             formatter: function () {
                                 if (_this.isPercent && _this.totalSum) {
                                     let percent = (this.point.value / _this.totalSum * 100).toFixed(2);
@@ -46,7 +45,6 @@
                                 }
 
                             }
-                            //format: "{y}"
                         }
                     }
                 },
