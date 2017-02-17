@@ -385,6 +385,10 @@
                     }
                 }
 
+                if (!!$location.search().embed) {
+                    url += '&embed=1';
+                }
+
                 if (newWindow) {
                     window.open(url, '_blank');
                 } else {
