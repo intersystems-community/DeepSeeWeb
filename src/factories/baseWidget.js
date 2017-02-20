@@ -1117,15 +1117,16 @@
                         filters = parts.slice(1).join(':');
                     }
                 }
-                if (widgetName && _this.desc.name === widgetName && filters) {
+                if (widgetName && _this.desc.name !== widgetName) return mdx;
+                if (filters) {
                     let f = filters.split('~');
                     for (let i = 0; i < f.length; i++) {
                         let s = f[i];
                         let isExclude = s.indexOf('%NOT') !== -1;
-                        if (s.indexOf('{') !== -1) {
+                        if (/\{([^}]+)\}/.test(s)) {
                             // Many values
                             let path = s.substring(0, s.indexOf('{')).replace('%NOT ', '');
-                            let values = s.match(/\{([^)]+)\}/)[1].split(',');
+                            let values = s.match(/\{([^}]+)\}/)[1].split(',');
                             mdx += ' %FILTER %OR({';
                             mdx += values.map(v => path + v + (isExclude ? '.%NOT' : '')).join(',');
                             mdx += '})';
