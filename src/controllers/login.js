@@ -5,7 +5,7 @@
 (function (){
     'use strict';
 
-    function LoginCtrl(Connector, Lang, $scope, $location, $rootScope, CONST, Storage) {
+    function LoginCtrl(Connector, Lang, $scope, $location, $rootScope, CONST, Storage, ngDialog) {
         var startTime = new Date().getTime();
         delete sessionStorage.dashboarList;
         $scope.model = {
@@ -17,8 +17,7 @@
             error: ""
         };
         if (dsw.mobile) {
-            //$scope.model.login = "web";
-            //$scope.model.password = "dsweb";
+            fillFieldsWithSelectedServer();
         }
 
         var from = $location.search().from;
@@ -29,11 +28,61 @@
         }
 
         $scope.onLoginClick = onLoginClick;
+        $scope.showServers = showServers;
         $scope.scanSettings = scanSettings;
+        $scope.saveServer = saveServer;
         $scope.$on('signinerror', onError);
         // Listened in menu.js
         $rootScope.$broadcast('toggleMenu', false);
 
+
+        function fillFieldsWithSelectedServer() {
+            let idx = localStorage.selectedServer;
+            if (!idx) return;
+            idx = parseInt(idx);
+            if (isNaN(idx)) return;
+            let servers = [];
+            try  {
+                servers = JSON.parse(localStorage.serverList || '[]');
+            } catch (ex) {
+                console.error(ex);
+            }
+            let srv= servers[idx];
+            if (!srv) return;
+            $scope.model.server = srv.server || '';
+            $scope.model.login = srv.login || '';
+            $scope.model.password = srv.password || '';
+            $scope.model.namespace = srv.namespace || '';
+            if (!$scope.$$phase) $scope.$apply();
+        }
+
+        /**
+         * Saves current connection info as item for server list
+         */
+        function saveServer() {
+            var name = prompt("Please enter server name", $scope.model.server);
+            var servers = [];
+            try  {
+                servers = JSON.parse(localStorage.serverList || '[]');
+            } catch (ex) {
+                console.error(ex);
+            }
+            servers.push({
+                name: name,
+                server: $scope.model.server,
+                login: $scope.model.login,
+                password: $scope.model.password,
+                namespace: $scope.model.namespace
+            });
+            localStorage.serverList = JSON.stringify(servers);
+            localStorage.selectedServer = servers.length - 1;
+        }
+        /**
+         * Show servers list modal dialog
+         */
+        function showServers() {
+            ngDialog.open({template: 'src/views/serverList.html', data: {callback: fillFieldsWithSelectedServer}, controller: "serverList", disableAnimation: dsw.mobile, showClose: true, className: "ngdialog-theme-default wnd-mobile wnd-servers" });
+        }
 
         function getParameterByName(name, url) {
             name = name.replace(/[\[\]]/g, "\\$&");
@@ -59,8 +108,10 @@
 
         function getMobileUrl() {
             var s = $scope.model.server;
+            let isMdx2Json = s.replace('://', '').indexOf('/') !== -1;
             if (s.toLowerCase().indexOf('http') ==0 -1) s = "http://" + s;
-            s += "/MDX2JSON/";
+            if (!isMdx2Json) s += "/MDX2JSON/";
+            if (s.charAt(s.length - 1) !== '/') s += '/';
             return s;
         }
 
@@ -175,6 +226,6 @@
     }
 
     angular.module('app')
-        .controller('login', ['Connector', 'Lang', '$scope', '$location', '$rootScope', 'CONST', 'Storage', LoginCtrl]);
+        .controller('login', ['Connector', 'Lang', '$scope', '$location', '$rootScope', 'CONST', 'Storage', 'ngDialog', LoginCtrl]);
 
 })();

@@ -885,18 +885,6 @@ button {
     }
 }
 
-#btnLogin {
-    @include btn-anim;
-    height: $controlHeight;
-    border: none;
-    background: $themeColor none;
-    color: $themeFontColor;
-    z-index: $zIndexHeader + 1;
-    font-size: $fontSize;
-    text-shadow: none;
-    margin-top: 20px;
-}
-
 .login-form {
     & input {
         height: $rowHeight;
@@ -916,6 +904,36 @@ button {
 
         background: transparent !important;
         padding-top: 30px;
+    }
+
+    & .btn {
+        @include btn-anim;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: $controlHeight;
+        border: none;
+        background: $themeColor none;
+        color: $themeFontColor;
+        z-index: $zIndexHeader + 1;
+        font-size: $fontSize;
+        text-shadow: none;
+        margin-top: 20px;
+    }
+
+    & .btn-preset {
+        width: $controlHeight;
+        margin-right: $padding;
+        flex-shrink: 0;
+    }
+
+    & > .button-row {
+        display: flex;
+    }
+
+    & .dropdown-menu {
+        background-color: $accentColor;
+        width: calc(100vw - 30px);
     }
 }
 
@@ -1363,4 +1381,57 @@ button {
 
 .tile-with-widget {
     height: 200px !important;
+}
+
+.mob-list-item {
+    height: $rowHeight;
+    display: flex;
+    align-items: center;
+    margin: 0 !important;
+    border: none;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    background-color: #2ecd82;
+    font-family: $fonts;
+    font-size: $fontSize;
+    padding-left: $padding;
+    padding-right: $padding;
+    color: black;
+}
+
+.wnd-mobile {
+    animation: none;
+    -webkit-animation: none;
+    & .tab-content {
+        height: 100%;
+    }
+    & .container-fluid {
+        padding: 0;
+        background-color: $themeColor;
+    }
+}
+
+.ngdialog.ngdialog-theme-default.wnd-mobile .ngdialog-content {
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+    border-radius: 0;
+    z-index: $zIndexHeader + 100;
+}
+
+.mob-header-btn-right {
+    @include mobile-header;
+    @include btn-anim;
+    position: fixed;
+    right: 0;
+    top: 0;
+    width: $headerHeightPercent;
+    min-width: $headerHeight;
+    color: $themeFontColor;
+    font-size: $iconSize;
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }

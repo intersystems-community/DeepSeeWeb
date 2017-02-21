@@ -1,4 +1,3 @@
-
 <span class="ver">{{model.ver}}</span>
 <span class="qr-scanner-btn" desktop-hidden ng-click="scanSettings()"><i class="fa fa-camera"></i></span>
 <div class="container login-screen" ng-cloak>
@@ -35,7 +34,11 @@
                         <input id="ns" type="text" class="form-control" ng-model="model.namespace" placeholder="{{'namespace' | lang}}" focus-next="btnLogin" required>
                     </div>
                 </div>
-                <button id="btnLogin" class="btn btn-large btn-block btn-success">{{'signin' | lang}}</button>
+                <div class="button-row">
+                    <div class="btn btn-block btn-success btn-preset" ng-click="showServers()" desktop-hidden><i class="fa fa-arrow-up"></i></div>
+                    <div class="btn btn-block btn-success btn-preset" ng-click="saveServer()" desktop-hidden><i class="fa fa-save"></i></div>
+                    <div id="btnLogin" class="btn btn-large btn-block btn-success" ng-click="onLoginClick()">{{'signin' | lang}}</div>
+                </div>
         </form>
     </div>
     <div class="row">
