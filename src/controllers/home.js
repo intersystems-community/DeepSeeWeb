@@ -204,6 +204,7 @@
             } else {
                 $location.path("/d/" + item.path);
             }
+            $location.search('SETTINGS', null);
         }
 
         /**
