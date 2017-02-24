@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25" zv="Cache for UNIX (Red Hat Enterprise Linux for x86-64) 2016.2.1 (Build 803U)" ts="2017-02-24 09:24:30">
+<Class name="DSWMDX2JSON.Installer">
+<TimeChanged>64338,32714.767929</TimeChanged>
+<TimeCreated>64338,32714.767929</TimeCreated>
+
+<XData name="setup">
+<XMLNamespace>INSTALLER</XMLNamespace>
+<Data><![CDATA[
+<Manifest>
+    <Var Name="Namespace" Value="MDX2JSON"/>
+    <Var Name="Import" Value="0"/>
+
+    <If Condition='(##class(Config.Namespaces).Exists("${Namespace}")=0)'>
+    <Log Text="Creating namespace ${Namespace}" Level="0"/>
+    <Namespace Name="${Namespace}" Create="yes" Code="${Namespace}" Ensemble="" Data="${Namespace}">
+    <Configuration>
+    <Database Name="${Namespace}" Dir="${MGRDIR}/${Namespace}" Create="yes" MountRequired="true" Resource="%DB_${Namespace}" PublicPermissions="RW" MountAtStartup="true"/>
+    </Configuration>
+    </Namespace>
+    <Log Text="End Creating namespace ${Namespace}" Level="0"/>
+    </If>
+
+    <Namespace Name="${CURRENTNS}">
+    <Invoke Class="${CURRENTCLASS}" Method="Copy" CheckStatus="true">
+      <Arg Value="${CURRENTNS}"/>
+      <Arg Value="${Namespace}"/>
+      <Arg Value="MDX2JSON.*.inc,MDX2JSON.*.cls"/>
+    </Invoke>
+    </Namespace>
+    
+    <RunInstall Class="MDX2JSON.Installer" Method="setup"/>
+
+    <RunInstall Class="DSW.Installer" Method="setup"/>
+</Manifest>
+]]></Data>
+</XData>
+
+<Method name="setup">
+<Internal>1</Internal>
+<ClassMethod>1</ClassMethod>
+<CodeMode>objectgenerator</CodeMode>
+<FormalSpec><![CDATA[&pVars,pLogLevel:%Integer=3,pInstaller:%Installer.Installer,pLogger:%Installer.AbstractLogger]]></FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	do %code.WriteLine($char(9)_"set pVars(""CURRENTCLASS"")="""_%classname_"""")
+	do %code.WriteLine($char(9)_"set pVars(""CURRENTNS"")="""_$namespace_"""")
+  #; Let our XGL document generate code for this method. 
+  Quit ##class(%Installer.Manifest).%Generate(%compiledclass, %code, "setup")
+]]></Implementation>
+</Method>
+
+<Method name="Copy">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>SourceNS,TargetNS,wildcard...</FormalSpec>
+<Implementation><![CDATA[
+  new $namespace
+  set $namespace=SourceNS
+
+  for i=1:1:wildcard {
+    set item=wildcard(i)
+    if item'="" set items(item)=""
+  }
+  set tSC=$system.OBJ.ExportToStream(.items, .stream)
+  quit:$$$ISERR(tSC) tSC
+
+  set $namespace=TargetNS
+  set tSC=$system.OBJ.LoadStream(.stream, "ckd")
+
+  quit tSC
+]]></Implementation>
+</Method>
+</Class>
+</Export>

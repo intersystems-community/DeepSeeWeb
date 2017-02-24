@@ -205,6 +205,32 @@ gulp.task('create-install-package', ['enum-files'], function() {
     console.log('DSW.Installer.xml was created!')
 });
 
+gulp.task('mdx2json', function() {
+    const fs = require('fs'),
+          download = require('gulp-download'),
+          unzip = require('gulp-unzip');
+
+    const mdx2jsonUrl = 'https://github.com/intersystems-ru/Cache-MDX2JSON/archive/master.zip';
+
+    return download(mdx2jsonUrl)
+        .pipe(unzip())
+        .pipe(gulp.dest('./build/mdx2json/'));
+})
+
+// create full installer with MDX2JSON inside
+gulp.task('create-full-install-package', ['create-install-package', 'mdx2json'], function() {
+    const cacheBuilder = require('gulp-cachebuild');
+    const p = require('./package.json');
+
+    return gulp.src([
+        './DSWMDX2JSON.Installer.xml',
+        './build/DSW.Installer.' +  p.version + '.xml',
+        './build/mdx2json/**/MDX2JSON/*.cls.xml',
+        './build/mdx2json/**/MDX2JSON/*.inc.xml'
+        ])
+        .pipe(cacheBuilder('DSW.Installer.' +  p.version + '-full.xml'))
+        .pipe(gulp.dest('./build/'));
+});
 
 /* Generate jsdoc
 gulp.task('jsdoc', function() {
