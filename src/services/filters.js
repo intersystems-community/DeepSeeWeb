@@ -97,8 +97,12 @@
                             });
 
                             exists.valueDisplay = flt.value.split('|').map(el => {
+                                let isNot = el.indexOf('.%NOT') !== -1;
+                                if (isNot) el = el.replace('.%NOT', '');
                                 let v = exists.values.find(e => e.path == el);
-                                return (v.name || '').toString();
+                                let name = '';
+                                if (v && v.name) name = v.name.toString();
+                                return (isNot ? Lang.get('not') + ' ' : '') + name;
                             }).join(',');
                         }
 
