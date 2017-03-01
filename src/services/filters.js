@@ -4,7 +4,7 @@
 (function() {
     'use strict';
 
-    function FiltersSvc($rootScope, Connector, Storage, Lang) {
+    function FiltersSvc($rootScope, Connector, Storage, Lang, $location) {
         var _this = this;
         this.items = [];
         this.isFiltersOnToolbarExists = false;
@@ -52,7 +52,6 @@
                     if (parts && parts.length !== 0) {
                         var params = parts[0].substring(2, parts[0].length - 2);
                         flt.additionalParams = params.toLowerCase().trim().split(',');
-                        console.log(params);
 
                         if (flt.additionalParams.indexOf('inverseorder') !== -1) flt.values = flt.values.reverse();
                         if (flt.additionalParams.indexOf('ignorenow') !== -1) flt.values = flt.values.filter(function(v) { return v.path.toLowerCase() !== '&[now]';});
@@ -64,6 +63,8 @@
             }
 
             loadFiltersFromSettings();
+
+            loadFilterFromQuery();
         }
 
         /**
@@ -77,36 +78,91 @@
                 for (var i = 0; i < widgets._filters.length; i++) {
                     var flt = widgets._filters[i];
 
-                    var exists = _this.items.filter(function(el) { return el.targetProperty === flt.targetProperty; })[0];
-                    if (exists) {
-                        // Check for single value
-                        exists.value = flt.value;
-                        exists.isExclude = flt.isExclude;
-                        exists.isInterval = flt.isInterval;
-
-                        if (exists.isInterval) {
-                            exists.fromIdx = flt.fromIdx;
-                            exists.toIdx = flt.toIdx;
-                            exists.valueDisplay = exists.values[exists.fromIdx].name + ':' + exists.values[exists.toIdx].name;
-                        } else {
-                            var values = flt.value.split('|');
-
-                            // Multiple values was selected
-                            exists.values.forEach(function (v) {
-                                if (values.indexOf(v.path) !== -1) v.checked = true;
-                            });
-
-                            exists.valueDisplay = flt.value.split('|').map(el => {
-                                let v = exists.values.find(e => e.path == el);
-                                return (v.name || '').toString();
-                            }).join(',');
-                        }
-
-                        found = true;
-                    }
+                    applyFilterValue(flt);
                 }
             }
         }
+
+        function applyFilterValue(flt) {
+            var exists = _this.items.filter(function(el) { return el.targetProperty === flt.targetProperty; })[0];
+            if (!exists) return;
+            // Check for single value
+            exists.value = flt.value;
+            exists.isExclude = flt.isExclude;
+            exists.isInterval = flt.isInterval;
+
+            if (exists.isInterval) {
+                if (!flt.fromIdx && !flt.toIdx) {
+                    let ranges = flt.value.match(/(&\[[^\]]+\]):(&\[[^\]]+\])/);
+                    const findIndex = (path) => { return exists.values.findIndex(val => val.path === path) }
+                    flt.fromIdx = findIndex(ranges[1]);
+                    flt.toIdx = findIndex(ranges[2]);
+                }
+                exists.fromIdx = flt.fromIdx;
+                exists.toIdx = flt.toIdx;
+                exists.valueDisplay = exists.values[exists.fromIdx].name + ':' + exists.values[exists.toIdx].name;
+            } else {
+                var values = flt.value.split('|');
+
+                // Multiple values was selected
+                exists.values.forEach(function (v) {
+                    if (values.indexOf(v.path) !== -1) v.checked = true;
+                });
+                
+                exists.valueDisplay = flt.value.split('|').map(el => {
+                    let v = exists.values.find(e => e.path == el);
+                    return v === undefined ? null : (v.name || '').toString();
+                }).filter(v => v !== null).join(',');
+            }
+
+            return exists;
+        }
+
+        /**
+         * Load settings from query
+         */
+        function loadFilterFromQuery() {
+            let querySettings = $location.search().SETTINGS;
+            if (!querySettings) return;
+
+            let params = querySettings.split(';');
+            let filters = '';
+            for (let i in params) {
+                let parts = params[i].split(':');
+                if (parts[0].toLowerCase() === 'filter') {
+                    filters = parts.slice(1).join(':');
+                }
+            }
+            if (filters) {
+                let f = filters.split('~');
+                for (let i in f) {
+                    let s = f[i];
+                    let targetProperty = s.match(/^(\[([^\]]+)\].)*/)[0].slice(0, -1);
+                    let flt = {
+                        targetProperty: targetProperty,
+                        isExclude: false,
+                        isInterval: false
+                    };
+
+                    let filterValue = s.substr(targetProperty.length + 1);
+                    if (filterValue.startsWith('%NOT')) {
+                        flt.isExclude = true;
+                        filterValue = filterValue.substr(5);
+                    }
+                    const re = /\{([^}]+)\}/;
+                    if (re.test(filterValue)) {
+                        let values = filterValue.match(re)[1].split(',');
+                        filterValue = values.join('|');
+                    } else if (/&\[[^\]]+\]:&\[[^\]]+\]/.test(filterValue)) {
+                        flt.isInterval = true;
+                    } 
+
+                    flt.value = filterValue;
+
+                    applyFilterValue(flt);
+                }
+            }
+        } 
 
         function getClickFilterTarget(widgetName) {
             for (var i = 0; i < _this.items.length; i++) {
@@ -273,6 +329,6 @@
     }
 
     angular.module('app')
-        .service('Filters', ['$rootScope', 'Connector', 'Storage', 'Lang', FiltersSvc]);
+        .service('Filters', ['$rootScope', 'Connector', 'Storage', 'Lang', '$location', FiltersSvc]);
 
 })();
