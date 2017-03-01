@@ -993,7 +993,8 @@
                 var mdx = _this.getMDX();
                 if (!mdx) return;
                 _this.clearError();
-                if (!firstRun) broadcastDependents();
+                setTimeout(broadcastDependents, 0);
+                //if (!firstRun) broadcastDependents();
                 firstRun = false;
 
                 // Check for variables
