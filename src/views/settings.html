@@ -65,7 +65,7 @@
                             <div class="col-md-4">
                                 <div class="form-group">
                                     {{'importSettings' | lang}}
-                                    <div id="uploader-block"><input id="uploader" class="fm-uploader" type="file" enctype="multipart/form-data"/></div>
+                                    <div id="uploader-block"><input id="uploader" class="fm-uploader" type="file" enctype="multipart/form-data"/ onchange="angular.element(this).scope().readSettings(this.files)"></div>
                                 </div>
                             </div>
                         </div>

@@ -41,6 +41,8 @@
         $scope.readSettings = readSettings;
         $scope.showLog = showLog;
 
+        //FIXME This function does currently not get called. Changes in Angular?
+        //FIXME For now we added the listening method directly to the html event in the view
         $scope.onInit = function() {
            $scope.editor.setText(Storage.getAddons());
             document.getElementById('uploader').addEventListener('change', readSettings, false);
@@ -143,8 +145,8 @@
             });
         }
 
-        function readSettings(evt) {
-            var f = evt.target.files[0];
+        function readSettings(files) {
+            var f = files[0];
             if (f) {
                 var r = new FileReader();
                 r.onload = function(e) {
