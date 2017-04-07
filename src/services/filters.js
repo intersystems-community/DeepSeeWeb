@@ -17,12 +17,14 @@
         this.getClickFilterTarget = getClickFilterTarget;
         this.getAffectsFilters = getAffectsFilters;
         this.dashboard = '';
+        this.filtersChanged = false;
 
         /**
          * Initialize service with filter array
          * @param {Array} filterArray Filter array
          */
         function init(filterArray, dashboard) {
+            this.filtersChanged = true;
             _this.dashboard = dashboard;
             _this.items = [];
             _this.isFiltersOnToolbarExists = false;
@@ -185,7 +187,7 @@
         function getWidgetFilters(widgetName) {
             var res = [];
             for (var i = 0; i < _this.items.length; i++) {
-                if ((_this.items[i].target === "*") || (_this.items[i].targetArray.indexOf(widgetName) !== -1)) {
+                if ((_this.items[i].target === "*" || _this.items[i].target === "") || (_this.items[i].targetArray.indexOf(widgetName) !== -1)) {
                     res.push(_this.items[i]);
                 }
             }
@@ -217,9 +219,10 @@
                     for (i = 0; i < flt.targetArray.length; i++) $rootScope.$broadcast("filter" + flt.targetArray[i], flt);
                 } else {
                     // Listened in widget.js
-                    if (flt.target === "*") $rootScope.$broadcast("filterAll", flt);
+                    if (flt.target === "*" || flt.target === '') $rootScope.$broadcast("filterAll", flt);
                 }
             }
+            _this.filtersChanged = true;
             saveFilters();
         }
 

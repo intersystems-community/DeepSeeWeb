@@ -23,6 +23,7 @@
             showFolders:      !settings.hideFolders,
             theme:            settings.theme || '',
             isSaveFilters:    settings.isSaveFilters === undefined ? true : settings.isSaveFilters,
+            isRelatedFilters: settings.isRelatedFilters === undefined ? true : settings.isRelatedFilters,
             showImages:       settings.showImages,
             langs:            Lang.getLanguages(),
             language:         Lang.current,
@@ -117,12 +118,14 @@
             settings.showImages   = $scope.model.showImages ? true : false;
             settings.theme        = $scope.model.theme;
             settings.isSaveFilters= $scope.model.isSaveFilters ? true : false;
+            settings.isRelatedFilters= $scope.model.isRelatedFilters ? true : false;
             settings.colCount     = $scope.model.colCount;
             settings.widgetHeight = $scope.model.widgetHeight;
 
             if (old.language     !== settings.language)     shouldRefresh = true;
             if (old.theme        !== settings.theme)      shouldRefresh = true;
             if (old.isSaveFilters!== settings.isSaveFilters)shouldRefresh = true;
+            if (old.isRelatedFilters!== settings.isRelatedFilters)shouldRefresh = true;
             if (old.hideFolders  !== settings.hideFolders)  shouldRefresh = true;
             if (old.showImages   !== settings.showImages)   shouldRefresh = true;
             if (old.colCount     !== settings.colCount)     shouldRefresh = true;

@@ -5,8 +5,12 @@
 (function(){
     'use strict';
 
-    function FilterCtrl($scope, Filters, Connector, Error) {
+    function FilterCtrl($scope, Filters, Connector, Error, Storage, Variables) {
         var _this = this;
+        var settings      = Storage.getAppSettings();
+
+        this.isRelatedFilters = settings.isRelatedFilters === undefined ? true : settings.isRelatedFilters;
+
         this.widget = $scope.ngDialogData.widget;
         this.source = $scope.ngDialogData.filter;
         this.dataSource = $scope.ngDialogData.dataSource;
@@ -20,14 +24,12 @@
             isExclude: _this.source.isExclude === true,
             isInterval: _this.source.isInterval === true
         };
-        for (var i = 0; i < this.source.values.length; i++) $scope.model.values.push(this.source.values[i]);
-        if ($scope.model.values.length !== 0) {
-            if ($scope.model.values[this.source.fromIdx]) $scope.model.from =$scope.model.values[this.source.fromIdx];
-            else
-                $scope.model.from = $scope.model.values[0];
-            if ($scope.model.values[this.source.toIdx]) $scope.model.to =$scope.model.values[this.source.toIdx];
-            else
-                $scope.model.to = $scope.model.values[0];
+
+        // Check for related filters
+        if (this.isRelatedFilters/* && Filters.filtersChanged*/) {
+            requestRelatedFilters();
+        } else {
+            prepareFilters();
         }
 
         $scope.acceptFilter = acceptFilter;
@@ -39,6 +41,66 @@
         $scope.toggleRow = toggleRow;
         $scope.isIntervalControlsVisible = isIntervalControlsVisible;
         $scope.model.isAll = !isAnyChecked();
+
+
+        /**
+         * Requests filters from server
+         */
+        function requestRelatedFilters() {
+            let ds = getDataSource();
+            if (!ds) return;
+            let related = [];
+            let filters = Filters.items;
+            // Get active filters
+            let activeFilters = filters.filter(f => (f.targetProperty !== _this.source.targetProperty) && f.value !== "" || f.isInterval);
+            // Reformat to DSZ filters
+            activeFilters.forEach(f => {
+                f.Value = f.value;
+                if (f.isExclude) f.Value = f.Value.split('|').map(v => v += '.%NOT').join('|');
+                if (f.isInterval) f.Value = f.Value.replace('|', ':');
+                if (f.value.indexOf('|') !== -1) f.Value = '{' + f.Value.replace(/\|/g,',') + '}';
+            });
+            activeFilters = activeFilters.map(f => ({Filter: f.targetProperty, Value: f.Value}));
+            $scope.model.isLoading = true;
+            Connector
+                .searchFilters('', ds, activeFilters)
+                .catch(onError)
+                .then(onFilterValuesReceived);
+        }
+
+        /**
+         * Returns data source of widget for current filter
+         * @returns {undefined|string} Data source string
+         */
+        function getDataSource() {
+            let widgets = Variables.widgets;
+            let w;
+            let target = _this.source.target;
+            if (target === '*' || !target) {
+                w = widgets[0];
+            } else {
+                w = widgets.find(wi => wi.name === target);
+            }
+            if (!w) return;
+            return w.dataSource;
+        }
+
+        /**
+         * Initialize filters data
+         */
+        function prepareFilters() {
+            Filters.filtersChanged = false;
+            $scope.model.values = [];
+            for (var i = 0; i < _this.source.values.length; i++) $scope.model.values.push(_this.source.values[i]);
+            if ($scope.model.values.length !== 0) {
+                if ($scope.model.values[_this.source.fromIdx]) $scope.model.from =$scope.model.values[_this.source.fromIdx];
+                else
+                    $scope.model.from = $scope.model.values[0];
+                if ($scope.model.values[_this.source.toIdx]) $scope.model.to =$scope.model.values[_this.source.toIdx];
+                else
+                    $scope.model.to = $scope.model.values[0];
+            }
+        }
 
         /**
          * Search input onChange callback. Searches filter values by input text
@@ -102,11 +164,13 @@
          * Request filters from server by search string. (handles onEnter event on search input)
          */
         function searchFilters() {
+            let ds = getDataSource();
+            if (!ds) return;
             var searchStr = $scope.model.search;
             if (!searchStr) return;
             $scope.model.isLoading = true;
             Connector
-                .searchFilters(searchStr, _this.dataSource)
+                .searchFilters(searchStr, ds)
                 .catch(onError)
                 .then(onFilterValuesReceived);
         }
@@ -116,26 +180,30 @@
          * @param {object} result Filter data
          */
         function onFilterValuesReceived(result) {
-            function findFilter(el) {
-                return el.name === val.name;
-            }
-
             $scope.model.isLoading = false;
             if (!result) return;
-            // TODO: should be _this.source.name but it's empty now
-            var filters = result.children.filter(function(el) { return el.name === _this.source.targetPropertyDisplay; } );
+
+            // Find global filter to update its values
+            var filters = result.children.filter(function(el) { return el.path === _this.source.targetProperty; } );
             if (filters.length === 0) return;
             var filter = filters[0];
-            if (!filter.children) return;
-            if (filter.children.length === 0) return;
-            for (var i = 0; i < filter.children.length; i++) {
-                var val = filter.children[i];
-                var found = _this.source.values.filter(findFilter);
-                if (found.length !== 0) continue;
-                // add new filter values
-                _this.source.values.push(val);
-                $scope.model.values.push(val);
-            }
+            if (!filter.children || filter.children.length === 0) return;
+
+            // Path current filter modifications(selected state, etc.) to newly received values
+            let oldFilters = _this.source.values.slice();
+            filter.children.forEach(f => {
+               let o = oldFilters.find(flt => flt.path === f.path);
+                if (o) Object.assign(f, o);
+            });
+
+            // Update model values
+            _this.source.values = filter.children;
+
+            // Prepare filter values
+            prepareFilters();
+
+            // Recreate filters
+            //Filters.init(Filters.items.slice());
         }
 
         /**
@@ -173,12 +241,12 @@
                 delete _this.source.to;
             }
             Filters.applyFilter(_this.source);
-            _this.widget.updateFiltersText();
+            Filters.filtersChanged = true;
             $scope.closeThisDialog();
         }
     }
 
     angular.module('widgets')
-        .controller('filter', ['$scope', 'Filters', 'Connector', 'Error', FilterCtrl] );
+        .controller('filter', ['$scope', 'Filters', 'Connector', 'Error', 'Storage', 'Variables', FilterCtrl] );
 
 })();

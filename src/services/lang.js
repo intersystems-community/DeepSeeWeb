@@ -71,6 +71,7 @@
      */
         .constant('LANGSTR', {
             en: {
+                relatedFilters: "Related filters",
                 theme: "Theme",
                 showLog: "Show log",
                 server: "Server",
@@ -162,6 +163,7 @@
                 shortMonths: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
             },
             de: {
+                relatedFilters: "Related filters",
                 theme: "Oberflächendesign",
                 showLog: "Log",
                 server: "Server",
@@ -253,6 +255,7 @@
                 shortMonths: ["Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"]
             },
             cs: {
+                relatedFilters: "Related filters",
                 saveFilters: "Uložit filtry",
                 exportSettings: 'Export nastavení',
                 importSettings: 'Import nastavení',
@@ -341,6 +344,7 @@
                 shortMonths: ["Leden", "Únor", "Březen", "Duben", "Květen", "Červen", "Červenec", "Srpen", "Září", "Říjen", "Listopad", "Prosinec"]
             },
             ru: {
+                relatedFilters: "Взаимосвязанные фильтры",
                 theme: "Тема",
                 showLog: "Показать ошибки",
                 server: "Сервер",

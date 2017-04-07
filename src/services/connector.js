@@ -189,15 +189,17 @@
          * Requests filter values
          * @param {string} searchStr Search string
          * @param {string} dataSource Filter data source
+         * @param relatedFilters {Array<object>} Related filters
          * @returns {object} $http promise
          */
-        function searchFilters(searchStr, dataSource) {
+        function searchFilters(searchStr, dataSource, relatedFilters) {
             return $http({
                 method: 'POST',
                 data: {
                     DataSource: dataSource,
                     Values: 1,
-                    Search: searchStr
+                    Search: searchStr,
+                    RelatedFilters: relatedFilters || []
                 },
                 url: _this.url + 'Filters?Namespace=' + getNamespace(),
                 withCredentials: true
