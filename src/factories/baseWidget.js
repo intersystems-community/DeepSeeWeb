@@ -319,7 +319,7 @@
                 _this.requestData();
             }
 
-            function actionNewWindow(action) {
+            function actionNavigate(action, newWindow = false) {
                 let url = action.targetProperty;
                 let idx = url.toUpperCase().indexOf('DASHBOARD=');
                 if (idx !== -1) {
@@ -385,14 +385,24 @@
                     }
                 }
 
-                window.open(url, '_blank');
+                if (!!$location.search().embed) {
+                    url += '&embed=1';
+                }
+
+                if (newWindow) {
+                    window.open(url, '_blank');
+                } else {
+                    window.location = url;
+                }
             }
 
             function performAction(action) {
                 let a = action.action.toLowerCase();
-
-                if (a === 'newwindow') {
-                    actionNewWindow(action);
+                
+                if (a === 'navigate') {
+                    actionNavigate(action);
+                } else if (a === 'newwindow') {
+                    actionNavigate(action, true);
                 } else if (a === 'setColumnSpec') {
                     _this.customColSpec = action.targetProperty;
                     _this.requestData();
