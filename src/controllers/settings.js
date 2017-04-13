@@ -42,10 +42,20 @@
         $scope.readSettings = readSettings;
         $scope.showLog = showLog;
 
-        $scope.onInit = function() {
+        $scope.onInit = function(){
+            setTimeout(_=> document.getElementById('uploader').addEventListener('change', readSettings, false), 0);
+
+            console.log('added!');
+        };
+        // $scope.onInit = function() {
+        //     document.getElementById('uploader').addEventListener('change', readSettings, false);
+        //     comsole.log('added!');
+        // };
+
+        /*$scope.onInit = function() {
            $scope.editor.setText(Storage.getAddons());
             document.getElementById('uploader').addEventListener('change', readSettings, false);
-        };
+        };*/
         /**
          * Handler for "New view" button
          */

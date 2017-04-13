@@ -56,6 +56,7 @@
                     _this.drills.push({path: p.path, name: "", category: ""});
                 } else {
                     _this.drills.pop();
+                    _this.doDrillFilter(p.path, _this.drills);
                 }
 
                 _this.broadcastDependents(p.mdx);
@@ -72,6 +73,9 @@
                         if (newMdx.toLowerCase().substr(0, 12) !== 'drillthrough') newMdx = _this.getDrillthroughMdx(newMdx);
                     }
                     if (newMdx === "") return;
+                    if (_this.drillFilter) {
+                        newMdx = newMdx + " %FILTER " + _this.drillFilter;
+                    }
                     _this.broadcastDependents();
                     if (_this.lpt.getActualMDX() != newMdx) _this.lpt.changeBasicMDX(newMdx);
                     //_this.lpt.refresh();
