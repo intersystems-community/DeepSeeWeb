@@ -478,14 +478,22 @@
                 }
                 var idx2 = m.indexOf("from");
                 if (idx1 === -1) {
-                    console.warn("Can't find 'select' in MDX during calulation drillthrough mdx");
+                    console.warn("Can't find 'select' in MDX during calculation drillthrough mdx");
                     return;
                 }
                 if (idx2 === -1) {
-                    console.warn("Can't find 'from' in MDX during calulation drillthrough mdx");
+                    console.warn("Can't find 'from' in MDX during calculation drillthrough mdx");
                     return;
                 }
-                return "DRILLTHROUGH " + mdx.substring(0, idx1 + selTxt.length) + " " +  mdx.substring(idx2, mdx.length);
+                // Check for max rows parameter in pivot
+                let sRows = '';
+                if (_this.pivotData.listingRows) {
+                    let listingRows = parseInt(_this.pivotData.listingRows);
+                    if (listingRows) {
+                        sRows = ` MAXROWS ${listingRows} `;
+                    }
+                }
+                return "DRILLTHROUGH " + sRows + mdx.substring(0, idx1 + selTxt.length) + " " +  mdx.substring(idx2, mdx.length);
             }
 
             /**
