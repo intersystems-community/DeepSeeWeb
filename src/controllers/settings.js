@@ -38,7 +38,6 @@
         $scope.onCancelClick = onCancelClick;
         $scope.onLoadClick = onLoadClick;
         $scope.exportSettings = exportSettings;
-        $scope.importSettings = importSettings;
         $scope.readSettings = readSettings;
         $scope.showLog = showLog;
 
@@ -47,15 +46,7 @@
 
             console.log('added!');
         };
-        // $scope.onInit = function() {
-        //     document.getElementById('uploader').addEventListener('change', readSettings, false);
-        //     comsole.log('added!');
-        // };
 
-        /*$scope.onInit = function() {
-           $scope.editor.setText(Storage.getAddons());
-            document.getElementById('uploader').addEventListener('change', readSettings, false);
-        };*/
         /**
          * Handler for "New view" button
          */
@@ -70,6 +61,9 @@
             }
         }
 
+        /**
+         * Show console log. Used in mobile version of app
+         */
         function showLog() {
             var html = "";
             if (dsw.errors) html += dsw.errors.join('<br/>');
@@ -83,6 +77,9 @@
             $scope.model.addMode = false;
         }
 
+        /**
+         * Load settings button handler
+         */
         function onLoadClick() {
             var name = $scope.model.selectedSettings;
             var ns = Connector.getNamespace();
@@ -104,18 +101,6 @@
             if (!name) return;
             if ($scope.model.settingsNames.indexOf(name) === -1) $scope.model.settingsNames.push(name);
             $scope.model.selectedSettings = name;
-
-            //$scope.model.addMode = false;
-            /*var settings = Storage.getAllSettings();
-            if (!settings[name]) settings[name] = {};
-            Utils.merge(settings[name], settings[Storage.currentSettings]);
-
-            Storage.currentSettings = name;
-            $scope.model.selectedSettings = name;
-            localStorage.currentSettings = name;
-
-            Connector.saveConfig(settings);*/
-
         }
 
         /**
@@ -149,13 +134,13 @@
 
             Connector.saveConfig(Storage.settings).then(function(){
                 if (shouldRefresh) reloadPage(); else $scope.closeThisDialog();
-                /*var ns = Connector.getNamespace();
-                Connector.saveNamespaceConfig(Storage.nsSettings[ns] || {}, ns).then(function() {
-                    if (shouldRefresh) reloadPage(); else $scope.closeThisDialog();
-                });*/
             });
         }
 
+        /**
+         * Read settings from file
+         * @param {event} evt Event
+         */
         function readSettings(evt) {
             var f = evt.target.files[0];
             if (f) {
@@ -167,14 +152,9 @@
                         Storage.nsSettings = contents.ns;
                         sessionStorage.namespaceUserSettings = JSON.stringify(Storage.nsSettings);
                     }
-                    //Storage.setAllSettings(contents.settings);
                     Storage.saveCurrentSettings(Storage.currentSettings);
                     Connector.saveConfig(Storage.settings).then(function(){
                         reloadPage();
-                        //var ns = Connector.getNamespace();
-                        // Connector.saveNamespaceConfig(Storage.nsSettings[ns] || {}, ns).then(function() {
-                        //     if (shouldRefresh) reloadPage(); else $scope.closeThisDialog();
-                        // });
                     });
                 };
                 r.readAsArrayBuffer(f);
@@ -183,28 +163,43 @@
             }
         }
 
+        /**
+         * Exports settings to file
+         */
         function exportSettings() {
             var filename = Connector.getNamespace() + "." + new Date().toLocaleDateString() + ".json";
             var ns = Connector.getNamespace();
             var nset = sessionStorage.namespaceUserSettings ? JSON.parse(sessionStorage.namespaceUserSettings) : Storage.nsSettings;
             var data = JSON.stringify({ ns: nset });
+            downloadFile(filename, data);
 
+            /* Deprecated
             var download = document.createElement('a');
-            //if (type) {
             download.setAttribute('href', 'data:application/octet-stream;charset=utf-8,' + encodeURIComponent(data));
-                //download.setAttribute('href', 'data:attachment/text,' + data);
-              //  console.log("csv");
-            //} else {
-              //  download.setAttribute('href', 'data:application/octet-stream;charset=utf-8,' + encodeURIComponent(data));
-            //}
             $(download).attr("download", filename);
             download.setAttribute('download', filename);
             download.click();
-            $(download).remove();
+            setTimeout(_ => $(download).remove(), 100);*/
         }
 
-        function importSettings() {
-
+        /**
+         * Starts file download locally from js
+         * @param {string} filename File name
+         * @param {string} data Data to download
+         */
+        function downloadFile(filename, data) {
+            var a = document.createElement('a');
+            a.style = "display: none";
+            var blob = new Blob([data], {type: "application/octet-stream"});
+            var url = window.URL.createObjectURL(blob);
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            setTimeout(_ => {
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+            }, 100);
         }
 
         /**
