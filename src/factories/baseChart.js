@@ -23,6 +23,7 @@
             this.initFormatForSeries = initFormatForSeries;
             this.limitSeriesAndData  = limitSeriesAndData;
             this.toggleButton        = toggleButton;
+            this.hasOption           = hasOption;
             this.dataInfo            = null;
             this.widgetData          = null;
             this.labelsFormatter     = labelsFormatter;
@@ -179,6 +180,13 @@
                 if (!widgetsSettings[_this.desc.name]) widgetsSettings[_this.desc.name] = {};
                 widgetsSettings[_this.desc.name][name] = $scope.item[name];
                 Storage.setWidgetsSettings(widgetsSettings, _this.desc.dashboard, Connector.getNamespace());
+            }
+
+            function hasOption(name) {
+                var widgetsSettings = Storage.getWidgetsSettings(_this.desc.dashboard, Connector.getNamespace());
+                if (!widgetsSettings[_this.desc.name]) return false;
+                if (widgetsSettings[_this.desc.name][name] === undefined) return false;
+                return true;
             }
 
             function toggleSeries(index, visiblility) {
