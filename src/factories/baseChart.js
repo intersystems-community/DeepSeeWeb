@@ -29,6 +29,7 @@
             this.labelsFormatter     = labelsFormatter;
             // Selected point for mobile version to make drill after second tap
             this._selectedPoint      = null;
+            this.seriesTypes         = [];
             var _this    = this;
             var firstRun = true;
             var settings = Storage.getAppSettings();
@@ -52,6 +53,9 @@
                 if (widgetsSettings[_this.desc.key].showZero !== undefined)  $scope.item.showZero = widgetsSettings[_this.desc.key].showZero;
             }*/
             widgetsSettings = null;
+
+            // Check for series types
+            if (this.desc.overrides && this.desc.overrides[0] && this.desc.overrides[0].seriesTypes) this.seriesTypes = this.desc.overrides[0].seriesTypes.split(',');
 
             $scope.item.isChart = true;
             $scope.item.displayAsPivot = displayAsPivot;
@@ -390,15 +394,14 @@
                     _this.parseData(result);
 
                     //buildAxisTitles(result);
-
                     if (_this.desc.type.toLowerCase() === "combochart") {
                         $scope.chartConfig.yAxis = [{},{ opposite: true}];
-                        $scope.chartConfig.options.yAxis = [{},{}];
                         for (i = 0; i < $scope.chartConfig.series.length; i++) {
+                            if ($scope.chartConfig.series[i].type) continue;
                             switch (i % 3) {
-                                case 0: $scope.chartConfig.series[i].type="line";$scope.chartConfig.series[i].zIndex = 2; $scope.chartConfig.series[i].color = Highcharts.getOptions().colors[1]; break;
-                                case 1: $scope.chartConfig.series[i].type="bar"; $scope.chartConfig.series[i].yAxis = 1;$scope.chartConfig.series[i].color =Highcharts.getOptions().colors[2];$scope.chartConfig.series[i].zIndex = 0; break;
-                                case 2: $scope.chartConfig.series[i].type="area"; break;
+                                case 0: $scope.chartConfig.series[i].type = this.seriesTypes[i] || "bar"; $scope.chartConfig.series[i].zIndex = 2; $scope.chartConfig.series[i].color = Highcharts.getOptions().colors[1]; break;
+                                case 1: $scope.chartConfig.series[i].type = this.seriesTypes[i] || "line"; $scope.chartConfig.series[i].yAxis = 1;$scope.chartConfig.series[i].color =Highcharts.getOptions().colors[2];$scope.chartConfig.series[i].zIndex = 0; break;
+                                case 2: $scope.chartConfig.series[i].type = this.seriesTypes[i] || "area"; break;
                             }
                             $scope.chartConfig.yAxis[i].title = {
                                 text: $scope.chartConfig.series[i].name
@@ -407,8 +410,6 @@
                     }
                     if ($scope.item.showZero) {
                         setYAxisMinToZero();
-                        //$scope.chartConfig.yAxis.prevMin = $scope.chartConfig.yAxis.currentMin;
-                        //$scope.chartConfig.yAxis.currentMin = 0;
                     }
                     if (firstRun) {
 
@@ -511,6 +512,11 @@
                 var cols = Highcharts.getOptions().colors;
                 data.color = cols[$scope.chartConfig.series.length % cols.length];
                 //if (!data.id) data.id = $scope.chartConfig.series.length + 1;
+
+                // Check chart type
+                let curIdx = $scope.chartConfig.series.length;
+                if (this.seriesTypes && this.seriesTypes[curIdx]) data.type = this.seriesTypes[curIdx];
+
                 $scope.chartConfig.series.push(data);
             }
 
@@ -781,7 +787,8 @@
              * Callback for resize event
              */
             function onResize() {
-                if (_this.chart) if (_this.chart.container) if (_this.chart.container.parentNode) _this.chart.setSize(_this.chart.container.parentNode.offsetWidth, _this.chart.container.parentNode.offsetHeight, false);
+                //if (_this.chart) if (_this.chart.container) if (_this.chart.container.parentNode) _this.chart.setSize(_this.chart.container.parentNode.offsetWidth, _this.chart.container.parentNode.offsetHeight, false);
+                if (_this.chart) _this.chart.reflow();
             }
         }
 
