@@ -24,7 +24,7 @@
         this.addFavorite = addFavorite;
         this.deleteFavorite = deleteFavorite;
         this.searchFilters = searchFilters;
-        this.saveConfig = saveConfig;
+        //this.saveConfig = saveConfig;
         this.loadConfig = loadConfig;
         this.execAction = execAction;
         this.getSettings = getSettings;
@@ -281,8 +281,8 @@
             return $http({
                 method: 'Get',
                 data: {},
-                url: _this.url + 'Config/' + (cutomNamespace ? cutomNamespace : this.getNamespace()) + '?Namespace=MDX2JSON',
-                withCredentials: true
+                url: 'configs/' + (cutomNamespace ? cutomNamespace : this.getNamespace()).toLowerCase() + '.json',
+                withCredentials: false
             }).then(transformResponse);
         }
 
@@ -326,14 +326,14 @@
          * @param {object} config Configuration to save
          * @returns {object} $http promise
          */
-        function saveConfig(config) {
-            return $http({
-                method: 'POST',
-                data: { Application: this.getNamespace(), Config: JSON.stringify(config) },
-                url: _this.url + 'Config?Namespace=MDX2JSON',
-                withCredentials: true
-            }).then(transformResponse);
-        }
+        // function saveConfig(config) {
+        //     return $http({
+        //         method: 'POST',
+        //         data: { Application: this.getNamespace(), Config: JSON.stringify(config) },
+        //         url: _this.url + 'Config?Namespace=MDX2JSON',
+        //         withCredentials: true
+        //     }).then(transformResponse);
+        // }
 
         /**
          * Saves configuration to server

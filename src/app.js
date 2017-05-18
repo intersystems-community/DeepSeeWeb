@@ -186,7 +186,7 @@ window.dsw.mobile = false;
         function loadConf() {
             Connector.loadConfig($route.current.params.ns)
             .catch(function() {
-                Connector.gotoLoginPage();
+                // Config not found - it's ok, because there can be namespaces without config
             })
             .then(function (result) {
                 $rootScope.$broadcast('toggleMenu', true);
@@ -231,21 +231,6 @@ window.dsw.mobile = false;
         return deffered.promise;
     }
 
-    /*function loadNamespaceConfig(Storage, $q, Connector, ns) {
-        var deffered = $q.defer();
-        if (Storage.isNamespaceConfigLoaded(ns)) {
-            deffered.resolve();
-        } else {
-            Connector.loadNamespaceConfig(ns).then(function (res) {
-                Storage.loadNamespaceSettings(res.data, ns);
-                deffered.resolve();
-            }).catch(function (result) {
-                deffered.resolve();
-            });
-        }
-        return deffered.promise;
-    }*/
-
     function loadSettings(Storage, $q, Connector)  {
         var deffered = $q.defer();
         Connector.getSettings().then(function(res) {
@@ -256,13 +241,6 @@ window.dsw.mobile = false;
         });
         return deffered.promise;
     }
-/*
-    function loadConfig($q,$http) {
-        var deffered = $q.defer();
-
-        // make your http request here and resolve its promise
-        return deffered.promise;
-    }*/
 
     /**
      * Application entry point

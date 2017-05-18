@@ -30,6 +30,7 @@
             lblLang: Lang.get("language"),
             lblLogout: Lang.get("signout"),
             lblFilter: Lang.get("filters"),
+            showLabels: true,
             lang: Lang.current,
             langs: Lang.getLanguages(),
             filterButton: false,
@@ -87,7 +88,7 @@
 
             if (old.language !== settings.language) {
                 Storage.setAppSettings(settings);
-                Storage.saveCurrentSettings(Storage.currentSettings);
+                //Storage.saveCurrentSettings(Storage.currentSettings);
                 Connector.saveConfig(Storage.settings).then(function(){
                     window.location.reload();
                 });

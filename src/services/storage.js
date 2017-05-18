@@ -6,24 +6,13 @@
 
     function StorageSvc(CONST, Lang, Utils, $rootScope, $location) {
         var _this = this;
-        /*if (window.dsw.mobile) {
-            document.getElementById('pagestyle').setAttribute('href', CONST.css.classic);
-        }*/
-        this.settings            = {
-            Default: {}
-        };
-        this.temp = {}; // used to store all changes in settings
+        this.settings = {};
         this.serverSettings = {};
 
         // Settings for namespace
         this.nsSettings = null;
 
-        this.currentSettings     = localStorage.currentSettings || "Default";
         this.configLoaded        = false;
-        this.saveCurrentSettings = saveCurrentSettings;
-        this.isSettingsExists    = isSettingsExists;
-        this.setCurrentSettings  = setCurrentSettings;
-        this.getSettingsNames    = getSettingsNames;
         this.loadConfig          = loadConfig;
         this.getAppSettings      = getAppSettings;
         this.setAppSettings      = setAppSettings;
@@ -31,25 +20,37 @@
         this.setWidgetsSettings  = setWidgetsSettings;
         this.getTilesSettings    = getTilesSettings;
         this.setTilesSettings    = setTilesSettings;
-        this.removeTilesSettings = removeTilesSettings;
         this.getAllSettings      = getAllSettings;
-        this.setAddons           = setAddons;
-        this.getAddons           = getAddons;
         this.loadServerSettings  = loadServerSettings;
-        this.isNamespaceConfigLoaded  = isNamespaceConfigLoaded;
-        this.loadNamespaceSettings  = loadNamespaceSettings;
         this.setAllSettings  = setAllSettings;
 
+        // check for local storage support
+        this.isLocalStorage = false;
+        checkForLocalStorage();
 
         /**
-         * Saves current settings stored in this.temp to settings with name
-         * @param {name} name Settings name
+         * Check if local storqage available
+         * note: in incognito mode only session storage is available
          */
-        function saveCurrentSettings(name) {
-            var nss = _this.nsSettings;
-            _this.settings[name] = {};
-            Utils.merge(_this.settings[name], _this.temp);
-            if (nss) _this.settings[name].namespaces = angular.copy(nss);
+        function checkForLocalStorage() {
+            try {
+                localStorage.setItem("test", "test");
+            } catch (e) {
+               return;
+            }
+            _this.isLocalStorage = true;
+            delete localStorage.test;
+        }
+
+        /**
+         * Saves user settings to storage
+         */
+        function saveUserSettings() {
+            if (_this.isLocalStorage) {
+                localStorage.userSettings = JSON.stringify(_this.settings);
+            } else {
+                sessionStorage.userSettings = JSON.stringify(_this.settings);
+            }
         }
 
         /**
@@ -59,11 +60,11 @@
         function loadConfig(response) {
                 if (!response) return;
                 _this.configLoaded = true;
-                if (response && response.Config) {
-                    if (response.Config.constructor === Object) _this.settings = response.Config; else {
+                if (response) {
+                    if (response.constructor === Object) _this.settings = response; else {
                         var o;
                         try {
-                            o = JSON.parse(response.Config);
+                            o = JSON.parse(response);
                         } catch (e) {
                             o = {};
                         }
@@ -71,23 +72,13 @@
                     }
                 }
 
+                // Override settings by user settings
+                if (localStorage.userSettings) {
+                    _this.settings = JSON.parse(localStorage.userSettings);
+                }
                 if (sessionStorage.userSettings) {
-                    _this.temp = JSON.parse(sessionStorage.userSettings);
-                    if (!_this.settings[_this.currentSettings]) _this.currentSettings = "Default";
-                } else
-                {
-                    _this.temp = {};
-                    if (!_this.settings[_this.currentSettings]) _this.currentSettings = "Default";
-                    if (_this.settings[_this.currentSettings]) Utils.merge(_this.temp, _this.settings[_this.currentSettings]);
+                    _this.settings = JSON.parse(sessionStorage.userSettings);
                 }
-
-                var nsSet;
-                if (_this.settings[_this.currentSettings]) {
-                    nsSet = _this.settings[_this.currentSettings].namespaces;
-                }
-                    if (sessionStorage.namespaceUserSettings) this.nsSettings = JSON.parse(sessionStorage.namespaceUserSettings);
-                else if (nsSet) this.nsSettings = angular.copy(nsSet);
-
 
                 var settings = _this.getAppSettings();
                 if (!window.dsw.mobile) {
@@ -123,47 +114,15 @@
         }
 
         /**
-         * Returns tru if settings with name exists
-         * @param {string} name Settings name to check
-         * @returns {boolean} True if exists
-         */
-        function isSettingsExists(name) {
-            return _this.settings[name] !== undefined;
-        }
-
-        /**
-         * Sets current settings name
-         * @param {string} name Name of settings
-         */
-        function setCurrentSettings(name) {
-            localStorage.currentSettings = name;
-            _this.currentSettings = name;
-        }
-
-        /**
-         * Get settings list
-         * @returns {Array} Settings names
-         */
-        function getSettingsNames() {
-            var result = [];
-            for (var p in _this.settings) {
-                if (!_this.settings.hasOwnProperty(p)) continue;
-                result.push(p);
-                //result.push({ id: result.length, name: p });
-            }
-            return result;
-        }
-
-        /**
          * Returns application settings stored in sessionStorage
          * @returns {object} Application settings
          */
         function getAppSettings() {
             var lang = $location.search()['lang'];
-            var settings = _this.temp.app || {};
+            if (!_this.settings.app) _this.settings.app = {};
+            var settings = _this.settings.app;
             if (lang) settings.language = lang;
             return settings;
-            //return JSON.parse(sessionStorage.settings || "{}");
         }
 
         /**
@@ -176,26 +135,18 @@
          *   .isMetro use or not metro theme
          */
         function setAppSettings(settings) {
-            _this.temp.app = settings;
-            sessionStorage.userSettings = JSON.stringify(_this.temp);
-        }
-
-        function setAddons(addons) {
-            _this.temp.addons = addons;
-            sessionStorage.userSettings = JSON.stringify(_this.temp);
-        }
-
-        function getAddons() {
-            return sessionStorage.devAddons || _this.temp.addons || {};
+            _this.settings.app = settings;
+            saveUserSettings();
         }
 
         /**
          * Returns widget settings(placement, sizes etc.)
          * @returns {object} Widget settings
          */
-        function getWidgetsSettings(dashboard, ns) {
-            if (_this.nsSettings &&
-                _this.nsSettings.widgets) return _this.nsSettings.widgets[dashboard] || {};
+        function getWidgetsSettings(dashboard) {
+            if (_this.settings &&
+                _this.settings.ns &&
+                _this.settings.ns.widgets) return _this.settings.ns.widgets[dashboard] || {};
             else return {};
         }
 
@@ -203,40 +154,31 @@
          * Save widget settings to storage
          * @param {object} widgets Widget settings to store
          */
-        function setWidgetsSettings(widgets, dashboard, ns) {
-            if (!_this.nsSettings) _this.nsSettings = {};
-            if (!_this.nsSettings.widgets) _this.nsSettings.widgets = {};
-            _this.nsSettings.widgets[dashboard] = angular.copy(widgets);
-            sessionStorage.namespaceUserSettings = JSON.stringify(_this.nsSettings);
+        function setWidgetsSettings(widgets, dashboard) {
+            if (!_this.settings) _this.settings = {};
+            if (!_this.settings.ns) _this.settings.ns = {};
+            if (!_this.settings.ns.widgets) _this.settings.ns.widgets = {};
+            _this.settings.ns.widgets[dashboard] = angular.copy(widgets);
+            saveUserSettings();
         }
 
         /**
          * Returns tiles settings(placement, sizes, icons, colors etc.)
          * @returns {object} Tiles settings
          */
-        function getTilesSettings(ns) {
-            if (_this.nsSettings) return _this.nsSettings.tiles || {}; else return {};
+        function getTilesSettings() {
+            if (_this.settings && _this.settings.ns) return _this.settings.ns.tiles || {}; else return {};
         }
 
         /**
          * Save tiles settings to storage
          * @param {object} tiles Tiles settings to store
          */
-        function setTilesSettings(tiles, ns) {
-            if (!_this.nsSettings) _this.nsSettings = {};
-            _this.nsSettings.tiles = angular.copy(tiles);
-            sessionStorage.namespaceUserSettings = JSON.stringify(_this.nsSettings);
-        }
-
-        /**
-         * Removes tiles settings
-         * @param {string} ns Namespace
-         */
-        function removeTilesSettings(ns) {
-            if (_this.nsSettings) {
-                _this.nsSettings.tiles = {};
-                sessionStorage.namespaceUserSettings = JSON.stringify(_this.nsSettings);
-            }
+        function setTilesSettings(tiles) {
+            if (!_this.settings) _this.settings = {};
+            if (!_this.settings.ns) _this.settings.ns = {};
+            _this.settings.ns.tiles = angular.copy(tiles);
+            saveUserSettings();
         }
 
         /**
@@ -258,24 +200,6 @@
             $rootScope.$broadcast('servSettings:loaded');
         }
 
-        function isNamespaceConfigLoaded(ns) {
-            return _this.nsSettings !== undefined;
-        }
-
-        function loadNamespaceSettings(data, ns) {
-            if (!data || !data.Config) return;
-            var conf = null;
-            try {
-                conf = JSON.parse(data.Config);
-            } catch(ex) {
-                console.error(ex);
-                return;
-            }
-            if (!conf) return;
-
-            _this.nsSettings = angular.copy(conf);
-            sessionStorage.namespaceUserSettings = JSON.stringify(_this.nsSettings);
-        }
     }
 
     angular.module('app')

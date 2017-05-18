@@ -15,11 +15,8 @@
         var shouldRefresh = false;
 
         $scope.model = {
-            addMode:   false,
             themes: CONST.themes,
-            settingsNames:    Storage.getSettingsNames(),
-            selectedSettings: Storage.currentSettings,
-            settingsName:     "",
+            //settingsName:     "",
             showFolders:      !settings.hideFolders,
             theme:            settings.theme || '',
             isSaveFilters:    settings.isSaveFilters === undefined ? true : settings.isSaveFilters,
@@ -32,11 +29,7 @@
         };
 
         $scope.applySettrings    = applySettrings;
-        $scope.resetWidgets      = resetWidgets;
-        $scope.resetTiles        = resetTiles;
-        $scope.onAddClick   = onAddClick;
-        $scope.onCancelClick = onCancelClick;
-        $scope.onLoadClick = onLoadClick;
+        $scope.resetSettings        = resetSettings;
         $scope.exportSettings = exportSettings;
         $scope.readSettings = readSettings;
         $scope.showLog = showLog;
@@ -50,16 +43,16 @@
         /**
          * Handler for "New view" button
          */
-        function onAddClick() {
-            $scope.model.addMode = !$scope.model.addMode;
-            if ($scope.model.addMode) {
-                $scope.model.settingsName = "";
-                // Declared in directive 'focusFunc' - directives/focus.js
-                $scope.setFocusOnInput();
-            } else {
-                addSettings($scope.model.settingsName);
-            }
-        }
+        // function onAddClick() {
+        //     $scope.model.addMode = !$scope.model.addMode;
+        //     if ($scope.model.addMode) {
+        //         $scope.model.settingsName = "";
+        //         // Declared in directive 'focusFunc' - directives/focus.js
+        //         $scope.setFocusOnInput();
+        //     } else {
+        //         addSettings($scope.model.settingsName);
+        //     }
+        // }
 
         /**
          * Show console log. Used in mobile version of app
@@ -68,39 +61,6 @@
             var html = "";
             if (dsw.errors) html += dsw.errors.join('<br/>');
             ngDialog.open({template: 'src/views/log.html', data: { html: html }, controller: 'share', className: "ngdialog-theme-default wnd-error-log" });
-        }
-
-        /**
-         * Handler for "Cancel view" button
-         */
-        function onCancelClick() {
-            $scope.model.addMode = false;
-        }
-
-        /**
-         * Load settings button handler
-         */
-        function onLoadClick() {
-            var name = $scope.model.selectedSettings;
-            var ns = Connector.getNamespace();
-            if (Storage.isSettingsExists(name) || Storage.nsSettings[ns]) {
-                delete sessionStorage.userSettings;
-                delete sessionStorage.namespaceUserSettings;
-                //Storage.nsSettings[ns] = {};
-                //Storage.setTilesSettings(undefined, ns);
-                Storage.setCurrentSettings(name);
-                reloadPage();
-            }
-        }
-
-        /**
-         * Adds new settings record to settings list
-         * @param {string} name Name used to store view on server
-         */
-        function addSettings(name) {
-            if (!name) return;
-            if ($scope.model.settingsNames.indexOf(name) === -1) $scope.model.settingsNames.push(name);
-            $scope.model.selectedSettings = name;
         }
 
         /**
@@ -126,15 +86,10 @@
             if (old.colCount     !== settings.colCount)     shouldRefresh = true;
             if (old.widgetHeight !== settings.widgetHeight) shouldRefresh = true;
 
-            if ($scope.editor) Storage.setAddons($scope.editor.getText());
-
             Storage.setAppSettings(settings);
-            Storage.saveCurrentSettings($scope.model.selectedSettings);
-            Storage.setCurrentSettings($scope.model.selectedSettings);
 
-            Connector.saveConfig(Storage.settings).then(function(){
-                if (shouldRefresh) reloadPage(); else $scope.closeThisDialog();
-            });
+            if (shouldRefresh) reloadPage(); else $scope.closeThisDialog();
+
         }
 
         /**
@@ -152,10 +107,10 @@
                         Storage.nsSettings = contents.ns;
                         sessionStorage.namespaceUserSettings = JSON.stringify(Storage.nsSettings);
                     }
-                    Storage.saveCurrentSettings(Storage.currentSettings);
-                    Connector.saveConfig(Storage.settings).then(function(){
+                    //Storage.saveCurrentSettings(Storage.currentSettings);
+                    //Connector.saveConfig(Storage.settings).then(function(){
                         reloadPage();
-                    });
+                    //});
                 };
                 r.readAsArrayBuffer(f);
             } else {
@@ -169,17 +124,8 @@
         function exportSettings() {
             var filename = Connector.getNamespace() + "." + new Date().toLocaleDateString() + ".json";
             var ns = Connector.getNamespace();
-            var nset = sessionStorage.namespaceUserSettings ? JSON.parse(sessionStorage.namespaceUserSettings) : Storage.nsSettings;
-            var data = JSON.stringify({ ns: nset });
+            var data = JSON.stringify(Storage.settings);
             downloadFile(filename, data);
-
-            /* Deprecated
-            var download = document.createElement('a');
-            download.setAttribute('href', 'data:application/octet-stream;charset=utf-8,' + encodeURIComponent(data));
-            $(download).attr("download", filename);
-            download.setAttribute('download', filename);
-            download.click();
-            setTimeout(_ => $(download).remove(), 100);*/
         }
 
         /**
@@ -203,17 +149,13 @@
         }
 
         /**
-         * Reset widgets on active dashboard. If no active dashboard, function does nothing
+         * Reset user settings(position, sizes, icons, etc.)
          */
-        function resetWidgets() {
-            $rootScope.$broadcast("resetWidgets");
-        }
-
-        /**
-         * Reset tiles options(position, sizes, icons, etc.)
-         */
-        function resetTiles() {
-            Storage.removeTilesSettings(Connector.getNamespace());
+        function resetSettings() {
+            delete sessionStorage.userSettings;
+            try {
+                delete localStorage.userSettings;
+            } catch(e) {}
             reloadPage();
         }
 

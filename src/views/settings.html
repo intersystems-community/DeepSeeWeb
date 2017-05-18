@@ -59,8 +59,7 @@
                                     </div>
                                     <div class="col-md-4">
                                         <div class="form-group mobile-action-buttons">
-                                            <button type="button" class="btn btn-default btn-xs" ng-click="resetWidgets()">{{'resetWidgets' | lang}}</button>
-                                            <button type="button" class="btn btn-default btn-xs" ng-click="resetTiles()" mobile-hidden>{{'resetTiles' | lang}}</button>
+                                            <button type="button" class="btn btn-default btn-xs" ng-click="resetSettings()" mobile-hidden>{{'resetSettings' | lang}}</button>
                                             <button type="button" class="btn btn-default btn-xs" ng-click="exportSettings()" mobile-hidden>{{'exportSettings' | lang}}</button>
                                             <button type="button" class="btn btn-default btn-xs" ng-click="showLog()" desktop-hidden="">{{'showLog' | lang}}</button>
                                         </div>
@@ -84,26 +83,11 @@
 
 
         <div class="line-divider" mobile-hidden></div>
-
         <div class="row modal-mobile-footer">
-            <div class="col-md-6" mobile-hidden>
-                <div class="input-group">
-                    <div class="float-left" ng-hide="model.addMode">
-                        {{'curSettings' | lang}}&nbsp;
-                    </div>
-                    <select class="float-left" ng-show="!model.addMode" ng-model="model.selectedSettings" ng-options="item for item in model.settingsNames" ></select>
-                    <input class="float-left input-xs" type="text" ng-show="model.addMode" ng-model="model.settingsName" focus-func="setFocusOnInput" ng-enter="onAddClick()">
-                    <span class="input-group-btn float-left">
-                        <button type="button" class="btn btn-default btn-xs" ng-click="onAddClick()" ng-hide="model.addMode">+</button>
-                        <button type="button" class="btn btn-default btn-xs" ng-click="onCancelClick()" ng-show="model.addMode"><i class="fa fa-close"></i></button>
-                    </span>
-                </div>
-            </div>
-            <div class="col-md-6">
+            <div class="col-md-12">
                 <div class="pull-right">
-                    <button type="button" class="btn btn-default" ng-click="onLoadClick()">{{'load' | lang}}</button>
-                <button type="button" class="btn btn-default" ng-click="applySettrings()">{{'save' | lang}}</button>
-                <button type="button" class="btn btn-default" ng-click="closeThisDialog()" mobile-hidden>{{'close' | lang}}</button>
+                    <button type="button" class="btn btn-default" ng-click="applySettrings()">{{'save' | lang}}</button>
+                    <button type="button" class="btn btn-default" ng-click="closeThisDialog()" mobile-hidden>{{'close' | lang}}</button>
                 </div>
             </div>
         </div>
