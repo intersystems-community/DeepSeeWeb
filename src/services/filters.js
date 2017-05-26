@@ -16,6 +16,7 @@
         this.clear = clear;
         this.getClickFilterTarget = getClickFilterTarget;
         this.getAffectsFilters = getAffectsFilters;
+        this.getFiltersUrlString = getFiltersUrlString;
         this.dashboard = '';
         this.filtersChanged = false;
 
@@ -66,6 +67,33 @@
             }
 
             loadFiltersFromSettings();
+        }
+
+        /**
+         * Return url with filters for widget or for all dashboard
+         * @param {string} [widgetName] Name of widget
+         * @returns {string}
+         */
+        function getFiltersUrlString(widgetName) {
+            let f = [];
+            let widgetFilters = widgetName ? _this.getAffectsFilters() : _this.items;
+            for (let i = 0; i < widgetFilters.length; i++) {
+                let flt = widgetFilters[i];
+                if (!flt.value) continue;
+                let v = '';
+                if (flt.isInterval) {
+                    // Format filter string like path.v1:v2
+                    v = flt.targetProperty + '.' + flt.values[flt.fromIdx].path + ':' + flt.values[flt.toIdx].path;
+                } else {
+                    v = flt.targetProperty + '.' + (flt.isExclude ? '%NOT ' : '') + flt.value;
+                }
+                // For many selected values make correct filter string {v1,v2,v3}
+                if (v.indexOf('|') !== -1) {
+                    v = v.replace(/\|/g, ',').replace('&[', '{&[') + '}';
+                }
+                f.push(v);
+            }
+            return encodeURIComponent(f.join('~'));
         }
 
         /**

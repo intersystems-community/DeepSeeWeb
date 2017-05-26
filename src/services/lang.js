@@ -71,6 +71,8 @@
      */
         .constant('LANGSTR', {
             en: {
+                copy: "Copy",
+                shareDashboard: "Share dashboard",
                 relatedFilters: "Related filters",
                 theme: "Theme",
                 showLog: "Show log",
@@ -162,6 +164,8 @@
                 shortMonths: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
             },
             de: {
+                copy: "Copy",
+                shareDashboard: "Share dashboard",
                 relatedFilters: "Related filters",
                 theme: "Oberflächendesign",
                 showLog: "Log",
@@ -253,6 +257,8 @@
                 shortMonths: ["Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"]
             },
             cs: {
+                copy: "Copy",
+                shareDashboard: "Share dashboard",
                 relatedFilters: "Related filters",
                 saveFilters: "Uložit filtry",
                 exportSettings: 'Export nastavení',
@@ -341,6 +347,8 @@
                 shortMonths: ["Leden", "Únor", "Březen", "Duben", "Květen", "Červen", "Červenec", "Srpen", "Září", "Říjen", "Listopad", "Prosinec"]
             },
             ru: {
+                copy: "Копировать",
+                shareDashboard: "Поделиться дешбордом",
                 relatedFilters: "Взаимосвязанные фильтры",
                 theme: "Тема",
                 showLog: "Показать ошибки",

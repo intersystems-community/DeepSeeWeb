@@ -5,7 +5,7 @@
 (function(){
     'use strict';
 
-    function MenuCtrl($scope, $routeParams, Connector, Storage, $rootScope, $location, CONST, ngDialog, Lang, Utils) {
+    function MenuCtrl($scope, $routeParams, Connector, Storage, $rootScope, $location, CONST, ngDialog, Lang, Utils, Filters) {
         var _this = this;
         this.favs = [];
         loadFav();
@@ -49,6 +49,7 @@
         $scope.setLang = setLang;
         $scope.about = about;
         $scope.showGlobalFilter = showGlobalFilter;
+        $scope.shareDashboard = shareDashboard;
         $rootScope.$on('toggleMenu', toggleMenu);
       //  $rootScope.$on('menu:toggleLoading', toggleLoading);
         $rootScope.$on('menu:changeTitle', changeTitle);
@@ -71,6 +72,24 @@
         // Remove header space holder if there is no menu
         if (isEmbedded()) {
             $('body').css('margin-top', '-50px');
+        }
+
+
+        /**
+         * Create link for dashboard sharing
+         */
+        function shareDashboard() {
+            let url = window.location.href;
+            let fltUrl =  Filters.getFiltersUrlString();
+            let flt = 'SETTINGS=TARGET:*;FILTER:' + fltUrl;
+            if (fltUrl) {
+                if (url.indexOf('?') !== -1) {
+                    url += '&' + flt;
+                } else {
+                    url += '?' + flt;
+                }
+            }
+            ngDialog.open({template: 'src/views/shareDashboard.html', controller: 'shareDashboard', data: { url }, showClose: true, className: "ngdialog-theme-default wnd-about" });
         }
 
         function showFilterButton(e,visible) {
@@ -309,6 +328,6 @@
     }
 
     angular.module('app')
-        .controller('menu', ['$scope', '$routeParams', 'Connector', 'Storage', '$rootScope', '$location', 'CONST', 'ngDialog', 'Lang', 'Utils', MenuCtrl] );
+        .controller('menu', ['$scope', '$routeParams', 'Connector', 'Storage', '$rootScope', '$location', 'CONST', 'ngDialog', 'Lang', 'Utils', 'Filters', MenuCtrl] );
 
 })();

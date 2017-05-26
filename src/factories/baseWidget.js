@@ -93,6 +93,7 @@
             this.doDrillFilter = doDrillFilter;
             this.getDataByColumnName = getDataByColumnName;
             this.getDrillthroughMdx = getDrillthroughMdx;
+
             this.liveUpdateInterval = null;
             this.onResize = function(){};
             this.canDoDrillthrough = false;
@@ -336,7 +337,7 @@
                 }
 
                 // Build filter string
-                let f = [];
+                /*let f = [];
                 let widgetFilters = Filters.getAffectsFilters(_this.desc.name);
                 for (let i = 0; i < widgetFilters.length; i++) {
                     let flt = widgetFilters[i];
@@ -353,8 +354,9 @@
                         v = v.replace(/\|/g, ',').replace('&[', '{&[') + '}';
                     }
                     f.push(v);
-                }
-                url = url.replace('$$$FILTERS', encodeURIComponent(f.join('~')));
+                }*/
+                //url = url.replace('$$$FILTERS', encodeURIComponent(f.join('~')));
+                url = url.replace('$$$FILTERS', Filters.getFiltersUrlString(_this.desc.name));
 
                 // Get current value for $$$currvalue
                 if (_this.lpt) {
@@ -537,6 +539,7 @@
                 Connector.execMDX(mdx)
                     .catch(function() { requestDrillthrough(); })
                     .then(function(data) {
+                        if (!data) { return; }
                         if ($scope.chartConfig) $scope.chartConfig.loading = false;
                         if (isEmptyData(data) && path && _this.canDoDrillthrough) {
                             requestDrillthrough();
@@ -1126,7 +1129,7 @@
                         filters = parts.slice(1).join(':');
                     }
                 }
-                if (widgetName && _this.desc.name === widgetName && filters) {
+                if (widgetName && (_this.desc.name === widgetName || widgetName === "*" || widgetName.split(',').indexOf(_this.desc.name) !== -1) && filters) {
                     let f = filters.split('~');
                     for (let i = 0; i < f.length; i++) {
                         let s = f[i];

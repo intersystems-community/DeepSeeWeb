@@ -63,7 +63,7 @@
             activeFilters = activeFilters.map(f => ({Filter: f.targetProperty, Value: f.Value}));
             $scope.model.isLoading = true;
             Connector
-                .searchFilters('', ds, activeFilters)
+                .searchFilters('', ds, activeFilters, [_this.source.targetProperty])
                 .catch(onError)
                 .then(onFilterValuesReceived);
         }

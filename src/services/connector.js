@@ -190,17 +190,24 @@
          * @param {string} searchStr Search string
          * @param {string} dataSource Filter data source
          * @param relatedFilters {Array<object>} Related filters
+         * @param {Array<string>} List of filter to request
          * @returns {object} $http promise
          */
-        function searchFilters(searchStr, dataSource, relatedFilters) {
+        function searchFilters(searchStr, dataSource, relatedFilters, requestFilters) {
+            let data = {
+                DataSource: dataSource,
+                Values: 1,
+                Search: searchStr
+            };
+            if (relatedFilters && relatedFilters.length) {
+                data.RelatedFilters = relatedFilters;
+            }
+            if (requestFilters && requestFilters.length) {
+                data.RequestedFilters = requestFilters;
+            }
             return $http({
                 method: 'POST',
-                data: {
-                    DataSource: dataSource,
-                    Values: 1,
-                    Search: searchStr,
-                    RelatedFilters: relatedFilters || []
-                },
+                data,
                 url: _this.url + 'Filters?Namespace=' + getNamespace(),
                 withCredentials: true
             }).then(transformResponse);

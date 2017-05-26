@@ -44,6 +44,10 @@
                     <div class="btn btn-default" ng-click="gotoDeepSee()" title="{{'gotoDeepSee'|lang}}"><i class="fa fa-mail-forward"></i><span desktop-hidden>{{'gotoDeepSee'|lang}}</span></div>
                 </div>
 
+                <div class="btn-group" ng-show="model.onDashboard" mobile-hidden>
+                    <div class="btn btn-default" ng-click="shareDashboard()" title="{{'shareDashboard'|lang}}"><i class="fa fa-link"></i><span desktop-hidden>{{'shareDashboard'|lang}}</span></div>
+                </div>
+
                 <div class="btn-group" ng-show="model.onDashboard" desktop-hidden mobile-hidden>
                     <div type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
                         <i class="fa fa-list"></i>
