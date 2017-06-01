@@ -41,20 +41,6 @@
         };
 
         /**
-         * Handler for "New view" button
-         */
-        // function onAddClick() {
-        //     $scope.model.addMode = !$scope.model.addMode;
-        //     if ($scope.model.addMode) {
-        //         $scope.model.settingsName = "";
-        //         // Declared in directive 'focusFunc' - directives/focus.js
-        //         $scope.setFocusOnInput();
-        //     } else {
-        //         addSettings($scope.model.settingsName);
-        //     }
-        // }
-
-        /**
          * Show console log. Used in mobile version of app
          */
         function showLog() {

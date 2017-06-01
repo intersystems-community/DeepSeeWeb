@@ -144,25 +144,6 @@
                     }
                 }
             });
-
-            // if (widgetName && (_this.desc.name === widgetName || widgetName === "*" || widgetName.split(',').indexOf(_this.desc.name) !== -1) && filters) {
-            //     let f = filters.split('~');
-            //     for (let i = 0; i < f.length; i++) {
-            //         let s = f[i];
-            //         let isExclude = s.indexOf('%NOT') !== -1;
-            //         if (s.indexOf('{') !== -1) {
-            //             // Many values
-            //             let path = s.substring(0, s.indexOf('{')).replace('%NOT ', '');
-            //             let values = s.match(/\{([^)]+)\}/)[1].split(',');
-            //             mdx += ' %FILTER %OR({';
-            //             mdx += values.map(v => path + v + (isExclude ? '.%NOT' : '')).join(',');
-            //             mdx += '})';
-            //         } else {
-            //             // One value
-            //             mdx += " %FILTER " + s;
-            //         }
-            //     }
-            // }
         }
 
         /**
