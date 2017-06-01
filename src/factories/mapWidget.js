@@ -222,8 +222,8 @@
                     if (value > maxV) maxV = value;
                 }
 
-                var min = [Number.MAX_VALUE, Number.MAX_VALUE];
-                var max = [Number.MIN_VALUE, Number.MIN_VALUE];
+                var min = [99999999, 99999999];
+                var max = [-99999999, -99999999];
 
                 var count = 0;
                 //polyCoordProp  = _this.desc.proper Polygon Coords property
@@ -238,7 +238,6 @@
                 if (item.length !== 0) {
                     idx = _this.mapData.Cols[0].tuples.indexOf(item[0]);
                 }
-
                 for (t = 0; t < _this.mapData.Cols[1].tuples.length; t++) {
                     //if (t !== 0) continue;
 
@@ -278,9 +277,9 @@
                             if (parseFloat(lat) < min[1]) min[1] = parseFloat(lat);
                             if (parseFloat(ll) > max[0]) max[0] = parseFloat(ll);
                             if (parseFloat(lat) > max[1]) max[1] = parseFloat(lat);
-
                             polyCoords.push(point.getCoordinates());
                         }
+
                         poly.push(polyCoords);
 
                         if (poly.length >300) {

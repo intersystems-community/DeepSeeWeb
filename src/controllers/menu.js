@@ -74,14 +74,24 @@
             $('body').css('margin-top', '-50px');
         }
 
+        // Removes parameter from url
+        function removeParameterFromUrl(url, parameter) {
+            return url
+                .replace(new RegExp('[?&]' + parameter + '=[^&#]*(#.*)?$'), '$1')
+                .replace(new RegExp('([?&])' + parameter + '=[^&]*&'), '$1');
+        }
 
         /**
          * Create link for dashboard sharing
          */
         function shareDashboard() {
+            //let rp = $routeParams;
+            //$location.search('Filters', null);
             let url = window.location.href;
+            url = removeParameterFromUrl(url, 'FILTERS');
+
             let fltUrl =  Filters.getFiltersUrlString();
-            let flt = 'SETTINGS=TARGET:*;FILTER:' + fltUrl;
+            let flt = 'FILTERS=TARGET:*;FILTER:' + fltUrl;
             if (fltUrl) {
                 if (url.indexOf('?') !== -1) {
                     url += '&' + flt;

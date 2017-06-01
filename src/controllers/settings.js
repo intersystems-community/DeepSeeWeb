@@ -28,8 +28,8 @@
             widgetHeight:     settings.widgetHeight
         };
 
-        $scope.applySettrings    = applySettrings;
-        $scope.resetSettings        = resetSettings;
+        $scope.applySettrings  = applySettrings;
+        $scope.resetSettings  = resetSettings;
         $scope.exportSettings = exportSettings;
         $scope.readSettings = readSettings;
         $scope.showLog = showLog;
@@ -152,10 +152,23 @@
          * Reset user settings(position, sizes, icons, etc.)
          */
         function resetSettings() {
-            delete sessionStorage.userSettings;
+            let ns = Connector.getNamespace().toLowerCase();
+
+            let removeSettings = st => {
+                let us = st.userSettings;
+                if (us) {
+                    let o = JSON.parse(us);
+                    delete o[ns];
+                    st.userSettings = JSON.stringify(o);
+                }
+            };
+
+            // Remove both from local and session storage
+            removeSettings(sessionStorage);
             try {
-                delete localStorage.userSettings;
+                removeSettings(localStorage);
             } catch(e) {}
+
             reloadPage();
         }
 

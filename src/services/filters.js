@@ -4,7 +4,7 @@
 (function() {
     'use strict';
 
-    function FiltersSvc($rootScope, Connector, Storage, Lang) {
+    function FiltersSvc($rootScope, Connector, Storage, Lang, $location) {
         var _this = this;
         this.items = [];
         this.isFiltersOnToolbarExists = false;
@@ -67,6 +67,7 @@
             }
 
             loadFiltersFromSettings();
+            loadFiltersFromUrl();
         }
 
         /**
@@ -94,6 +95,74 @@
                 f.push(v);
             }
             return encodeURIComponent(f.join('~'));
+        }
+
+
+        function loadFiltersFromUrl() {
+            let param = $location.search().FILTERS;
+            if (!param) return;
+            let params = param.split(';');
+            let widgetName = null;
+            let filters = '';
+            for (let i = 0; i < params.length; i++) {
+                let parts = params[i].split(':');
+                if (parts[0].toLowerCase() === 'target') {
+                    widgetName = parts[1];
+                    continue;
+                }
+                if (parts[0].toLowerCase() === 'filter') {
+                    filters = parts.slice(1).join(':');
+                }
+            }
+            // Get affected filters
+            let flt = _this.items.filter(f => f.targetArray.indexOf(widgetName) !== -1 || f.target === widgetName || f.target === "*");
+            flt.forEach(f => {
+                let urlFilters = filters.split('~');
+                for (let i = 0; i < urlFilters.length; i++) {
+                    let s = urlFilters[i];
+                    // Check filter path
+                    if (s.indexOf('{') !== -1) {
+                        // Many values
+                        let path = s.substring(0, s.indexOf('{')-1).replace('%NOT ', '');
+                        if (path !== f.targetProperty) { continue; }
+                        //&[30 to 59]|&[60+]|"
+                        let values = s.match(/\{([^)]+)\}/)[1].split(',');
+                        f.value = values.join('|');
+                        /*f.value = s.match(/\{([^)]+)\}/)[1];
+                        let values = f.value.split(',');
+                        f.value = values.map(v => path + '.' + v).join(',');
+                        f.values.forEach(function (v) {
+                            if (values.indexOf(v.path) !== -1) v.checked = true;
+                        });*/
+                        f.valueDisplay = values.map(v => v.replace('&[', '').replace(']', '')).join(',');
+                    } else {
+                        // One value
+                        let path = s.split('.&')[0];
+                        if (path !== f.targetProperty) { continue; }
+                        f.value = '&' + s.split('.&')[1];
+                        f.valueDisplay = findDisplayText(f);
+                    }
+                }
+            });
+
+            // if (widgetName && (_this.desc.name === widgetName || widgetName === "*" || widgetName.split(',').indexOf(_this.desc.name) !== -1) && filters) {
+            //     let f = filters.split('~');
+            //     for (let i = 0; i < f.length; i++) {
+            //         let s = f[i];
+            //         let isExclude = s.indexOf('%NOT') !== -1;
+            //         if (s.indexOf('{') !== -1) {
+            //             // Many values
+            //             let path = s.substring(0, s.indexOf('{')).replace('%NOT ', '');
+            //             let values = s.match(/\{([^)]+)\}/)[1].split(',');
+            //             mdx += ' %FILTER %OR({';
+            //             mdx += values.map(v => path + v + (isExclude ? '.%NOT' : '')).join(',');
+            //             mdx += '})';
+            //         } else {
+            //             // One value
+            //             mdx += " %FILTER " + s;
+            //         }
+            //     }
+            // }
         }
 
         /**
@@ -308,6 +377,6 @@
     }
 
     angular.module('app')
-        .service('Filters', ['$rootScope', 'Connector', 'Storage', 'Lang', FiltersSvc]);
+        .service('Filters', ['$rootScope', 'Connector', 'Storage', 'Lang', '$location', FiltersSvc]);
 
 })();

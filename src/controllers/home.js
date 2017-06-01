@@ -51,6 +51,8 @@
 
         this.setCurrentFolder();
 
+        // Reset filters query params
+        $location.search('FILTERS', null);
 
         // Load tile settings first, then request data
         requestData();

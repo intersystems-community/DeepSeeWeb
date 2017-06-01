@@ -4,7 +4,7 @@
 (function() {
     'use strict';
 
-    function StorageSvc(CONST, Lang, Utils, $rootScope, $location) {
+    function StorageSvc(CONST, Lang, Utils, $rootScope, $location, Connector) {
         var _this = this;
         this.settings = {};
         this.serverSettings = {};
@@ -46,10 +46,15 @@
          * Saves user settings to storage
          */
         function saveUserSettings() {
+            let ns = Connector.getNamespace().toLowerCase();
             if (_this.isLocalStorage) {
-                localStorage.userSettings = JSON.stringify(_this.settings);
+                let us = JSON.parse(localStorage.userSettings || '{}');
+                us[ns] = _this.settings;
+                localStorage.userSettings = JSON.stringify(us);
             } else {
-                sessionStorage.userSettings = JSON.stringify(_this.settings);
+                let us = JSON.parse(sessionStorage.userSettings || '{}');
+                us[ns] = _this.settings;
+                sessionStorage.userSettings = JSON.stringify(us);
             }
         }
 
@@ -58,59 +63,62 @@
          * @param {object} config Configuration to load
          */
         function loadConfig(response) {
-                if (!response) return;
-                _this.configLoaded = true;
-                if (response) {
-                    if (response.constructor === Object) _this.settings = response; else {
-                        var o;
-                        try {
-                            o = JSON.parse(response);
-                        } catch (e) {
-                            o = {};
-                        }
-                        _this.settings = o;
+            _this.settings = {};
+            _this.configLoaded = true;
+            if (response) {
+                if (response.constructor === Object) _this.settings = response; else {
+                    var o;
+                    try {
+                        o = JSON.parse(response);
+                    } catch (e) {
+                        o = {};
                     }
+                    _this.settings = o;
                 }
+            }
 
-                // Override settings by user settings
-                if (localStorage.userSettings) {
-                    _this.settings = JSON.parse(localStorage.userSettings);
-                }
-                if (sessionStorage.userSettings) {
-                    _this.settings = JSON.parse(sessionStorage.userSettings);
-                }
+            // Override settings by user settings
+            let userSettings = null;
+            let ns = Connector.getNamespace().toLowerCase();
+            if (localStorage.userSettings) {
+                userSettings = JSON.parse(localStorage.userSettings)[ns];
+            }
+            if (sessionStorage.userSettings) {
+                userSettings = JSON.parse(sessionStorage.userSettings)[ns];
+            }
+            if (userSettings) _this.settings = userSettings;
 
-                var settings = _this.getAppSettings();
-                if (!window.dsw.mobile) {
-                    if (settings.theme) {
-                        document.getElementById('pagestyle').setAttribute('href', 'css/' + settings.theme);
-                    }
+            var settings = _this.getAppSettings();
+            if (!window.dsw.mobile) {
+                if (settings.theme) {
+                    document.getElementById('pagestyle').setAttribute('href', 'css/' + settings.theme);
                 }
-                Lang.current = settings.language || "en";
-                $rootScope.$broadcast('lang:changed');
+            }
+            Lang.current = settings.language || "en";
+            $rootScope.$broadcast('lang:changed');
 
-                // Get colors from theme
-                var cols = Highcharts.getOptions().colors;
-                for (var i = 1; i <= cols.length; i++) {
-                    var c = $('.hc' + i.toString()).css('background-color').toLowerCase();
-                    if (c !== 'rgba(0, 0, 0, 0)' &&  c !== 'transparent') {
-                        cols[i-1] = c;
-                    }
+            // Get colors from theme
+            var cols = Highcharts.getOptions().colors;
+            for (var i = 1; i <= cols.length; i++) {
+                var c = $('.hc' + i.toString()).css('background-color').toLowerCase();
+                if (c !== 'rgba(0, 0, 0, 0)' && c !== 'transparent') {
+                    cols[i - 1] = c;
                 }
-                Highcharts.setOptions({
-                    colors: cols,
-                    global: {
-                        useUTC: false
-                    },
-                    lang: {
-                        loading: "<div class='loader'></div>",
-                        shortMonths: Lang.get("shortMonths"),
-                        rangeSelectorZoom: Lang.get("zoom"),
-                        rangeSelectorFrom: Lang.get("from"),
-                        rangeSelectorTo: Lang.get("to"),
-                        noData: Lang.get("noData")
-                    }
-                });
+            }
+            Highcharts.setOptions({
+                colors: cols,
+                global: {
+                    useUTC: false
+                },
+                lang: {
+                    loading: "<div class='loader'></div>",
+                    shortMonths: Lang.get("shortMonths"),
+                    rangeSelectorZoom: Lang.get("zoom"),
+                    rangeSelectorFrom: Lang.get("from"),
+                    rangeSelectorTo: Lang.get("to"),
+                    noData: Lang.get("noData")
+                }
+            });
         }
 
         /**
@@ -203,6 +211,6 @@
     }
 
     angular.module('app')
-        .service('Storage', ['CONST', 'Lang', 'Utils', '$rootScope', '$location', StorageSvc]);
+        .service('Storage', ['CONST', 'Lang', 'Utils', '$rootScope', '$location', 'Connector', StorageSvc]);
 
 })();

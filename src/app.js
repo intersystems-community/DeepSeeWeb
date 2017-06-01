@@ -184,20 +184,17 @@ window.dsw.mobile = false;
         if (Connector.firstRun) loadConf(); else deffered.resolve();
 
         function loadConf() {
-            Connector.loadConfig($route.current.params.ns)
-            .catch(function() {
-                // Config not found - it's ok, because there can be namespaces without config
-            })
-            .then(function (result) {
+
+            let confLoaded = result => {
                 $rootScope.$broadcast('toggleMenu', true);
                 $rootScope.$broadcast('refresh', true);
                 Storage.loadConfig(result);
                 var addons = null;
                 Connector.loadAddons()
-                    .catch(function(e) {
+                    .catch(function (e) {
                         console.log(`Can't load addons: ${e}`);
                     })
-                    .then(function(addons) {
+                    .then(function (addons) {
                         if (addons && addons.length) {
                             dsw.addons = addons.slice();
                             for (var i = 0; i < dsw.addons.length; i++) {
@@ -208,7 +205,7 @@ window.dsw.mobile = false;
                         }
                         return loadAddons(addons, $q, $ocLazyLoad);
                     })
-                    .then(function() {
+                    .then(function () {
                         $rootScope.$broadcast('addons:loaded', addons);
                     })
                     .then(loadSettings(Storage, $q, Connector))
@@ -216,14 +213,21 @@ window.dsw.mobile = false;
                         deffered.resolve();
                     });
                 /*
-                $q.all([
-                    //loadNamespaceConfig(Storage, $q, Connector, $route.current.params.ns),
-                    loadAddons(Storage, $q, $ocLazyLoad),
-                    loadSettings(Storage, $q, Connector)
-                ]).then(function () {
-                    deffered.resolve();
-                });*/
-            }).catch(function (result) {
+                 $q.all([
+                 //loadNamespaceConfig(Storage, $q, Connector, $route.current.params.ns),
+                 loadAddons(Storage, $q, $ocLazyLoad),
+                 loadSettings(Storage, $q, Connector)
+                 ]).then(function () {
+                 deffered.resolve();
+                 });*/
+            };
+
+
+
+            Connector.loadConfig($route.current.params.ns)
+            // Config not found - it's ok, because there can be namespaces without config
+            .catch(_ => { confLoaded(); })
+            .then(confLoaded).catch(r => {
                 deffered.resolve();
             });
         }
