@@ -2,7 +2,7 @@
 Renderer for DeepSee Dashboards in Browser with MDX2JSON as a Serverside and JS web-client.<br>
 Developed using AngularJS and Bootstrap.<br><br>
 ![DeepSeeWeb screenshot](/screenshot.png?raw=true "DeepSeeWeb screenshot")<br>
-#Supported widgets
+# Supported widgets
 * Area chart
 * Line chart
 * Chart with markers
@@ -20,7 +20,7 @@ Developed using AngularJS and Bootstrap.<br><br>
 * Speedometer
 * Fuel gauge
 
-#Installation
+# Installation
 1. First be sure, that you have [MDX2JSON](https://github.com/intersystems-ru/Cache-MDX2JSON) installed. To test it open URL `<server:port>/MDX2JSON/Test`
 You should see something like this:
 `
@@ -53,7 +53,7 @@ To use DSW Open `server:port/dsw/index.html`
 
 Demo: https://www.youtube.com/watch?v=-HplM12eNik
 
-#Known issues:
+# Known issues:
 
 Sometimes after installation you can see umlyauts in the client. like in the shot:
 ![Install](/installbug.png?raw=true "Installbug screenshot")
