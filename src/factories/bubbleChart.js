@@ -68,6 +68,7 @@
 
                     for (var i = 0; i < data.Cols[1].tuples.length; i++) {
                         tempData = [];
+						Console.log("AZAZA");
                         tempData.push([data.Data[i * 2], data.Data[i * 2 + 1], 1]);
                         //cb.fixData(tempData);
 
