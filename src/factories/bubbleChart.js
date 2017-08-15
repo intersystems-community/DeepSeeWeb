@@ -27,9 +27,9 @@
                 chart: {
                     zoomType: 'xy'
                 },
-                /*legend: {
-                    enabled: false
-                },*/
+                legend: {
+                    enabled: true
+                },
                 xAxis: {
                     tickWidth: 10
                 },
@@ -46,44 +46,107 @@
                 }
             };
             Utils.merge($scope.chartConfig.options, ex);
+			
+			function getSeriesNames(data)
+			{
+				var ser = {};
+				if(data.Cols[0].tuples.length == 4)
+				{
+					for (var i = 3; i < data.Data.length; i += 4)
+					{
+						ser[data.Data[i]] = true; 
+					}
+				}
+				
+				return Object.keys(ser);
+			}
+			
+			function mapBySeries(data, uniqueSeries)
+			{
+				var seriesName_data = {};
+					if (data.Cols[0].tuples.length == 4)
+					{
+						for (var key in uniqueSeries) 
+						{
+	  						if (uniqueSeries.hasOwnProperty(key)) 
+							{
+								seriesName_data[uniqueSeries[key]] = [];
+							}
+						} 
+					}
+					else
+					{
+						seriesName_data['default'] = [];
+					}
+				return seriesName_data;
+			}
 
             /**
              * Bubble chart data parser function. Creates series for bubble chart from data
              * @param {object} data Data
              */
-            function bubbleDataConvertor(data) {
+            function bubbleDataConvertor(data) 
+			{
+				
+				var uniqueSeries = getSeriesNames(data);			
+				
                 $scope.chartConfig.series = [];
                 if (data.Cols[0].tuples.length >= 1) $scope.chartConfig.xAxis.title.text = data.Cols[0].tuples[0].caption;
                 if (data.Cols[0].tuples.length >= 2) $scope.chartConfig.yAxis.title.text = data.Cols[0].tuples[1].caption;
                 var tempData = [];
-
+				
+				if(data.Cols[0].tuples.length > 4)
+				{
+					_this.showError("Data converter for this bubble chart not implemented!");
+				}
+				else
                 if (data.Cols[0].tuples[0].children) {
                     // TODO: Lang support
                     _this.showError("Data converter for this bubble chart not implemented!");
                 } else {
+					var offset = data.Cols[0].tuples.length;
                     var fmt1 = "";
                     var fmt2 = "";
                     if (data.Cols[0].tuples[0]) fmt1 = data.Cols[0].tuples[0].format;
-                    if (data.Cols[0].tuples[1]) fmt1 = data.Cols[0].tuples[1].format;
-
-                    for (var i = 0; i < data.Cols[1].tuples.length; i++) {
-                        tempData = [];
-						Console.log("AZAZA");
-                        tempData.push([data.Data[i * 2], data.Data[i * 2 + 1], 1]);
-                        //cb.fixData(tempData);
-
-                        _this.addSeries({
-                            data: tempData,
-                            name: data.Cols[1].tuples[i].caption,
-                            format1: fmt1,
-                            format2: fmt2
-                        });
+                    if (data.Cols[0].tuples[1]) fmt2 = data.Cols[0].tuples[1].format;
+					
+					
+					var seriesName_data = mapBySeries(data, uniqueSeries);				
+					
+                    for (var i = 0; i < data.Cols[1].tuples.length; i++) 
+					{
+                        var tempData = [];
+						
+						if (data.Cols[0].tuples.length == 2)
+						{
+							tempData.push([data.Data[offset * i], data.Data[offset * i + 1], 1]);
+						}
+						else
+						{
+							var tmp = {};
+							tmp.x = data.Data[offset * i];
+							tmp.y = data.Data[offset * i + 1];
+							tmp.z = data.Data[offset * i + 2];
+							var seriesName = (data.Cols[0].tuples.length == 4)?seriesName = data.Data[offset * i + 3]:'default';						
+	
+							seriesName_data[seriesName].push(tmp);
+						}
                     }
-                    //}
+					
+					//console.log("seriesName_data ", seriesName_data);
+					
+					for (var key in seriesName_data) 
+				    {	
+						_this.addSeries({
+                            				data: seriesName_data[key],
+                            				name: key,
+                            				format1: fmt1,
+                           					format2: fmt2
+									   });
+					}
                 }
             }
         }
-
         return BuubleChart;
     }
 
