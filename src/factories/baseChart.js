@@ -136,6 +136,29 @@
                 loading: true
             };
 
+            // Check for combo chart
+            if (_this.desc.type.toLowerCase() === "combochart") {
+                $scope.chartConfig.yAxis = [{},{ opposite: true}];
+                if (this.desc.overrides && this.desc.overrides[0] && this.desc.overrides[0]._type === 'comboChart') {
+                    var combo = this.desc.overrides[0];
+                    var l = combo.yAxisList;
+                    if (l && l.length) {
+                        for (var k = 0; k < l.length; k++) {
+                            if (l[k].title) $scope.chartConfig.yAxis[k].title = l[k].title;
+                            $scope.chartConfig.yAxis[k].axisType = l[k].axisType;
+                            if (l[k].axisType === "percent") {
+                                $scope.chartConfig.yAxis[k].labels = {
+                                    formatter: function() {
+                                        return this.value*100+"%";
+                                    }
+                                };
+                            }
+                        }
+                    }
+
+                }
+            }
+
             if (_this.desc.inline) {
                 $scope.chartConfig.options.chart.backgroundColor = null;
                 $scope.chartConfig.options.plotOptions ={
@@ -395,8 +418,7 @@
 
                     //buildAxisTitles(result);
                     if (_this.desc.type.toLowerCase() === "combochart") {
-                        $scope.chartConfig.yAxis = [{},{ opposite: true}];
-                        for (i = 0; i < $scope.chartConfig.series.length; i++) {
+                       for (i = 0; i < $scope.chartConfig.series.length; i++) {
                             if ($scope.chartConfig.series[i].type) continue;
                             switch (i % 3) {
                                 case 0: $scope.chartConfig.series[i].type = this.seriesTypes[i] || "bar"; $scope.chartConfig.series[i].zIndex = 2; $scope.chartConfig.series[i].color = Highcharts.getOptions().colors[1]; break;
@@ -516,7 +538,6 @@
                 // Check chart type
                 let curIdx = $scope.chartConfig.series.length;
                 if (this.seriesTypes && this.seriesTypes[curIdx]) data.type = this.seriesTypes[curIdx];
-
                 $scope.chartConfig.series.push(data);
             }
 
@@ -674,7 +695,7 @@
             function parseMultivalueData(d) {
                 var data = d;
                 var i;
-
+                var currentAxis = 0;
                 // Add non exists axis as count
                 if (!data.Cols[1]) {
                     data.Cols[1] = {tuples: []};
@@ -776,6 +797,23 @@
                         });
                     }
                 }
+
+                // Set axis for combo chart
+                if (_this.desc.type.toLowerCase() === "combochart") {
+                    var series = $scope.chartConfig.series;
+                    for (var k = 0; k < series.length; k++) {
+                        series[k].yAxis = series.length - 1 - k;
+                        // Convert to percents if axis show percentage
+                        /*if ($scope.chartConfig.yAxis[series.length - 1 - k].axisType === "percent" && series[k].data && series[k].data.length) {
+                            for (var n = 0; n < series[k].data.length; n++) {
+                                if (series[k].data[n].y !== undefined && !isNaN(series[k].data[n].y)) {
+                                    series[k].data[n].y *= 100;
+                                }
+                            }
+                        }*/
+                    }
+                }
+
             }
 
             function getFormat(data) {
