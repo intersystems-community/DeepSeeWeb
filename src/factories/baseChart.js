@@ -125,8 +125,7 @@
                     text: ''
                 },
                 func: function (chart) {
-                    if (_this.chart) return;
-                    _this.chart = chart;
+                    if (!_this.chart) _this.chart = chart;
                     $timeout(function() {
                         if (!_this) return;
                         if (_this.chart) _this.chart.reflow();
