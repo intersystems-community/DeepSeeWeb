@@ -41,6 +41,7 @@
             }
 
             function onDrillThrough() {
+                if (!_this.canDoDrillthrough) return false;
                 _this._oldMdx = _this.lpt.getActualMDX();
                 $scope.item.backButton = true;
                 return true;

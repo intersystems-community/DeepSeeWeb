@@ -126,7 +126,7 @@
 
         function changeNamespace(name) {
             $routeParams.ns = name;
-            $location.path("/").url("?ns="+name);
+            $location.path("/").search({ns: name});
         }
 
         function onServerSettingsLoaded() {
@@ -192,6 +192,7 @@
          */
         function onHomeClick() {
             $location.path("/");
+            $location.search('SETTINGS', null);
         }
 
         /**
