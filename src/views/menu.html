@@ -91,7 +91,7 @@
                 <ul class="nav navbar-nav">
                     <li class="dropdown">
                         <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="fa fa-database"></i> {{model.namespace}}<span class="caret"></span></a>
-                        <ul class="dropdown-menu">
+                        <ul class="spaces dropdown-menu">
                             <li ng-class="{active: ns.toLowerCase() === model.namespace.toLowerCase()}" ng-repeat="ns in model.namespaces track by $index"><a ng-click="changeNamespace(ns)">{{ns}}</a></li>
                         </ul>
                     </li>
