@@ -99,6 +99,8 @@ gulp.task('copyfiles', ['sass-dev'], function () {
         .pipe(gulp.dest('build/fonts'));
     gulp.src(['img/**/*'])
         .pipe(gulp.dest('build/img'));
+    gulp.src(['changelog.md'])
+        .pipe(gulp.dest('build'));
     gulp.src(['updater.csp'])
         .pipe(gulp.dest('build'));
 });
