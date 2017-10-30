@@ -115,7 +115,12 @@
                 }
             }
             // Get affected filters
-            let flt = _this.items.filter(f => f.targetArray.indexOf(widgetName) !== -1 || f.target === widgetName || f.target === "*");
+            let flt = [];
+            if (widgetName != '*') {
+                flt = _this.items.filter(f => f.targetArray.indexOf(widgetName) !== -1 || f.target === widgetName || f.target === "*");
+            } else {
+                flt = _this.items.slice();
+            }
             flt.forEach(f => {
                 let urlFilters = filters.split('~');
                 for (let i = 0; i < urlFilters.length; i++) {

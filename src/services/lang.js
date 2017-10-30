@@ -71,6 +71,7 @@
      */
         .constant('LANGSTR', {
             en: {
+                seriesColor: 'Series colors',
                 copy: "Copy",
                 shareDashboard: "Share dashboard",
                 relatedFilters: "Related filters",
@@ -164,6 +165,7 @@
                 shortMonths: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
             },
             de: {
+                seriesColor: 'Series colors',
                 copy: "Copy",
                 shareDashboard: "Share dashboard",
                 relatedFilters: "Related filters",
@@ -257,6 +259,7 @@
                 shortMonths: ["Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"]
             },
             cs: {
+                seriesColor: 'Series colors',
                 copy: "Copy",
                 shareDashboard: "Share dashboard",
                 relatedFilters: "Related filters",
@@ -347,6 +350,7 @@
                 shortMonths: ["Leden", "Únor", "Březen", "Duben", "Květen", "Červen", "Červenec", "Srpen", "Září", "Říjen", "Listopad", "Prosinec"]
             },
             ru: {
+                seriesColor: 'Цвет серий',
                 copy: "Копировать",
                 shareDashboard: "Поделиться дешбордом",
                 relatedFilters: "Взаимосвязанные фильтры",

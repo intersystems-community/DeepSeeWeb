@@ -746,3 +746,15 @@ select.input-sm {
 .hc10 {
     background-color: transparent;
 }
+
+.color-picker-input {
+    width: 100%;
+}
+
+.txt-changelog {
+   white-space: pre-wrap;
+}
+
+.wnd-about {
+    max-height: 90vh;
+}

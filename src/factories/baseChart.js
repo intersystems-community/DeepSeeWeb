@@ -1,7 +1,7 @@
 /**
  * Base chart class factory
  */
-(function() {
+(function () {
     'use strict';
 
     function BaseChartFact(Lang, Utils, Connector, $timeout, CONST, Storage) {
@@ -10,27 +10,27 @@
         var DEF_COL_COUNT = 20;
 
         function BaseChart($scope) {
-            this.addSeries           = addSeries;
-            this.setType             = setType;
-            this.getMinValue         = getMinValue;
-            this.enableStacking      = enableStacking;
-            this.baseRequestData     = this.requestData;
-            this.requestData         = reqestData;
-            this.parseData           = parseMultivalueData;
-            this.onResize            = onResize;
-            this._retrieveData       = retrieveData;
-            this.formatNumber        = formatNumber;
+            this.addSeries = addSeries;
+            this.setType = setType;
+            this.getMinValue = getMinValue;
+            this.enableStacking = enableStacking;
+            this.baseRequestData = this.requestData;
+            this.requestData = reqestData;
+            this.parseData = parseMultivalueData;
+            this.onResize = onResize;
+            this._retrieveData = retrieveData;
+            this.formatNumber = formatNumber;
             this.initFormatForSeries = initFormatForSeries;
-            this.limitSeriesAndData  = limitSeriesAndData;
-            this.toggleButton        = toggleButton;
-            this.hasOption           = hasOption;
-            this.dataInfo            = null;
-            this.widgetData          = null;
-            this.labelsFormatter     = labelsFormatter;
+            this.limitSeriesAndData = limitSeriesAndData;
+            this.toggleButton = toggleButton;
+            this.hasOption = hasOption;
+            this.dataInfo = null;
+            this.widgetData = null;
+            this.labelsFormatter = labelsFormatter;
             // Selected point for mobile version to make drill after second tap
-            this._selectedPoint      = null;
-            this.seriesTypes         = [];
-            var _this    = this;
+            this._selectedPoint = null;
+            this.seriesTypes = [];
+            var _this = this;
             var firstRun = true;
             var settings = Storage.getAppSettings();
 
@@ -42,16 +42,16 @@
             loadToolbarButton(widgetsSettings, "showZero");
             loadToolbarButton(widgetsSettings, "showValues");
             /*if (widgetsSettings[_this.desc.key]) {
-                if (widgetsSettings[_this.desc.key].isLegend !== undefined)  $scope.item.isLegend = widgetsSettings[_this.desc.key].isLegend;
-            }
-            $scope.item.isTop = false;
-            if (widgetsSettings[_this.desc.key]) {
-                if (widgetsSettings[_this.desc.key].isTop !== undefined)  $scope.item.isTop = widgetsSettings[_this.desc.key].isTop;
-            }
-            $scope.item.showZero = false;
-            if (widgetsSettings[_this.desc.key]) {
-                if (widgetsSettings[_this.desc.key].showZero !== undefined)  $scope.item.showZero = widgetsSettings[_this.desc.key].showZero;
-            }*/
+             if (widgetsSettings[_this.desc.key].isLegend !== undefined)  $scope.item.isLegend = widgetsSettings[_this.desc.key].isLegend;
+             }
+             $scope.item.isTop = false;
+             if (widgetsSettings[_this.desc.key]) {
+             if (widgetsSettings[_this.desc.key].isTop !== undefined)  $scope.item.isTop = widgetsSettings[_this.desc.key].isTop;
+             }
+             $scope.item.showZero = false;
+             if (widgetsSettings[_this.desc.key]) {
+             if (widgetsSettings[_this.desc.key].showZero !== undefined)  $scope.item.showZero = widgetsSettings[_this.desc.key].showZero;
+             }*/
             widgetsSettings = null;
 
             // Check for series types
@@ -67,11 +67,29 @@
             $scope.item.isBtnValues = false;
 
 
-            $scope.$on("print:" + $scope.item.$$hashKey, function(){ if (_this.chart) _this.chart.print();});
+            $scope.$on("print:" + $scope.item.$$hashKey, function () {
+                if (_this.chart) _this.chart.print();
+            });
             $scope.chartConfig = {
                 options: {
+                    labels: {
+                        style: {
+                            color: settings.hcTextColor
+                        }
+                    },
+                    drilldown: {
+                        activeAxisLabelStyle: {
+                                color: settings.hcTextColor
+                        },
+                        activeDataLabelStyle: {
+                                color: settings.hcTextColor
+                        }
+                    },
                     legend: {
-                        enabled: $scope.item.isLegend
+                        enabled: $scope.item.isLegend,
+                        itemStyle: {
+                            color: settings.hcTextColor
+                        }
                     },
                     navigation: {
                         buttonOptions: {
@@ -91,7 +109,20 @@
                         enabled: false
                     },
                     plotOptions: {
+                        column: {
+                            borderColor: settings.hcBorderColor
+                        },
+                        bar: {
+                            borderColor: settings.hcBorderColor
+                        },
+                        pie: {
+                            borderColor: settings.hcBorderColor
+                        },
+                        treemap: {
+                            borderColor: settings.hcBorderColor
+                        },
                         series: {
+                            fillOpacity: settings.hcOpacity,
                             cursor: "pointer",
                             point: {
                                 events: {
@@ -103,7 +134,7 @@
                                 formatter: labelsFormatter
                             },
                             events: {
-                                legendItemClick: function(event) {
+                                legendItemClick: function (event) {
                                     toggleSeries(this.index, !this.visible);
                                 }
                             }
@@ -113,12 +144,30 @@
                 yAxis: {
                     title: {
                         text: ""
-                    }
+                    },
+                    labels: {
+                        style: {
+                            color: settings.hcTextColor
+                        }
+                    },
+                    minorGridLineColor: settings.hcLineColor,
+                    gridLineColor: settings.hcLineColor,
+                    lineColor: settings.hcLineColor,
+                    tickColor: settings.hcLineColor
                 },
                 xAxis: {
                     title: {
                         text: ""
-                    }
+                    },
+                    labels: {
+                        style: {
+                            color: settings.hcTextColor
+                        }
+                    },
+                    minorGridLineColor: settings.hcLineColor,
+                    gridLineColor: settings.hcLineColor,
+                    lineColor: settings.hcLineColor,
+                    tickColor: settings.hcLineColor
                 },
                 series: [],
                 title: {
@@ -127,7 +176,7 @@
                 func: function (chart) {
                     if (_this.chart) return;
                     _this.chart = chart;
-                    $timeout(function() {
+                    $timeout(function () {
                         if (!_this) return;
                         if (_this.chart) _this.chart.reflow();
                     }, 0);
@@ -136,9 +185,40 @@
                 loading: true
             };
 
+            // Set navigator style
+            $scope.chartConfig.options.navigator = {
+                outlineColor: settings.hcLineColor,
+                xAxis: {
+                    gridLineColor: settings.hcLineColor
+                },
+                yAxis: {
+                    gridLineColor: settings.hcLineColor
+                }
+            };
+
+
             // Check for combo chart
             if (_this.desc.type.toLowerCase() === "combochart") {
-                $scope.chartConfig.yAxis = [{},{ opposite: true}];
+                $scope.chartConfig.yAxis = [{
+                    gridLineColor: settings.hcLineColor,
+                    lineColor: settings.hcLineColor,
+                    tickColor: settings.hcLineColor,
+                    labels: {
+                        style: {
+                            color: settings.hcTextColor
+                        }
+                    }
+                }, {
+                    opposite: true,
+                    gridLineColor: settings.hcLineColor,
+                    lineColor: settings.hcLineColor,
+                    tickColor: settings.hcLineColor,
+                    labels: {
+                        style: {
+                            color: settings.hcTextColor
+                        }
+                    }
+                }];
                 if (this.desc.overrides && this.desc.overrides[0] && this.desc.overrides[0]._type === 'comboChart') {
                     var combo = this.desc.overrides[0];
                     var l = combo.yAxisList;
@@ -148,8 +228,8 @@
                             $scope.chartConfig.yAxis[k].axisType = l[k].axisType;
                             if (l[k].axisType === "percent") {
                                 $scope.chartConfig.yAxis[k].labels = {
-                                    formatter: function() {
-                                        return this.value*100+"%";
+                                    formatter: function () {
+                                        return this.value * 100 + "%";
                                     }
                                 };
                             }
@@ -161,7 +241,7 @@
 
             if (_this.desc.inline) {
                 $scope.chartConfig.options.chart.backgroundColor = null;
-                $scope.chartConfig.options.plotOptions ={
+                $scope.chartConfig.options.plotOptions = {
                     series: {
                         enableMouseTracking: false
                     }
@@ -170,20 +250,20 @@
                     enabled: false
                 };
                 if (_this.desc.tile) {
-                     var opt = {
+                    var opt = {
                         xAxis: {
                             labels: {
                                 style: {
-                                    color: $('.'+CONST.fontColors[_this.desc.tile.fontColor]).css('color')
+                                    color: $('.' + CONST.fontColors[_this.desc.tile.fontColor]).css('color')
                                 }
                             }
                         },
                         yAxis: {
-                         labels: {
-                             style: {
-                                 color: $('.'+CONST.fontColors[_this.desc.tile.fontColor]).css('color')
-                             }
-                         }
+                            labels: {
+                                style: {
+                                    color: $('.' + CONST.fontColors[_this.desc.tile.fontColor]).css('color')
+                                }
+                            }
                         }
                     };
                     Utils.merge($scope.chartConfig, opt);
@@ -288,7 +368,7 @@
                 }
                 $scope.chartConfig.loading = true;
                 _this.doDrill(e.point.path, e.point.name, e.point.category)
-                    .then(function() {
+                    .then(function () {
                         $scope.chartConfig.loading = false;
                     });
             }
@@ -301,7 +381,8 @@
                 if (_this.chart) {
                     try {
                         if ($scope.item.isLegend) _this.chart.legendShow(); else _this.chart.legendHide();
-                    } catch(ex) {}
+                    } catch (ex) {
+                    }
                 }
                 $scope.chartConfig.legend = {enabled: $scope.item.isLegend};
             }
@@ -312,7 +393,7 @@
             function displayAsPivot(customMdx) {
                 if (_this.desc.type === "pivot") {
                     $scope.item.isDrillthrough = null;
-                   _this.restoreWidgetType();
+                    _this.restoreWidgetType();
                 } else {
                     $scope.item.pivotMdx = customMdx || _this.getMDX();
                     _this.changeWidgetType("pivot");
@@ -329,7 +410,7 @@
                 if (format) res = numeral(v).format(format.replace(/;/g, "")); else res = v.toString();
                 if (_this.dataInfo) {
                     res = res.replace(/,/g, _this.dataInfo.numericGroupSeparator)
-                             .replace(/\./g, _this.dataInfo.decimalSeparator);
+                        .replace(/\./g, _this.dataInfo.decimalSeparator);
                 }
                 return res;
             }
@@ -345,7 +426,7 @@
                 var fmt = t.series.options.format;
                 var val = t.y;
                 if (fmt) val = _this.formatNumber(val, fmt);
-                var a = (t.point.name || t.x || '') + '<br>' + (t.point.title ? (t.point.title + "<br>") : "")  + t.series.name + ': <b>' + val + "</b><br>";
+                var a = (t.point.name || t.x || '') + '<br>' + (t.point.title ? (t.point.title + "<br>") : "") + t.series.name + ': <b>' + val + "</b><br>";
                 if (t.point.percentage) a += parseFloat(t.point.percentage).toFixed(2).toString() + "%";
                 return a;
             }
@@ -418,12 +499,23 @@
 
                     //buildAxisTitles(result);
                     if (_this.desc.type.toLowerCase() === "combochart") {
-                       for (i = 0; i < $scope.chartConfig.series.length; i++) {
+                        for (i = 0; i < $scope.chartConfig.series.length; i++) {
                             if ($scope.chartConfig.series[i].type) continue;
                             switch (i % 3) {
-                                case 0: $scope.chartConfig.series[i].type = this.seriesTypes[i] || "bar"; $scope.chartConfig.series[i].zIndex = 2; $scope.chartConfig.series[i].color = Highcharts.getOptions().colors[1]; break;
-                                case 1: $scope.chartConfig.series[i].type = this.seriesTypes[i] || "line"; $scope.chartConfig.series[i].yAxis = 1;$scope.chartConfig.series[i].color =Highcharts.getOptions().colors[2];$scope.chartConfig.series[i].zIndex = 0; break;
-                                case 2: $scope.chartConfig.series[i].type = this.seriesTypes[i] || "area"; break;
+                                case 0:
+                                    $scope.chartConfig.series[i].type = this.seriesTypes[i] || "bar";
+                                    $scope.chartConfig.series[i].zIndex = 2;
+                                    $scope.chartConfig.series[i].color = Highcharts.getOptions().colors[1];
+                                    break;
+                                case 1:
+                                    $scope.chartConfig.series[i].type = this.seriesTypes[i] || "line";
+                                    $scope.chartConfig.series[i].yAxis = 1;
+                                    $scope.chartConfig.series[i].color = Highcharts.getOptions().colors[2];
+                                    $scope.chartConfig.series[i].zIndex = 0;
+                                    break;
+                                case 2:
+                                    $scope.chartConfig.series[i].type = this.seriesTypes[i] || "area";
+                                    break;
                             }
                             $scope.chartConfig.yAxis[i].title = {
                                 text: $scope.chartConfig.series[i].name
@@ -494,9 +586,9 @@
                 //         $scope.chartConfig.xAxis.title = {text: result.Cols[1].tuples[0].dimension};
                 //     }
                 // } else {
-                    if ($scope.chartConfig.yAxis && result.Cols[0] && result.Cols[0].tuples && result.Cols[0].tuples.length) {
-                        $scope.chartConfig.yAxis.title = {text: result.Cols[0].tuples.map(t => t.caption || '').join(' & ')};
-                    }
+                if ($scope.chartConfig.yAxis && result.Cols[0] && result.Cols[0].tuples && result.Cols[0].tuples.length) {
+                    $scope.chartConfig.yAxis.title = {text: result.Cols[0].tuples.map(t => t.caption || '').join(' & ')};
+                }
                 //}
 
                 // $scope.chartConfig.xAxis.title = {text: '' };
@@ -505,11 +597,12 @@
                 //         $scope.chartConfig.yAxis.title = {text: result.Cols[0].tuples[0].dimension};
                 //     }
                 // } else {
-                    if ($scope.chartConfig.xAxis && result.Cols[1] && result.Cols[1].tuples && result.Cols[1].tuples.length) {
-                        $scope.chartConfig.xAxis.title = {text: result.Cols[1].tuples.map(t => t.caption || '').join(' & ')};
-                    }
+                if ($scope.chartConfig.xAxis && result.Cols[1] && result.Cols[1].tuples && result.Cols[1].tuples.length) {
+                    $scope.chartConfig.xAxis.title = {text: result.Cols[1].tuples.map(t => t.caption || '').join(' & ')};
+                }
                 //}
             }
+
             /**
              * Adds series to chart
              * @param {object} data Series data
@@ -590,11 +683,12 @@
             function limitData(d) {
                 var i, j, c;
                 var controls = _this.desc.controls || [];
-                var cont = controls.filter(function(el) { return el.action === "setRowCount"; })[0];
+                var cont = controls.filter(function (el) {
+                    return el.action === "setRowCount";
+                })[0];
                 var rowCount = cont ? (cont.value || DEF_ROW_COUNT) : DEF_ROW_COUNT;
                 //rowCount = 20;
-                if ($scope.chartConfig.options.plotOptions.series.stacking === "normal" ||
-                    !$scope.chartConfig.options.plotOptions.series.stacking ) {
+                if ($scope.chartConfig.options.plotOptions.series.stacking === "normal" || !$scope.chartConfig.options.plotOptions.series.stacking) {
                     var cats = d.Cols[1].tuples;
                     var ser = d.Cols[0].tuples;
                     if ($scope.item.isTop) {
@@ -610,26 +704,26 @@
                                         d.Data[k] = d.Data[k + 1];
                                         d.Data[k + 1] = tmp;
                                         tmp = d.Cols[1].tuples[k];
-                                        d.Cols[1].tuples[k] = d.Cols[1].tuples[k+1];
+                                        d.Cols[1].tuples[k] = d.Cols[1].tuples[k + 1];
                                         d.Cols[1].tuples[k + 1] = tmp;
                                     }
                                 }
                             }
                             d.Cols[1].tuples.splice(rowCount, d.Cols[1].tuples.length - rowCount);
                             /*var values = d.Data.map(function(el, idx) {
-                               return { idx: idx, value: el}
-                            });
-                            values = values.sort(function(a, b) { return a.value > b.value ? -1 : 1; })
-                            var sortedCats = cats.sort(function(a, b) {
-                                var cidx1 = cats.indexOf(a);
-                                var cidx2 = cats.indexOf(b);
-                                var idx1 = values.find(function(v) {return v.idx == cidx1}).idx;
-                                var idx2 = values.find(function(v) {return v.idx == cidx2}).idx;
-                                return idx1 < idx2 ? 1: -1;
-                            });
-                            sortedCats.splice(rowCount, cats.length - rowCount);
-                            d.Cols[1].tuples = sortedCats;
-                            d.Data = values.map(function(v) { return v.value; });*/
+                             return { idx: idx, value: el}
+                             });
+                             values = values.sort(function(a, b) { return a.value > b.value ? -1 : 1; })
+                             var sortedCats = cats.sort(function(a, b) {
+                             var cidx1 = cats.indexOf(a);
+                             var cidx2 = cats.indexOf(b);
+                             var idx1 = values.find(function(v) {return v.idx == cidx1}).idx;
+                             var idx2 = values.find(function(v) {return v.idx == cidx2}).idx;
+                             return idx1 < idx2 ? 1: -1;
+                             });
+                             sortedCats.splice(rowCount, cats.length - rowCount);
+                             d.Cols[1].tuples = sortedCats;
+                             d.Data = values.map(function(v) { return v.value; });*/
                         } else {
                             // As discussed with Shvarov, only reduction of categories
                             // should be performed without sorting
@@ -644,14 +738,14 @@
                             //     var k;
                             //     var tmpData=[];
                             //     var counter = 0;
-								//
+                            //
                             //     for(k=0;k<d.Data.length-1;k=k++){
                             //         var tmbObjOne =[];
                             //         for(var t = 0;t<value;t++){
                             //             tmbObjOne.push(d.Data[k]);
                             //             k++;
                             //         }
-								//
+                            //
                             //         var count = 0;
                             //         for(t = 0; t < tmbObjOne.length; t++)
                             //         {
@@ -664,7 +758,7 @@
                             //             tmbObjOne
                             //         );
                             //     }
-								//
+                            //
                             //     for (k = 0; k < tmpData.length - 1; k++) {
                             //         if(tmpData[k][value]<tmpData[k+1][value]){
                             //             found = true;
@@ -683,7 +777,7 @@
                             //         counter++;
                             //     }
                             // }
-                       }
+                        }
                     }
                 }
             }
@@ -719,7 +813,7 @@
                 if (data.Cols[0].tuples.length !== 0) if (data.Cols[0].tuples[0].children && data.Cols[0].tuples[0].children.length !== 0) hasChildren = true;
                 if (hasChildren) {
                     var k = 0;
-                    for(var t = 0; t < data.Cols[0].tuples.length; t++) {
+                    for (var t = 0; t < data.Cols[0].tuples.length; t++) {
                         var len = data.Cols[0].tuples[t].children ? data.Cols[0].tuples[t].children.length : 1;
                         for (var c = 0; c < len; c++) {
                             tempData = [];
@@ -750,27 +844,27 @@
                         }
                     }
                     /*for(var t = 0; t < data.Cols[0].tuples.length; t++) {
-                        for (var c = 0; c < data.Cols[0].tuples[t].children.length; c++) {
-                            tempData = [];
-                            for (var da = 0; da < data.Cols[1].tuples.length; da++) {
-                                tempData.push({
-                                    y: data.Data[data.Cols[0].tuples.length * data.Cols[0].tuples[t].children.length * da + t * data.Cols[0].tuples[t].children.length + c],
-                                    cube: data.Info.cubeName,
-                                    path: data.Cols[0].tuples[t].path
-                                });
-                                k++;
-                            }
-                            fixData(tempData);
-                            _this.addSeries({
-                                data: tempData,
-                                name: data.Cols[0].tuples[t].caption + "/" + data.Cols[0].tuples[t].children[c].caption,
-                                format: data.Cols[0].tuples[t].children[c].format
-                            });
-                        }
-                    }*/
+                     for (var c = 0; c < data.Cols[0].tuples[t].children.length; c++) {
+                     tempData = [];
+                     for (var da = 0; da < data.Cols[1].tuples.length; da++) {
+                     tempData.push({
+                     y: data.Data[data.Cols[0].tuples.length * data.Cols[0].tuples[t].children.length * da + t * data.Cols[0].tuples[t].children.length + c],
+                     cube: data.Info.cubeName,
+                     path: data.Cols[0].tuples[t].path
+                     });
+                     k++;
+                     }
+                     fixData(tempData);
+                     _this.addSeries({
+                     data: tempData,
+                     name: data.Cols[0].tuples[t].caption + "/" + data.Cols[0].tuples[t].children[c].caption,
+                     format: data.Cols[0].tuples[t].children[c].format
+                     });
+                     }
+                     }*/
                 } else {
                     //for(var j = 0; j < data.Cols[0].tuples.length; j++) {
-                    for(var j = data.Cols[0].tuples.length - 1; j>=0; j--) {
+                    for (var j = data.Cols[0].tuples.length - 1; j >= 0; j--) {
                         tempData = [];
                         for (i = 0; i < data.Cols[1].tuples.length; i++) {
                             tempData.push({
@@ -805,12 +899,12 @@
                         series[k].yAxis = series.length - 1 - k;
                         // Convert to percents if axis show percentage
                         /*if ($scope.chartConfig.yAxis[series.length - 1 - k].axisType === "percent" && series[k].data && series[k].data.length) {
-                            for (var n = 0; n < series[k].data.length; n++) {
-                                if (series[k].data[n].y !== undefined && !isNaN(series[k].data[n].y)) {
-                                    series[k].data[n].y *= 100;
-                                }
-                            }
-                        }*/
+                         for (var n = 0; n < series[k].data.length; n++) {
+                         if (series[k].data[n].y !== undefined && !isNaN(series[k].data[n].y)) {
+                         series[k].data[n].y *= 100;
+                         }
+                         }
+                         }*/
                     }
                 }
 

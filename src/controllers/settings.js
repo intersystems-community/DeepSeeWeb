@@ -25,7 +25,14 @@
             langs:            Lang.getLanguages(),
             language:         Lang.current,
             colCount:         settings.colCount,
-            widgetHeight:     settings.widgetHeight
+            widgetHeight:     settings.widgetHeight,
+            colors:           settings.hcColors || Highcharts.getOptions().colors.slice(),
+            hcTextColor:      settings.hcTextColor || Highcharts.getOptions().labels.style.color,
+            hcBackground:     settings.hcBackground || Highcharts.getOptions().chart.backgroundColor,
+            hcBorderColor:    settings.hcBorderColor,
+            hcLineColor:      settings.hcLineColor,
+            hcOpacity:        settings.hcOpacity,
+            colorPickerOpt: {format:'rgb'}
         };
 
         $scope.applySettrings  = applySettrings;
@@ -62,7 +69,26 @@
             settings.isRelatedFilters= $scope.model.isRelatedFilters ? true : false;
             settings.colCount     = $scope.model.colCount;
             settings.widgetHeight = $scope.model.widgetHeight;
+            settings.hcColors     = $scope.model.colors;
+            settings.hcTextColor   = $scope.model.hcTextColor;
+            settings.hcBackground   = $scope.model.hcBackground;
+            settings.hcLineColor   = $scope.model.hcLineColor;
+            settings.hcBorderColor   = $scope.model.hcBorderColor;
+            settings.hcOpacity   = $scope.model.hcOpacity;
 
+            Highcharts.setOptions({
+                chart: {
+                    backgroundColor: settings.hcBackground
+                },
+                colors: settings.hcColors,
+                labels: {style: {color: settings.hcTextColor}}
+            });
+
+            if (old.hcOpacity    !== settings.hcOpacity) shouldRefresh = true;
+            if (old.hcBorderColor!== settings.hcBorderColor) shouldRefresh = true;
+            if (old.hcLineColor  !== settings.hcLineColor) shouldRefresh = true;
+            if (old.hcTextColor  !== settings.hcTextColor)     shouldRefresh = true;
+            if (old.hcBackground !== settings.hcBackground)     shouldRefresh = true;
             if (old.language     !== settings.language)     shouldRefresh = true;
             if (old.theme        !== settings.theme)      shouldRefresh = true;
             if (old.isSaveFilters!== settings.isSaveFilters)shouldRefresh = true;
@@ -74,7 +100,10 @@
 
             Storage.setAppSettings(settings);
 
-            if (shouldRefresh) reloadPage(); else $scope.closeThisDialog();
+            if (shouldRefresh) reloadPage(); else {
+                $rootScope.$broadcast('refresh-all');
+                $scope.closeThisDialog();
+            }
 
         }
 

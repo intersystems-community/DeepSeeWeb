@@ -1,13 +1,14 @@
 {
   "name": "DeepSeeWeb",
   "author": "Gnibeda A.A",
-  "version": "2.1.6",
+  "version": "2.1.9",
   "description": "Renderer for DeepSee Dashboards in Browser with MDX2JSON as a Serverside and JS web-client",
   "repository": {
     "type": "git",
     "url": "https://github.com/intersystems-ru/DeepSeeWeb"
   },
   "devDependencies": {
+    "angularjs-color-picker": "^3.4.8",
     "del": "^1.1.1",
     "gulp": "^3.8.11",
     "gulp-angular-templatecache": "^1.5.0",
@@ -24,7 +25,8 @@
     "gulp-unzip": "^0.2.0",
     "gulp-useref": "^1.2.0",
     "gulp-zip": "^3.0.2",
-    "through2": "^2.0.1"
+    "through2": "^2.0.1",
+    "tinycolor2": "^1.4.1"
   },
   "keywords": [
     "deepsee",

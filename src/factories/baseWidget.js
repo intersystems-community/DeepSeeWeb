@@ -782,7 +782,7 @@
             function setupActions() {
                 if (!_this.desc.controls || _this.desc.controls.length === 0) return;
                 var stdList = ['applyfilter', 'setfilter', 'refresh', 'reloaddashboard', 'setdatasource',
-                    'choosedatasource', 'applyvariable', 'setrowspec', 'chooserowspec', 'setcolumnspec',
+                    'applyvariable', 'setrowspec', 'setcolumnspec',
                     'choosecolumnspec', 'viewdashboard', 'navigate',
                     'newwindow', 'setrowcount', 'setrowsort', 'setcolumncount', 'setcolumnsort', 'newwindow'];
                 var actions = _this.desc.controls.filter(function(el) {

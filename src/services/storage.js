@@ -105,8 +105,11 @@
                     cols[i - 1] = c;
                 }
             }
+
             Highcharts.setOptions({
-                colors: cols,
+                chart: { backgroundColor: settings.hcBackground},
+                labels: {style: {color: settings.hcTextColor}},
+                colors: settings.hcColors || cols,
                 global: {
                     useUTC: false
                 },
@@ -130,6 +133,7 @@
             if (!_this.settings.app) _this.settings.app = {};
             var settings = _this.settings.app;
             if (lang) settings.language = lang;
+            settings.theme = 'black.css';
             return settings;
         }
 

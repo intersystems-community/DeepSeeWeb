@@ -17,7 +17,7 @@ window.dsw.mobile = false;
     angular.module('templates', []);
     angular.module('utils', []);
 
-    angular.module('app', ['oc.lazyLoad', 'ngRoute', 'ngCookies', 'cgNotify', 'gridster', 'highcharts-ng', 'ng-context-menu', 'ngDialog', 'utils', 'dashboard', 'widgets', 'templates'])
+    angular.module('app', ['oc.lazyLoad', 'ngRoute', 'ngCookies', 'cgNotify', 'gridster', 'highcharts-ng', 'ng-context-menu', 'ngDialog', 'utils', 'dashboard', 'widgets', 'templates', 'color.picker'])
 
     // This filter is used with ng-bind-htm to insert html
     .filter("sanitize", ['$sce', function($sce) {

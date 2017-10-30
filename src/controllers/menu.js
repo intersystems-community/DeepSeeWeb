@@ -175,7 +175,7 @@
          * Show about modal dialog
          */
         function about() {
-            ngDialog.open({template: 'src/views/about.html', data: {}, showClose: true, className: "ngdialog-theme-default wnd-about" });
+            ngDialog.open({template: 'src/views/about.html', controller: 'about', data: {}, showClose: true, className: "ngdialog-theme-default wnd-about" });
         }
 
         /**

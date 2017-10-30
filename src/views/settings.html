@@ -4,6 +4,7 @@
         <div class="row">
             <ul class="nav nav-tabs settings-tabbar" role="tablist">
                 <li role="presentation" class="active settings-tab"><a data-target="#main" aria-controls="main" role="tab" data-toggle="tab">Main</a></li>
+                <li role="presentation" class="settings-tab"><a data-target="#colors" aria-controls="colors" role="tab" data-toggle="tab">Colors</a></li>
                 <!--<li role="presentation" class="settings-tab"><a data-target="#addons" aria-controls="addons" role="tab" data-toggle="tab">Addons</a></li>-->
             </ul>
             <div class="tab-content">
@@ -72,6 +73,28 @@
                                     <div id="uploader-block"><input id="uploader" class="fm-uploader" type="file" enctype="multipart/form-data"/></div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </div>
+                <div role="tabpanel" class="tab-pane settings-content" id="colors">
+                    <div class="container-fluid">
+                        <div class="col-md-6">
+                            {{'seriesColor' | lang}}
+                            <div class="row" ng-repeat="c in model.colors track by $index" >
+                                <color-picker ng-model="model.colors[$index]" options="model.colorPickerOpt"></color-picker>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            Chart background
+                            <color-picker ng-model="model.hcBackground" options="model.colorPickerOpt"></color-picker>
+                            Lines color
+                            <color-picker ng-model="model.hcLineColor" options="model.colorPickerOpt"></color-picker>
+                            Text color
+                            <color-picker ng-model="model.hcTextColor" options="model.colorPickerOpt"></color-picker>
+                            Series border color
+                            <color-picker ng-model="model.hcBorderColor" options="model.colorPickerOpt"></color-picker>
+                            Fill opacity
+                            <input class="input-xs" type="text" ng-model="model.hcOpacity">
                         </div>
                     </div>
                 </div>

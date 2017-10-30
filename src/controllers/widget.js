@@ -1,4 +1,5 @@
-/**
+
+ /**
  * Controller for widget
  */
 (function(){
@@ -27,6 +28,7 @@
         $scope.requestData = this.requestData;
         $scope.toggleFilter = toggleFilter;
 
+        $scope.$on("refresh-all", function(){_this.requestData();});
         $scope.$on("refresh:" + $scope.item.$$hashKey, function(){_this.requestData();});
         var filterListener = $scope.$on("filter" + _this.desc.name, applyFilter);
         var filterAllListener = $scope.$on("filterAll", applyFilter);

@@ -115,11 +115,13 @@
 					
                     for (var i = 0; i < data.Cols[1].tuples.length; i++) 
 					{
-                        var tempData = [];
-						
+                        if (!seriesName_data[seriesName]) {
+                            seriesName_data[seriesName] = [];
+                        }
+                        var seriesName = (data.Cols[0].tuples.length == 4)? data.Data[offset * i + 3]:'default';
 						if (data.Cols[0].tuples.length == 2)
 						{
-							tempData.push([data.Data[offset * i], data.Data[offset * i + 1], 1]);
+                            seriesName_data[seriesName].push([parseFloat(data.Data[offset * i]), parseFloat(data.Data[offset * i + 1]), 1]);
 						}
 						else
 						{
@@ -127,7 +129,6 @@
 							tmp.x = data.Data[offset * i];
 							tmp.y = data.Data[offset * i + 1];
 							tmp.z = data.Data[offset * i + 2];
-							var seriesName = (data.Cols[0].tuples.length == 4)?seriesName = data.Data[offset * i + 3]:'default';						
 	
 							seriesName_data[seriesName].push(tmp);
 						}

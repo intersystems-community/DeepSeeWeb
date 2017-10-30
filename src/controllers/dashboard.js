@@ -108,7 +108,7 @@
                 return;
             }
 
-            if (result.displayInfo && result.displayInfo.gridRows) {
+            if (result.displayInfo && result.displayInfo.gridRows && !settings.widgetHeight) {
                 $scope.gridsterOpts.rowHeight = Math.floor((window.innerHeight - 60)/(result.displayInfo.gridRows));
             }
 
