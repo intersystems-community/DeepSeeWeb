@@ -1,3 +1,6 @@
+#2.1.10
+* fixed issues with theme loading
+
 #2.1.9
 * added black theme
 * added configuration for chart colors and some other colors as well
