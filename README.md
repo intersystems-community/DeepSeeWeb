@@ -81,3 +81,6 @@ For custom widget example, please look at [src/factories/customWidget.js](src/fa
 
 # Creating custom themes
 User can create or use custom themes, more about it here: [Custom themes](doc/themes.md).
+
+# Article and discussion around DeepSee Web
+Here is the [article on InterSystems Developer Community](https://community.intersystems.com/post/deepsee-web-intersystems-analytics-visualization-angularjs-part-1) describing DSW features and capabilites.
