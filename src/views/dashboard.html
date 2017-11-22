@@ -10,6 +10,7 @@
                     <div class="widget-title-btn" ng-show="item.isBtnZero" ng-click="item.showZeroOnAxis()" ng-class="item.showZero ? 'active' : ''" title="{{'showZero' | lang}}"><i class="fa">0</i></div>
                     <div class="widget-title-btn" ng-show="item.isChart" ng-click="item.toggleTop()" ng-class="item.isTop ? 'active' : ''" title="{{'showTop' | lang}}"><i class="fa fa-star"></i></div>
                     <div class="widget-title-btn" ng-show="item.isChart" ng-click="item.toggleLegend()" ng-class="item.isLegend ? '' : 'notActive'" title="{{'showLegend' | lang}}"><i class="fa fa-info"></i></div>
+                    <div class="widget-title-btn" ng-show="item.isChart" ng-click="item.showSettings()" title="{{'options' | lang}}"><i class="fa fa-cog"></i></div>
                     <div class="widget-title-drag"><span>{{item.title}}</span></div>
                 </div>
                 <widget class="widget" ng-controller="widget"></widget>

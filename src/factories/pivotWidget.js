@@ -28,7 +28,9 @@
             }
 
             function doDrillUp() {
-                if (!_this._oldMdx) {
+                _this.lpt.CONTROLS.back();
+                // TODO: check if this still needed
+                /*if (!_this._oldMdx) {
                     // Go back to chart if this is drillthrough from chart
                     if ($scope.item.isDrillthrough && _this.restoreWidgetType) {
                         $scope.item.isDrillthrough = null;
@@ -36,8 +38,9 @@
                     }
                     return;
                 }
-                _this.lpt.changeBasicMDX(_this._oldMdx);
-                $scope.item.backButton = false;
+                _this.lpt.changeBasicMDX(_this._oldMdx);*/
+
+                $scope.item.backButton = _this.lpt.DRILL_LEVEL !== 0;
             }
 
             function onDrillThrough() {
@@ -55,6 +58,7 @@
                 if (p.path) {
                     _this.doDrillFilter(p.path, _this.drills);
                     _this.drills.push({path: p.path, name: "", category: ""});
+                    $scope.item.backButton = true;
                 } else {
                     _this.drills.pop();
                     _this.doDrillFilter(p.path, _this.drills);

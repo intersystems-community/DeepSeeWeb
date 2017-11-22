@@ -4,7 +4,7 @@
 (function () {
     'use strict';
 
-    function BaseChartFact(Lang, Utils, Connector, $timeout, CONST, Storage) {
+    function BaseChartFact(Lang, Utils, Connector, $timeout, CONST, Storage, ngDialog, $window) {
 
         var DEF_ROW_COUNT = 20;
         var DEF_COL_COUNT = 20;
@@ -34,25 +34,18 @@
             var firstRun = true;
             var settings = Storage.getAppSettings();
 
-
             $scope.item.isLegend = true;
-            var widgetsSettings = Storage.getWidgetsSettings(_this.desc.dashboard, Connector.getNamespace());
+            var widgetsSettings = Storage.getWidgetsSettings(_this.desc.dashboard, Connector.getNamespace()) || {};
+
+            let tc = settings.themeColors[settings.theme] || {};
+
+            // Override theme colors by widget custom colors
+            if (widgetsSettings[_this.desc.name] && widgetsSettings[_this.desc.name].themeColors && widgetsSettings[_this.desc.name].themeColors[settings.theme]) tc = widgetsSettings[_this.desc.name].themeColors[settings.theme];
+
             loadToolbarButton(widgetsSettings, "isLegend");
             loadToolbarButton(widgetsSettings, "isTop");
             loadToolbarButton(widgetsSettings, "showZero");
             loadToolbarButton(widgetsSettings, "showValues");
-            /*if (widgetsSettings[_this.desc.key]) {
-             if (widgetsSettings[_this.desc.key].isLegend !== undefined)  $scope.item.isLegend = widgetsSettings[_this.desc.key].isLegend;
-             }
-             $scope.item.isTop = false;
-             if (widgetsSettings[_this.desc.key]) {
-             if (widgetsSettings[_this.desc.key].isTop !== undefined)  $scope.item.isTop = widgetsSettings[_this.desc.key].isTop;
-             }
-             $scope.item.showZero = false;
-             if (widgetsSettings[_this.desc.key]) {
-             if (widgetsSettings[_this.desc.key].showZero !== undefined)  $scope.item.showZero = widgetsSettings[_this.desc.key].showZero;
-             }*/
-            widgetsSettings = null;
 
             // Check for series types
             if (this.desc.overrides && this.desc.overrides[0] && this.desc.overrides[0].seriesTypes) this.seriesTypes = this.desc.overrides[0].seriesTypes.split(',');
@@ -63,6 +56,7 @@
             $scope.item.toggleTop = toggleTop;
             $scope.item.toggleValues = toggleValues;
             $scope.item.showZeroOnAxis = showZeroOnAxis;
+            $scope.item.showSettings = showSettings;
             $scope.item.isBtnZero = false;
             $scope.item.isBtnValues = false;
 
@@ -74,21 +68,21 @@
                 options: {
                     labels: {
                         style: {
-                            color: settings.hcTextColor
+                            color: tc.hcTextColor
                         }
                     },
                     drilldown: {
                         activeAxisLabelStyle: {
-                                color: settings.hcTextColor
+                                color: tc.hcTextColor
                         },
                         activeDataLabelStyle: {
-                                color: settings.hcTextColor
+                                color: tc.hcTextColor
                         }
                     },
                     legend: {
                         enabled: $scope.item.isLegend,
                         itemStyle: {
-                            color: settings.hcTextColor
+                            color: tc.hcTextColor
                         }
                     },
                     navigation: {
@@ -97,7 +91,8 @@
                         }
                     },
                     chart: {
-                        type: 'line'
+                        type: 'line',
+                        backgroundColor: tc.hcBackground
                     },
                     credits: {
                         enabled: false
@@ -110,19 +105,19 @@
                     },
                     plotOptions: {
                         column: {
-                            borderColor: settings.hcBorderColor
+                            borderColor: tc.hcBorderColor
                         },
                         bar: {
-                            borderColor: settings.hcBorderColor
+                            borderColor: tc.hcBorderColor
                         },
                         pie: {
-                            borderColor: settings.hcBorderColor
+                            borderColor: tc.hcBorderColor
                         },
                         treemap: {
-                            borderColor: settings.hcBorderColor
+                            borderColor: tc.hcBorderColor
                         },
                         series: {
-                            fillOpacity: settings.hcOpacity,
+                            fillOpacity: tc.hcOpacity,
                             cursor: "pointer",
                             point: {
                                 events: {
@@ -147,13 +142,13 @@
                     },
                     labels: {
                         style: {
-                            color: settings.hcTextColor
+                            color: tc.hcTextColor
                         }
                     },
-                    minorGridLineColor: settings.hcLineColor,
-                    gridLineColor: settings.hcLineColor,
-                    lineColor: settings.hcLineColor,
-                    tickColor: settings.hcLineColor
+                    minorGridLineColor: tc.hcLineColor,
+                    gridLineColor: tc.hcLineColor,
+                    lineColor: tc.hcLineColor,
+                    tickColor: tc.hcLineColor
                 },
                 xAxis: {
                     title: {
@@ -161,13 +156,13 @@
                     },
                     labels: {
                         style: {
-                            color: settings.hcTextColor
+                            color: tc.hcTextColor
                         }
                     },
-                    minorGridLineColor: settings.hcLineColor,
-                    gridLineColor: settings.hcLineColor,
-                    lineColor: settings.hcLineColor,
-                    tickColor: settings.hcLineColor
+                    minorGridLineColor: tc.hcLineColor,
+                    gridLineColor: tc.hcLineColor,
+                    lineColor: tc.hcLineColor,
+                    tickColor: tc.hcLineColor
                 },
                 series: [],
                 title: {
@@ -186,12 +181,12 @@
 
             // Set navigator style
             $scope.chartConfig.options.navigator = {
-                outlineColor: settings.hcLineColor,
+                outlineColor: tc.hcLineColor,
                 xAxis: {
-                    gridLineColor: settings.hcLineColor
+                    gridLineColor: tc.hcLineColor
                 },
                 yAxis: {
-                    gridLineColor: settings.hcLineColor
+                    gridLineColor: tc.hcLineColor
                 }
             };
 
@@ -199,22 +194,22 @@
             // Check for combo chart
             if (_this.desc.type.toLowerCase() === "combochart") {
                 $scope.chartConfig.yAxis = [{
-                    gridLineColor: settings.hcLineColor,
-                    lineColor: settings.hcLineColor,
-                    tickColor: settings.hcLineColor,
+                    gridLineColor: tc.hcLineColor,
+                    lineColor: tc.hcLineColor,
+                    tickColor: tc.hcLineColor,
                     labels: {
                         style: {
-                            color: settings.hcTextColor
+                            color: tc.hcTextColor
                         }
                     }
                 }, {
                     opposite: true,
-                    gridLineColor: settings.hcLineColor,
-                    lineColor: settings.hcLineColor,
-                    tickColor: settings.hcLineColor,
+                    gridLineColor: tc.hcLineColor,
+                    lineColor: tc.hcLineColor,
+                    tickColor: tc.hcLineColor,
                     labels: {
                         style: {
-                            color: settings.hcTextColor
+                            color: tc.hcTextColor
                         }
                     }
                 }];
@@ -267,6 +262,25 @@
                     };
                     Utils.merge($scope.chartConfig, opt);
                 }
+            }
+
+            /**
+             * Shows widget settings(actually color theme)
+             */
+            function showSettings() {
+                let save = () => {
+                    Storage.setWidgetsSettings(widgetsSettings, _this.desc.dashboard, Connector.getNamespace());
+                    $window.location.reload();
+                };
+                // Create settings if not exists
+                if (!widgetsSettings[_this.desc.name]) {
+                    widgetsSettings[_this.desc.name] = {};
+                }
+                // Create theme if not exists
+                if (!widgetsSettings[_this.desc.name].themeColors) {
+                    widgetsSettings[_this.desc.name].themeColors = {};
+                }
+                ngDialog.open({template: 'src/views/settings.html', data: {isWidgetSettings: true, widgetSettings: widgetsSettings[_this.desc.name], saveWidgetSettings: save}, controller: "settings", disableAnimation: dsw.mobile, showClose: true, className: "ngdialog-theme-default wnd-settings" });
             }
 
             function loadToolbarButton(settings, name) {
@@ -623,7 +637,7 @@
                     }
                     if (isEmpty && exists) data.showInLegend = false;
                 }
-                var cols = Highcharts.getOptions().colors;
+                var cols = tc.hcColors || Highcharts.getOptions().colors;
                 data.color = cols[$scope.chartConfig.series.length % cols.length];
                 //if (!data.id) data.id = $scope.chartConfig.series.length + 1;
 
@@ -927,6 +941,6 @@
     }
 
     angular.module('widgets')
-        .factory('BaseChart', ['Lang', 'Utils', 'Connector', '$timeout', 'CONST', 'Storage', BaseChartFact]);
+        .factory('BaseChart', ['Lang', 'Utils', 'Connector', '$timeout', 'CONST', 'Storage', 'ngDialog', '$window', BaseChartFact]);
 
 })();

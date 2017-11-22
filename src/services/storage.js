@@ -106,10 +106,11 @@
                 }
             }
 
+            let tc = settings.themeColors[settings.theme] || {};
             Highcharts.setOptions({
-                chart: { backgroundColor: settings.hcBackground},
-                labels: {style: {color: settings.hcTextColor}},
-                colors: settings.hcColors || cols,
+                chart: { backgroundColor: tc.hcBackground},
+                labels: {style: {color: tc.hcTextColor}},
+                colors: tc.hcColors || cols,
                 global: {
                     useUTC: false
                 },
@@ -133,6 +134,7 @@
             if (!_this.settings.app) _this.settings.app = {};
             var settings = _this.settings.app;
             if (lang) settings.language = lang;
+            if (!settings.themeColors) settings.themeColors = {};
             return settings;
         }
 

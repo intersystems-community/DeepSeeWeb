@@ -30,6 +30,7 @@
                         //showSummary: true,
                         //loadingMessageHTML: '<div class="loader"></div>',
                         locale: Lang.current,
+                        hideButtons: true,
                         formatNumbers: "#,###.##"
                     };
                     delete scope.model.pivotMdx;
