@@ -1,3 +1,8 @@
+#2.1.11
+* now color settings depends from theme
+* added custom colors for widgets(cog icon on chart widget header)
+* fixed issue with redundant back button on pivot
+
 #2.1.10
 * fixed issues with theme loading
 
