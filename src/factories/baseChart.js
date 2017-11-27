@@ -137,6 +137,7 @@
                     }
                 },
                 yAxis: {
+                    events: {},
                     title: {
                         text: ""
                     },
@@ -151,6 +152,7 @@
                     tickColor: tc.hcLineColor
                 },
                 xAxis: {
+                    events: {},
                     title: {
                         text: ""
                     },
@@ -170,9 +172,10 @@
                 },
                 func: function (chart) {
                     if (!_this.chart) _this.chart = chart;
+
                     $timeout(function() {
-                        if (!_this) return;
-                        if (_this.chart) _this.chart.reflow();
+                        if (!chart) return;
+                         chart.reflow();
                     }, 0);
                 },
 
@@ -194,6 +197,7 @@
             // Check for combo chart
             if (_this.desc.type.toLowerCase() === "combochart") {
                 $scope.chartConfig.yAxis = [{
+                    events: {},
                     gridLineColor: tc.hcLineColor,
                     lineColor: tc.hcLineColor,
                     tickColor: tc.hcLineColor,
@@ -203,6 +207,7 @@
                         }
                     }
                 }, {
+                    events: {},
                     opposite: true,
                     gridLineColor: tc.hcLineColor,
                     lineColor: tc.hcLineColor,
@@ -246,6 +251,7 @@
                 if (_this.desc.tile) {
                     var opt = {
                         xAxis: {
+                            events: {},
                             labels: {
                                 style: {
                                     color: $('.' + CONST.fontColors[_this.desc.tile.fontColor]).css('color')
@@ -253,6 +259,7 @@
                             }
                         },
                         yAxis: {
+                            events: {},
                             labels: {
                                 style: {
                                     color: $('.' + CONST.fontColors[_this.desc.tile.fontColor]).css('color')

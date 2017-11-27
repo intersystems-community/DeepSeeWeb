@@ -1,3 +1,9 @@
+#2.1.12
+* prepeared for migration to new highcharts
+* fixed some widget actions
+* highcharts has been updated
+* lightpivottable has been updated
+
 #2.1.11
 * now color settings depends from theme
 * added custom colors for widgets(cog icon on chart widget header)

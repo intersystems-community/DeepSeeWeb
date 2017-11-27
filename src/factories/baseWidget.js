@@ -781,12 +781,15 @@
              */
             function setupActions() {
                 if (!_this.desc.controls || _this.desc.controls.length === 0) return;
-                var stdList = ['applyfilter', 'setfilter', 'refresh', 'reloaddashboard', 'setdatasource',
+                var stdList = ['applyfilter', 'setfilter', 'refresh', 'reloaddashboard', 'showlisting', 'showgeolisting', 'showbreakdown', 'setdatasource',
+                    'applyvariable', 'viewdashboard', 'setrowcount', 'setrowsort', 'setcolumncount', 'setcolumnsort'];
+
+                /*var stdList = ['applyfilter', 'setfilter', 'refresh', 'reloaddashboard', 'setdatasource',
                     'applyvariable', 'setrowspec', 'setcolumnspec',
                     'choosecolumnspec', 'viewdashboard', 'navigate',
-                    'newwindow', 'setrowcount', 'setrowsort', 'setcolumncount', 'setcolumnsort', 'newwindow'];
+                    'newwindow', 'setrowcount', 'setrowsort', 'setcolumncount', 'setcolumnsort', 'newwindow'];*/
                 var actions = _this.desc.controls.filter(function(el) {
-                    return stdList.indexOf(el.action.toLowerCase()) !== -1 && el.type !== "hidden";
+                    return stdList.indexOf(el.action.toLowerCase()) === -1 && el.type !== "hidden";
                 });
                 if (actions.length === 0) return;
                 _this.hasActions = true;
