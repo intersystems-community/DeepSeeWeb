@@ -3,6 +3,8 @@
 * fixed some widget actions
 * highcharts has been updated
 * lightpivottable has been updated
+* fixed pivot issue
+* fixed actions issues
 
 #2.1.11
 * now color settings depends from theme

@@ -781,7 +781,7 @@
              */
             function setupActions() {
                 if (!_this.desc.controls || _this.desc.controls.length === 0) return;
-                var stdList = ['applyfilter', 'setfilter', 'refresh', 'reloaddashboard', 'showlisting', 'showgeolisting', 'showbreakdown', 'setdatasource',
+                var stdList = ['chooserowspec', 'choosedatasource', 'choosecharttype', 'applyfilter', 'setfilter', 'refresh', 'reloaddashboard', 'showlisting', 'showgeolisting', 'showbreakdown', 'setdatasource',
                     'applyvariable', 'viewdashboard', 'setrowcount', 'setrowsort', 'setcolumncount', 'setcolumnsort'];
 
                 /*var stdList = ['applyfilter', 'setfilter', 'refresh', 'reloaddashboard', 'setdatasource',

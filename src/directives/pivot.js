@@ -13,6 +13,7 @@
                     var setup = {
                         initialData: scope.item.pivotData,
                         container: element[0],
+                        pivotProperties: {},
                         dataSource: {
                             pivot: desc.dataSource,
                             MDX2JSONSource: Connector.url.substring(0, Connector.url.length - 1),
