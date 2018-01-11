@@ -24,7 +24,7 @@ At present DSW theme list is predefined in source code in [app.js](src/app.js):
  themes: [
             {text: 'Default', file: ''},
             {text: 'Contrast', file: 'themes/contrast.css'},
-            {text: 'Metro', file: 'themes/metro.min.css'},
+            {text: 'Metro', file: 'themes/metro.css'},
             {text: 'Black', file: 'themes/black.css'}
         ]
 ```

@@ -1,3 +1,9 @@
+#2.1.16
+* fixed widget sharing logic
+
+#2.1.13
+* fixed issue with metro theme with new installation
+
 #2.1.12
 * prepeared for migration to new highcharts
 * fixed some widget actions

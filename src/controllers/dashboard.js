@@ -21,7 +21,11 @@
 
         if (this.sharedWidget) {
             $scope.gridsterOpts.columns = 1;
-            $scope.gridsterOpts.rowHeight = $routeParams.height || "match";
+            if ($routeParams.height) {
+                $scope.gridsterOpts.rowHeight = parseInt($routeParams.height);
+            } else {
+                $scope.gridsterOpts.rowHeight = "match";
+            }
             $scope.gridsterOpts.draggable = {
                 enabled: false,
                 handle: ''
@@ -108,7 +112,7 @@
                 return;
             }
 
-            if (result.displayInfo && result.displayInfo.gridRows && !settings.widgetHeight) {
+            if (result.displayInfo && result.displayInfo.gridRows && !settings.widgetHeight && !_this.sharedWidget) {
                 $scope.gridsterOpts.rowHeight = Math.floor((window.innerHeight - 60)/(result.displayInfo.gridRows));
             }
 

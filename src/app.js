@@ -29,7 +29,7 @@ window.dsw.mobile = false;
         themes: [
             {text: 'Default', file: ''},
             {text: 'Contrast', file: 'themes/contrast.css'},
-            {text: 'Metro', file: 'themes/metro.min.css'},
+            {text: 'Metro', file: 'themes/metro.css'},
             {text: 'Black', file: 'themes/black.css'}
         ],
         bgColorClasses: ["", "cl1", "cl2", "cl3", "cl4", "cl5", "cl6", "cl7", "cl8", "cl9"],
