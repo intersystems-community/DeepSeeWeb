@@ -153,7 +153,7 @@
             }
             if (this.isLinked()) $scope.$on("setLinkedMDX:" + _this.desc.key, onSetLinkedMdx);
             if (this.hasDependents()) $scope.$on("widget:" + _this.desc.key + ":refreshDependents", onRefreshDependents);
-            
+
             setupDrillFilter();
             setupChoseDataSource();
             setupActions();
@@ -400,7 +400,7 @@
 
             function performAction(action) {
                 let a = action.action.toLowerCase();
-                
+
                 if (a === 'navigate') {
                     actionNavigate(action);
                 } else if (a === 'newwindow') {
@@ -519,9 +519,12 @@
 
                 _this.showLoading();
 
-                function requestDrillthrough() {
+                function performNoDrillAction() {
+                    if (noDrillCallback) {
+                        noDrillCallback();
+                        return;
+                    }
                     if (!_this.canDoDrillthrough) return;
-                    if (noDrillCallback) noDrillCallback();
                     var ddMdx = getDrillthroughMdx(mdx);
 
                     Connector.execMDX(ddMdx)
@@ -535,14 +538,13 @@
                         });
                 }
 
-
                 Connector.execMDX(mdx)
-                    .catch(function() { requestDrillthrough(); })
+                    .catch(function() { performNoDrillAction(); })
                     .then(function(data) {
                         if (!data) { return; }
                         if ($scope.chartConfig) $scope.chartConfig.loading = false;
-                        if (isEmptyData(data) && path && _this.canDoDrillthrough) {
-                            requestDrillthrough();
+                        if (isEmptyData(data) && path) {
+                            performNoDrillAction();
                             /*Connector.execMDX(getDrillthroughMdx(mdx)).success(function(dd) {
                                 _this._retrieveData(dd);
                             });*/
@@ -1216,7 +1218,7 @@
                     flt = filters[i];
                     if (!flt.isInterval) continue;
                     path = flt.targetProperty;
-					var v1 = flt.values[flt.fromIdx].path; 
+					var v1 = flt.values[flt.fromIdx].path;
 					var v2 = flt.values[flt.toIdx].path;
 					mdx += " %FILTER %OR(" + path + "." +  v1 + ":" + v2 + ")";
                 }
@@ -1277,7 +1279,7 @@
                         }
                     }
                 }
-                
+
                 for (i = 0; i < _this.filterCount; i++) {
                     flt = _this.getFilter(i);
                     if (flt.isInterval) {
