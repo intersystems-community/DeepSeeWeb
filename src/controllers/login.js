@@ -133,20 +133,21 @@
             var from = $location.search().from;
             var search = {};
             if (from) {
-                from = decodeURIComponent(from);
-                if (~from.indexOf("?")) {
-                    var parts = from.split("?");
-                    from = parts[0];
-                    parts = parts[1].split("&");
-                    for (var i = 0; i < parts.length; i++) {
-                        var p = parts[i].split("=");
-                        if (p.length === 2) {
-                            search[p[0]] = p[1];
-                        }
-                    }
-                }
-                if (!search.ns) search.ns = $scope.model.namespace;
-                $location.path(from).search(search);
+                // from = decodeURIComponent(from);
+                // if (~from.indexOf("?")) {
+                //     var parts = from.split("?");
+                //     from = parts[0];
+                //     parts = parts[1].split("&");
+                //     for (var i = 0; i < parts.length; i++) {
+                //         var p = parts[i].split("=");
+                //         if (p.length === 2) {
+                //             search[p[0]] = p[1];
+                //         }
+                //     }
+                // }
+                // if (!search.ns) search.ns = $scope.model.namespace;
+                // $location.path(from).search(search);
+                $location.url(from);
             }
             else $location.path("/").search({ns: $scope.model.namespace});
             $rootScope.$broadcast('toggleMenu', true);

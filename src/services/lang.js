@@ -71,6 +71,7 @@
      */
         .constant('LANGSTR', {
             en: {
+                copyMDX: 'Copy MDX',
                 seriesColor: 'Series colors',
                 copy: "Copy",
                 shareDashboard: "Share dashboard",
@@ -124,6 +125,7 @@
                 setDefault: "Reset to default",
                 dashColumns: "Column count",
                 widgetHeight: "Widget height(px)",
+                widgetHeightDyn: "Default: fit to window",
                 noData: "No data to display",
                 byRows: "Display by rows",
                 by2columns: "Display by two columns",
@@ -165,6 +167,7 @@
                 shortMonths: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
             },
             de: {
+                copyMDX: 'Copy MDX',
                 seriesColor: 'Series colors',
                 copy: "Copy",
                 shareDashboard: "Share dashboard",
@@ -218,6 +221,7 @@
                 setDefault: "Zurücksetzen",
                 dashColumns: "Spaltenanzahl",
                 widgetHeight: "Widget Höhe(px)",
+                widgetHeightDyn: "Default: fit to window",
                 noData: "Keine Daten vorhanden",
                 byRows: "Anzeige nach Zeilen",
                 by2columns: "Anzeige mit zwei Spalten",
@@ -259,6 +263,7 @@
                 shortMonths: ["Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"]
             },
             cs: {
+                copyMDX: 'Copy MDX',
                 seriesColor: 'Series colors',
                 copy: "Copy",
                 shareDashboard: "Share dashboard",
@@ -309,6 +314,7 @@
                 setDefault: "Obnovit výchozí",
                 dashColumns: "Počet slouců",
                 widgetHeight: "Výška widgetu(px)",
+                widgetHeightDyn: "Default: fit to window",
                 noData: "Nejsou data k zobrazení",
                 byRows: "Zobrazit řádky",
                 by2columns: "Zobrazit podle dvou sloupců",
@@ -350,6 +356,7 @@
                 shortMonths: ["Leden", "Únor", "Březen", "Duben", "Květen", "Červen", "Červenec", "Srpen", "Září", "Říjen", "Listopad", "Prosinec"]
             },
             ru: {
+                copyMDX: 'Скопировать MDX',
                 seriesColor: 'Цвет серий',
                 copy: "Копировать",
                 shareDashboard: "Поделиться дешбордом",
@@ -403,6 +410,7 @@
                 setDefault: "Установить по умолчанию",
                 dashColumns: "Колонки",
                 widgetHeight: "Высота виджетов(px)",
+                widgetHeightDyn: "По умолчанию: подогнать к высоте окна",
                 noData: "Нет данных",
                 byRows: "Отобразить построчно",
                 by2columns: "Отобразить двумя колонками",

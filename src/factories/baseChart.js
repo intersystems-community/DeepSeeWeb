@@ -4,7 +4,7 @@
 (function () {
     'use strict';
 
-    function BaseChartFact(Lang, Utils, Connector, $timeout, CONST, Storage, ngDialog, $window) {
+    function BaseChartFact(Lang, Utils, Connector, $timeout, CONST, Storage, ngDialog, $window, $routeParams) {
 
         var DEF_ROW_COUNT = 20;
         var DEF_COL_COUNT = 20;
@@ -549,12 +549,23 @@
 
                         // Load series toggle from settings
                         var widgetsSettings = Storage.getWidgetsSettings(_this.desc.dashboard, Connector.getNamespace());
-                        if (widgetsSettings[_this.desc.name] && widgetsSettings[_this.desc.name].series) {
-                            for (i = 0; i < $scope.chartConfig.series.length; i++) {
-                                if (widgetsSettings[_this.desc.name].series[i] === false) {
-                                    $scope.chartConfig.series[i].visible = false;
+                        if (!Utils.isEmbedded()) {
+                            if (widgetsSettings[_this.desc.name] && widgetsSettings[_this.desc.name].series) {
+                                for (i = 0; i < $scope.chartConfig.series.length; i++) {
+                                    if (widgetsSettings[_this.desc.name].series[i] === false) {
+                                        $scope.chartConfig.series[i].visible = false;
+                                    }
                                 }
                             }
+                        } else {
+                            // For shared widgets hide series via hiddenSeries query param
+                            const hidden = $routeParams.hiddenSeries;
+                            let ser = [];
+                            if (hidden) { ser = hidden.split(','); }
+                            ser.forEach(i => {
+                                if (!$scope.chartConfig.series[i]) { return; }
+                                $scope.chartConfig.series[i].visible = false;
+                            });
                         }
                         widgetsSettings = null;
 
@@ -948,6 +959,6 @@
     }
 
     angular.module('widgets')
-        .factory('BaseChart', ['Lang', 'Utils', 'Connector', '$timeout', 'CONST', 'Storage', 'ngDialog', '$window', BaseChartFact]);
+        .factory('BaseChart', ['Lang', 'Utils', 'Connector', '$timeout', 'CONST', 'Storage', 'ngDialog', '$window', '$routeParams', BaseChartFact]);
 
 })();

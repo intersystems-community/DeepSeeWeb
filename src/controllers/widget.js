@@ -42,6 +42,7 @@
         $scope.$on("resetWidgets", resetWidget);
         $scope.$on("setType:" + $scope.item.$$hashKey, changeType);
         $scope.$on("share:" + $scope.item.$$hashKey, share);
+        $scope.$on("copyMDX:" + $scope.item.$$hashKey, copyMDX);
         $scope.$on('$destroy', function () {
             filterListener();
             filterAllListener();
@@ -75,10 +76,17 @@
             Storage.setWidgetsSettings(widgets, _this.desc.dashboard, Connector.getNamespace());
         }
 
+        function copyMDX() {
+            var mdx = _this.getMDX();
+            ngDialog.open({template: 'src/views/share.html', data: { html: mdx }, controller: 'share', showClose: false, className: "ngdialog-theme-default" });
+        }
 
         function share() {
-            var url = window.location.href;
-            if (url.indexOf('?') === -1)
+            const c = _this.chart;
+
+            let url = Filters.getFiltersShareUrl();
+            let part = url.split('#')[1];
+            if (part && part.indexOf('?') === -1)
                 url += '?widget=' + $scope.item.idx;
             else
                 url += '&widget=' + $scope.item.idx;
@@ -92,12 +100,20 @@
                 url += '&height=' + h;
             }
 
+            // Store hidden series
+            if (c) {
+                const hidden = c.series.map((s, i) => ({v: s.visible, i: i})).filter(s => !s.v);
+                if (hidden.length) {
+                    url += '&hiddenSeries=' + hidden.map(s => s.i).join(',');
+                }
+            }
+
             var html = '<iframe style="border: none" src="' + url + '" ';
             if (w && h) {
                 html = html + 'width="' + w + '" ';
                 html = html + 'height="' + h + '" ';
             }
-            html += '>';
+            html += '></iframe>';
 
             ngDialog.open({template: 'src/views/share.html', data: { html: html }, controller: 'share', showClose: false, className: "ngdialog-theme-default" });
         }

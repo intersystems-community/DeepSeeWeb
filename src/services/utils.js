@@ -9,6 +9,7 @@
         this.merge = mergeRecursive;
         this.removeExt = removeExt;
         this.replaceFilename = replaceFilename;
+        this.isEmbedded = isEmbedded;
 
         function removeExt(fileName) {
             var a = fileName.split(".");
@@ -21,6 +22,14 @@
             var a = oldName.split("/");
             a[a.length - 1] = newName;
             return a.join("/");
+        }
+
+        function isEmbedded() {
+            var params = window.location.hash.replace("?", "").replace("#/", "").split("&");
+            for (var i = 0; i < params.length; i++) {
+                if (params[i].indexOf('widget=') !== -1) return true;
+            }
+            return params.indexOf("embed=1") !== -1;
         }
 
         /**

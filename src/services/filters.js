@@ -4,7 +4,7 @@
 (function() {
     'use strict';
 
-    function FiltersSvc($rootScope, Connector, Storage, Lang, $location) {
+    function FiltersSvc($rootScope, Connector, Storage, Lang, $location, Utils) {
         var _this = this;
         this.items = [];
         this.isFiltersOnToolbarExists = false;
@@ -17,6 +17,7 @@
         this.getClickFilterTarget = getClickFilterTarget;
         this.getAffectsFilters = getAffectsFilters;
         this.getFiltersUrlString = getFiltersUrlString;
+        this.getFiltersShareUrl = getFiltersShareUrl;
         this.dashboard = '';
         this.filtersChanged = false;
 
@@ -70,8 +71,36 @@
             loadFiltersFromUrl();
         }
 
+        // Removes parameter from url
+        function removeParameterFromUrl(url, parameter) {
+            return url
+                .replace(new RegExp('[?&]' + parameter + '=[^&#]*(#.*)?$'), '$1')
+                .replace(new RegExp('([?&])' + parameter + '=[^&]*&'), '$1');
+        }
+
         /**
-         * Return url with filters for widget or for all dashboard
+         * Returns whole share ulr for filters on dashboard
+         */
+        function getFiltersShareUrl() {
+            //let rp = $routeParams;
+            //$location.search('Filters', null);
+            let url = window.location.href;
+            url = removeParameterFromUrl(url, 'FILTERS');
+            let part = url.split('#')[1];
+            let fltUrl = _this.getFiltersUrlString();
+            let flt = 'FILTERS=TARGET:*;FILTER:' + fltUrl;
+            if (fltUrl) {
+                if (part && part.indexOf('?') !== -1) {
+                    url += '&' + flt;
+                } else {
+                    url += '?' + flt;
+                }
+            }
+            return url;
+        }
+
+        /**
+         * Return parameters for ulr with filters for widget or for all dashboard
          * @param {string} [widgetName] Name of widget
          * @returns {string}
          */
@@ -80,7 +109,7 @@
             let widgetFilters = widgetName ? _this.getAffectsFilters() : _this.items;
             for (let i = 0; i < widgetFilters.length; i++) {
                 let flt = widgetFilters[i];
-                if (!flt.value) continue;
+                if (!flt.value && !flt.isInterval) continue;
                 let v = '';
                 if (flt.isInterval) {
                     // Format filter string like path.v1:v2
@@ -155,6 +184,9 @@
          * Load saved filter values from settings
          */
         function loadFiltersFromSettings() {
+            // Don't Load filters for shared widget
+            if (Utils.isEmbedded()) { return; }
+
             if (!Storage.getAppSettings().isSaveFilters) return;
             var found = false;
             var widgets = Storage.getWidgetsSettings(_this.dashboard, Connector.getNamespace());
@@ -363,6 +395,6 @@
     }
 
     angular.module('app')
-        .service('Filters', ['$rootScope', 'Connector', 'Storage', 'Lang', '$location', FiltersSvc]);
+        .service('Filters', ['$rootScope', 'Connector', 'Storage', 'Lang', '$location', 'Utils', FiltersSvc]);
 
 })();

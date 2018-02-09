@@ -68,7 +68,7 @@ window.dsw.mobile = false;
             .otherwise({ redirectTo: '/' });
     }])
 
-    .run(['gridsterConfig', 'Lang', 'CONST', 'Connector', '$route', start]);
+    .run(['gridsterConfig', 'Lang', 'CONST', 'Connector', '$route', '$routeParams', start]);
 
 
     function loadjscssfile(filename, filetype, callback){
@@ -254,7 +254,7 @@ window.dsw.mobile = false;
      * @param Connector
      * @param Storage
      */
-    function start(gridsterConfig, Lang, CONST, Connector, $route) {
+    function start(gridsterConfig, Lang, CONST, Connector, $route, $routeParams) {
 
         /*Array.prototype.swap = function (x, y) {
             var b = this[x];
@@ -278,7 +278,10 @@ window.dsw.mobile = false;
             gridsterConfig.mobileBreakPoint = 2000;// if the screen is not wider that this, remove the grid layout and stack the items
             //gridsterConfig.mobileModeEnabled = true;
         }
-
+        // Check for shared widget screen and disable mobile breakpoint
+        if (window.location.href.split('#').pop().indexOf('widget=') !== -1) {
+            gridsterConfig.mobileBreakPoint = 0;
+        }
 
         gridsterConfig.resizable.start = function() {
             gridsterConfig.isResizing = true;

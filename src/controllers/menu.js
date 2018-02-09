@@ -70,35 +70,15 @@
         });
 
         // Remove header space holder if there is no menu
-        if (isEmbedded()) {
+        if (Utils.isEmbedded()) {
             $('body').css('margin-top', '-50px');
-        }
-
-        // Removes parameter from url
-        function removeParameterFromUrl(url, parameter) {
-            return url
-                .replace(new RegExp('[?&]' + parameter + '=[^&#]*(#.*)?$'), '$1')
-                .replace(new RegExp('([?&])' + parameter + '=[^&]*&'), '$1');
         }
 
         /**
          * Create link for dashboard sharing
          */
         function shareDashboard() {
-            //let rp = $routeParams;
-            //$location.search('Filters', null);
-            let url = window.location.href;
-            url = removeParameterFromUrl(url, 'FILTERS');
-
-            let fltUrl =  Filters.getFiltersUrlString();
-            let flt = 'FILTERS=TARGET:*;FILTER:' + fltUrl;
-            if (fltUrl) {
-                if (url.indexOf('?') !== -1) {
-                    url += '&' + flt;
-                } else {
-                    url += '?' + flt;
-                }
-            }
+            let url = Filters.getFiltersShareUrl();
             ngDialog.open({template: 'src/views/shareDashboard.html', controller: 'shareDashboard', data: { url }, showClose: true, className: "ngdialog-theme-default wnd-about" });
         }
 
@@ -289,15 +269,7 @@
          */
         function toggleMenu(event, isVisible) {
             if (isVisible) $scope.model.username = localStorage.userName || "";
-            $scope.model.visible = isVisible && (!isEmbedded());
-        }
-
-        function isEmbedded() {
-            var params = window.location.hash.replace("?", "").replace("#/", "").split("&");
-            for (var i = 0; i < params.length; i++) {
-                if (params[i].indexOf('widget=') !== -1) return true;
-            }
-            return params.indexOf("embed=1") !== -1;
+            $scope.model.visible = isVisible && (!Utils.isEmbedded());
         }
 
         /**

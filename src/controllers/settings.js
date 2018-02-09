@@ -25,7 +25,7 @@
             showImages:       settings.showImages,
             langs:            Lang.getLanguages(),
             language:         Lang.current,
-            colCount:         settings.colCount,
+            colCount:         settings.colCount || 12,
             widgetHeight:     settings.widgetHeight,
             colorPickerOpt: {format:'rgb'}
         };

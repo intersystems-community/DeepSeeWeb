@@ -44,6 +44,7 @@
         $scope.printItem = printItem;
         $scope.shareItem = shareItem;
         $scope.setType = setType;
+        $scope.copyMDX = copyMDX;
 
         $scope.$on("resetWidgets", function() { window.location.reload(); });
 
@@ -75,6 +76,14 @@
         function shareItem() {
             if (!_this.ctxItem) return;
             $scope.$broadcast('share:' + _this.ctxItem);
+        }
+
+        /**
+         * Copies widget MDX and open dialog
+         */
+        function copyMDX() {
+            if (!_this.ctxItem) return;
+            $scope.$broadcast('copyMDX:' + _this.ctxItem);
         }
 
         /**
