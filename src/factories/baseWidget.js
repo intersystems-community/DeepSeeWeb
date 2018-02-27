@@ -153,7 +153,7 @@
             }
             if (this.isLinked()) $scope.$on("setLinkedMDX:" + _this.desc.key, onSetLinkedMdx);
             if (this.hasDependents()) $scope.$on("widget:" + _this.desc.key + ":refreshDependents", onRefreshDependents);
-
+            
             setupDrillFilter();
             setupChoseDataSource();
             setupActions();
@@ -400,7 +400,7 @@
 
             function performAction(action) {
                 let a = action.action.toLowerCase();
-
+                
                 if (a === 'navigate') {
                     actionNavigate(action);
                 } else if (a === 'newwindow') {
@@ -537,6 +537,7 @@
                             $scope.item.displayAsPivot(ddMdx);
                         });
                 }
+
 
                 Connector.execMDX(mdx)
                     .catch(function() { performNoDrillAction(); })
@@ -1218,7 +1219,7 @@
                     flt = filters[i];
                     if (!flt.isInterval) continue;
                     path = flt.targetProperty;
-					var v1 = flt.values[flt.fromIdx].path;
+					var v1 = flt.values[flt.fromIdx].path; 
 					var v2 = flt.values[flt.toIdx].path;
 					mdx += " %FILTER %OR(" + path + "." +  v1 + ":" + v2 + ")";
                 }
@@ -1279,7 +1280,7 @@
                         }
                     }
                 }
-
+                
                 for (i = 0; i < _this.filterCount; i++) {
                     flt = _this.getFilter(i);
                     if (flt.isInterval) {
