@@ -519,9 +519,12 @@
 
                 _this.showLoading();
 
-                function requestDrillthrough() {
+                function performNoDrillAction() {
+                    if (noDrillCallback) {
+                        noDrillCallback();
+                        return;
+                    }
                     if (!_this.canDoDrillthrough) return;
-                    if (noDrillCallback) noDrillCallback();
                     var ddMdx = getDrillthroughMdx(mdx);
 
                     Connector.execMDX(ddMdx)
@@ -537,12 +540,12 @@
 
 
                 Connector.execMDX(mdx)
-                    .catch(function() { requestDrillthrough(); })
+                    .catch(function() { performNoDrillAction(); })
                     .then(function(data) {
                         if (!data) { return; }
                         if ($scope.chartConfig) $scope.chartConfig.loading = false;
-                        if (isEmptyData(data) && path && _this.canDoDrillthrough) {
-                            requestDrillthrough();
+                        if (isEmptyData(data) && path) {
+                            performNoDrillAction();
                             /*Connector.execMDX(getDrillthroughMdx(mdx)).success(function(dd) {
                                 _this._retrieveData(dd);
                             });*/
