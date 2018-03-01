@@ -53,8 +53,6 @@
 
         $scope.onInit = function(){
             setTimeout(_=> document.getElementById('uploader').addEventListener('change', readSettings, false), 0);
-
-            console.log('added!');
         };
 
         /**
@@ -183,15 +181,8 @@
                 var r = new FileReader();
                 r.onload = function(e) {
                     var contents = JSON.parse(String.fromCharCode.apply(null, new Uint8Array(e.target.result)));
-                    var ns = Connector.getNamespace();
-                    if (contents.ns) {
-                        Storage.nsSettings = contents.ns;
-                        sessionStorage.namespaceUserSettings = JSON.stringify(Storage.nsSettings);
-                    }
-                    //Storage.saveCurrentSettings(Storage.currentSettings);
-                    //Connector.saveConfig(Storage.settings).then(function(){
-                        reloadPage();
-                    //});
+                    Storage.setAllSettings(contents);
+                    reloadPage();
                 };
                 r.readAsArrayBuffer(f);
             } else {

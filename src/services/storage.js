@@ -10,8 +10,6 @@
         this.serverSettings = {};
 
         // Settings for namespace
-        this.nsSettings = null;
-
         this.configLoaded        = false;
         this.loadConfig          = loadConfig;
         this.getAppSettings      = getAppSettings;
@@ -206,6 +204,7 @@
          */
         function setAllSettings(set) {
             _this.settings = set;
+            saveUserSettings();
         }
 
         function loadServerSettings(settings) {
