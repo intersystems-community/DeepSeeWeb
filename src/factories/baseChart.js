@@ -291,6 +291,17 @@
             }
 
             function loadToolbarButton(settings, name) {
+                // For embedded widgets firstly try to settings param from URL
+                if (Utils.isEmbedded()) {
+                    if ($routeParams[name]) {
+                        let v = $routeParams[name];
+                        if (v.toLowerCase() === 'true') v = true;
+                            else
+                            if (v.toLowerCase() === 'false') v = false;
+                        $scope.item[name] = v;
+                        return;
+                    }
+                }
                 if (settings[_this.desc.name]) {
                     if (settings[_this.desc.name][name] !== undefined)  $scope.item[name] = widgetsSettings[_this.desc.name][name];
                 }

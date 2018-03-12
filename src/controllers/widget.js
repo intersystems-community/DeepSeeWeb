@@ -81,6 +81,20 @@
             ngDialog.open({template: 'src/views/share.html', data: { html: mdx }, controller: 'share', showClose: false, className: "ngdialog-theme-default" });
         }
 
+        /**
+         * Appends button state to shared url
+         * @param {string} url Url to modify
+         * @param {string} state State name
+         * @return {string} New url
+         */
+        function appendShareState(url, state) {
+            let v = $scope.item[state];
+            if (v) {
+                url += '&' + state + '=' + v;
+            }
+            return url;
+        }
+
         function share() {
             const c = _this.chart;
 
@@ -99,6 +113,12 @@
             if (h) {
                 url += '&height=' + h;
             }
+
+            // Share button state
+            url = appendShareState(url, "isLegend");
+            url = appendShareState(url, "isTop");
+            url = appendShareState(url, "showZero");
+            url = appendShareState(url, "showValues");
 
             // Store hidden series
             if (c) {

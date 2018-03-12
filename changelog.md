@@ -1,4 +1,8 @@
 #2.1.20
+* Now click filter can be removed by back button on dependent widget
+* Now widget sharing include toolbar button state
+
+#2.1.20
 * Added default value for "Columns count" field in settings
 * Added hint for "Widget height" field in settings
 * Added support for intervals in shared widgets

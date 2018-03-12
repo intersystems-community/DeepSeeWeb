@@ -306,6 +306,7 @@
 
             function doDrillFilter(path, drills) {
                 if (!_this.drillFilterWidgets || !_this.drillFilterWidgets.length) return;
+
                 var i;
                 var dr = drills.slice();
                 if (!path) dr.pop();
@@ -315,6 +316,7 @@
             }
 
             function onDrillFilter(sc, path, drills) {
+                $scope.item.backButton = !!path;
                 _this.drillFilter = path;
                 _this.drillFilterDrills = drills;
                 _this.requestData();
@@ -463,6 +465,15 @@
              * Back button click handler
              */
             function doDrillUp() {
+                // First of all reset drill filter if set
+                if (_this.drillFilter) {
+                    _this.drillFilter = "";
+                    _this.drillFilterDrills = [];
+                    $scope.item.backButton = false;
+                    _this.requestData();
+                    return;
+                }
+
                 if ($scope.item.isDrillthrough) {
                     restoreWidgetType();
                     $scope.item.isDrillthrough = false;

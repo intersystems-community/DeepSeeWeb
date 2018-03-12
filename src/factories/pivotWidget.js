@@ -28,6 +28,16 @@
             }
 
             function doDrillUp() {
+
+                // First of all reset drill filter if set
+                if (_this.drillFilter) {
+                    _this.drillFilter = "";
+                    _this.drillFilterDrills = [];
+                    $scope.item.backButton = false;
+                    _this.requestData();
+                    return;
+                }
+
                 if ($scope.item.isDrillthrough && _this.restoreWidgetType) {
                     $scope.item.isDrillthrough = null;
                     _this.restoreWidgetType();
