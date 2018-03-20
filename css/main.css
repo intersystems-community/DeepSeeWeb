@@ -758,3 +758,8 @@ select.input-sm {
 .wnd-about {
     max-height: 90vh;
 }
+
+/* Enable text selection in pivot */
+[pivot] {
+   user-select: text;
+}

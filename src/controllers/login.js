@@ -119,6 +119,7 @@
          * Callback for success login
          */
         function onSuccess(res) {
+            if (!res) { return; }
             if (dsw.mobile) {
                 Connector.url = getMobileUrl();
                 localStorage.connectorRedirect = Connector.url;
@@ -162,7 +163,7 @@
          */
         function onError(data, status, headers, config) {
             var respTime = new Date().getTime() - startTime;
-            if(respTime >= config.timeout){
+            if(config && respTime >= config.timeout){
                 showError(Lang.get("errTimeout"));
                 return;
             }
@@ -181,11 +182,11 @@
                     }
                 }
             }
-           switch (status) {
-               case 0: showError(Lang.get("errNotFound")); break;
-               case 401: showError(Lang.get("errUnauth")); break;
-
-           }
+            let st = status || data.status;
+            switch (st) {
+                case 0: showError(Lang.get("errNotFound")); break;
+                case 401: showError(Lang.get("errUnauth")); break;
+            }
         }
 
         /**

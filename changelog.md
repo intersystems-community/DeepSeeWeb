@@ -1,6 +1,16 @@
-#2.1.20
+#2.1.22
+* Added main config file "configs/config.json"
+* Added support of changing mdx2json endpoint in config.json
+* Added "Reset click filter" feature
+* Fixed issue with text selection inside pivot table
+* Fixed issue with 401 Auth error message during login phase
+* Updated light pivot table
+
+#2.1.21
 * Now click filter can be removed by back button on dependent widget
 * Now widget sharing include toolbar button state
+* Fixed login error messages issue
+* Fixed issue with related filters loading
 
 #2.1.20
 * Added default value for "Columns count" field in settings

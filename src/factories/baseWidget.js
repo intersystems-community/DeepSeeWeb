@@ -58,6 +58,7 @@
             $scope.onDataSourceChange = onDataSourceChange;
             $scope.emitVarChange = emitVarChange;
             $scope.item.drillUp = doDrillUp;
+            $scope.item.resetClickFilter = resetClickFilter;
             $scope.performAction = performAction;
 
             $scope.item.doExport = doExport;
@@ -304,19 +305,31 @@
                 if (flt) _this.drillFilterWidgets = flt.split(",");
             }
 
+            /**
+             * Resets drill filter
+             */
+            function resetClickFilter() {
+                $scope.item.clickFilterActive = false;
+                if (!_this.drillFilterWidgets || !_this.drillFilterWidgets.length) return;
+                for (let i = 0; i < _this.drillFilterWidgets.length; i++) {
+                    $rootScope.$broadcast("drillFilter:" + _this.drillFilterWidgets[i], "", []);
+                }
+            }
+
             function doDrillFilter(path, drills) {
                 if (!_this.drillFilterWidgets || !_this.drillFilterWidgets.length) return;
-
                 var i;
                 var dr = drills.slice();
                 if (!path) dr.pop();
+                $scope.item.clickFilterActive = !!path;
                 for (i = 0; i < _this.drillFilterWidgets.length; i++) {
                     $rootScope.$broadcast("drillFilter:" + _this.drillFilterWidgets[i], path, dr);
                 }
             }
 
             function onDrillFilter(sc, path, drills) {
-                $scope.item.backButton = !!path;
+                // TODO: removed back button on drill filter target
+                //$scope.item.backButton = !!path;
                 _this.drillFilter = path;
                 _this.drillFilterDrills = drills;
                 _this.requestData();
@@ -466,13 +479,14 @@
              */
             function doDrillUp() {
                 // First of all reset drill filter if set
-                if (_this.drillFilter) {
+                // TODO: removed back button on drill filter target
+                /*if (_this.drillFilter) {
                     _this.drillFilter = "";
                     _this.drillFilterDrills = [];
                     $scope.item.backButton = false;
                     _this.requestData();
                     return;
-                }
+                }*/
 
                 if ($scope.item.isDrillthrough) {
                     restoreWidgetType();
@@ -482,6 +496,7 @@
 
 
             function getDrillthroughMdx(mdx) {
+
                 var m = mdx.toLowerCase();
                 var selTxt = "select non empty";
                 var idx1 = m.indexOf(selTxt);
@@ -506,6 +521,16 @@
                         sRows = ` MAXROWS ${listingRows} `;
                     }
                 }
+                // Find custom listing ifexists
+                const c = _this.desc.controls.find(c => c.action === 'showListing');
+                if (c) {
+                    const listing = c.targetPropertyDisplay;
+                    if (listing) {
+                        let r = "DRILLTHROUGH " + sRows + mdx.substring(0, idx1 + selTxt.length) + " " +  mdx.substring(idx2, mdx.length) + ` %LISTING [${listing}]`;
+                        return r;
+                    }
+                }
+
                 return "DRILLTHROUGH " + sRows + mdx.substring(0, idx1 + selTxt.length) + " " +  mdx.substring(idx2, mdx.length);
             }
 

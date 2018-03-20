@@ -67,22 +67,19 @@
                 .catch(onError)
                 .then(onFilterValuesReceived);
         }
-
+//$scope.ngDialogData.widget.dataSource
         /**
          * Returns data source of widget for current filter
          * @returns {undefined|string} Data source string
          */
         function getDataSource() {
-            let widgets = Variables.widgets;
-            let w;
-            let target = _this.source.target;
-            if (target === '*' || !target) {
-                w = widgets[0];
-            } else {
-                w = widgets.find(wi => wi.name === target);
+            let ds = '';
+            try {
+                ds = $scope.ngDialogData.widget.desc.dataSource;
+            } catch (e) {
+                ds = '';
             }
-            if (!w) return;
-            return w.dataSource;
+            return ds;
         }
 
         /**

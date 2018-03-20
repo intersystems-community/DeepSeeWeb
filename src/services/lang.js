@@ -71,6 +71,7 @@
      */
         .constant('LANGSTR', {
             en: {
+                resetClickFilter: 'Reset click filter',
                 copyMDX: 'Copy MDX',
                 seriesColor: 'Series colors',
                 copy: "Copy",
@@ -158,7 +159,7 @@
                 errWidgetRequest: "Unable to load widget data",
                 errLoginRequired: "Please enter login",
                 errPassRequired: "Please enter password",
-                errUnauth: "Incorrect username or password",
+                errUnauth: "Uknown login and password pair. Please try again",
                 errNotFound: "Requested url not fount on server",
                 errTimeout: "Request timeout",
                 errWidgetNotSupported: "Widget is not supported",
@@ -167,6 +168,7 @@
                 shortMonths: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
             },
             de: {
+                resetClickFilter: 'Reset click filter',
                 copyMDX: 'Copy MDX',
                 seriesColor: 'Series colors',
                 copy: "Copy",
@@ -263,6 +265,7 @@
                 shortMonths: ["Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"]
             },
             cs: {
+                resetClickFilter: 'Reset click filter',
                 copyMDX: 'Copy MDX',
                 seriesColor: 'Series colors',
                 copy: "Copy",
@@ -356,6 +359,7 @@
                 shortMonths: ["Leden", "Únor", "Březen", "Duben", "Květen", "Červen", "Červenec", "Srpen", "Září", "Říjen", "Listopad", "Prosinec"]
             },
             ru: {
+                resetClickFilter: 'Сбросить click фильтр',
                 copyMDX: 'Скопировать MDX',
                 seriesColor: 'Цвет серий',
                 copy: "Копировать",
