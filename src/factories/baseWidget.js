@@ -415,7 +415,7 @@
 
             function performAction(action) {
                 let a = action.action.toLowerCase();
-                
+
                 if (a === 'navigate') {
                     actionNavigate(action);
                 } else if (a === 'newwindow') {
@@ -1317,7 +1317,7 @@
                         }
                     }
                 }
-
+                
                 for (i = 0; i < _this.filterCount; i++) {
                     flt = _this.getFilter(i);
                     if (flt.isInterval) {
