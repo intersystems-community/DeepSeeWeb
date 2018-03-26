@@ -996,7 +996,7 @@
                 var i, j;
                 var cats = [];
                 for (i = 0; i < d.Properties.length; i++) {
-                    cats.push({caption: d.Properties[i].caption});
+                    cats.push({caption: d.Properties[i].caption || d.Properties[i].name});
                 }
                 res.Cols.push({tuples: cats});
 
