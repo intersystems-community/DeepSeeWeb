@@ -5,7 +5,7 @@
 
 <span ng-repeat="choser in item.dsItems" class="pull-left flt-holder">
     <label>{{choser.label}}</label>
-    <select class="form-control input-sm" ng-model="item.dsSelected" ng-options="el for el in choser.labels" ng-change="onDataSourceChange(choser)"></select>
+    <select class="form-control input-sm" ng-model="choser.dsSelected" ng-options="el for el in choser.labels" ng-change="onDataSourceChange(choser)"></select>
 </span>
 <span ng-repeat="action in item.acItems" class="pull-left flt-holder">
     <button class="form-control btn btn-default btn-sm btn-action" ng-click="performAction(action);">{{action.label || action.action}}</button>

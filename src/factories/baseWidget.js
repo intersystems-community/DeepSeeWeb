@@ -154,7 +154,7 @@
             }
             if (this.isLinked()) $scope.$on("setLinkedMDX:" + _this.desc.key, onSetLinkedMdx);
             if (this.hasDependents()) $scope.$on("widget:" + _this.desc.key + ":refreshDependents", onRefreshDependents);
-            
+
             setupDrillFilter();
             setupChoseDataSource();
             setupActions();
@@ -415,7 +415,7 @@
 
             function performAction(action) {
                 let a = action.action.toLowerCase();
-                
+
                 if (a === 'navigate') {
                     actionNavigate(action);
                 } else if (a === 'newwindow') {
@@ -843,7 +843,7 @@
              */
             function onDataSourceChange(item) {
                 var sel, val, idx;
-                sel = $scope.item.dsSelected;
+                sel = item.dsSelected;
                 if (sel) {
                     idx = item.labels.indexOf(sel);
                     if (idx !== -1) val = item.values[idx];
@@ -871,8 +871,8 @@
                                 item.values.push(data.data[k]);
                             }
                             // Set selection to first item, if current item is wrong
-                            if (item.labels.indexOf($scope.item.dsSelected) === -1) {
-                                $scope.item.dsSelected = item.labels[0];
+                            if (item.labels.indexOf(item.dsSelected) === -1) {
+                                item.dsSelected = item.labels[0];
                             }
                         }
                     };
@@ -922,6 +922,7 @@
                     var item = {
                         action: choosers[i].action,
                         label: choosers[i].label || Lang.get("dataSource"),
+                        dsSelected: choosers[i].value,
                         control: choosers[i]
                     };
                     $scope.item.dsItems.push(item);
@@ -1255,7 +1256,7 @@
                     flt = filters[i];
                     if (!flt.isInterval) continue;
                     path = flt.targetProperty;
-					var v1 = flt.values[flt.fromIdx].path; 
+					var v1 = flt.values[flt.fromIdx].path;
 					var v2 = flt.values[flt.toIdx].path;
 					mdx += " %FILTER %OR(" + path + "." +  v1 + ":" + v2 + ")";
                 }
