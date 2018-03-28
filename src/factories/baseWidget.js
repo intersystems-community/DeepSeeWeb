@@ -689,7 +689,9 @@
                     mdx = mdx.replace(str, (isNonEmpty ? "NON EMPTY " : " ") + path + " ");
                 }
 
-                if ((!customDrill && customDrills.length !== 0) || (customDrills.length === 0)) {
+                if (((!customDrill && customDrills.length !== 0) || (customDrills.length === 0))
+                    // if on exis 1 there are more than one element then skip
+                    && (!mdx.match(/\{.*\} ON 1/))){
                     var idx = mdx.indexOf(".Members ON 1 FROM");
                     if (idx === -1) {
                         mdx = mdx.replace(" ON 1 FROM", " .children ON 1 FROM");
@@ -1317,7 +1319,7 @@
                         }
                     }
                 }
-                
+
                 for (i = 0; i < _this.filterCount; i++) {
                     flt = _this.getFilter(i);
                     if (flt.isInterval) {
