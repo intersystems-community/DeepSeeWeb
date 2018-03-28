@@ -9,7 +9,7 @@
     /**
      * Creates map widget
      */
-        .directive('mapWidget', ['$templateCache', '$compile', function($templateCache, $compile) {
+        .directive('mapWidget', ['$templateCache', '$compile', 'Storage', function($templateCache, $compile, Storage) {
             return {
                 template: function(element, attrs) {
                     return "<div style='visibility: hidden'><div class='panel panel-default map-popup'>" +
@@ -36,13 +36,21 @@
                         .appendTo("body");
                     scope.tooltip = tt;
 
+                    // setting up tile server if it was specified in app settings
+                    var appS = Storage.getAppSettings();
+                    var layersSource;
+                    if (!appS.tileServer) {
+                        layersSource = new ol.source.OSM({ wrapX: true });
+                    } else {
+                        layersSource = new ol.source.XYZ({ url: appS.tileServer });
+                    }
+
                     var map = new ol.Map({
                         layers: [
                             //raster,
                             new ol.layer.Tile({
-                                //source: new ol.source.OSM({ wrapX: true })
                                 //source: new ol.source.MapQuest({layer: 'osm', url: 'https://otile{1-4}-s.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.jpg?access_token=Z2AeMd4y8ipY2WAeYP2HQF9s51FDPZ0f' })
-                                source: new ol.source.OSM({ wrapX: true })
+                                source: layersSource
                             })
                         ],
                         controls: ol.control.defaults({
