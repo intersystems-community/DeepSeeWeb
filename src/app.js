@@ -223,20 +223,22 @@ window.dsw.mobile = false;
             };
 
 
-            // Load main config
-            let mc = Connector.loadMainConfig();
-
-            // Load namespace config
-            let nc = Connector.loadConfig($route.current.params.ns);
-
-            Promise.all([mc, nc])
-            // Config not found - it's ok, because there can be namespaces without config or DSW without main config
-                .catch(_ => { confLoaded(); })
-                .then(confLoaded).catch(r => {
+            const loadNsConfig = () => {
+                Connector.loadConfig($route.current.params.ns)
+                // Config not found - it's ok, because there can be namespaces without config or DSW without main config
+                    .catch(_ => {
+                        confLoaded();
+                    })
+                    .then(confLoaded).catch(r => {
                     deffered.resolve();
                 });
-        }
+            };
 
+            // Load main config
+            Connector.loadMainConfig()
+                .then(_ => loadNsConfig())
+                .catch(_ => loadNsConfig());
+        }
         return deffered.promise;
     }
 

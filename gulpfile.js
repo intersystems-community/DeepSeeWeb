@@ -103,6 +103,8 @@ gulp.task('copyfiles', ['sass-dev'], function () {
         .pipe(gulp.dest('build'));
     gulp.src(['updater.csp'])
         .pipe(gulp.dest('build'));
+    gulp.src(['config.json'])
+        .pipe(gulp.dest('build'));
 });
 
 gulp.task('copyfiles-mobile', ['copyfiles'], function () {

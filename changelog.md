@@ -1,3 +1,12 @@
+#2.1.24
+* Fixed issue with tiles config loading
+
+#2.1.23
+* Added namespace to main config
+* Main config was moved to root "/config.json"
+* Fixed issue with config loading
+* Now DSW build includes config.json (copied only if there is no another one)
+
 #2.1.22
 * Added main config file "configs/config.json"
 * Added support of changing mdx2json endpoint in config.json

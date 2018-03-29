@@ -5,6 +5,7 @@
     'use strict';
 
     let MDX2JSON = "MDX2JSON";
+    let NAMESPACE = "MDX2JSON";
 
 
     function ConnectorSvc($http, CONST, $cookieStore, $location, $routeParams, $route) {
@@ -39,19 +40,26 @@
         this.gotoLoginPage = gotoLoginPage;
 
         // for local testing
-        if (localStorage.connectorRedirect && (dsw.mobile || location.host.split(':')[0].toLowerCase() === 'localhost')) {
-            this.url = localStorage.connectorRedirect;
-            this.newAPI = localStorage.connectorRedirect.replace("/" + MDX2JSON, '') + 'api/deepsee/Data/MDXExecute';
-        } else {
-            this.url = $location.$$protocol + "://" + $location.$$host;
-            if ($location.$$port) this.url += ":" + $location.$$port;
-            this.url += `/${MDX2JSON}/`;
+        adjustEndpoints();
 
-            this.newAPI = $location.$$protocol + "://" + $location.$$host;
-            if ($location.$$port) this.newAPI += ":" + $location.$$port;
-            this.newAPI += '/api/deepsee/Data//MDXExecute';
+
+        /**
+         * Adjust endpoints paths, also used after config has been loaded
+         */
+        function adjustEndpoints() {
+            if (localStorage.connectorRedirect && (dsw.mobile || location.host.split(':')[0].toLowerCase() === 'localhost')) {
+                _this.url = localStorage.connectorRedirect;
+                _this.newAPI = localStorage.connectorRedirect.replace("/" + MDX2JSON, '') + 'api/deepsee/Data/MDXExecute';
+            } else {
+                _this.url = $location.$$protocol + "://" + $location.$$host;
+                if ($location.$$port) _this.url += ":" + $location.$$port;
+                _this.url += `/${MDX2JSON}/`;
+
+                _this.newAPI = $location.$$protocol + "://" + $location.$$host;
+                if ($location.$$port) _this.newAPI += ":" + $location.$$port;
+                _this.newAPI += '/api/deepsee/Data//MDXExecute';
+            }
         }
-
         /**
          * Navigates to login page
          */
@@ -282,7 +290,7 @@
             return $http({
                 method: 'Get',
                 data: {},
-                url: 'configs/config.json',
+                url: 'config.json',
                 withCredentials: false
             })
                 .then(transformResponse)
@@ -290,10 +298,12 @@
                     try {
                        if (conf && conf.endpoints && conf.endpoints.mdx2json) {
                            MDX2JSON = conf.endpoints.mdx2json.replace(/\//ig, '').replace(/ /g, '');
+                           NAMESPACE = conf.namespace.replace(/\//ig, '').replace(/ /g, '');
                        }
                     } catch (e) {
-                        console.error('Incorrect config in file "configs/config.json"');
+                        console.error('Incorrect config in file "config.json"');
                     }
+                    adjustEndpoints();
                 })
         }
 
@@ -327,7 +337,7 @@
             return $http({
                 method: 'Get',
                 data: {},
-                url: _this.url + `Addons?Namespace=${MDX2JSON}`,
+                url: _this.url + `Addons?Namespace=${NAMESPACE}`,
                 withCredentials: true
             }).then(transformResponse);
         }
@@ -340,7 +350,7 @@
             return $http({
                 method: 'Get',
                 data: {},
-                url: _this.url + 'Config/' + ns + `?Namespace=${MDX2JSON}`,
+                url: _this.url + 'Config/' + ns + `?Namespace=${NAMESPACE}`,
                 withCredentials: true
             }).then(transformResponse);
         }
@@ -369,7 +379,7 @@
             return $http({
                 method: 'POST',
                 data: { Application: ns, Config: JSON.stringify(config) },
-                url: _this.url + `Config?Namespace=${MDX2JSON}`,
+                url: _this.url + `Config?Namespace=${NAMESPACE}`,
                 withCredentials: true
             }).then(transformResponse);
         }

@@ -116,7 +116,14 @@ Copy files from XData placed inside DSW.InstallerData class</Description>
 		}
 		
 		d tInstaller.Log(pLogLevel, "Creating file", fileName)
-		
+
+		// Skip config.json if exists
+		if (file.Description = "config.json") {
+		    if ##class(%File).Exists(fileName) {
+		        s i = i + 1
+		        continue
+		    }
+		}
 		
 		s f = ##class(%Stream.FileBinary).%New()
     	d f.LinkToFile(fileName)

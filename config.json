@@ -1,4 +1,5 @@
 {
+    "namespace": "mdx2json",
     "endpoints": {
         "mdx2json": "mdx2json"
     }
