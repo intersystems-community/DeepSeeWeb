@@ -1,4 +1,7 @@
 # DeepSeeWeb
+
+[![Gitter](https://img.shields.io/badge/chat-on%20telegram-blue.svg)](https://t.me/joinchat/FoZ4M0xJSMDPlCQBLPRosw)
+
 Renderer for DeepSee Dashboards in Browser with MDX2JSON as a Serverside and JS web-client.<br>
 Developed using AngularJS and Bootstrap.<br><br>
 ![DeepSeeWeb screenshot](/screenshot.png?raw=true "DeepSeeWeb screenshot")<br>
