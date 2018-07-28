@@ -467,7 +467,14 @@
                 var t = this;
                 /* jshint ignore:end */
                 var fmt = t.series.options.format;
-                var val = t.y;
+
+                var val = '';
+                if ($scope.chartConfig.options.chart.type === "pie") {
+                    val = t.key + ", " + t.y;
+                } else {
+                    val = t.y;
+                }
+
                 if (fmt) val = _this.formatNumber(val, fmt);
                 return val;
             }
