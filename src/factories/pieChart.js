@@ -9,6 +9,7 @@
         function PieChart($scope) {
             BaseChart.apply(this, [$scope]);
             var _this = this;
+            _this.labelsFormatter = labelsFormatter;
 
             $scope.item.toggleLegend = toggleLegend;
             $scope.item.toggleValues = toggleValues;
@@ -90,6 +91,17 @@
                         enabled: $scope.item.isLegend
                     };
                 }
+            }
+
+            function labelsFormatter() {
+                /* jshint ignore:start */
+                var t = this;
+                /* jshint ignore:end */
+                var fmt = t.series.options.format;
+                var val = t.key + ", " + t.y;
+
+                if (fmt) val = _this.formatNumber(val, fmt);
+                return val;
             }
 
             function toggleValues() {
