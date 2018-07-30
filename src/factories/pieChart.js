@@ -98,10 +98,10 @@
                 var t = this;
                 /* jshint ignore:end */
                 var fmt = t.series.options.format;
-                var val = t.key + ", " + t.y;
+                var val = t.y;
 
                 if (fmt) val = _this.formatNumber(val, fmt);
-                return val;
+                return t.key + ", " + val;
             }
 
             function toggleValues() {
