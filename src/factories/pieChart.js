@@ -58,6 +58,11 @@
                         dataLabels: {
                             enabled: $scope.item.showValues
                         }
+                    },
+                    series: {
+                        dataLabels: {
+                            formatter: _this.labelsFormatter
+                        }
                     }
                 }
             };
