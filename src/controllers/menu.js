@@ -19,7 +19,7 @@
             visible: Storage.configLoaded || false,
             favs: getFavs(),
             onDashboard: isOnDashboard(),
-            namespace: $routeParams.ns || "Samples",
+            namespace: $routeParams.ns || "MDX2JSON",
             title: $routeParams.folder,
             devMode: localStorage.connectorRedirect,
             lblHome: Lang.get("home"),
@@ -298,7 +298,7 @@
             $scope.model.title = $scope.model.title.replace(".dashboard", "");
             //var parts = $scope.model.title.split("/");
             //if (parts.length != "")
-            $scope.model.namespace = $routeParams.ns || localStorage.namespace || "Samples";
+            $scope.model.namespace = $routeParams.ns || localStorage.namespace || "MDX2JSON";
             var ns = localStorage.namespace;
             if (ns) ns = ns.toLowerCase();
             if (ns !== $scope.model.namespace.toLowerCase()) {

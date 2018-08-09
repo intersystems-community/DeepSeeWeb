@@ -75,7 +75,7 @@
          * @returns {string} Namespace
          */
         function getNamespace() {
-            var lastNS = localStorage.namespace || "samples";
+            var lastNS = localStorage.namespace || "MDX2JSON";
             var ns = $route.current.params.ns || lastNS;
             return ns.toUpperCase();
         }

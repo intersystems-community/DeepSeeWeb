@@ -13,7 +13,7 @@
             server: localStorage.DSWMobileServer || "146.185.143.59",
             login: "",
             password: "",
-            namespace:  localStorage.namespace || "Samples",
+            namespace:  localStorage.namespace || "MDX2JSON",
             error: ""
         };
         if (dsw.mobile) {
