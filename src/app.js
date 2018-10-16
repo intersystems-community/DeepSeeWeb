@@ -1,5 +1,6 @@
 window.dsw = {};
-window.dsw.mobile = false;
+window.dsw.mobile = screen.availWidth <= 600;
+window.dsw.desktop = true;
 
 /**
  * Main application module

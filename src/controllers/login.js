@@ -8,9 +8,13 @@
     function LoginCtrl(Connector, Lang, $scope, $location, $rootScope, CONST, Storage, ngDialog) {
         var startTime = new Date().getTime();
         delete sessionStorage.dashboarList;
+        if (window.dsw.desktop) {
+            delete localStorage.DSWMobileServer;
+        }
         $scope.model = {
+            isDesktop: dsw.desktop,
             ver: CONST.ver,
-            server: localStorage.DSWMobileServer || "146.185.143.59",
+            server: localStorage.DSWMobileServer || location.hostname,
             login: "",
             password: "",
             namespace:  localStorage.namespace || "Samples",
@@ -101,7 +105,7 @@
             var s = getMobileUrl();
             startTime = new Date().getTime();
             Connector
-                .signIn($scope.model.login, $scope.model.password, $scope.model.namespace, dsw.mobile ? s : undefined)
+                .signIn($scope.model.login, $scope.model.password, $scope.model.namespace, (dsw.mobile && !dsw.desktop) ? s : undefined)
                 .catch(onError)
                 .then(onSuccess);
         }
@@ -120,7 +124,7 @@
          */
         function onSuccess(res) {
             if (!res) { return; }
-            if (dsw.mobile) {
+            if (dsw.mobile && !dsw.desktop) {
                 Connector.url = getMobileUrl();
                 localStorage.connectorRedirect = Connector.url;
             }
