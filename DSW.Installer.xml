@@ -50,7 +50,7 @@ You can see generated method in zsetup+1^App.Installer.1</Description>
     </If>
     
     <If Condition='(##class(Config.Namespaces).Exists("%All")=1)'>
-        <Namespace Name="%All" Create="no" Code="CACHETEMP" Data="CACHETEMP" Ensemble="0">
+        <Namespace Name="%All" Create="no" Code="IRISTEMP" Data="IRISTEMP" Ensemble="0">
             <Configuration>
                 <Log Text="Mapping DSW and DSW.Addons packages to %All namespace" Level="0"/>
                 <ClassMapping From="${Namespace}" Package="DSW"/>
