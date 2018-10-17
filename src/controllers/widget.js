@@ -121,7 +121,7 @@
             url = appendShareState(url, "showValues");
 
             // Store hidden series
-            if (c) {
+            if (c && c.series) {
                 const hidden = c.series.map((s, i) => ({v: s.visible, i: i})).filter(s => !s.v);
                 if (hidden.length) {
                     url += '&hiddenSeries=' + hidden.map(s => s.i).join(',');

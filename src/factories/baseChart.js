@@ -468,6 +468,7 @@
                 /* jshint ignore:end */
                 var fmt = t.series.options.format;
                 var val = t.y;
+
                 if (fmt) val = _this.formatNumber(val, fmt);
                 return val;
             }
