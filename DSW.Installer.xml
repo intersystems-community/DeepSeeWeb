@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Export generator="Cache" version="25" zv="Cache for Windows (x86-64) 2016.1 (Build 656U)" ts="2016-06-13 09:17:47">
+<Export generator="Cache" version="25" zv="Cache for Windows (x86-64) 2017.1.1 (Build 111U)" ts="2018-10-17 15:32:19">
 <Class name="DSW.Installer">
 <IncludeCode>%occInclude</IncludeCode>
-<TimeChanged>64082,33185.871662</TimeChanged>
+<TimeChanged>64938,55928.404503</TimeChanged>
 <TimeCreated>63986,58811.369564</TimeCreated>
 
 <XData name="Install">
@@ -25,13 +25,41 @@ You can see generated method in zsetup+1^App.Installer.1</Description>
         <Log Text="End Creating namespace ${Namespace}" Level="0"/>
     </If>
     
+    <If Condition="($system.Version.GetISCProduct()=4)">
+    <Role Name="AppRole" Description="Role to access and use the App" Resources="%DB_IRISSYS:RW,%Admin_Secure:U" />
+    </If>
+    <If Condition="($system.Version.GetISCProduct()&lt;4)">
     <Role Name="AppRole" Description="Role to access and use the App" Resources="%DB_CACHESYS:RW,%Admin_Secure:U" />
+    </If>
+      
     <Namespace Name="${Namespace}" Create="no">
         <CSPApplication Url="/dsw" Recurse="1" Directory="${CSPDIR}dsw" AuthenticationMethods="64" IsNamespaceDefault="true" Grant="AppRole" /> 
         <Log Text="Copying web application files" Level="0"/>
         <RunInstall Class="DSW.Installer" Method="CopyFiles"/>  
    </Namespace>
+   
+     <If Condition="($system.Version.GetISCProduct()=4)">
+       <If Condition='(##class(Config.Namespaces).Exists("%All")=0)'>
+        <Log Text="Creating namespace %All" Level="0"/>
+        <Namespace Name="%All" Create="yes" Code="IRISTEMP" Data="IRISTEMP" Ensemble="0">
+            <Configuration>
+                <Log Text="Mapping DSW and DSW.Addons packages to %All namespace" Level="0"/>
+                <ClassMapping From="${Namespace}" Package="DSW"/>
+            </Configuration>
+        </Namespace>
+    </If>
+    
+    <If Condition='(##class(Config.Namespaces).Exists("%All")=1)'>
+        <Namespace Name="%All" Create="no" Code="CACHETEMP" Data="CACHETEMP" Ensemble="0">
+            <Configuration>
+                <Log Text="Mapping DSW and DSW.Addons packages to %All namespace" Level="0"/>
+                <ClassMapping From="${Namespace}" Package="DSW"/>
+            </Configuration>
+        </Namespace>
+    </If>
+   </If>
 
+   <If Condition="($system.Version.GetISCProduct()&lt;4)">
     <If Condition='(##class(Config.Namespaces).Exists("%All")=0)'>
         <Log Text="Creating namespace %All" Level="0"/>
         <Namespace Name="%All" Create="yes" Code="CACHETEMP" Data="CACHETEMP" Ensemble="0">
@@ -57,6 +85,7 @@ You can see generated method in zsetup+1^App.Installer.1</Description>
                 <ClassMapping From="${Namespace}" Package="DSW"/>
             </Configuration>
         </Namespace>
+    </If>
     </If>
 </Manifest>
 ]]></Data>
