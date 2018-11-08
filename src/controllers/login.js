@@ -129,7 +129,7 @@
                 localStorage.connectorRedirect = Connector.url;
             }
             localStorage.DSWMobileServer = $scope.model.server;
-            Storage.loadServerSettings(res);
+                Storage.loadServerSettings(res);
             localStorage.namespace = $scope.model.namespace;
             localStorage.userName = Connector.username;
 

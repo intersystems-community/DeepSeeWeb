@@ -158,7 +158,7 @@ window.dsw.desktop = true;
      */
     function configResolver(Connector, $q, Storage, $rootScope, $route, $ocLazyLoad) {
         // In mobile version navigate to login if there is not connection set yet
-        if (dsw.mobile && !localStorage.connectorRedirect) {
+        if (dsw.mobile && !dsw.desktop && !localStorage.connectorRedirect) {
             Connector.gotoLoginPage();
             return;
         }
