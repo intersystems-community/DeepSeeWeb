@@ -705,7 +705,7 @@
              */
             function fixData(tempData) {
                 for (var g = 0; g < tempData.length; g++) {
-                    if (!tempData[g].y) tempData[g].y = null;
+                    if (!tempData[g].y && tempData[g].y !== 0) tempData[g].y = null;
                     if (tempData[g].y === "" || tempData[g].y === undefined) tempData[g].y = null;
                 }
             }

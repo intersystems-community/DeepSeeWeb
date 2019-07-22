@@ -29,6 +29,9 @@
             var str = decodeURIComponent(from);
             var ns = getParameterByName("ns", str);
             if (ns)  $scope.model.namespace = ns;
+        } else {
+            var ns = $location.search().ns;
+            if (ns)  $scope.model.namespace = ns;
         }
 
         $scope.onLoginClick = onLoginClick;

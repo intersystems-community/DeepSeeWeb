@@ -1,3 +1,8 @@
+#2.1.34
+* Fixed issue with namespace detection on home screen
+* Fixed issue whit zero values on charts
+* Fixes for mobile version of app
+
 #2.1.24
 * Fixed issue with tiles config loading
 
