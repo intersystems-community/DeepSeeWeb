@@ -337,7 +337,7 @@
             return $http({
                 method: 'Get',
                 data: {},
-                url: _this.url + `Addons?Namespace=${NAMESPACE}`,
+                url: _this.url + `Addons`,
                 withCredentials: true
             }).then(transformResponse);
         }

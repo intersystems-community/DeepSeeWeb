@@ -1,3 +1,6 @@
+#2.1.35
+* Fixed addons loading issue
+
 #2.1.34
 * Fixed issue with namespace detection on home screen
 * Fixed issue whit zero values on charts
