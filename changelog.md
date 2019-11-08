@@ -1,3 +1,6 @@
+#2.1.36
+* New version of Highcharts
+
 #2.1.35
 * Fixed addons loading issue
 
