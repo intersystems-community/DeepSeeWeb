@@ -38,6 +38,7 @@
         this.saveNamespaceConfig = saveNamespaceConfig;
         this.loadAddons = loadAddons;
         this.gotoLoginPage = gotoLoginPage;
+        this.loadOAuthConfig = loadOAuthConfig;
 
         // for local testing
         adjustEndpoints();
@@ -316,6 +317,19 @@
                 method: 'Get',
                 data: {},
                 url: 'configs/' + (cutomNamespace ? cutomNamespace : this.getNamespace()).toLowerCase() + '.json',
+                withCredentials: false
+            }).then(transformResponse);
+        }
+
+        /**
+         * Load OAuth config file oauth.json
+         * @returns {object} $http promise
+         */
+        function loadOAuthConfig() {
+            return $http({
+                method: 'Get',
+                data: {},
+                url: 'oauth.json',
                 withCredentials: false
             }).then(transformResponse);
         }

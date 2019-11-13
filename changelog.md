@@ -1,5 +1,7 @@
 #2.1.36
 * New version of Highcharts
+* Fixed issue with chooseColumnSpec
+* Added  initial support for oAuth
 
 #2.1.35
 * Fixed addons loading issue

@@ -5,7 +5,7 @@
 (function (){
     'use strict';
 
-    function LoginCtrl(Connector, Lang, $scope, $location, $rootScope, CONST, Storage, ngDialog) {
+    function LoginCtrl(Connector, Lang, $scope, $location, $rootScope, CONST, Storage, ngDialog, Hello) {
         var startTime = new Date().getTime();
         delete sessionStorage.dashboarList;
         if (window.dsw.desktop) {
@@ -18,7 +18,8 @@
             login: "",
             password: "",
             namespace:  localStorage.namespace || "Samples",
-            error: ""
+            error: "",
+            isOAuth: false
         };
         if (dsw.mobile) {
             fillFieldsWithSelectedServer();
@@ -35,13 +36,22 @@
         }
 
         $scope.onLoginClick = onLoginClick;
+        $scope.onLoginOAuthClick = onLoginOAuthClick;
         $scope.showServers = showServers;
         $scope.scanSettings = scanSettings;
         $scope.saveServer = saveServer;
         $scope.$on('signinerror', onError);
         // Listened in menu.js
         $rootScope.$broadcast('toggleMenu', false);
+        loadOAuthConfig();
 
+
+        function loadOAuthConfig() {
+            Connector.loadOAuthConfig().then(d => {
+                Hello.initialize(d);
+                $scope.model.isOAuth = true;
+            }).catch(() => {});
+        }
 
         function fillFieldsWithSelectedServer() {
             let idx = localStorage.selectedServer;
@@ -101,6 +111,13 @@
         }
 
         /**
+         * Login with intersystems oauth
+         */
+        function onLoginOAuthClick() {
+            window['hello'].login('intersystems');
+        }
+
+        /**
          * Click event gandler for login button
          */
         function onLoginClick() {
@@ -132,7 +149,7 @@
                 localStorage.connectorRedirect = Connector.url;
             }
             localStorage.DSWMobileServer = $scope.model.server;
-                Storage.loadServerSettings(res);
+            Storage.loadServerSettings(res);
             localStorage.namespace = $scope.model.namespace;
             localStorage.userName = Connector.username;
 
@@ -235,6 +252,6 @@
     }
 
     angular.module('app')
-        .controller('login', ['Connector', 'Lang', '$scope', '$location', '$rootScope', 'CONST', 'Storage', 'ngDialog', LoginCtrl]);
+        .controller('login', ['Connector', 'Lang', '$scope', '$location', '$rootScope', 'CONST', 'Storage', 'ngDialog', 'Hello', LoginCtrl]);
 
 })();

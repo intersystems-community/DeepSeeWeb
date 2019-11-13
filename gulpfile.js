@@ -29,7 +29,7 @@ gulp.task('sass-themes', function () {
 });
 
 // Build sass
-gulp.task('sass-dev', ['sass-themes'], function () {
+gulp.task('sass-dev', gulp.series('sass-themes', function () {
     return gulp.src(['./css/sass/*.scss'])
         .pipe(sass({
             sourceComments: 'map',
@@ -37,14 +37,14 @@ gulp.task('sass-dev', ['sass-themes'], function () {
             outputStyle: 'nested'
         }).on('error', sass.logError))
         .pipe(gulp.dest('./css/'));
-});
+}));
 
 // Sass watcher
-gulp.task('sass:watch', ['sass-dev'], function () {
+gulp.task('sass:watch', gulp.series('sass-dev', function () {
     var sassSrc = ['./css/sass/*.scss', './css/sass/themes/*.scss', './css/sass/base/*.scss'];
     if (!(sassSrc instanceof Array)) { sassSrc += '*.scss'; }
     gulp.watch(sassSrc, ['sass-dev']);
-});
+}));
 
 
 // Runing jshint an all source
@@ -68,23 +68,32 @@ gulp.task('minify', function () {
         .pipe(gulp.dest('build'));
 });
 
-// Append templates.js to app.js
-gulp.task('concat-templates', ['templates', 'minify'], function() {
-    return gulp.src(['build/src/app.js', 'build/src/templates.js'])
-        .pipe(concat('app.js'))
+// Create single tamplates file from *.html views
+gulp.task('templates', function() {
+    var p = require('./package.json');
+    return gulp.src(['src/views/*.html'])
+        .pipe(replace('{{package.json.version}}', p.version))
+        .pipe(templateCache({root:"src/views/"}))
         .pipe(gulp.dest('build/src'));
 });
 
+// Append templates.js to app.js
+gulp.task('concat-templates', gulp.series('templates', 'minify', function() {
+    return gulp.src(['build/src/app.js', 'build/src/templates.js'])
+        .pipe(concat('app.js'))
+        .pipe(gulp.dest('build/src'));
+}));
+
 // Minify css files
-gulp.task('cssminify', ['sass-dev'], function () {
-    gulp.src(['css/main.css', 'css/new.min.css', 'css/default.css'])
+gulp.task('cssminify', gulp.series('sass-dev', function () {
+    return gulp.src(['css/main.css', 'css/new.min.css', 'css/default.css'])
         .pipe(cssmin())
         .pipe(concat('main.css'))
         .pipe(gulp.dest('build/css'));
-});
+}));
 
 // Copy other files to dist (like fonts, libs, images)
-gulp.task('copyfiles', ['sass-dev'], function () {
+gulp.task('copyfiles', gulp.series('sass-dev', async function () {
     gulp.src(['src/addons/*.js'])
         .pipe(gulp.dest('build/addons'));
     gulp.src(['src/lib/*.js'])
@@ -105,29 +114,20 @@ gulp.task('copyfiles', ['sass-dev'], function () {
         .pipe(gulp.dest('build'));
     gulp.src(['config.json'])
         .pipe(gulp.dest('build'));
-});
+}));
 
-gulp.task('copyfiles-mobile', ['copyfiles'], function () {
+gulp.task('copyfiles-mobile', gulp.series('copyfiles', async function () {
     gulp.src(['mobile/**/*'])
         .pipe(gulp.dest('build/'));
-});
-
-// Create single tamplates file from *.html views
-gulp.task('templates', function() {
-    var p = require('./package.json');
-    return gulp.src(['src/views/*.html'])
-        .pipe(replace('{{package.json.version}}', p.version))
-        .pipe(templateCache({root:"src/views/"}))
-        .pipe(gulp.dest('build/src'));
-});
+}));
 
 // Remove temporary files
-gulp.task('cleanup', ['concat-templates'], function() {
+gulp.task('cleanup', gulp.series('concat-templates', async function() {
     del(["build/src/templates.js"]);
     //del(["build/css/**/*"]);
     del(["build/*.zip"]);
     del(["build/res/**/*"]);
-});
+}));
 
 // Creates zip with builded project
 gulp.task('zip', function() {
@@ -152,11 +152,11 @@ gulp.task('zip', function() {
     }));
 });*/
 
-gulp.task('makerelease', ['zip'], function() {
+gulp.task('makerelease', gulp.series('zip', function() {
     return gulp.src('./package.json')
         //.pipe(bump())
         .pipe(gulp.dest('./'));
-});
+}));
 
 var FILE_LIST;
 gulp.task('enum-files', function() {
@@ -178,7 +178,7 @@ gulp.task('enum-files', function() {
     console.log(dec.charCodeAt(7));
 });*/
 
-gulp.task('create-install-package', ['enum-files'], function() {
+gulp.task('create-install-package', gulp.series('enum-files', async function() {
     var fs = require('fs');
     var append = '';
     for (var i = 0; i < FILE_LIST.length; i++) {
@@ -207,7 +207,7 @@ gulp.task('create-install-package', ['enum-files'], function() {
     installer += '<Class name="DSW.InstallerData">' + append + '</Class></Export>';
     fs.writeFileSync('./build/DSW.Installer.' +  p.version + '.xml', installer);
     console.log('DSW.Installer.xml was created!')
-});
+}));
 
 gulp.task('mdx2json', function() {
     const fs = require('fs'),
@@ -219,10 +219,10 @@ gulp.task('mdx2json', function() {
     return download(mdx2jsonUrl)
         .pipe(unzip())
         .pipe(gulp.dest('./build/mdx2json/'));
-})
+});
 
 // create full installer with MDX2JSON inside
-gulp.task('create-full-install-package', ['create-install-package', 'mdx2json'], function() {
+gulp.task('create-full-install-package', gulp.series('create-install-package', 'mdx2json', async function() {
     const cacheBuilder = require('gulp-cachebuild');
     const p = require('./package.json');
 
@@ -234,14 +234,18 @@ gulp.task('create-full-install-package', ['create-install-package', 'mdx2json'],
         ])
         .pipe(cacheBuilder('DSW.Installer.' +  p.version + '-full.xml'))
         .pipe(gulp.dest('./build/'));
-});
+}));
 
 /* Generate jsdoc
 gulp.task('jsdoc', function() {
     return gulp.src(['src/ * * /*.js', '!src/lib/*'])
         .pipe(jsdoc('./documentation'));
 });*/
-gulp.task('build-mobile', ['lint', 'minify', 'cssminify', 'concat-templates', 'copyfiles-mobile', 'cleanup'], function () {});
+gulp.task('build-mobile', gulp.series('minify', 'cssminify', 'concat-templates', 'copyfiles-mobile', 'cleanup', function () {}));
 
-gulp.task('default', ['lint', 'minify', 'cssminify', 'concat-templates', 'copyfiles', 'cleanup'], function () {});
+gulp.task('default', gulp.series('minify', 'cssminify', 'concat-templates', 'copyfiles', 'cleanup', function () {
+    return new Promise(function(resolve, reject) {
+        resolve();
+    });
+}));
 

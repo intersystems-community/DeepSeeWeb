@@ -1,7 +1,7 @@
 {
   "name": "DeepSeeWeb",
   "author": "Gnibeda A.A",
-  "version": "2.1.35",
+  "version": "2.1.36",
   "description": "Renderer for DeepSee Dashboards in Browser with MDX2JSON as a Serverside and JS web-client",
   "repository": {
     "type": "git",
@@ -10,20 +10,20 @@
   "devDependencies": {
     "angularjs-color-picker": "^3.4.8",
     "del": "^1.1.1",
-    "gulp": "^3.8.11",
+    "gulp": "^4.0.0",
     "gulp-angular-templatecache": "^1.5.0",
     "gulp-cachebuild": "^0.0.2",
-    "gulp-concat": "^2.5.2",
-    "gulp-cssmin": "^0.1.6",
+    "gulp-concat": "^2.6.1",
+    "gulp-cssmin": "^0.2.0",
     "gulp-download": "0.0.1",
     "gulp-github-release": "^1.0.3",
     "gulp-jshint": "^1.9.2",
-    "gulp-replace": "^0.5.4",
-    "gulp-sass": "^3.1.0",
+    "gulp-replace": "^1.0.0",
+    "gulp-sass": "^4.0.2",
     "gulp-traceur-compiler": "^1.1.4",
-    "gulp-uglify": "^1.1.0",
+    "gulp-uglify": "^3.0.2",
     "gulp-unzip": "^0.2.0",
-    "gulp-useref": "^1.2.0",
+    "gulp-useref": "1.2.0",
     "gulp-zip": "^3.0.2",
     "through2": "^2.0.1",
     "tinycolor2": "^1.4.1"
@@ -38,6 +38,7 @@
     "visualization"
   ],
   "dependencies": {
-    "gulp-bump": "^0.3.1"
+    "gulp-bump": "^0.3.1",
+    "hellojs": "^1.18.1"
   }
 }

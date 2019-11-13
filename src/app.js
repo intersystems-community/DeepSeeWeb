@@ -50,17 +50,17 @@ window.dsw.desktop = true;
             .when('/', {
                 templateUrl: 'src/views/home.html',
                 controller: 'home',
-                resolve: { config: ['Connector', '$q', 'Storage', '$rootScope', '$route', '$ocLazyLoad', configResolver] }
+                resolve: { config: ['Connector', '$q', 'Storage', '$rootScope', '$route', '$ocLazyLoad', 'Hello', configResolver] }
             })
             .when('/d/:path*', {
                 templateUrl: 'src/views/dashboard.html',
                 controller: 'dashboard',
-                resolve: { config: ['Connector', '$q', 'Storage', '$rootScope', '$route', '$ocLazyLoad', configResolver] }
+                resolve: { config: ['Connector', '$q', 'Storage', '$rootScope', '$route', '$ocLazyLoad', 'Hello', configResolver] }
             })
             .when('/f/:folder*', {
                 templateUrl: 'src/views/home.html',
                 controller: 'home',
-                resolve: { config: ['Connector', '$q', 'Storage', '$rootScope', '$route', '$ocLazyLoad', configResolver] }
+                resolve: { config: ['Connector', '$q', 'Storage', '$rootScope', '$route', '$ocLazyLoad', 'Hello', configResolver] }
             })
             .when('/login', {
                 templateUrl: 'src/views/login.html',
@@ -156,7 +156,7 @@ window.dsw.desktop = true;
      * @param {object} Storage Storage service
      * @returns {IPromise<T>}
      */
-    function configResolver(Connector, $q, Storage, $rootScope, $route, $ocLazyLoad) {
+    function configResolver(Connector, $q, Storage, $rootScope, $route, $ocLazyLoad, hello) {
         // In mobile version navigate to login if there is not connection set yet
         if (dsw.mobile && !dsw.desktop && !localStorage.connectorRedirect) {
             Connector.gotoLoginPage();
