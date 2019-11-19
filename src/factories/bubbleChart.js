@@ -37,11 +37,14 @@
                     formatter: function () {
                         var fmt1 = this.series.userOptions.format1;
                         var fmt2 = this.series.userOptions.format2;
+                        var fmt3 = this.series.userOptions.format3;
                         var v1 = this.x;
                         var v2 = this.y;
+                        var v3 = this.point.z;
                         if (fmt1) v1 = numeral(v1).format(fmt1);
                         if (fmt2) v2 = numeral(v2).format(fmt2);
-                        return this.series.name + '<br/>'+  $scope.chartConfig.xAxis.title.text + ':<b>' + v1 + '</b><br/>'+  $scope.chartConfig.yAxis.title.text + ':<b>' + v2 + '</b>';
+                        if (fmt3) v3 = numeral(v3).format(fmt3);
+                        return this.series.name + '<br/>'+  $scope.chartConfig.xAxis.title.text + ':<b>' + v1 + '</b><br/>'+  $scope.chartConfig.yAxis.title.text + ':<b>' + v2 + '</b>' + (v3 ? ('<br>radius: <b>' + v3.toString() + '</b>') : '');
                     }
                 }
             };
@@ -95,11 +98,11 @@
                 if (data.Cols[0].tuples.length >= 2) $scope.chartConfig.yAxis.title.text = data.Cols[0].tuples[1].caption;
                 var tempData = [];
 				
-				if(data.Cols[0].tuples.length > 4)
-				{
-					_this.showError("Data converter for this bubble chart not implemented!");
-				}
-				else
+				// if(data.Cols[0].tuples.length > 4)
+				// {
+				// 	_this.showError("Data converter for this bubble chart not implemented!");
+				// }
+				// else
                 if (data.Cols[0].tuples[0].children) {
                     // TODO: Lang support
                     _this.showError("Data converter for this bubble chart not implemented!");
@@ -107,9 +110,11 @@
 					var offset = data.Cols[0].tuples.length;
                     var fmt1 = "";
                     var fmt2 = "";
+                    var fmt3 = "";
                     if (data.Cols[0].tuples[0]) fmt1 = data.Cols[0].tuples[0].format;
                     if (data.Cols[0].tuples[1]) fmt2 = data.Cols[0].tuples[1].format;
-					
+                    if (data.Cols[0].tuples[2]) fmt3 = data.Cols[0].tuples[2].format;
+
 					
 					var seriesName_data = mapBySeries(data, uniqueSeries);				
 					
@@ -142,7 +147,8 @@
                             				data: seriesName_data[key],
                             				name: key,
                             				format1: fmt1,
-                           					format2: fmt2
+                           					format2: fmt2,
+                           					format3: fmt3,
 									   });
 					}
                 }

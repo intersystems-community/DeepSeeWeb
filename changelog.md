@@ -1,3 +1,6 @@
+#2.1.37
+* Bubble chart KPI now show radius
+ 
 #2.1.36
 * New version of Highcharts
 * Fixed issue with chooseColumnSpec
