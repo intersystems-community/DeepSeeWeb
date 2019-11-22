@@ -1,5 +1,6 @@
 #2.1.37
 * Bubble chart KPI now show radius
+* Fixe issue with dashboard filters
  
 #2.1.36
 * New version of Highcharts

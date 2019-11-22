@@ -48,7 +48,10 @@
          */
         function requestRelatedFilters() {
             let ds = getDataSource();
-            if (!ds) return;
+            if (!ds) {
+                prepareFilters();
+                return;
+            }
             let related = [];
             let filters = Filters.items;
             // Get active filters
