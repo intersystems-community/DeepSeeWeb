@@ -413,7 +413,7 @@
                 url: url ? (url + 'Test?Namespace=' + namespace) : (_this.url + 'Test?Namespace=' + namespace),
                 timeout: CONST.timeout,
                 headers: {
-                    'Authorization': 'Basic ' + btoa(encodeURIComponent(login) + ":" + encodeURIComponent(password))
+                    'Authorization': 'Basic ' + btoa(login + ":" + password)
                 }
             }).then(transformResponse);
         }
