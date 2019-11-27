@@ -1,0 +1,256 @@
+body::-webkit-scrollbar {
+    display: none;
+}
+
+.metro-tile {
+    position: relative;
+    cursor: pointer;
+    overflow: hidden;
+    user-select: none;
+    -webkit-user-select: none;
+    background: transparent;
+
+    background-size: cover;
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
+        /*-webkit-box-shadow: 0 1px 2px rgba(0,0,0,.05);
+        box-shadow: 0 1px 2px rgba(0,0,0,.05);*/
+}
+
+.editing {
+    border: 1px dashed #FFF;
+    opacity: 0.5;
+}
+
+.gridster-preview-holder {
+    opacity: 1;
+    /*border: 1px dashed #AAAAAA;
+    background-color: transparent;*/
+    border: none;
+    background-color: #ffffff;
+    opacity: 0.3;
+}
+
+.cl1 {
+    background-color: #c4e3f3; !important;
+}
+
+.cl2 {
+    background-color: #ffddd8; !important;
+}
+
+.cl3 {
+    background-color: #d0e9c6; !important;
+}
+
+.cl4 {
+    background-color: #fff9a8; !important;
+}
+
+.cl5 {
+    background-color: #fad4b4; !important;
+}
+
+.cl6 {
+    background-color: #ffd3cf; !important;
+}
+
+.cl7 {
+    background-color: #bef1ff; !important;
+}
+
+.cl8 {
+    background-color: #d1dafe; !important;
+}
+
+.cl9 {
+    background-color: #c8fcd3; !important;
+}
+
+
+.metro-tile h4 {
+    font-family: 'Segoe UI', 'Open Sans', serif;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: normal;
+    outline-color: #1c5ec7;
+    /*color: white;*/
+    /*position: absolute;
+    left: 10px;
+    right: 10px;
+    top: 0px;
+    text-align: center;*/
+    position: absolute;
+    left: 10px;
+    right: 10px;
+    bottom: 0px;
+    top: auto;
+    text-align: left;
+    /*text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;*/
+}
+
+.metro-tile h4 input {
+    border: 1px solid white;
+    background-color: transparent;
+    width: 100%;
+    display: block;
+    word-break: break-word;
+    /* white-space: inherit; */
+    /* box-sizing: border-box; */
+    resize: vertical;
+    overflow: auto;
+}
+
+.metro-tile-icon {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+}
+
+.metro-tile-icon svg {
+    font-family: FontAwesome;
+    /*height: 40%;
+    width: 40%;
+    margin-top: 50%;
+    margin-left: 30%;
+    margin-right: 30%;*/
+    height: 50%;
+    width: 50%;
+    margin-top: 10%;
+    margin-left: 25%;
+    margin-right: 25%;
+}
+
+.btn-dashboard {
+    overflow: hidden;
+    border: none;
+    background: transparent;
+    background-image: none;
+    box-shadow: none;
+    outline: none;
+    text-shadow: none;
+    position: fixed;
+    right: 10px;
+    bottom: 10px;
+    font-size: x-large;
+    width: 2em;
+    z-index: 101;
+    transition: width 0.2s linear;
+}
+
+.btn-edit-dash {
+    width: 5em;
+}
+
+.color-row {
+    width: 100%;
+    text-align: center;
+    display: block;
+}
+
+.color-items {
+    width: 50%;
+    margin: 0 auto;
+}
+
+.color-rect {
+    float: left ;
+    /*color: white;*/
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+    margin-right: 4px;
+    box-shadow: inset 0 0 1px #FFFFCC;
+    cursor: pointer;
+    font-size: 24px;
+    display: inline-block;
+}
+
+.color-rect:hover {
+    outline: #0cb4ff solid 3px;
+    transition: all 0.1s ease-out;
+}
+.color-rect.active {
+    border: 2px solid white;
+}
+
+.color-rect span {
+    position: absolute;
+    margin-top: 2px;
+    margin-left: 2px;
+}
+
+.color-rect svg {
+    font-family: FontAwesome;
+}
+
+.sidebar-bottom {
+    overflow: hidden;
+    width: 100%;
+    position: fixed;
+    bottom: 0px;
+    border-top: 1px solid rgb(101, 84, 255);
+    /*background-color: #00aff0;*/
+    z-index: 100;
+    padding: 0px 130px 10px 4px;
+    -webkit-box-shadow: 0px -2px 18px 0px rgba(0,0,0,0.42);
+    -moz-box-shadow: 0px -2px 18px 0px rgba(0,0,0,0.42);
+    box-shadow: 0px -2px 18px 0px rgba(0,0,0,0.42);
+}
+
+.sidebar-bottom.closed {
+    display: none;
+}
+
+.sidebar-bottom label {
+    font-family: 'Segoe UI', 'Open Sans', serif;
+    clear: both;
+    display: block;
+    font-weight: normal;
+    margin-bottom: 0px;
+}
+
+.sidebar-block {
+    float: left;
+    padding-right: 16px;
+    padding-top: 4px;
+}
+
+.metro-tile .text-widget-label {
+    background-image: none;
+    font-family: 'Segoe UI', 'Open Sans', serif;
+    color: black;
+}
+
+.metro-tile-selected {
+    opacity: 1;
+    border: 1px solid white; !important;
+    -webkit-box-shadow: 10px 10px 28px 0px rgba(0,0,0,0.28); !important;
+    -moz-box-shadow: 10px 10px 28px 0px rgba(0,0,0,0.28); !important;
+    box-shadow: 10px 10px 28px 0px rgba(0,0,0,0.28); !important;
+}
+
+.flt-holder .input-group input {
+    background-color: #FFF;
+}
+
+.fc1 {
+    color: #000;
+    fill:  #000;
+}
+.fc2 {
+    color: #FFF;
+    fill: #FFF;
+}
+.fc3 {
+    color: #F00;
+    fill: #F00;
+}
+.fc4 {
+    color: #0A0;
+    fill: #0A0;
+}
+.fc5 {
+    color: #00F;
+    fill: #00F;
+}

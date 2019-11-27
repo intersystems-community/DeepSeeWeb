@@ -1,0 +1,14 @@
+<html>
+<head>
+<script language="Cache" method="OnPostHTTP" arguments="" returntype="%Boolean">
+	d ##class(DSW.Installer).update()
+	Quit 1
+</script>
+<!-- Put your page Title here -->
+<title>	DSW Updater</title>
+
+</head>
+
+<body>
+</body>
+</html>
