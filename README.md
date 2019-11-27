@@ -85,5 +85,9 @@ For custom widget example, please look at [src/factories/customWidget.js](src/fa
 # Creating custom themes
 User can create or use custom themes, more about it here: [Custom themes](doc/themes.md).
 
+# License
+Though DeepSeeWeb source goes with MIT License it uses hicharts.js for visualisation of several widgets so please obey the [Highcharts license](https://shop.highsoft.com/highcharts/) when use DeepSeeWeb for commercial applications.
+According to [Highcharts license](https://shop.highsoft.com/highcharts/#non-com) it's free for non-commercial usage
+
 # Article and discussion around DeepSee Web
 Here is the [article on InterSystems Developer Community](https://community.intersystems.com/post/deepsee-web-intersystems-analytics-visualization-angularjs-part-1) describing DSW features and capabilites.
