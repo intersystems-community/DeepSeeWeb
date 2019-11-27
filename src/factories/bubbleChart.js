@@ -9,6 +9,7 @@
         function BuubleChart($scope) {
             BaseChart.apply(this, [$scope]);
             var _this = this;
+            this.thirdTitle = '';
             this.setType('bubble');
             this.parseData = bubbleDataConvertor;
             this.requestData();
@@ -44,7 +45,8 @@
                         if (fmt1) v1 = numeral(v1).format(fmt1);
                         if (fmt2) v2 = numeral(v2).format(fmt2);
                         if (fmt3) v3 = numeral(v3).format(fmt3);
-                        return this.series.name + '<br/>'+  $scope.chartConfig.xAxis.title.text + ':<b>' + v1 + '</b><br/>'+  $scope.chartConfig.yAxis.title.text + ':<b>' + v2 + '</b>' + (v3 ? ('<br>radius: <b>' + v3.toString() + '</b>') : '');
+                        var thirdTitle = _this.thirdTitle || 'radius';
+                        return this.series.name + '<br/>'+  $scope.chartConfig.xAxis.title.text + ':<b>' + v1 + '</b><br/>'+  $scope.chartConfig.yAxis.title.text + ':<b>' + v2 + '</b>' + (v3 ? ('<br>' + thirdTitle + ': <b>' + v3.toString() + '</b>') : '');
                     }
                 }
             };
@@ -96,6 +98,7 @@
                 $scope.chartConfig.series = [];
                 if (data.Cols[0].tuples.length >= 1) $scope.chartConfig.xAxis.title.text = data.Cols[0].tuples[0].caption;
                 if (data.Cols[0].tuples.length >= 2) $scope.chartConfig.yAxis.title.text = data.Cols[0].tuples[1].caption;
+                if (data.Cols[0].tuples.length >= 3) _this.thirdTitle = data.Cols[0].tuples[2].caption;
                 var tempData = [];
 				
 				// if(data.Cols[0].tuples.length > 4)
@@ -120,10 +123,10 @@
 					
                     for (var i = 0; i < data.Cols[1].tuples.length; i++) 
 					{
+                        var seriesName = (data.Cols[0].tuples.length == 4)? data.Data[offset * i + 3]:'default';
                         if (!seriesName_data[seriesName]) {
                             seriesName_data[seriesName] = [];
                         }
-                        var seriesName = (data.Cols[0].tuples.length == 4)? data.Data[offset * i + 3]:'default';
 						if (data.Cols[0].tuples.length == 2)
 						{
                             seriesName_data[seriesName].push([parseFloat(data.Data[offset * i]), parseFloat(data.Data[offset * i + 1]), 1]);

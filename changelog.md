@@ -1,6 +1,10 @@
+#2.1.38
+* Fixed bubble chart "title" for radius issue
+* Fixed bubble chart "undefined" series issue
+
 #2.1.37
 * Bubble chart KPI now show radius
-* Fixe issue with dashboard filters
+* Fixed issue with dashboard filters
  
 #2.1.36
 * New version of Highcharts

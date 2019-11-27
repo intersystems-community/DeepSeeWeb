@@ -1,0 +1,10 @@
+{
+  "auth": {
+    "socialKeys": {
+      "github": "c59b1f8a0a798a43513a",
+      "intersystems": "9M-iTne2oe6ckE4_MZ92TaQCffzzDdf8SNmnD8HAV1U"
+    },
+    "redirect": "localhost/redirect.html",
+    "proxy": "localhost/oauthproxy"
+  }
+}
