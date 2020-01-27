@@ -1,3 +1,9 @@
+#2.1.40
+* Fixed issue with widgets on tiles
+
+#2.1.39
+* Fixed issue with chooseColumnSpec
+
 #2.1.38
 * Fixed bubble chart "title" for radius issue
 * Fixed bubble chart "undefined" series issue
