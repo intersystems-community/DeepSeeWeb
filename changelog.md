@@ -1,3 +1,6 @@
+#2.1.41
+* Added oAuth
+
 #2.1.40
 * Fixed issue with widgets on tiles
 

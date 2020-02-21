@@ -1,11 +1,12 @@
 /**
+/**
  * Controller for login screen
  * @view views/login.html
  */
 (function (){
     'use strict';
 
-    function LoginCtrl(Connector, Lang, $scope, $location, $rootScope, CONST, Storage, ngDialog, Hello) {
+    function LoginCtrl(Connector, Lang, $scope, $location, $rootScope, CONST, Storage, ngDialog) {
         var startTime = new Date().getTime();
         delete sessionStorage.dashboarList;
         if (window.dsw.desktop) {
@@ -19,7 +20,7 @@
             password: "",
             namespace:  localStorage.namespace || "Samples",
             error: "",
-            isOAuth: false
+            oAuthUrl: ''
         };
         if (dsw.mobile) {
             fillFieldsWithSelectedServer();
@@ -45,11 +46,16 @@
         $rootScope.$broadcast('toggleMenu', false);
         loadOAuthConfig();
 
-
         function loadOAuthConfig() {
             Connector.loadOAuthConfig().then(d => {
-                Hello.initialize(d);
-                $scope.model.isOAuth = true;
+                try {
+                    if (typeof d === 'string') {
+                        let o = JSON.parse(d);
+                        $scope.model.oAuthUrl = o.url || '';
+                    } else {
+                        $scope.model.oAuthUrl = d.url || '';
+                    }
+                } catch (e) {}
             }).catch(() => {});
         }
 
@@ -114,7 +120,7 @@
          * Login with intersystems oauth
          */
         function onLoginOAuthClick() {
-            window['hello'].login('intersystems');
+            window.location.href = $scope.model.oAuthUrl;
         }
 
         /**
@@ -252,6 +258,6 @@
     }
 
     angular.module('app')
-        .controller('login', ['Connector', 'Lang', '$scope', '$location', '$rootScope', 'CONST', 'Storage', 'ngDialog', 'Hello', LoginCtrl]);
+        .controller('login', ['Connector', 'Lang', '$scope', '$location', '$rootScope', 'CONST', 'Storage', 'ngDialog', LoginCtrl]);
 
 })();

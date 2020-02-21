@@ -12,7 +12,7 @@ You can see generated method in zsetup+1^App.Installer.1</Description>
 <Data><![CDATA[
 <Manifest>
 	<IfNotDef Var="Namespace">
-		<Var Name="Namespace" Value="mdx2json"/>
+		<Var Name="Namespace" Value="MDX2JSON"/>
 		<Log Text="Set namespace to ${Namespace}" Level="0"/>
 	</IfNotDef>
     <If Condition='(##class(Config.Namespaces).Exists("${Namespace}")=0)'>

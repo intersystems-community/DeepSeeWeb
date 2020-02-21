@@ -329,7 +329,8 @@
             return $http({
                 method: 'Get',
                 data: {},
-                url: 'oauth.json',
+                //url: '/dswoauth/check',
+                url: 'dswoauth/check',
                 withCredentials: false
             }).then(transformResponse);
         }
