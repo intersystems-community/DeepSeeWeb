@@ -853,6 +853,7 @@
                 }
                 var tempData = [];
                 var hasChildren = false;
+                var colCountControl = _this.desc.controls.find(c => c.action.toLowerCase() === "setcolumncount");
                 if (data.Cols[0].tuples.length !== 0) if (data.Cols[0].tuples[0].children && data.Cols[0].tuples[0].children.length !== 0) hasChildren = true;
                 if (hasChildren) {
                     var k = 0;
@@ -908,6 +909,11 @@
                 } else {
                     //for(var j = 0; j < data.Cols[0].tuples.length; j++) {
                     for (var j = data.Cols[0].tuples.length - 1; j >= 0; j--) {
+
+                        if (colCountControl) {
+                            if (j >= colCountControl.value) { continue; }
+                        }
+
                         tempData = [];
                         for (i = 0; i < data.Cols[1].tuples.length; i++) {
                             tempData.push({
@@ -926,7 +932,6 @@
                             name = data.Cols[0].tuples[j].caption;
                             format = data.Cols[0].tuples[j].format;
                         }
-
                         _this.addSeries({
                             data: tempData,
                             name: name,
