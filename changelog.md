@@ -1,3 +1,8 @@
+#2.1.42
+* added col count control for charts
+* changed opacity for map polygons to 0.65
+* added initial support for gradient color on map polygons
+
 #2.1.41
 * Added oAuth
 
