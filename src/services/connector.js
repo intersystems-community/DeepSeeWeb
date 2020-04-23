@@ -7,7 +7,6 @@
     let MDX2JSON = "MDX2JSON";
     let NAMESPACE = "MDX2JSON";
 
-
     function ConnectorSvc($http, CONST, $cookieStore, $location, $routeParams, $route) {
         var _this = this;
         this.firstRun = true;
@@ -42,7 +41,6 @@
 
         // for local testing
         adjustEndpoints();
-
 
         /**
          * Adjust endpoints paths, also used after config has been loaded

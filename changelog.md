@@ -1,3 +1,6 @@
+#2.1.44
+* fixed bubble chart
+
 #2.1.42
 * fixes for zpm
 

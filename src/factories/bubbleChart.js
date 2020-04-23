@@ -81,7 +81,11 @@
 					}
 					else
 					{
-						seriesName_data['default'] = [];
+					    let name = 'default';
+                        if (data.Cols[1] && data.Cols[1].tuples[0]) {
+                            name = data.Cols[1].tuples[0].caption;
+                        }
+						seriesName_data[name] = [];
 					}
 				return seriesName_data;
 			}
@@ -123,7 +127,11 @@
 					
                     for (var i = 0; i < data.Cols[1].tuples.length; i++) 
 					{
-                        var seriesName = (data.Cols[0].tuples.length == 4)? data.Data[offset * i + 3]:'default';
+					    let name = 'default';
+                        if (data.Cols[1] && data.Cols[1].tuples[0]) {
+                            name = data.Cols[1].tuples[0].caption;
+                        }
+                        var seriesName = (data.Cols[0].tuples.length == 4)? data.Data[offset * i + 3]:name;
                         if (!seriesName_data[seriesName]) {
                             seriesName_data[seriesName] = [];
                         }
