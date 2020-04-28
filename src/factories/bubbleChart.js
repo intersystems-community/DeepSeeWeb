@@ -145,13 +145,13 @@
                         //data.Cols[1].tuples = data.Cols[1].tuples.slice(0, rowCount * 3);
                     }
 
-                    var cnt = (isTop ? rowCount*3 : data.Cols[1].tuples.length);
-                    if (cnt > data.Cols[1].tuples.length) {
-                        cnt = data.Cols[1].tuples.length;
+                    var cnt = (isTop ? rowCount : data.Data.length);
+                    if (cnt > data.Data.length) {
+                        cnt = data.Data.length;
                     }
-                    for (var i = 0; i < cnt; i+=3)
+                    for (var i = 0; i < cnt; i+=offset)
 					{
-                        var seriesName = data.Cols[1].tuples[Math.floor(i/3)].caption;
+                        var seriesName = data.Cols[1].tuples[Math.floor(i/offset)].caption;
                         if (!seriesName_data[seriesName]) {
                             seriesName_data[seriesName] = [];
                         }
@@ -170,9 +170,9 @@
 						// else
 						// {
 							var tmp = {};
-							tmp.x = data.Data[offset * i];
-							tmp.y = data.Data[offset * i + 1];
-							tmp.z = data.Data[offset * i + 2];
+							tmp.x = data.Data[i];
+							tmp.y = data.Data[i + 1];
+							tmp.z = data.Data[i + 2];
 
 							seriesName_data[seriesName].push(tmp);
 						// }

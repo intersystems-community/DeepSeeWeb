@@ -1,3 +1,6 @@
+#2.1.47
+* fixed bubble chart data issue 
+
 #2.1.46
 * fixed bubble chart overflow issue
 
