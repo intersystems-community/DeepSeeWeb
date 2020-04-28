@@ -323,7 +323,7 @@
             function hasOption(name) {
                 var widgetsSettings = Storage.getWidgetsSettings(_this.desc.dashboard, Connector.getNamespace());
                 if (!widgetsSettings[_this.desc.name]) return false;
-                if (widgetsSettings[_this.desc.name][name] === undefined) return false;
+                if (widgetsSettings[_this.desc.name][name] === undefined || widgetsSettings[_this.desc.name][name] === false) return false;
                 return true;
             }
 

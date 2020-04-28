@@ -103,7 +103,7 @@ window.dsw.desktop = true;
             } else {
                 //url = window.location.host + url;
             }
-            if (url) {
+            if (url && !localStorage.devAddons) {
                 var defer = $q.defer();
                 defers.push(defer.promise);
 

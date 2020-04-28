@@ -3,7 +3,7 @@
   <Document name="dsw.ZPM">
     <Module>
       <Name>dsw</Name>
-      <Version>2.1.44</Version>
+      <Version>2.1.45</Version>
       <Packaging>module</Packaging>
       <Dependencies>
         <ModuleReference>

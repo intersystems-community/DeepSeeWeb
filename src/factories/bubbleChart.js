@@ -3,7 +3,7 @@
  */
 (function() {
     'use strict';
-
+    var DEF_ROW_COUNT = 20;
     function BuubleChartFact(BaseChart, Utils) {
 
         function BuubleChart($scope) {
@@ -16,6 +16,14 @@
 
             var ex = {
                 plotOptions: {
+
+                        bubble:{
+                            // minSize:100,
+                            //maxSize:200,
+                            minSIze:'1%',
+                            maxSize:'10%'
+                        },
+
                     series: {
                         cursor: null,
                         point: {
@@ -123,31 +131,48 @@
                     if (data.Cols[0].tuples[2]) fmt3 = data.Cols[0].tuples[2].format;
 
 					
-					var seriesName_data = mapBySeries(data, uniqueSeries);				
-					
-                    for (var i = 0; i < data.Cols[1].tuples.length; i++) 
+					var seriesName_data = {}; // mapBySeries(data, uniqueSeries);
+
+                    var isTop = false;
+                    // Limit top records
+                    if (_this.hasOption('isTop')) {
+                        isTop = true;
+                        var controls = _this.desc.controls || [];
+                        var cont = controls.filter(function (el) {
+                            return el.action === "setRowCount";
+                        })[0];
+                        var rowCount = cont ? (cont.value || DEF_ROW_COUNT) : DEF_ROW_COUNT;
+                        //data.Cols[1].tuples = data.Cols[1].tuples.slice(0, rowCount * 3);
+                    }
+
+                    var cnt = (isTop ? rowCount*3 : data.Cols[1].tuples.length);
+                    for (var i = 0; i < cnt; i++)
 					{
-					    let name = 'default';
-                        if (data.Cols[1] && data.Cols[1].tuples[0]) {
-                            name = data.Cols[1].tuples[0].caption;
-                        }
-                        var seriesName = (data.Cols[0].tuples.length == 4)? data.Data[offset * i + 3]:name;
+                        var seriesName = data.Cols[1].tuples[Math.floor(i/3)].caption;
                         if (!seriesName_data[seriesName]) {
                             seriesName_data[seriesName] = [];
                         }
-						if (data.Cols[0].tuples.length == 2)
-						{
-                            seriesName_data[seriesName].push([parseFloat(data.Data[offset * i]), parseFloat(data.Data[offset * i + 1]), 1]);
-						}
-						else
-						{
+					    // let name = 'default';
+                        // if (data.Cols[1] && data.Cols[1].tuples[0]) {
+                        //     name = data.Cols[1].tuples[0].caption;
+                        // }
+                        // var seriesName = (data.Cols[0].tuples.length == 4)? data.Data[offset * i + 3]:name;
+                        // if (!seriesName_data[seriesName]) {
+                        //     seriesName_data[seriesName] = [];
+                        // }
+						// if (data.Cols[0].tuples.length == 2)
+						// {
+                        //     seriesName_data[seriesName].push([parseFloat(data.Data[offset * i]), parseFloat(data.Data[offset * i + 1]), 1]);
+						// }
+						// else
+						// {
 							var tmp = {};
 							tmp.x = data.Data[offset * i];
 							tmp.y = data.Data[offset * i + 1];
 							tmp.z = data.Data[offset * i + 2];
-	
+
 							seriesName_data[seriesName].push(tmp);
-						}
+						// }
                     }
 					
 					//console.log("seriesName_data ", seriesName_data);

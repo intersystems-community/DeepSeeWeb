@@ -1,3 +1,10 @@
+#2.1.45
+* fixed issue with chart options
+* added top records support for bubble chart
+* fixed bubbles size on bubble chart
+* changed data processing for bubble chart
+* fixed localStorage.devAddons support for debug
+
 #2.1.44
 * fixed bubble chart
 
