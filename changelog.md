@@ -1,3 +1,6 @@
+#2.1.46
+* fixed bubble chart overflow issue
+
 #2.1.45
 * fixed issue with chart options
 * added top records support for bubble chart

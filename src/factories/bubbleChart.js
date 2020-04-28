@@ -146,7 +146,10 @@
                     }
 
                     var cnt = (isTop ? rowCount*3 : data.Cols[1].tuples.length);
-                    for (var i = 0; i < cnt; i++)
+                    if (cnt > data.Cols[1].tuples.length) {
+                        cnt = data.Cols[1].tuples.length;
+                    }
+                    for (var i = 0; i < cnt; i+=3)
 					{
                         var seriesName = data.Cols[1].tuples[Math.floor(i/3)].caption;
                         if (!seriesName_data[seriesName]) {
