@@ -1,3 +1,6 @@
+#2.1.48
+* fixed tree chart hover issue 
+
 #2.1.47
 * fixed bubble chart data issue 
 
