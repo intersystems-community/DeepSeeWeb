@@ -1,3 +1,6 @@
+#2.1.49
+* changed bubble size calculation algorithm and min/max sizes 
+
 #2.1.48
 * fixed tree chart hover issue 
 

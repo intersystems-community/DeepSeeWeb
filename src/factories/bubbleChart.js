@@ -18,10 +18,11 @@
                 plotOptions: {
 
                         bubble:{
-                            // minSize:100,
-                            //maxSize:200,
-                            minSIze:'1%',
-                            maxSize:'10%'
+                             //minSize:30,
+                            //maxSize:100,
+                            minSize:'5%',
+                            maxSize:'35%',
+                            sizeBy: 'width'
                         },
 
                     series: {
