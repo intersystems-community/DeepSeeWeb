@@ -1,3 +1,7 @@
+#2.1.50
+* added support for "?theme" query param
+* added fullscreen button for widgets
+
 #2.1.49
 * changed bubble size calculation algorithm and min/max sizes 
 

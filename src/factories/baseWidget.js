@@ -60,6 +60,7 @@
             $scope.item.drillUp = doDrillUp;
             $scope.item.resetClickFilter = resetClickFilter;
             $scope.performAction = performAction;
+            $scope.item.toggleExpanded = toggleExpanded;
 
             $scope.item.doExport = doExport;
             this.customColSpec = "";
@@ -190,6 +191,21 @@
             function emitVarChange(v) {
                 var target = v.target;
                 $rootScope.$broadcast("updatePivotVar:" + target);
+            }
+
+            function toggleButton(name) {
+                $scope.item[name] = !$scope.item[name];
+                var widgetsSettings = Storage.getWidgetsSettings(_this.desc.dashboard, Connector.getNamespace());
+                if (!widgetsSettings[_this.desc.name]) widgetsSettings[_this.desc.name] = {};
+                widgetsSettings[_this.desc.name][name] = $scope.item[name];
+                Storage.setWidgetsSettings(widgetsSettings, _this.desc.dashboard, Connector.getNamespace());
+            }
+
+            function toggleExpanded() {
+                toggleButton("isExpanded");
+                if ($scope.expandWidget) {
+                    $scope.expandWidget();
+                }
             }
 
             /**

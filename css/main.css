@@ -112,13 +112,25 @@
 
 .widget-holder {
     overflow: hidden;
+}
 
-
-    /*
-        display: inline-block;
-    width: 100vw;
-    height: 100%;
-    */
+/* Expanded widget */
+.widget-holder.expanded {
+    position: fixed;
+    z-index: 100;
+    left: 0 !important;
+    top: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: auto !important;
+    height: auto !important;
+}
+.widget-holder.expanded .widget-title {
+    cursor: default;
+}
+.widget-holder.expanded .widget-title-drag {
+    cursor: default;
+    pointer-events: none;
 }
 
 .widget-toolbar {

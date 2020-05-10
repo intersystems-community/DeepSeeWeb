@@ -151,6 +151,10 @@ Highcharts.maps["custom/world-eckert3"] = {"title":"World, Eckert III projection
                         scope.drawWidget();
                     };
 
+                    scope.expandWidget = function() {
+                        scope.drawWidget();
+                    };
+
                     scope.updateData = function(data) {
                         options.series = [{
                             data: data,

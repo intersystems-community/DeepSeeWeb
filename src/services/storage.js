@@ -133,6 +133,15 @@
             var settings = _this.settings.app;
             if (lang) settings.language = lang;
             if (!settings.themeColors) settings.themeColors = {};
+
+            // Override theme from url
+            var theme = $location.search()['theme'];
+            if (theme) {
+                theme = CONST.themes.find(function(th) { return th.text === theme });
+                if (theme) {
+                    settings.theme = theme.file;
+                }
+            }
             return settings;
         }
 
