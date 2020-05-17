@@ -1,3 +1,6 @@
+#2.1.51
+* added formatting support for text widget
+
 #2.1.50
 * added support for "?theme" query param
 * added fullscreen button for widgets

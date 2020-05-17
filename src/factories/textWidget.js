@@ -33,9 +33,13 @@
                 $scope.model.textData = [];
                 if (result) {
                     for (var i = 0; i < result.Cols[0].tuples.length; i++) {
+                        var propFmt = '';
+                        if (_this.desc && _this.desc.properties && _this.desc.properties.format) {
+                            propFmt = _this.desc.properties.format;
+                        }
                         // Format value
                         var v = result.Data[i];
-                        var fmt = result.Cols[0].tuples[i].format;
+                        var fmt = result.Cols[0].tuples[i].format || propFmt;
                         if (fmt) v = numeral(v).format(fmt);
 
                         // Change font color, if widget is displayed on tile
