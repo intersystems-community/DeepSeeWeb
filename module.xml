@@ -14,8 +14,8 @@
       <SystemSetting Name="CSP.DefaultFileCharset" Value="UTF-8"/>
       <CSPApplication
         Url="/dsw"
-        Path="/build"
-        Directory="{$cspdir}/dsw"
+        SourcePath="/build"
+        DeployPath="{$cspdir}/dsw"
         ServeFiles="1"
         Recurse="1"
         CookiePath="/dsw"
