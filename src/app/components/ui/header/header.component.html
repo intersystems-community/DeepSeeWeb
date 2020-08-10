@@ -1,0 +1,17 @@
+<div>
+    <button class="btn square" [class.active]="!!(ss.sidebarToggle | async)?.component" (click)="toggleMenu()">
+        <img src="assets/img/logo.svg">
+    </button>
+    <h2>
+<!--        <a routerLink="/" class="path">DeepSeeWeb</a>-->
+        <a [routerLink]="p.url" class="path" *ngFor="let p of path$ | async; let idx = index">{{p.title}}</a>
+    </h2>
+    <button class="btn btn-icon square s60 btn-goto" (click)="gotoZenDeepSee()" *ngIf="!isSearch" [title]="'gotoDeepSee' | i18n">
+        <img class="flip" src="assets/img/icons/reply-black-18dp.svg">
+    </button>
+</div>
+<div>
+    <input *ngIf="isSearch" [formControl]="searchField" type="search" placeholder="Search">
+<!--    <label><i class="fa fa-database"></i>{{namespace}}</label>-->
+<!--    <button class="btn square"><i class="fa fa-sign-out"></i></button>-->
+</div>

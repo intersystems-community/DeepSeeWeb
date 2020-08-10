@@ -1,0 +1,215 @@
+@import "~ol/ol.css";
+@import "variables";
+@import "fonts";
+@import "gridster";
+
+
+@mixin icon {
+    filter: var(--icon-filter);
+    max-width: 100%;
+    max-height: 100%;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: $font;
+    background-color: var(--cl-bg);
+    overflow-x: hidden;
+    & * {
+        box-sizing: border-box;
+        //font-family: $font;
+    }
+}
+
+// Hidden style
+[hidden] {
+    display: none !important;
+}
+
+[desktop-hidden] {
+    display: none !important;
+}
+
+
+input, textarea, select {
+    display: block;
+    height: 30px;
+    border-radius: var(--input-border-radius);
+    width: 100%;
+    padding: 6px 12px;
+    font-size: 14px;
+    color: #555;
+    background-color: #fff;
+    background-image: none;
+    border: 1px solid #ccc;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+    -webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;
+    -o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+    transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+    &:focus {
+        outline: 1px solid var(--cl-accent);
+        outline-offset: -1px;
+    }
+}
+input[type=checkbox] {
+    margin: 0;
+    width: 30px;
+}
+input:not([type=checkbox]), textarea {
+    -moz-appearance: none;
+    -webkit-appearance: none;
+}
+
+.btn {
+    display: inline-block;
+    padding: 6px 12px;
+    font-family: $font;
+    margin-bottom: 0;
+    height: 36px;
+    font-size: 14px;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    -ms-touch-action: manipulation;
+    touch-action: manipulation;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    background-image: none;
+    border: 1px solid transparent;
+    box-shadow: rgba(0, 0, 0, 0.3) 0 1px 2px 0;
+    transition: background-color $animSpeed linear;
+    &:active {
+        transform: translateY(1px);
+        box-shadow: rgba(0, 0, 0, 0.3) 0 1px 1px 0;
+    }
+    &:focus {
+        outline: 1px solid var(--cl-accent);
+        outline-offset: -1px;
+    }
+}
+
+.btn-success {
+    color: #fff;
+    background-color: #5cb85c;
+    border-color: #4cae4c;
+
+    &:hover {
+        background-color: #6eca6e;
+    }
+}
+
+.btn-link {
+    background-color: transparent;
+    border: none;
+    color: #4a3aa8;
+    box-shadow: none;
+    font-weight: 500;
+    &:hover {
+        color: #5c49d1;
+    }
+}
+
+.btn-icon {
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.cl1 {
+    background-color: var(--cl1) !important;
+}
+
+.cl2 {
+    background-color: var(--cl2) !important;
+}
+
+.cl3 {
+    background-color: var(--cl3) !important;
+}
+
+.cl4 {
+    background-color: var(--cl4) !important;
+}
+
+.cl5 {
+    background-color: var(--cl5) !important;
+}
+
+.cl6 {
+    background-color: var(--cl6) !important;
+}
+
+.cl7 {
+    background-color: var(--cl7) !important;
+}
+
+.cl8 {
+    background-color: var(--cl8) !important;
+}
+
+.cl9 {
+    background-color: var(--cl9) !important;
+}
+
+.fc1 {
+    color: var(--fc1);
+    fill:  var(--fc1);
+}
+.fc2 {
+    color: var(--fc2);
+    fill:  var(--fc2);
+}
+.fc3 {
+    color: var(--fc3);
+    fill:  var(--fc3);
+}
+.fc4 {
+    color: var(--fc4);
+    fill:  var(--fc4);
+}
+.fc5 {
+    color: var(--fc5);
+    fill:  var(--fc5);
+}
+
+// Svg icon style
+.ico {
+    @include icon;
+}
+
+// Change font for lpt message
+.lpt .lpt-hoverMessage {
+    font-family: $font;
+    font-size: 16px;
+    color: var(--cl-txt);
+}
+
+// Needed to make greater than  LPT zindex, so user can resize widget
+.gridster-item:hover .gridster-item-resizable-handler.handle-se {
+    z-index: 1000;
+}
+
+// Set dynamic component to fir all free space
+dsw-widget-filter + * {
+    height: 100%;
+    width: 100%;
+    min-height: 0;
+}
+
+
+.highcharts-credits {
+    display: none !important;
+}
+
+// For flipping icons
+.flip {
+    transform: scaleX(-1);
+}

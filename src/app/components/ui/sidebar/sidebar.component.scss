@@ -1,0 +1,12 @@
+@import "src/scss/variables";
+:host {
+    display: block;
+    height: 100%;
+    width: $sidebar-width;
+    max-width: $sidebar-width;
+    background-color: var(--cl-sidebar-bg);
+    color: var(--cl-sidebar-txt);
+    flex: 0 0 var(--sidebar-width);
+    border-right: 1px solid var(--cl-sidebar-border);
+    z-index: 3;
+}

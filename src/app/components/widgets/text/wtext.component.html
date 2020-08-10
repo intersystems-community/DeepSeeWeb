@@ -1,0 +1,29 @@
+<div
+    *ngFor="let item of model.textData; let idx = index"
+    [style.height.%]="100 / (model.textData.length || 1)"
+    class='item'
+>
+    <label [hidden]="model?.textData?.length === 1"
+           [style.top.%]="100 / (model.textData.length || 1) * idx"
+           [style.color]="item.color"
+    >
+        {{item.label}}
+    </label>
+
+    <svg #images class='text-widget'>
+        <text [style.fill]='item.valueColor'>{{item.value}}
+            <tspan style='font-size: 4px;fill:red'>{{item.deltaNeg}}</tspan>
+            <tspan style='font-size: 4px;fill:green'>{{item.delta}}</tspan>
+        </text>
+    </svg>
+</div>
+
+<!--<div *ngFor="let item of model.textData; let idx = index" class='item2'>-->
+<!--    <svg #images class='text-widget'>-->
+<!--        <text [style.fill]='item.valueColor'>{{item.value}}-->
+<!--            <tspan style='font-size: 4px;fill:red'>{{item.deltaNeg}}</tspan>-->
+<!--            <tspan style='font-size: 4px;fill:green'>{{item.delta}}</tspan>-->
+<!--        </text>-->
+<!--    </svg>-->
+<!--    <label>{{item.label}}</label>-->
+<!--</div>-->

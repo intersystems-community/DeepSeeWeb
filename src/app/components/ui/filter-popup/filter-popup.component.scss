@@ -1,0 +1,130 @@
+@import "src/scss/variables";
+
+:host {
+    position: absolute;
+//    background:  #EFF1F2;
+    width: 340px;
+    // box-shadow: 0px 0px 4px 0 #00000036;
+    //background-color: #d7edf8;
+    //background-color: #E5F3F8;
+    background-color: var(--cl-header-bg);;
+    // box-shadow: 0 4px 4px 0 #00000070;
+    box-shadow: 0 1px 2px 0 #00000070;
+}
+
+// Header line with search and buttons
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-left: 4px;
+
+    // Buttons container
+    & > span {
+        flex-shrink: 0;
+    }
+
+    // Button style
+    & .btn {
+        height: 34px;
+        padding: 2px 8px;
+        border: none;
+        box-shadow: none;
+        background: transparent;
+
+        &:hover {
+            background-color: var(--cl-header-btn-hover-darken);
+        }
+    }
+}
+
+.values-list {
+    overflow: auto;
+    max-height: 280px;
+    color: var(--cl-txt);
+}
+
+.value-row {
+    display: flex;
+    padding: 2px 0;
+    cursor: pointer;
+    &:hover {
+        background-color: rgba(0, 0, 0, 0.02);
+        color: var(--cl-header-txt);
+    }
+
+    &:nth-child(2n + 1) {
+        background-color: rgba(0, 0, 0, 0.04);
+
+        &:hover {
+            background-color: rgba(0, 0, 0, 0.06);
+        }
+    }
+}
+
+input[type="search"] {
+    width: 116px;
+}
+
+input {
+    height: 20px;
+    border-radius: 0;
+    &:focus {
+        outline: 1px solid black;
+        outline-offset: -1px;
+    }
+}
+
+select {
+    border-radius: 0;
+    &:focus {
+        outline: 1px solid black;
+        outline-offset: -1px;
+    }
+}
+
+input[type=checkbox] {
+    cursor: pointer;
+    &:focus {
+        outline: none;
+    }
+}
+
+.checks-container {
+    color: var(--cl-txt);
+    display: flex;
+    padding-bottom: 4px;
+    border-bottom: 1px solid var(--cl-header-border);
+
+    & > span {
+        display: flex;
+        margin-right: 12px;
+    }
+}
+
+
+.ico {
+    opacity: 0.7;
+}
+
+.ico-accept {
+    height: 12px;
+    vertical-align: middle;
+
+}
+
+.ico-close {
+    height: 10px;
+    vertical-align: baseline;
+    margin-right: 2px;
+}
+
+.spinner {
+    display: flex;
+    justify-content: center;
+}
+
+.interval-container {
+    padding: 4px;
+    color: var(--cl-txt);
+}

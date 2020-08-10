@@ -1,0 +1,55 @@
+@import "src/scss/variables";
+
+:host {
+    display: block;
+    margin-top: calc(-1 * var(--header-height));
+    height: calc(100% + var(--header-height));
+    background-color: var(--cl-sidebar-bg);
+}
+
+// Label text style
+label {
+    display: block;
+    clear: both;
+    font-family: $font;
+    color: var(--cl-sidebar-txt);
+    padding-top: 10px;
+    margin-bottom: 2px;
+}
+
+.color-rect {
+    display: inline-flex;
+    position: relative;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+    margin-right: 4px;
+    margin-bottom: 4px;
+    border: var(--tile-border);
+    font-size: 24px;
+    transition: outline 0.1s ease-out;
+    outline-offset: -2px;
+    float: left;
+    &:hover {
+        outline: 1px solid var(--cl-accent);
+    }
+    &.active {
+        outline: 3px solid var(--cl-accent);
+    }
+}
+
+.color-rect svg {
+    position: absolute;
+    font-family: FontAwesome;
+}
+
+.container {
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+input {
+    margin-bottom: 4px;
+}

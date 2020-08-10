@@ -1,0 +1,35 @@
+{
+    "compileOnSave": false,
+    "compilerOptions": {
+        "allowSyntheticDefaultImports": true,
+        "baseUrl": "./",
+        "outDir": "./dist/out-tsc",
+        "sourceMap": true,
+        "declaration": false,
+        "downlevelIteration": true,
+        "experimentalDecorators": true,
+        "module": "es2020",
+        "moduleResolution": "node",
+        "importHelpers": true,
+        "target": "es2015",
+        "paths": {
+            "ol": [
+                "node_modules/ol/src"
+            ],
+            "ol/*": [
+                "node_modules/ol/src/*"
+            ]
+        },
+        "lib": [
+            "es2018",
+            "dom"
+        ]
+    },
+    "include": [
+        "node_modules/ol/**/*.js"
+    ],
+    "angularCompilerOptions": {
+        "fullTemplateTypeCheck": true,
+        "strictInjectionParameters": true
+    }
+}

@@ -1,0 +1,13 @@
+@import "src/scss/variables";
+
+:host {
+    font-family: $font;
+    max-width: 50vw;
+
+    & h2 {
+        font-size: 18px;
+        margin-bottom: 20px;
+        font-weight: normal;
+    }
+}
+

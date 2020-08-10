@@ -1,6 +1,0 @@
-{
-    "namespace": "MDX2JSON",
-    "endpoints": {
-        "mdx2json": "MDX2JSON"
-    }
-}

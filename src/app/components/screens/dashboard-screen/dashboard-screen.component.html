@@ -1,0 +1,94 @@
+<!-- Widgets grid -->
+<gridster [options]="tilesOptions" *ngIf="!isMobile" #gridster>
+
+    <!-- Grid item -->
+    <gridster-item
+        class="tile"
+        *ngFor="let item of (data$ | async); let idx = index"
+        [class.no-anim]="!isLoaded"
+        [class.expanded]="item.isExpanded"
+        [item]="item"
+        (transitionend)="onAnimationEnd(item, $event)"
+        (contextmenu)="showContextMenu(item, $event)"
+    >
+        <dsw-widget #widgets [widget]="item"></dsw-widget>
+    </gridster-item>
+</gridster>
+
+<img src="assets/img/spinner.svg" [hidden]="isLoaded">
+
+<!-- Context menu -->
+<div #ctxMenu class="ctx-menu" [style.visibility]="ctxItem? 'visible': 'hidden'">
+    <div (click)="refreshItem()">{{'refresh' | i18n}}</div>
+    <div (click)="printItem()" *ngIf="ctxItem?.isChart">{{'print' | i18n}}</div>
+    <div (click)="shareItem()">{{'share' | i18n}}</div>
+    <div (click)="copyMDX()">{{'copyMDX' | i18n}}</div>
+</div>
+
+<!-- TODO: implement mobile -->
+<!--    <div ng-if="isMobile" class="mobile-content" id="mobileDashboard" ng-style="{width: model.items.length*100 + 'vw' }" mobile-slider>-->
+<!--        &lt;!&ndash;  ng-style="{left: $last ? 0 : $index*100+'vw'}"&ndash;&gt;-->
+<!--        <div class="panel panel-default widget-holder noselect" ng-repeat="item in model.items">-->
+<!--            <div class="widget-title-drag" ng-class="(!item.backButton && !(item.isChart || item.isMap) && !item.isChart && !item.isBtnValues && !item.isBtnZero) ? 'mobile-header-whole':''"><span>{{item.title}}</span></div>-->
+<!--            <div class="panel-heading widget-title">-->
+<!--                <div class="widget-title-btn-left" *ngIf="item.backButton" ng-click="item.drillUp()">-->
+<!--                    <i class="fa fa-chevron-left"></i>-->
+<!--                </div>-->
+<!--                <div class="widget-title-btn" *ngIf="item.isChart || item.isMap" ng-click="item.displayAsPivot()" ng-class="item.pivotMdx ? 'active' : ''" title="{{'showPivot' | i18n}}"><i class="fa fa-table"></i></div>-->
+<!--                <div class="widget-title-btn" *ngIf="item.isBtnValues" ng-click="item.toggleValues()" ng-class="item.showValues ? 'active' : ''" title="{{'showValues' | i18n}}"><i class="fa fa-bar-chart"></i></div>-->
+<!--                <div class="widget-title-btn" *ngIf="item.isBtnZero" ng-click="item.showZeroOnAxis()" ng-class="item.showZero ? 'active' : ''" title="{{'showZero' | i18n}}"><i class="fa fa-level-down"></i></div>-->
+<!--                <div class="widget-title-btn" *ngIf="item.isChart" ng-click="item.toggleTop()" ng-class="item.isTop ? 'active' : ''" title="{{'showTop' | i18n}}"><i class="fa fa-sort-amount-desc"></i></div>-->
+<!--                <div class="widget-title-btn" *ngIf="item.isChart" ng-click="item.toggleLegend()" ng-class="item.isLegend ? '' : 'notActive'" title="{{'showLegend' | i18n}}"><i class="fa fa-list-ul"></i></div>-->
+<!--            </div>-->
+<!--            <div class="mobile-header"></div>-->
+<!--            <widget class="widget" ng-controller="widget"></widget>-->
+<!--            <div class="mobile-header"></div>-->
+<!--        </div>-->
+<!--    </div>-->
+
+<!--    <div class="dropdown position-fixed" id="ctx-item-menu" mobile-hidden>-->
+<!--        <ul class="dropdown-menu" role="menu">-->
+<!--            <li>-->
+<!--                <a class="pointer" role="menuitem" tabindex="1" ng-click="refreshItem()">-->
+<!--                    {{'refresh' | i18n}}-->
+<!--                </a>-->
+<!--            </li>-->
+<!--            <li>-->
+<!--                <a class="pointer" role="menuitem" tabindex="2" ng-click="printItem()">-->
+<!--                    {{'print' | i18n}}-->
+<!--                </a>-->
+<!--            </li>-->
+<!--            <li>-->
+<!--                <a class="pointer" role="menuitem" tabindex="3" ng-click="shareItem()">-->
+<!--                    {{'share' | i18n}}-->
+<!--                </a>-->
+<!--            </li>-->
+<!--            <li>-->
+<!--                <a class="pointer" role="menuitem" tabindex="4" ng-click="copyMDX()">-->
+<!--                    {{'copyMDX' | i18n}}-->
+<!--                </a>-->
+<!--            </li>-->
+<!--            <li role="presentation" class="divider"></li>-->
+<!--            <li class="dropdown-submenu">-->
+<!--                <a tabindex="-1">{{'export' | i18n}}</a>-->
+<!--                <ul class="dropdown-menu">-->
+<!--                    <li><a *ngIf="ctxItem.isChart" ng-click="ctxItem.doExport('svg')">{{'svgImage' | i18n}}</a></li>-->
+<!--                    <li><a *ngIf="ctxItem.isChart" tabindex="-1" ng-click="ctxItem.doExport('png')">{{'pngImage' | i18n}}</a></li>-->
+<!--                    <li><a *ngIf="ctxItem.isChart" ng-click="ctxItem.doExport('jpg')">{{'jpgImage' | i18n}}</a></li>-->
+<!--                    <li><a *ngIf="ctxItem.isChart" ng-click="ctxItem.doExport('pdf')">{{'pdfDoc' | i18n}}</a></li>-->
+<!--                    <li><a ng-click="ctxItem.doExport('xls')">{{'xlsDoc' | i18n}}</a></li>-->
+<!--                    <li><a ng-click="ctxItem.doExport('csv')">{{'csvDoc' | i18n}}</a></li>-->
+<!--                </ul>-->
+<!--            </li>-->
+<!--            <li class="dropdown-submenu">-->
+<!--                <a tabindex="-1">{{'viewAs' | i18n}}</a>-->
+<!--                <ul class="dropdown-menu">-->
+<!--                    <li><a tabindex="-1" ng-click="setType('areachart')">Area chart</a></li>-->
+<!--                    <li><a ng-click="setType('barchart')">Bar chart</a></li>-->
+<!--                    <li><a ng-click="setType('columnchart')">Column chart</a></li>-->
+<!--                    <li><a ng-click="setType('linechart')">Line chart</a></li>-->
+<!--                    <li><a ng-click="setType('piechart')">Pie chart</a></li>-->
+<!--                </ul>-->
+<!--            </li>-->
+<!--        </ul>-->
+<!--    </div>-->

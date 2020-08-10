@@ -1,0 +1,91 @@
+<span>
+    <!-- Reset click filter -->
+    <button class="btn-with-text" *ngIf="widget?.clickFilterActive" (click)="onResetClickFilterHandler()">
+        <img src="assets/img/icons/close-black-18dp.svg">
+        {{'resetClickFilter' | i18n}}
+    </button>
+
+    <!-- Back button -->
+    <button class="btn-with-text" *ngIf="widget?.backButton" (click)="onBackClick()">
+         <img src="assets/img/icons/chevron_left-black-18dp.svg">
+        {{'back' | i18n}}
+    </button>
+</span>
+
+<!-- Title -->
+<div class="drag-handle" [class.expanded]="widget?.isExpanded">{{widget?.title}}</div>
+
+<span>
+
+    <!-- Empty widget buttons -->
+    <ng-container *ngIf="isEmptyWidget()">
+        <!-- Display 3 columns  button -->
+        <button (click)="onClick('by3columns')" [title]="'by3columns' | i18n" [class.active]="widget?.viewSize === 33">
+            <img src="assets/img/icons/view_module-black-18dp.svg">
+        </button>
+
+        <!-- Display 2 columns  button -->
+        <button (click)="onClick('by2columns')" [title]="'by2columns' | i18n" [class.active]="widget?.viewSize === 50">
+            <i class="fa fa-th-large"></i>
+        </button>
+
+        <!-- Display as rows button -->
+        <button (click)="onClick('byRows')" [title]="'byRows' | i18n" [class.active]="widget?.viewSize === 100">
+            <img src="assets/img/icons/view_headline-black-18dp.svg">
+        </button>
+
+        <!-- Refresh button -->
+        <button (click)="onClick('setDefault')" [title]="'setDefault' | i18n">
+            <img src="assets/img/icons/refresh-black-18dp.svg">
+        </button>
+    </ng-container>
+
+    <!-- Fullscreen button -->
+    <button (click)="onClick('expand')" [class.active]="widget?.isExpanded" [title]="'fullscreen' | i18n" [hidden]="isEmptyWidget() || !widget?.isSupported">
+        <img src="assets/img/icons/fullscreen.svg">
+    </button>
+
+    <!-- Settings -->
+    <button *ngIf="widget?.isChart" ng-click="item.showSettings()"
+            title="{{'changeColors' | i18n}}">
+<!--        <i class="fa fa-cog"></i>-->
+        <img src="assets/img/icons/color_lens-black-18dp.svg">
+    </button>
+
+    <!-- Display as pivot -->
+    <button *ngIf="widget?.isChart || widget?.isMap" (click)="onClick('displayAsPivot')"
+            [class.active]="widget?.type === 'pivot'" title="{{'showPivot' | i18n}}">
+<!--        <i class="fa fa-table"></i>-->
+        <img src="assets/img/icons/view_list-black-18dp.svg">
+    </button>
+
+    <!-- Show zero -->
+    <button *ngIf="widget?.isBtnZero" (click)="onClick('showZero')"
+            [class.active]="widget?.showZero" title="{{'showZero' | i18n}}">
+<!--        <i class="fa">0</i>-->
+        <img src="assets/img/icons/exposure-zero.svg">
+    </button>
+
+    <!-- Top records -->
+    <button *ngIf="widget?.isChart" (click)="onClick('isTop')"
+            [class.active]="widget?.isTop" title="{{'showTop' | i18n}}">
+<!--        <i class="fa fa-star"></i>-->
+        <img src="assets/img/icons/trending-up.svg">
+    </button>
+
+    <!-- Show values -->
+    <button *ngIf="widget?.isBtnValues" (click)="onClick('showValues')"
+            [class.active]="widget?.showValues" title="{{'showValues' | i18n}}">
+<!--        <i>v</i>-->
+        <img src="assets/img/icons/format-list-numbered.svg">
+    </button>
+
+    <!-- Toggle legend -->
+    <button *ngIf="widget?.isChart && !widget.noToggleLegend" (click)="onClick('isLegend')" [class.active]="widget?.isLegend"
+            title="{{'showLegend' | i18n}}">
+<!--        <i class="fa fa-info"></i>-->
+        <img src="assets/img/icons/legend-toggle.svg">
+    </button>
+
+
+</span>

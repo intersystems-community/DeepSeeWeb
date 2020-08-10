@@ -1,0 +1,126 @@
+@import "src/scss/variables";
+
+:host {
+    display: flex;
+    flex: 0 0 var(--header-height);
+    justify-content: space-between;
+    background-color: var(--cl-header-bg);
+    height: var(--header-height);
+    width: 100%;
+    border-bottom: 1px solid var(--cl-header-border);
+
+    & > div {
+        display: flex;
+        align-items: center;
+    }
+}
+
+label {
+    font-family: $font;
+    color: var(--cl-header-txt);
+    opacity: 0.7;
+    flex: 0 0 auto;
+    margin-left: 10px;
+    margin-right: 10px;
+
+    & > i {
+        margin-right: 4px;
+    }
+}
+
+h2 {
+    font-family: $font;
+    color: var(--cl-header-txt);
+    font-size: 18px;
+    margin-left: 16px;
+    user-select: none;
+    //& > span:first-child {
+    //    margin-right: 20px;
+    //}
+}
+
+// Header button
+.btn {
+    height: 100%;
+    border: none;
+    background-color: transparent;
+    outline: none;
+    box-shadow: none;
+    transition: background-color $animSpeed linear;
+    color: var(--cl-header-ico);
+
+    // Font awesome icon
+    & > i {
+        font-size: 24px;
+    }
+
+    // Square buttons
+    &.square {
+        width: var(--header-height);
+
+        // 60% size
+        &.s60 {
+            height: calc(var(--header-height) * 0.6);
+            width: calc(var(--header-height) * 0.6);
+        }
+    }
+
+    // Pressed state
+    &.active {
+        background-color: var(--cl-header-btn-active);
+        border-bottom: 1px solid var(--cl-header-btn-active);
+        border-right: 1px solid var(--cl-header-border);
+
+        // Remove bottom line
+        height: calc(100% + 1px);
+    }
+
+    // Hover state
+    &:hover {
+        background-color: var(--cl-header-btn-hover);
+    }
+}
+
+// Search input
+input[type=search] {
+    font-family: $font;
+    background-color: #dbdbdb;
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
+    margin-right: 16px;
+    &::placeholder {
+        color: var(--cl-header-txt);
+        opacity: 0.5;
+    }
+}
+
+.path {
+    cursor: pointer;
+    outline: none;
+    text-decoration: none;
+    color: var(--cl-header-txt);
+    font-family: $font;
+    &:hover {
+        text-decoration: underline;
+    }
+    &:not(:last-child) {
+        opacity: 0.6;
+    }
+    &:last-child {
+        cursor: default;
+        pointer-events: none;
+    }
+    &:not(:last-child):after {
+        content: "/";
+        font-family: $font;
+        opacity: 0.7;
+        display: inline-block;
+        margin-left: 8px;
+        margin-right: 8px;
+    }
+}
+
+.btn-goto {
+    margin-left: 8px;
+}

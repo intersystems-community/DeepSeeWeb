@@ -1,0 +1,90 @@
+@import "src/scss/variables";
+
+:host {
+    position: relative;
+    display: flex;
+    flex: 0 0 auto;
+    justify-content: space-between;
+    font-family: $font;
+    background: var(--cl-header-bg);
+    height: var(--tile-header-height);
+    padding: 0;
+    font-size: 8pt;
+    text-align: center;
+    color: var(--cl-header-txt);
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    border-bottom: 1px solid var(--cl-header-border);
+
+    & > div {
+        display: inline-flex;
+        align-items: center;
+        font-size: 14px;
+        font-weight: bold;
+
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        top: 0;
+    }
+    & > span {
+        display: inline-flex;
+        align-items: center;
+        background: var(--cl-header-bg);
+        z-index: 1;
+        flex-direction: row-reverse;
+    }
+
+    & button {
+        flex: 0 0 auto;
+        // opacity: 0.7;
+        cursor: pointer;
+        background-color: transparent;
+        border: none;
+        padding-left: 4px;
+        padding-right: 4px;
+        margin: 0;
+        min-width: var(--tile-header-height);
+        height: 100%;
+        // border-left: 1px solid var(--cl-header-border);
+        transition: background-color $animSpeed line-height;
+        outline: none;
+        & > img {
+            opacity: 0.5;
+        }
+        & > i {
+            opacity: 0.5;
+        }
+        &:hover {
+            background-color: var(--cl-header-btn-hover-darken);
+        }
+        &.active > img, &.active > i {
+            opacity: 1;
+            filter: contrast(0.2) sepia(1) brightness(1.1) hue-rotate(-655deg) contrast(4);
+        }
+    }
+}
+
+// Drag handle (actually title)
+.drag-handle {
+    cursor: move;
+    flex: 1 1 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    // Disable drag when widget is expanded to fullscreen
+    &.expanded {
+        pointer-events: none;
+    }
+}
+
+.btn-with-text {
+    display: flex;
+    align-items: center;
+    & > img {
+        height: 100%;
+    }
+}

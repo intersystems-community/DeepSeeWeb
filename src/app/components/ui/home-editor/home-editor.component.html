@@ -1,0 +1,46 @@
+<dsw-sidebar-actions (cancel)="onCancelEditing()" (apply)="onSaveTiles()" >Edit dashboard</dsw-sidebar-actions>
+
+<div class="container">
+    <!-- Title -->
+    <label>{{'title' | i18n}}</label>
+    <input [(ngModel)]="tile.customTitle">
+
+    <!-- Bg colors -->
+    <label>{{'bgColor' | i18n}}</label>
+    <div (click)='setTileColor(idx)'
+         [class.active]="tile.color == idx"
+         [class]="'color-rect ' + col"
+         *ngFor="let col of model.colors; let idx = index">
+    </div>
+
+    <!-- Font colors -->
+    <label>{{'fntColor' | i18n}}</label>
+    <div (click)='setFontColor(idx)'
+         [class.active]="tile.fontColor == idx"
+         [class]="'color-rect ' + col + ' ' + model.colors[tile.color]"
+         *ngFor="let col of model.fontColors; let idx = index">
+        <span [class]="col">A</span>
+    </div>
+
+    <!-- Icons -->
+    <label>{{'icon' | i18n}}</label>
+    <div class="color-rect" *ngFor="let ico of model.icons; let idx = index" (click)='setIcon(idx)'
+         [class]="'cl' + tile.color + ' ' +  (tile.icon == idx ? 'active' : '')">
+        <svg viewBox="-10 -16 20 20" [class]="model.fontColors[tile.fontColor]">
+            <g>
+                <text text-anchor="middle" font-size="16px">{{ico}}</text>
+            </g>
+        </svg>
+    </div>
+
+    <!-- Widgets -->
+    <label>{{'widget' | i18n}}</label>
+    <select [(ngModel)]="tile.widget">
+        <option *ngFor="let opt of model.widgetList" value="{{opt.idx}}"
+                [selected]="opt.idx===tile.widget">{{opt.name}}</option>
+    </select>
+
+    <!-- Hide title -->
+    <label>{{'hideTitle' | i18n}}</label>
+    <input type="checkbox" [(ngModel)]="tile.hideTitle" blur-on-enter>
+</div>

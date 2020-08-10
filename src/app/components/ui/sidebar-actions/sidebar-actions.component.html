@@ -1,0 +1,8 @@
+<!-- Cancel button -->
+<button (click)="cancel.emit()" [title]="'cancel' | i18n"><img class="ico" src="assets/img/icons/close.svg"></button>
+<!-- Header text -->
+<label>
+    <ng-content></ng-content>
+</label>
+<!-- Apply button -->
+<button (click)="apply.emit()" [title]="'save' | i18n"><img class="ico img-accept" src="assets/img/icons/check.svg"></button>

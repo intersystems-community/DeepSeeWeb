@@ -1,0 +1,15 @@
+<dsw-header *ngIf="hs.visible$ | async"></dsw-header>
+<div class="content">
+    <dsw-sidebar #sidebar (@toggle.done)="onAnimDone()" (@toggle.start)="onAnimStart()" [@toggle] *ngIf="isSidebar"></dsw-sidebar>
+    <router-outlet></router-outlet>
+</div>
+
+<!-- Modals -->
+<dsw-modal *ngFor="let modal of ms.modals | async" [data]="modal"></dsw-modal>
+
+<!-- Error list -->
+<dsw-error
+    *ngFor="let err of es.errors$ | async; let idx = index; trackBy:trackError"
+    [@toggleError]
+    [error]="err">
+</dsw-error>

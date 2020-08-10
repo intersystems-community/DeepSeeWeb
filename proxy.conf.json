@@ -1,0 +1,20 @@
+{
+    "/config.json": {
+        "target": "https://public-analytics.community.intersystems.com/dsw/",
+        "secure": false,
+        "logLevel": "debug",
+        "changeOrigin": true
+    },
+    "/configs/": {
+        "target": "https://public-analytics.community.intersystems.com/dsw/",
+        "secure": false,
+        "logLevel": "debug",
+        "changeOrigin": true
+    },
+    "**": {
+        "target": "https://public-analytics.community.intersystems.com/",
+        "secure": false,
+        "logLevel": "debug",
+        "changeOrigin": true
+    }
+}

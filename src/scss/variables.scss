@@ -1,0 +1,140 @@
+//$font: "IBM Plex Sans";
+$font: "Roboto Condensed";
+$animSpeed: 0.3s;
+
+
+$fontColor: black;
+$tileBorder: #e0e0e0;
+$labelColor: $fontColor;
+
+$sidebar-width: 322px;
+
+//:root {
+//    --cl-bg: #ffffff;
+//    --cl-accent: #ffffff;
+//
+//    // Background colors for tiles
+//    --cl1: #b6e6ff;
+//    --cl2: #f7bfb7;
+//    --cl3: #bceca8;
+//    --cl4: #fff9a8;
+//    --cl5: #ffc593;
+//    --cl6: #f9b1ab;
+//    --cl7: #9de7fb;
+//    --cl8: #a8b8f9;
+//    --cl9: #9df1ae;
+//
+//    // Header
+//    --cl-header-bg: #080d43;
+//    --cl-header-txt: #ffffff;
+//    --cl-header-ico: var(--cl-header-txt);
+//    --cl-header-btn-active: #272c61;
+//    --cl-header-btn-hover: #{lighten(#273449, 5%)};
+//
+//    --header-height: 60px;
+//
+//    // Sidebar
+//    --cl-sidebar-bg: var(--cl-header-btn-active);
+//    //--sidebar-width: 300px;
+//
+//    // Tiles
+//    --cl-tile-border: #afafaf;
+//
+//}
+
+:root {
+    --cl-bg: white;
+    --cl-accent: black;
+    --cl-txt: #555555;
+    --input-border-radius: 0px;
+
+    // Icon filter
+    --icon-filter: contrast(0.05);
+    --icon-filter: none;
+
+    // Background colors for tiles
+    --cl1: #b6e6ff;
+    --cl2: #f7bfb7;
+    --cl3: #bceca8;
+    --cl4: #fff9a8;
+    --cl5: #ffc593;
+    --cl6: #f9b1ab;
+    --cl7: #9de7fb;
+    --cl8: #a8b8f9;
+    --cl9: #9df1ae;
+
+    // Header
+    --cl-header-bg: #f8fafb;
+    --cl-header-border: #e8eaea;
+    --cl-header-txt: black;
+    --cl-header-ico: var(--cl-header-txt);
+    --cl-header-btn-active: #eff1f1;
+    --cl-header-btn-hover: #{darken(#eff1f1, 5%)};
+    --cl-header-btn-hover-darken: rgba(0, 0, 0, 0.05);
+
+    --header-height: 58px;
+
+    // Sidebar
+    --cl-sidebar-bg: var(--cl-header-btn-active);
+    --cl-sidebar-txt: black;
+    //--sidebar-width: 300px;
+
+    // Tiles
+    --tile-border: 1px solid #afafaf;
+    --tile-border-radius: 0;
+    --tile-header-height: 22px;
+
+    // Font colors
+    --fc1: black;
+    --fc2: red;
+    --fc3: white;
+    --fc4: green;
+    --fc5: blue;
+
+    // Widgets
+    --cl-widget-header-btn-active: #A9FFA1;
+}
+
+//:root {
+//    --cl-bg: #fafafa;
+//    --cl-accent: black;
+//    --cl-txt: #555555;
+//
+//    // Background colors for tiles
+//    --cl1: #ffffff;
+//    --cl2: #ffffff;
+//    --cl3: #ffffff;
+//    --cl4: #ffffff;
+//    --cl5: #ffc593;
+//    --cl6: #f9b1ab;
+//    --cl7: #9de7fb;
+//    --cl8: #a8b8f9;
+//    --cl9: #9df1ae;
+//
+//    // Font colors
+//    --fc1: #939393;
+//    --fc2: black;
+//    --fc3: black;
+//    --fc4: black;
+//    --fc5: black;
+//
+//    // Header
+//    --cl-header-bg: #f2f2f2;
+//    --cl-header-border: #e7e7e7;
+//    --cl-header-txt: black;
+//    --cl-header-ico: var(--cl-header-txt);
+//    --cl-header-btn-active: #eff1f1;
+//    --cl-header-btn-hover: #fdfdfd;
+//    --header-height: 58px;
+//
+//    // Sidebar
+//    --cl-sidebar-bg: var(--cl-header-btn-active);
+//    --cl-sidebar-txt: black;
+//    --cl-sidebar-border: var(--cl-header-border);
+//
+//    // Tiles
+//    --cl-tile-border: 2px solid #e6e6e6;
+//    --tile-border-radius: 4px;
+//}
+//$cl-btn-hover: rgba(255,255,255,0.1);
+

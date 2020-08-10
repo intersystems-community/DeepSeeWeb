@@ -1,0 +1,8 @@
+<div style='visibility: hidden'>
+    <div #popup class='panel panel-default map-popup'>
+        <div ng-bind-html='model.tooltip.content | sanitize'></div>
+    </div>
+    <div class='arrow_box'></div>
+</div>
+
+<div #tooltip class='tooltip' style="display: none"></div>

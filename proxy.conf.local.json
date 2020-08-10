@@ -1,0 +1,29 @@
+{
+    "/config.json": {
+        "target": "http://localhost:52773/dsw/",
+        "secure": false,
+        "logLevel": "debug",
+        "changeOrigin": true
+    },
+    "/configs/": {
+        "target": "http://localhost:52773/dsw/",
+        "secure": false,
+        "logLevel": "debug",
+        "changeOrigin": true
+    },
+    "/csp/uspolygons.js": {
+        "target": "http://localhost:52773/csp/uspolygons.js",
+        "secure": false,
+        "logLevel": "debug",
+        "changeOrigin": true,
+        "rewrite": {
+            "^/csp/uspolygons.js": ""
+        }
+    },
+    "**": {
+        "target": "http://localhost:52773/",
+        "secure": false,
+        "logLevel": "debug",
+        "changeOrigin": true
+    }
+}

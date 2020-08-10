@@ -1,0 +1,62 @@
+@import "src/scss/variables";
+
+:host {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0,0,0,0.4);
+    backdrop-filter: blur(4px);
+    z-index: 10;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: 0;
+
+    &.no-backdrop {
+        background: none;
+        background-color: none;
+        backdrop-filter: none;
+    }
+}
+
+// Modal style
+.modal {
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    min-width: 320px;
+    max-width: calc(100vw - 100px);
+    background-color: white;
+    font-family: $font;
+    color: var(--cl-txt-main);
+    &.no-padding {
+        padding: 0;
+    }
+}
+
+// Modal title
+.title {
+    font-size: 22px;
+    margin-bottom: 20px;
+}
+
+// Footer style
+.footer {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+    margin-top: 20px;
+    flex-shrink: 0;
+    // For all buttons make spacing
+    & > button {
+        margin-left: 10px;
+        min-width: 80px;
+    }
+}
+
+// Modal content
+.content {
+    overflow: auto;
+}

@@ -1,0 +1,66 @@
+:host{
+    display: flex;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    background: url('/assets/img/bg.jpg');
+    background-size: cover;
+}
+
+// Login container
+.login-form {
+    position: relative;
+    width: 300px;
+    padding: 25px 25px;
+    background-color: white;
+    box-shadow: #00000045 0 0 4px 0px;
+    margin-bottom: 20vh;
+    & > div:first-child {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+}
+
+// Version text
+.ver {
+    position: absolute;
+    right: 2px;
+    top: 0;
+    font-size: 8px;
+}
+
+.msg-error {
+    text-align: center;
+    padding-top: 16px;
+    word-break: break-word;
+    position: absolute;
+    width: 100%;
+    font-size: 14px;
+    color: #d11818;
+    margin-left: -25px;
+    margin-top: 25px;
+    font-weight: 500;
+}
+
+img {
+    margin-bottom: 16px;
+}
+
+input {
+    margin-bottom: 16px;
+    width: 100%;
+}
+
+.btn {
+    width: 100%;
+    display: block;
+    margin-bottom: 4px;
+}
+
+
+.btn-link {
+    margin-bottom: -15px;
+}

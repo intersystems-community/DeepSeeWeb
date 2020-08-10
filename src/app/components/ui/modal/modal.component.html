@@ -1,0 +1,26 @@
+<div class="modal" [class.no-padding]="data.noPadding">
+
+    <!-- Title -->
+    <div class="title" [hidden]="!data.title">
+        {{data.title}}
+    </div>
+
+    <!-- Main content -->
+    <div class="content">
+        {{data.message}}
+        <ng-template #dynamicComponent></ng-template>
+    </div>
+
+    <!-- footer with buttons -->
+    <div class="footer" *ngIf="data.buttons?.length">
+        <button
+            class="btn"
+            *ngFor="let btn of data.buttons"
+            [class.btn-success]="btn.default"
+            [class.btn-text]="!btn.default"
+            (click)="onButtonClick(btn)"
+        >
+            {{btn.label}}
+        </button>
+    </div>
+</div>

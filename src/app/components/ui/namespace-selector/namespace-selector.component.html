@@ -1,0 +1,7 @@
+<img class="spinner" src="assets/img/spinner.svg" *ngIf="isLoading">
+<ul>
+    <li *ngFor="let ns of items" (click)="selectNamespace(ns)">
+        <img [src]="isSelected(ns) ? 'assets/img/icons/check-black-18dp.svg' : ''">
+        {{ns}}
+    </li>
+</ul>

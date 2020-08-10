@@ -1,0 +1,27 @@
+<ul>
+    <li *ngIf="isHome" (click)="editDashboard()">
+        <img src="assets/img/icons/edit-black-18dp.svg">
+        Edit dashboard
+    </li>
+    <li>
+        <img src="assets/img/icons/settings-black-18dp.svg">
+        Settings
+    </li>
+    <li (click)="showNamespaceSelector()">
+        <img src="assets/img/icons/database.svg">
+        Namespace
+    </li>
+    <li (click)="showLanguageSelector()">
+        <img src="assets/img/icons/language-24px.svg">
+        Language
+    </li>
+    <li (click)="showAboutDialog()">
+        <img src="assets/img/icons/information-outline.svg">
+        About
+    </li>
+    <li (click)="logout()">
+        <img src="assets/img/icons/logout-variant.svg">
+        Logout
+    </li>
+</ul>
+<span class="version">v.{{version}}</span>

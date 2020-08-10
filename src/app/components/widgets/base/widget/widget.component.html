@@ -1,0 +1,29 @@
+<!-- Widget header -->
+<dsw-widget-header
+    #header
+    [hidden]="widget?.tile"
+    (onButtonClick)="onHeaderButton($event)"
+    (onBack)="onHeaderButtonBack()"
+    (onResetClickFilter)="onResetClickFilter()"
+></dsw-widget-header>
+
+<!-- Filters -->
+<dsw-widget-filter
+    [hidden]="widget?.tile"
+    [widget]="widget"
+    [filters]="model.filters"
+    (onVariable)="onFilterVariable($event)"
+    (onDataSource)="onFilterDatasource($event)"
+    (onAction)="onFilterAction($event)"
+></dsw-widget-filter>
+
+<!-- Create dynamic widget component after this container -->
+<ng-template #container></ng-template>
+
+<!-- Error message -->
+<div class="error" *ngIf="model.error">{{model.error}}</div>
+
+<!-- Loading spinner -->
+<div class="spinner" [hidden]="model.error || !component?.isSpinner">
+    <img src="assets/img/spinner.svg">
+</div>

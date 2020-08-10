@@ -1,0 +1,24 @@
+<!-- Pivot variables -->
+<span *ngFor="let v of widget?.pvItems" class="flt-holder"  [style.width]="widget?.viewSize ? (widget?.viewSize + '%') : 'auto'">
+    <label>{{v.label}}</label>
+    <input [(ngModel)]="v.value" (keydown.enter)="emitVarChange(v)">
+</span>
+
+<!-- Choosers -->
+<span *ngFor="let chooser of widget?.dsItems" class="flt-holder"  [style.width]="widget?.viewSize ? (widget?.viewSize + '%') : 'auto'">
+    <label>{{chooser.label}}</label>
+    <select [(ngModel)]="chooser.dsSelected" (change)="onDataSourceChangeHandler(chooser)">
+        <option *ngFor="let c of chooser.labels" [ngValue]="c">{{c}}</option>
+    </select>
+</span>
+
+<!-- Actions -->
+<span *ngFor="let action of widget?.acItems" class="flt-holder"  [style.width]="widget?.viewSize ? (widget?.viewSize + '%') : 'auto'">
+    <button class="btn" (click)="performAction(action)">{{action.label || action.action}}</button>
+</span>
+
+<!-- Filters -->
+<span *ngFor="let flt of filters" class="flt-holder" [class.active]="openedFilter === flt.idx" [style.width]="widget?.viewSize ? (widget?.viewSize + '%') : 'auto'">
+    <label>{{flt.label}}</label>
+    <input readonly type="text" value="{{flt.text}}" title="{{flt.text}}" (click)="flt.isOpen = true; toggleFilter(flt.idx, $event)">
+</span>
