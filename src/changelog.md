@@ -1,4 +1,4 @@
-#### 3.0.1a
+#### 3.0.2a
 This is <b>alpha</b> release of newly rewritten DSW
 with TypeScript and Angular 10 + service workers support.
 
@@ -7,9 +7,10 @@ of Highcharts, gridster and other libs.
 
 This version is still <b>not supports</b>:
 * user addons (base addons as map, html text, worldmap are included in bundle already) 
-* app settings
-* color adjustements and theming
-Also this verison can contain several bugs due to code rewrite
+* changing app settings via UI(only configs supported)
+* color adjustments and theming
+* some specific widget settings or features(eg. changing type of chart)
+Also this version can contain several bugs due to code rewrite
 
 Do not install it, if you use features described above.
  

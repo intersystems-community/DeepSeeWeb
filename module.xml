@@ -3,7 +3,7 @@
   <Document name="dsw.ZPM">
     <Module>
       <Name>dsw</Name>
-      <Version>3.0.1</Version>
+      <Version>3.0.2</Version>
       <Packaging>module</Packaging>
       <Dependencies>
         <ModuleReference>
@@ -14,7 +14,7 @@
       <SystemSetting Name="CSP.DefaultFileCharset" Value="UTF-8"/>
       <CSPApplication
         Url="/dsw"
-        SourcePath="/build"
+        SourcePath="/dist"
         DeployPath="{$cspdir}/dsw"
         ServeFiles="1"
         Recurse="1"
