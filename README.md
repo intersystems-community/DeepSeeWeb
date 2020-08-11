@@ -42,7 +42,7 @@ Top - new design, buttom - old:
 * Changed templates to take advantage of component approach
   
 ## Not supported in alpha:
-* user addons, beacuse old addons has benn written on Angular1 (but base addons as map, html text, worldmap are included in bundle already) 
+* user addons, beacuse old addons has been written on Angular1 (but base addons as map, html text, worldmap are included in bundle already) 
 * changing app settings via UI(only configs supported)
 * color adjustments and theming
 * some specific widget settings or features(eg. changing type of chart)
