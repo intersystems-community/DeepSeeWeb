@@ -4,7 +4,33 @@
 
 Renderer for DeepSee Dashboards in Browser with MDX2JSON as a Serverside and JS web-client.<br>
 Developed using AngularJS and Bootstrap.<br><br>
-![DeepSeeWeb screenshot](/screenshot.png?raw=true "DeepSeeWeb screenshot")<br>
+
+# Whats new in 3.0
+This is newly rewritten DeepSeeWeb with TypeScript & Angular 10!
+Some features of new version:
+* Clean navigation
+![DeepSeeNavigation](https://github.com/gnibeda/gnibeda.github.io/blob/master/images/nav1.png?raw=true)
+Now user can clearly see and navigate to dashboards via breadcrumbs, changing namespace, etc.
+* Redesigned login screen
+![DeepSeeLogin](https://github.com/gnibeda/gnibeda.github.io/blob/master/images/login.png?raw=true) 
+* New sidebar with main menu
+![DeepSeeSidebar](https://github.com/gnibeda/gnibeda.github.io/blob/master/images/sidebar1.png?raw=true)
+Now user can easly see options available for each screen and change settings
+![DeepSeeSidebar](https://github.com/gnibeda/gnibeda.github.io/blob/master/images/sidebar2.png?raw=true)
+* More clean dashboards. Colors adjusted to show important data, whilst other information displayed in light colors.
+Also new design is more suitable for large screens. 
+Top - new design, buttom - old:
+![DeepSeeDashboard](https://github.com/gnibeda/gnibeda.github.io/blob/master/images/dash.png?raw=true)
+* Clean widget actions
+
+![DeepSeeActions](https://github.com/gnibeda/gnibeda.github.io/blob/master/images/actions.png?raw=true)
+* Redesigned styles for filters, modals
+* Added service workers to improve application startup
+* Now all libs(eg. Highcharts, gridster) can be easily updated via npm
+* Removed a lot of old code(300k+ lines) and refactored services
+* Changed widget classes to more OOP style, removed all prototypes, etc.
+* Changed templates to take advantage of component approach
+  
 # Supported widgets
 * Area chart
 * Line chart
