@@ -19,6 +19,7 @@ Now user can clearly see and navigate to dashboards via breadcrumbs, changing na
 * New sidebar with main menu
 
 ![DeepSeeSidebar](https://github.com/gnibeda/gnibeda.github.io/blob/master/images/sidebar1.png?raw=true)
+
 Now user can easly see options available for each screen and change settings
 
 ![DeepSeeSidebar](https://github.com/gnibeda/gnibeda.github.io/blob/master/images/sidebar2.png?raw=true)
