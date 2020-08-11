@@ -7,6 +7,9 @@ Developed using AngularJS and Bootstrap.<br><br>
 
 # Whats new in 3.0
 This is newly rewritten DeepSeeWeb with TypeScript & Angular 10!
+
+<b>Current version is alpha!</b>
+ 
 Some features of new version:
 * Clean navigation
 
@@ -37,6 +40,15 @@ Top - new design, buttom - old:
 * Removed a lot of old code(300k+ lines) and refactored services
 * Changed widget classes to more OOP style, removed all prototypes, etc.
 * Changed templates to take advantage of component approach
+  
+## Not supported in alpha:
+* user addons, beacuse old addons has benn written on Angular1 (but base addons as map, html text, worldmap are included in bundle already) 
+* changing app settings via UI(only configs supported)
+* color adjustments and theming
+* some specific widget settings or features(eg. changing type of chart)
+
+This features will be implemented soon and are to be included in RC
+  
   
 # Supported widgets
 * Area chart
