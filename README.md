@@ -9,17 +9,23 @@ Developed using AngularJS and Bootstrap.<br><br>
 This is newly rewritten DeepSeeWeb with TypeScript & Angular 10!
 Some features of new version:
 * Clean navigation
+
 ![DeepSeeNavigation](https://github.com/gnibeda/gnibeda.github.io/blob/master/images/nav1.png?raw=true)
+
 Now user can clearly see and navigate to dashboards via breadcrumbs, changing namespace, etc.
 * Redesigned login screen
+
 ![DeepSeeLogin](https://github.com/gnibeda/gnibeda.github.io/blob/master/images/login.png?raw=true) 
 * New sidebar with main menu
+
 ![DeepSeeSidebar](https://github.com/gnibeda/gnibeda.github.io/blob/master/images/sidebar1.png?raw=true)
 Now user can easly see options available for each screen and change settings
+
 ![DeepSeeSidebar](https://github.com/gnibeda/gnibeda.github.io/blob/master/images/sidebar2.png?raw=true)
 * More clean dashboards. Colors adjusted to show important data, whilst other information displayed in light colors.
 Also new design is more suitable for large screens. 
 Top - new design, buttom - old:
+
 ![DeepSeeDashboard](https://github.com/gnibeda/gnibeda.github.io/blob/master/images/dash.png?raw=true)
 * Clean widget actions
 
