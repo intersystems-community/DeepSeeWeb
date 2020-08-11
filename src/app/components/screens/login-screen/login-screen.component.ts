@@ -51,9 +51,9 @@ export class LoginScreenComponent implements OnInit {
             isDesktop: dsw.desktop,
             ver: dsw.const.ver,
             server: localStorage.DSWMobileServer || location.hostname,
-            login: 'devcom',
-            password: 'dsdevcom',
-            namespace: 'COMMUNITY', // localStorage.namespace || 'Samples',
+            login: '',
+            password: '',
+            namespace: '', // localStorage.namespace || 'Samples',
             error: '',
             oAuthUrl: ''
         };
