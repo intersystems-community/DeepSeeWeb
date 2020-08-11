@@ -4,7 +4,7 @@
     height: 100%;
     align-items: center;
     justify-content: center;
-    background: url('/assets/img/bg.jpg');
+    background: url('^assets/img/bg.jpg');
     background-size: cover;
 }
 
@@ -14,7 +14,7 @@
     width: 300px;
     padding: 25px 25px;
     background-color: white;
-    box-shadow: #00000045 0 0 4px 0px;
+    box-shadow: #00000045 0 0 4px 0;
     margin-bottom: 20vh;
     & > div:first-child {
         width: 100%;
