@@ -1,3 +1,6 @@
+#### 3.0.7a
+n
+
 #### 3.0.6a
 This is <b>alpha</b> release of newly rewritten DSW
 with TypeScript and Angular 10 + service workers support.

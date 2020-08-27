@@ -130,7 +130,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
     protected tile = null;
 
     // For light pivot
-    protected lpt;
+    public lpt;
 
     // For chart
     public chart: Highcharts.Chart;

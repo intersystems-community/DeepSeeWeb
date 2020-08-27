@@ -52,14 +52,52 @@ gridster {
     border-radius: 4px;
     z-index: 1;
     background-color: white;
-    box-shadow: 1px 1px 3px #0000000a;
+    white-space: nowrap;
+    // box-shadow: 1px 1px 3px #0000000a;
+    box-shadow: 0 0 5px 0px #0000001f;
+    // Menu item
     & > div {
         width: 100%;
-        padding: 10px 10px;
+        padding: 10px 20px;
         cursor: pointer;
         user-select: none;
         &:hover {
             background-color: rgba(0,0,0,0.05);
         }
+    }
+
+    // Items divider
+    & .divider {
+        height: 0;
+        margin: 0;
+        padding: 0;
+        border-bottom:1px solid var(--cl-header-border);
+    }
+}
+
+// Context sub menu
+.ctx-sub {
+    position: relative;
+    // Open sign
+    &:after {
+        content: ">";
+        position: absolute;
+        right: 05px;
+        display: block;
+        z-index: 1;
+        top: 11px;
+    }
+
+    // Sub menu
+    & > div {
+        display: none;
+        position: absolute;
+        left: calc(100% + 1px);
+        top: 0;
+    }
+
+    // Show submenu on hover
+    &:hover > div {
+        display: block;
     }
 }

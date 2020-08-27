@@ -16,6 +16,8 @@ import {IWidgetInfo} from '../../widgets/base-widget.class';
 import {WidgetComponent} from '../../widgets/base/widget/widget.component';
 import {CURRENT_NAMESPACE, NamespaceService} from '../../../services/namespace.service';
 import {BroadcastService} from '../../../services/broadcast.service';
+import {WPivotComponent} from '../../widgets/wpivot/pivot.component';
+import {ExportingOptions} from 'highcharts';
 
 @Component({
     selector: 'dsw-dashboard-screen',
@@ -458,7 +460,7 @@ export class DashboardScreenComponent implements OnInit, OnDestroy {
         // }
         const w = this.getWidgetByInfo(item);
         if (w && w.component) {
-            w.component.onResize()
+            w.component.onResize();
         }
     }
 
@@ -495,6 +497,120 @@ export class DashboardScreenComponent implements OnInit, OnDestroy {
                 return;
             }
             this.ctxItem = null;
-        })
+        });
+    }
+
+    /**
+     * Exports widget as file
+     * @param type
+     */
+    exportWidget(type: string) {
+        const comp = this.getWidgetByInfo(this.ctxItem).component;
+        const opt = {
+            sourceWidth: Math.floor(window.screen.width / 2),
+            sourceHeight: Math.floor(window.screen.height / 2),
+            filename: this.ctxItem.tile || 'chart',
+            type: 'image/svg+xml'
+        } as ExportingOptions;
+
+        switch (type) {
+            case 'png': opt.type = 'image/png'; break;
+            case 'svg': opt.type = 'image/svg+xml'; break;
+            case 'jpg': opt.type = 'image/jpeg'; break;
+            case 'pdf': opt.type = 'application/pdf'; break;
+            case 'xls': {
+                let mdx = comp?.getMDX();
+                if (!mdx) {
+                    console.warn(`Can't get MDX for widget: ${this.ctxItem}`);
+                    return;
+                }
+                if (comp?.lpt) {
+                    const lpt = comp.lpt;
+                    mdx = lpt._dataSourcesStack[lpt._dataSourcesStack.length - 1].BASIC_MDX + lpt.dataSource.FILTERS;
+                }
+                const folder = this.ss.serverSettings.DefaultApp || ('/csp/' + CURRENT_NAMESPACE);
+                const url = folder + '/_DeepSee.UI.MDXExcel.zen?MDX=' + encodeURIComponent(mdx);
+                window.open(url, '_blank');
+                return;
+            }
+            case 'csv': {
+                this.exportToCsv();
+                return;
+            }
+        }
+        if (this.ctxItem.isChart) {
+            comp.chart.exportChart(opt, null);
+        }
+    }
+
+    private exportToCsv() {
+        const comp = this.getWidgetByInfo(this.ctxItem).component;
+        const d = comp._currentData;
+        if (!comp.lpt && !d) {
+            return;
+        }
+        let cats, ser, data;
+        if (comp.lpt) {
+            ser = comp.lpt.dataController.getData().dimensions[0];
+            cats = comp.lpt.dataController.getData().dimensions[1];
+            data = comp.lpt.dataController.getData().dataArray;
+        } else {
+            cats = d.Cols[1].tuples;
+            ser = d.Cols[0].tuples;
+            data = d.Data;
+        }
+        const nl = '\r\n';
+        const sep = '|';
+        let csvFile = '"sep=' + sep + '"' + nl;
+        let i, j;
+        // if (ser.length === 1) {
+        //
+        // } else {
+        // Build header
+        if (cats[0] && cats[0].dimension) {
+            csvFile += cats[0].dimension + sep;
+        }
+        for (j = 0; j < ser.length; j++) {
+            csvFile += ser[j].caption;
+            if (j !== ser.length - 1) {
+                csvFile += sep;
+            }
+        }
+        csvFile += nl;
+
+        // Build data
+        for (i = 0; i < (cats.length || (data.length / ser.length)); i++) {
+            if (cats[i] && cats[i].caption) {
+                csvFile += cats[i].caption + sep;
+            }
+            for (j = 0; j < ser.length; j++) {
+                csvFile += data[i * ser.length + j] || '0';
+                if (j !== ser.length - 1) {
+                    csvFile += sep;
+                }
+            }
+            csvFile += nl;
+        }
+        // }
+
+        const filename = (this.ctxItem.title || 'data') + '.csv';
+        const blob = new Blob([csvFile], { type: 'text/csv;charset=utf-8;' });
+        if (navigator.msSaveBlob) { // IE 10+
+            navigator.msSaveBlob(blob, filename);
+        } else {
+            const link = document.createElement('a');
+            if (link.download !== undefined) { // feature detection
+                // Browsers that support HTML5 download attribute
+                const url = URL.createObjectURL(blob);
+                link.setAttribute('href', url);
+                link.setAttribute('download', filename);
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                setTimeout(() => {
+                    link.click();
+                    document.body.removeChild(link);
+                }, 10);
+            }
+        }
     }
 }

@@ -1,3 +1,14 @@
+#### 3.0.7a
+* added missing import to csv/xls
+* added missing import to images (for charts)
+* fixed style for context menu
+* added sub menu items support for context menu
+* changed logo for login screen
+* fixed issue with chart series colors
+* fixed issue with public dsw 
+* added description for new url style in readme 
+
+
 #### 3.0.6a
 This is <b>alpha</b> release of newly rewritten DSW
 with TypeScript and Angular 10 + service workers support.

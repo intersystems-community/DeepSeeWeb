@@ -23,6 +23,18 @@
     <div (click)="printItem()" *ngIf="ctxItem?.isChart">{{'print' | i18n}}</div>
     <div (click)="shareItem()">{{'share' | i18n}}</div>
     <div (click)="copyMDX()">{{'copyMDX' | i18n}}</div>
+    <div class="divider"></div>
+    <div class="ctx-sub">
+        Export
+        <div class="ctx-menu">
+            <div *ngIf="ctxItem?.isChart" (click)="exportWidget('svg')">{{'svgImage' | i18n}}</div>
+            <div *ngIf="ctxItem?.isChart" (click)="exportWidget('png')">{{'pngImage' | i18n}}</div>
+            <div *ngIf="ctxItem?.isChart" (click)="exportWidget('jpg')">{{'jpgImage' | i18n}}</div>
+            <div *ngIf="ctxItem?.isChart" (click)="exportWidget('pdf')">{{'pdfDoc' | i18n}}</div>
+            <div (click)="exportWidget('xls')">{{'xlsDoc' | i18n}}</div>
+            <div (click)="exportWidget('csv')">{{'csvDoc' | i18n}}</div>
+        </div>
+    </div>
 </div>
 
 <!-- TODO: implement mobile -->

@@ -469,7 +469,7 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
             }
         }
         const cols = this.tc.hcColors || Highcharts.getOptions().colors;
-        data.color = cols[(cols.length % this.chartConfig.series.length) || 0];
+        data.color = cols[(this.chart.series.length % cols.length) || 0];
 
         // Check chart type
         let curIdx = this.chartConfig.series.length;

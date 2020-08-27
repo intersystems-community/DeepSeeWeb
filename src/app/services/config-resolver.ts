@@ -24,16 +24,21 @@ export class ConfigResolver implements Resolve<any> {
         route: ActivatedRouteSnapshot,
         state: RouterStateSnapshot
     ): Observable<any> {
+        const ns = route.params.ns;
         return new Observable<any>(o => {
                 const done = () => {
                     this.isLoaded = true;
                     o.next(this.model);
                     o.complete();
                 };
-                // if (this.isLoaded) {
-                //     done();
-                //     return;
-                // }
+                if (!CURRENT_NAMESPACE) {
+                    if (!ns) {
+                        this.router.navigateByUrl('/login');
+                        done();
+                        return;
+                    }
+                    this.ns.setCurrent(ns);
+                }
                 this.ds.loadConfig(CURRENT_NAMESPACE)
                     .then(conf => this.st.loadConfig(conf))
                     .finally(() => done());

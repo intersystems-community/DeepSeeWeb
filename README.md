@@ -16,6 +16,9 @@ Some features of new version:
 ![DeepSeeNavigation](https://github.com/gnibeda/gnibeda.github.io/blob/master/images/nav1.png?raw=true)
 
 Now user can clearly see and navigate to dashboards via breadcrumbs, changing namespace, etc.
+Query parameter "ns" for namespace was gone. Now url constructed by following rule 
+"/namespace/folder/folder/.../dashboard.dashboard",
+eg. http://mysite.com/dsw/#/IRISAPP/Test/Countries.dashboard
 * Redesigned login screen
 
 ![DeepSeeLogin](https://github.com/gnibeda/gnibeda.github.io/blob/master/images/login.png?raw=true) 
