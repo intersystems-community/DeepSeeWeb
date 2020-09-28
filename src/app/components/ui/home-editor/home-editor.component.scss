@@ -2,9 +2,10 @@
 
 :host {
     display: block;
-    margin-top: calc(-1 * var(--header-height));
-    height: calc(100% + var(--header-height));
-    background-color: var(--cl-sidebar-bg);
+    height: 100%;
+        //margin-top: calc(-1 * var(--header-height));
+    //height: calc(100% + var(--header-height));
+    //background-color: var(--cl-sidebar-bg);
 }
 
 // Label text style
@@ -13,9 +14,31 @@ label {
     clear: both;
     font-family: $font;
     color: var(--cl-sidebar-txt);
-    padding-top: 10px;
+    margin-top: 10px;
     margin-bottom: 2px;
 }
+
+// Upload control
+input[type=file] {
+    padding: 3px;
+    &::-webkit-file-upload-button {
+        // color: red;
+    }
+}
+
+// Checkbox, must be placed inside label
+input[type=checkbox] {
+    cursor: pointer;
+    height: 20px;
+    width: 20px;
+    outline: none;
+    display: inline;
+    float: right;
+    &:focus, &:active {
+        outline: none;
+    }
+}
+
 
 .color-rect {
     display: inline-flex;
@@ -48,8 +71,15 @@ label {
 .container {
     margin-left: 10px;
     margin-right: 10px;
+    overflow-y: auto;
 }
 
 input {
     margin-bottom: 4px;
+}
+
+.divider {
+    display: block;
+    width: 100%;
+    clear: both;
 }

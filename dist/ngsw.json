@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1598546480531,
+  "timestamp": 1601295253899,
   "index": "/index.html",
   "assetGroups": [
     {
@@ -11,6 +11,10 @@
         "ignoreVary": true
       },
       "urls": [
+        "/addon-0-es2015.js",
+        "/addon-0-es5.js",
+        "/addon-2-es2015.js",
+        "/addon-2-es5.js",
         "/index.html",
         "/main-es2015.js",
         "/main-es5.js",
@@ -75,6 +79,7 @@
         "/assets/img/icons/language-24px.svg",
         "/assets/img/icons/legend-toggle.svg",
         "/assets/img/icons/logout-variant.svg",
+        "/assets/img/icons/next.svg",
         "/assets/img/icons/pen.svg",
         "/assets/img/icons/refresh-black-18dp.svg",
         "/assets/img/icons/reply-black-18dp.svg",
@@ -98,6 +103,10 @@
   ],
   "dataGroups": [],
   "hashTable": {
+    "/addon-0-es2015.js": "fb08cf21fa0a30ef3532300479c40c338562b9dd",
+    "/addon-0-es5.js": "93ac861c90b0a0145bf5c854d56e095af34b8b1c",
+    "/addon-2-es2015.js": "03b7fdfac8b6eee0e0b61fd6cc48770c89684f15",
+    "/addon-2-es5.js": "ae64c7ba9ef193c0946e68353a716089fc50c0f4",
     "/assets/fonts/RobotoCondensed-Bold-Cyr-Ex.woff2": "5c90a1a2459ad3fdb8d4828917162b7ee7dfc76e",
     "/assets/fonts/RobotoCondensed-Bold-Cyr.woff2": "122560becff778032eed54b47a6924c29e009ac2",
     "/assets/fonts/RobotoCondensed-Bold-Ex.woff2": "6be5d862def58ea5c30879afa237526c075779fb",
@@ -122,7 +131,7 @@
     "/assets/fonts/RobotoCondensed-Regular-Cyr.woff2": "87a5f75ab42bb97fc7bbcc4f3ba8d62956e847d5",
     "/assets/fonts/RobotoCondensed-Regular-Ex.woff2": "3187746af2e3cc6ffeed0ae62f46363f8eca0af9",
     "/assets/fonts/RobotoCondensed-Regular.woff2": "b92a55e91e116da95d789d60a6e265027ba8d07c",
-    "/assets/img/DeepSee.svg": "21cfd4842dcb424cc7f86dba5d9b7bffa79d2411",
+    "/assets/img/DeepSee.svg": "f16f26ba3217004727f0e2a3da6abd753c9f03ab",
     "/assets/img/bg.jpg": "fa6ce12f71c0572998b8dcf3d38d5b6716c878c1",
     "/assets/img/eye.svg": "7cde91ce76b383904f4aa4d62068ff6f12e03d50",
     "/assets/img/icons/check-black-18dp.svg": "c862425a422f0d48ad8b968b3ef8d4835e821b82",
@@ -141,6 +150,7 @@
     "/assets/img/icons/language-24px.svg": "08f01ddcd2dde5f31ed023b5625266f10d8e3a4e",
     "/assets/img/icons/legend-toggle.svg": "38eb8438b94c204e2d68f7cfe0ed99cb10dbdd98",
     "/assets/img/icons/logout-variant.svg": "12b6e97afd0966f34d81152df5441fd2e67a948b",
+    "/assets/img/icons/next.svg": "6506e62b0a4520f34da400efbbec3e434eff8949",
     "/assets/img/icons/pen.svg": "3746e49c34ac076ff42de13f2711e1e86cad297f",
     "/assets/img/icons/refresh-black-18dp.svg": "eba73c1879a77bae45732ee66adb9d9f59fba092",
     "/assets/img/icons/reply-black-18dp.svg": "2fdf92042122356b0c6ea8935a5be1cf54f1c0db",
@@ -159,15 +169,15 @@
     "/fontawesome-webfont.woff": "28b782240b3e76db824e12c02754a9731a167527",
     "/fontawesome-webfont.woff2": "d6f48cba7d076fb6f2fd6ba993a75b9dc1ecbf0c",
     "/index.html": "069cbaecb474b233e69e10cb70312a6979d104af",
-    "/main-es2015.js": "447d28ea93b411db7af898426a822a47cf95156f",
-    "/main-es5.js": "5d9aa56a8cf1393ad018fba9ae4926dbbaa15e46",
+    "/main-es2015.js": "ccfb51d393f3f17b966d918a6f41bdf3756a8742",
+    "/main-es5.js": "0bc3728f6a145cc8d5c6b9e4c6ed5d9882ed328c",
     "/manifest.webmanifest": "a0317b87bee62078bd486789254e0eb8c679a4b3",
-    "/polyfills-es2015.js": "15a133b6cbb459a66fcd2e75f6aa25782e5d79c4",
-    "/polyfills-es5.js": "243a15abc929362008f0f961f357c14cb2bb9426",
-    "/runtime-es2015.js": "a9aafcf49f49145093fc831efd9b8e2f6c71bb9c",
-    "/runtime-es5.js": "a9aafcf49f49145093fc831efd9b8e2f6c71bb9c",
-    "/scripts.js": "2ded72a4dc5211d09b42a7469ceb608c9bb39f0f",
-    "/styles.css": "93fc1d9f7cf0e327259b50726276b796104c069b"
+    "/polyfills-es2015.js": "3739b8ed3a9ea20a1c1a8c0ade32ad2f0b7736bc",
+    "/polyfills-es5.js": "9e8de9b2247280d7a6516022a12aeeed3f6fa4e5",
+    "/runtime-es2015.js": "d63ebf7dbe178934d78d3c143282e317d5018e49",
+    "/runtime-es5.js": "0e178d22e54e51a110423a3be18e70723eee599d",
+    "/scripts.js": "ebff24840f84a9f9796d41e4db96a1ad29565bc6",
+    "/styles.css": "90c0c4a4127e10100a7ad073c261caeb5b954774"
   },
   "navigationUrls": [
     {

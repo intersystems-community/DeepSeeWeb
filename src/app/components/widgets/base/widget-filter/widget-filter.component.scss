@@ -5,7 +5,7 @@
     display: flex;
     flex-shrink: 0;
     // padding: 2px 4px;
-    background: var(--cl-header-bg);
+    background: var(--cl-widget-filter-bg);
     height: auto;
     //border-bottom: 1px solid var(--cl-header-border);
     flex-wrap: wrap;
@@ -22,7 +22,7 @@
 
     & > label {
         font-size: 12px;
-        color: var(--cl-sidebar-txt);
+        color: var(--cl-widget-filter-txt);
     }
 
     & > input, & > select {

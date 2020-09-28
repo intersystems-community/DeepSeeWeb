@@ -17,7 +17,7 @@ export class HtmlViewerComponent extends BaseWidget implements OnInit {
 
         this.subOnFilter = this.fs.onApplyFilter.subscribe(flt => {
             this.url = this.san.bypassSecurityTrustResourceUrl(this.getUrl().replace('$$$FILTERS', encodeURIComponent(flt.value)));
-        })
+        });
     }
 
     getUrl(): string {

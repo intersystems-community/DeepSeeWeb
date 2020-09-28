@@ -46,7 +46,6 @@ export class FilterService {
                 const txt = flt.displayList.split(',');
                 flt.values = [];
                 for (let j = 0; i < vals.length; j++) {
-                    // TODO: txt[j] or txt[i] ?
                     flt.values.push({name: txt[j], path: vals[j]});
                 }
             }
@@ -210,7 +209,7 @@ export class FilterService {
             return;
         }
         let found = false;
-        // TODO: check namespace in getWidgetsSettings ?
+
         const widgets = this.ss.getWidgetsSettings(this.dashboard);
         if (widgets._filters) {
             for (let i = 0; i < widgets._filters.length; i++) {

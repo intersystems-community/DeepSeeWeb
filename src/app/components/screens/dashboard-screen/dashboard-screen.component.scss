@@ -11,6 +11,9 @@ gridster {
 }
 
 .tile {
+    // Future performance increase
+    content-visibility: auto;
+    // content-visibility: size, layout, style, paint;
     overflow: visible;
     // Only one way to override gridster inline style (
     display: flex !important;
@@ -55,6 +58,7 @@ gridster {
     white-space: nowrap;
     // box-shadow: 1px 1px 3px #0000000a;
     box-shadow: 0 0 5px 0px #0000001f;
+    min-width: 140px;
     // Menu item
     & > div {
         width: 100%;
@@ -80,12 +84,17 @@ gridster {
     position: relative;
     // Open sign
     &:after {
-        content: ">";
+        content: "";
+        background-image: url(^assets/img/icons/next.svg);
         position: absolute;
-        right: 05px;
+        right: 6px;
         display: block;
         z-index: 1;
-        top: 11px;
+        top: 14px;
+        width: 12px;
+        height: 12px;
+        opacity: 0.4;
+        transform: scaleX(0.6);
     }
 
     // Sub menu

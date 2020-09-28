@@ -1,11 +1,12 @@
 import {
     AfterViewInit,
+    ChangeDetectionStrategy, ChangeDetectorRef,
     Component,
     ComponentFactoryResolver,
     ComponentRef,
     Input,
     OnDestroy,
-    OnInit, Renderer2,
+    OnInit,
     ViewChild,
     ViewContainerRef
 } from '@angular/core';
@@ -20,10 +21,10 @@ import {IButtonToggle} from '../../../../services/widget.service';
 import {WidgetHeaderComponent} from '../widget-header/widget-header.component';
 import {NamespaceService} from '../../../../services/namespace.service';
 import {BroadcastService} from '../../../../services/broadcast.service';
-import {FilterPopupComponent} from '../../../ui/filter-popup/filter-popup.component';
 import {Subscription} from 'rxjs';
 import {ModalService} from '../../../../services/modal.service';
 import {TextAreaComponent} from '../../../ui/text-area/text-area.component';
+import {BaseChartClass} from '../../charts/base-chart.class';
 
 @Component({
     selector: 'dsw-widget',
@@ -52,6 +53,8 @@ export class WidgetComponent implements OnInit, OnDestroy, AfterViewInit {
     private subFilterAll: Subscription;
     private subRefresh: Subscription;
     private subCopyMdx: Subscription;
+    private subShare: Subscription;
+    private subChangeType: Subscription;
 
     constructor(private fs: FilterService,
                 private ds: DataService,
@@ -62,6 +65,7 @@ export class WidgetComponent implements OnInit, OnDestroy, AfterViewInit {
                 private ns: NamespaceService,
                 private bs: BroadcastService,
                 private ms: ModalService,
+                public cd: ChangeDetectorRef,
                 private cfr: ComponentFactoryResolver) {
 
     }
@@ -69,22 +73,6 @@ export class WidgetComponent implements OnInit, OnDestroy, AfterViewInit {
     ngAfterViewInit() {
 
     }
-
-    // changeWidgetType(newType: string) {
-    //     this.widget.oldType = this.widget.type;
-    //     this.widget.type = newType;
-    //     this.createWidgetComponent();
-    //     // TODO: this.widget.drills = this.drills;
-    //
-    // }
-
-    // restoreWidgetType() {
-    //     delete this.widget.pivotMdx;
-    //     delete this.widget.pivotData;
-    //     // TODO: this.widget.backButton = this.drills.length !== 0;
-    //     this.widget.type = this.widget.oldType;
-    //     this.createWidgetComponent();
-    // }
 
     onHeaderButton(bt: IButtonToggle) {
         if (bt.name ==='displayAsPivot' && this.component) {
@@ -112,40 +100,19 @@ export class WidgetComponent implements OnInit, OnDestroy, AfterViewInit {
         }
 
         // Filter subscriptions
-        this.subFilter = this.bs.subscribe("filter" + this.widget.name, flt => this.applyFilter(flt));
-        this.subFilterAll = this.bs.subscribe("filterAll", flt => this.applyFilter(flt));
+        this.subFilter = this.bs.subscribe('filter' + this.widget.name, flt => this.applyFilter(flt));
+        this.subFilterAll = this.bs.subscribe('filterAll', flt => this.applyFilter(flt));
 
-        this.subRefresh = this.bs.subscribe("refresh:" + this.widget.name, () => this.requestData());
+        this.subRefresh = this.bs.subscribe('refresh:' + this.widget.name, () => this.requestData());
         this.subCopyMdx = this.bs.subscribe(`copyMDX:${this.widget.name}`, () => this.copyMDX());
-        this.bs.subscribe(`share:${this.widget.name}`, () => this.share());
+        this.subShare = this.bs.subscribe(`share:${this.widget.name}`, () => this.share());
+        this.subChangeType = this.bs.subscribe('setType:' + this.widget.name, type => this.changeType(type));
 
 
         // TODO: subscribe
         // this.$on("refresh-all", () => {this.requestData();});
-        // TODO: process subscriptions
-        // this.$on('gridster-item-transition-end', onResize);
-        // this.$on('gridster-resized', onResize);
-        // this.$watch('item.row', onMoveVertical, true);
-        // this.$watch('item.col', onMoveHorizontal, true);
-        // this.$watch('item.sizeX', onResizeHorizontal, true);
-        // this.$watch('item.sizeY', onResizeVertical, true);
         // this.$on("resetWidgets", resetWidget);
-        // this.$on("setType:" + this.item.$$hashKey, changeType);
-        // this.$on('$destroy',  () => {
-        // filterListener();
-        // filterAllListener();
-
-        // if (this.component) {
-        //     this.component.instance.requestData();
-        // }
-        // this.setupDrillFilter();
-        // this.setupChoseDataSource();
-        // this.setupActions();
-
-        // this.requestPivotData();
-
     }
-
 
     /**
      * Initializes pivot variables
@@ -191,6 +158,12 @@ export class WidgetComponent implements OnInit, OnDestroy, AfterViewInit {
         if (this.subFilterAll) {
             this.subFilterAll.unsubscribe();
         }
+        if (this.subShare) {
+            this.subShare.unsubscribe();
+        }
+        if (this.subChangeType) {
+            this.subChangeType.unsubscribe();
+        }
         if (this.component) {
             this.component.destroy();
         }
@@ -232,6 +205,7 @@ export class WidgetComponent implements OnInit, OnDestroy, AfterViewInit {
             }
             this.model.filters[i].text = ((flt.isExclude === true && flt.valueDisplay) ? (this.i18n.get('not') + ' ') : '') + flt.valueDisplay;
         }
+        this.cd.detectChanges();
     }
 
     /**
@@ -251,11 +225,9 @@ export class WidgetComponent implements OnInit, OnDestroy, AfterViewInit {
      */
     changeType(t: string) {
         this.widget.type = t;
-        if ((this.component.chart) && (t.indexOf('chart') !== -1)) {
-            this.setType(t.replace('chart', ''));
+        if ((this.component.chart)) {
+            (this.component as BaseChartClass).setType(t);
         }
-        // TODO: broadcast
-        // this.$broadcast('typeChanged');
     }
 
     protected setType(type: string) {
@@ -301,7 +273,6 @@ export class WidgetComponent implements OnInit, OnDestroy, AfterViewInit {
      * @return {string} New url
      */
     appendShareState(url, state) {
-        // TODO: check what is item ?
         const v = this.widget[state];
         if (v) {
             url += '&' + state + '=' + v;
@@ -362,16 +333,6 @@ export class WidgetComponent implements OnInit, OnDestroy, AfterViewInit {
 
     }
 
-
-    /**
-     * Widget resize callback
-     */
-    // TODO: on resize
-    // onResize() {
-    //     this.onResize();
-    // }
-
-
     requestData() {
         if (!this.component) {
             return;
@@ -385,100 +346,6 @@ export class WidgetComponent implements OnInit, OnDestroy, AfterViewInit {
     applyFilter(flt: any) {
         this.updateFiltersText();
         this.requestData();
-    }
-
-
-    // toggleFilter(idx: number) {
-    //
-    // }
-
-    /**
-     * Callback for moving widget horizontally
-     * @param {undefined} a Not used
-     * @param {undefined} b Not used
-     * @param {object} this Scope
-     */
-    onMoveHorizontal(a, b) {
-        // TODO: check dragging
-        return;
-        // if (!gridsterConfig.isDragging) {
-        //     return;
-        // }
-        // if (!isNaN(this.item.row)) {
-        //     var widgets = Storage.getWidgetsSettings(this.widget.dashboard, Connector.getNamespace());
-        //     var k = this.widget.name;
-        //     if (!widgets[k]) {
-        //         widgets[k] = {};
-        //     }
-        //     widgets[k].col = this.item.col;
-        //     Storage.setWidgetsSettings(widgets, this.widget.dashboard, Connector.getNamespace());
-        // }
-    }
-
-    /**
-     * Callback for moving widget vertically
-     * @param {undefined} a Not used
-     * @param {undefined} b Not used
-     * @param {object} this Scope
-     */
-    onMoveVertical(a, b) {
-        // TODO: implement
-        // if (!gridsterConfig.isDragging) {
-        //     return;
-        // }
-        // if (!isNaN(this.item.row)) {
-        //     var widgets = Storage.getWidgetsSettings(this.widget.dashboard, Connector.getNamespace());
-        //     var k = this.widget.name;
-        //     if (!widgets[k]) {
-        //         widgets[k] = {};
-        //     }
-        //     widgets[k].row = this.item.row;
-        //     Storage.setWidgetsSettings(widgets, this.widget.dashboard, Connector.getNamespace());
-        // }
-    }
-
-    /**
-     * Callback for sizing widget horizontally
-     * @param {undefined} a Not used
-     * @param {undefined} b Not used
-     * @param {object} this Scope
-     */
-    onResizeHorizontal(a, b) {
-        // TODO: implement
-        // if (!gridsterConfig.isResizing) {
-        //     return;
-        // }
-        // if (!isNaN(this.item.sizeX)) {
-        //     var widgets = Storage.getWidgetsSettings(this.widget.dashboard, Connector.getNamespace());
-        //     var k = this.widget.name;
-        //     if (!widgets[k]) {
-        //         widgets[k] = {};
-        //     }
-        //     widgets[k].sizeX = this.item.sizeX;
-        //     Storage.setWidgetsSettings(widgets, this.widget.dashboard, Connector.getNamespace());
-        // }
-    }
-
-    /**
-     * Callback for sizing widget vertically
-     * @param {undefined} a Not used
-     * @param {undefined} b Not used
-     * @param {object} this Scope
-     */
-    onResizeVertical(a, b) {
-        // TODO: implement
-        // if (!gridsterConfig.isResizing) {
-        //     return;
-        // }
-        // if (!isNaN(this.item.sizeY)) {
-        //     var widgets = Storage.getWidgetsSettings(this.widget.dashboard, Connector.getNamespace());
-        //     var k = this.widget.name;
-        //     if (!widgets[k]) {
-        //         widgets[k] = {};
-        //     }
-        //     widgets[k].sizeY = this.item.sizeY;
-        //     Storage.setWidgetsSettings(widgets, this.widget.dashboard, Connector.getNamespace());
-        // }
     }
 
     /**
@@ -518,13 +385,6 @@ export class WidgetComponent implements OnInit, OnDestroy, AfterViewInit {
         this.widget.toolbar = false;
     }
 
-    getDesc(idx) {
-        // TODO: implement;
-        return null;
-    }
-
-
-
     private createWidgetComponent(type?: string) {
         if (!this.container) {
             console.error(`Can't find container for widget: `, this.widget);
@@ -540,6 +400,7 @@ export class WidgetComponent implements OnInit, OnDestroy, AfterViewInit {
             this.component = this.componentRef.instance;
             this.component.widget = this.widget;
             this.component.model = this.model;
+            this.component.parent = this;
             this.component.createWidgetComponent = (type: string) => {
                 this.createWidgetComponent(type)
             };

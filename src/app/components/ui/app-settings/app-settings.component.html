@@ -1,0 +1,23 @@
+<dsw-sidebar-actions (cancel)="onCancel()" (apply)="onApply()" >Settings</dsw-sidebar-actions>
+<div class="container">
+    <label>{{'dashColumns' | i18n}}</label>
+    <input type="number" [(ngModel)]="model.colCount">
+
+    <label>{{'saveFilters' | i18n}}
+        <input type="checkbox" [(ngModel)]="model.isSaveFilters">
+    </label>
+
+    <label>{{'relatedFilters' | i18n}}
+        <input type="checkbox" [(ngModel)]="model.isRelatedFilters">
+    </label>
+
+
+    <label>{{'importSettings' | i18n}}</label>
+    <input type="file" enctype="multipart/form-data" (change)="readSettings($event)"/>
+
+
+    <div class="actions">
+        <button class="btn btn-gray" (click)="resetSettings()">{{'resetSettings' | i18n}}</button>
+        <button class="btn btn-gray" (click)="exportSettings()">{{'exportSettings' | i18n}}</button>
+    </div>
+</div>

@@ -27,7 +27,7 @@ export class HiLowChartComponent extends BaseChartClass implements OnInit {
             },
             tooltip: {
                 formatter: function() {
-                    //TODO: Lang support
+                    // TODO: Lang support
                     const cap1 = this.series.userOptions.caption1 || 'Minimum';
                     const cap2 = this.series.userOptions.caption2 || 'Maximum';
                     const fmt1 = this.series.userOptions.format1;
@@ -60,7 +60,7 @@ export class HiLowChartComponent extends BaseChartClass implements OnInit {
         const tempData = [];
 
         if (data.Cols[0].tuples[0].children) {
-            //TODO: lang support
+            // TODO: lang support
             this.showError("Data converter for this hi-low chart not implemented!");
         } else {
             for (let i = 0; i < data.Cols[1].tuples.length; i++) {

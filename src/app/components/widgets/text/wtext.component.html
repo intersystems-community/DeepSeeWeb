@@ -1,12 +1,9 @@
 <div
     *ngFor="let item of model.textData; let idx = index"
-    [style.height.%]="100 / (model.textData.length || 1)"
     class='item'
 >
     <label [hidden]="model?.textData?.length === 1"
-           [style.top.%]="100 / (model.textData.length || 1) * idx"
-           [style.color]="item.color"
-    >
+           [style.color]="item.color">
         {{item.label}}
     </label>
 

@@ -17,7 +17,8 @@ html, body {
     padding: 0;
     font-family: $font;
     background-color: var(--cl-bg);
-    overflow-x: hidden;
+    // overflow-x: hidden;
+    overflow: hidden;
     & * {
         box-sizing: border-box;
         //font-family: $font;
@@ -102,6 +103,15 @@ input:not([type=checkbox]), textarea {
 
     &:hover {
         background-color: #6eca6e;
+    }
+}
+
+.btn-gray {
+    color: #363535;
+    background-color: #cccccc;
+    border-color: #b4b2b2;
+    &:hover {
+        background-color: #dbdbdb;
     }
 }
 

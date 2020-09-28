@@ -1,0 +1,49 @@
+<dsw-sidebar-actions (cancel)="onCancel()" (apply)="onApply()" >Chart colors</dsw-sidebar-actions>
+<div class="container">
+    <label>{{'seriesColor' | i18n}}</label>
+    <span *ngFor="let c of model.themeColors.hcColors; let idx = index; trackBy: byIndex">
+    <input
+        class="color-rect"
+        [(colorPicker)]="model.themeColors.hcColors[idx]" [style.background]="model.themeColors.hcColors[idx]"
+        cpPosition="bottom"
+        (colorPickerChange)="update()"
+        readonly
+    />
+    </span>
+
+    <label>Chart background</label>
+    <input
+        class="color-rect"
+        [(colorPicker)]="model.themeColors.hcBackground" [style.background]="model.themeColors.hcBackground"
+        (colorPickerChange)="update()"
+        readonly
+    />
+
+    <label>Lines color</label>
+    <input
+        class="color-rect"
+        [(colorPicker)]="model.themeColors.hcLineColor" [style.background]="model.themeColors.hcLineColor"
+        (colorPickerChange)="update()"
+        readonly
+    />
+
+    <label>Text color</label>
+    <input
+        class="color-rect"
+        [(colorPicker)]="model.themeColors.hcTextColor" [style.background]="model.themeColors.hcTextColor"
+        (colorPickerChange)="update()"
+        readonly
+    />
+
+    <label>Series border color</label>
+    <input
+        class="color-rect"
+        [(colorPicker)]="model.themeColors.hcBorderColor" [style.background]="model.themeColors.hcBorderColor"
+        (colorPickerChange)="update()"
+        readonly
+    />
+    <div class="divider"></div>
+
+    <button class="btn btn-success" (click)="resetToDefault()">Reset to default</button>
+</div>
+

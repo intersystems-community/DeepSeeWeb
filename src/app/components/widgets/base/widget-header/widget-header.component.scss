@@ -3,6 +3,7 @@
 :host {
     position: relative;
     display: flex;
+    z-index: 1;
     flex: 0 0 auto;
     justify-content: space-between;
     font-family: $font;
@@ -52,17 +53,19 @@
         transition: background-color $animSpeed line-height;
         outline: none;
         & > img {
-            opacity: 0.5;
+            opacity: var(--widget-header-btn-opacity);
+            filter: var(--widget-header-btn-filter);
         }
         & > i {
-            opacity: 0.5;
+            opacity: var(--widget-header-btn-opacity);
+            filter: var(--widget-header-btn-filter);
         }
         &:hover {
             background-color: var(--cl-header-btn-hover-darken);
         }
         &.active > img, &.active > i {
             opacity: 1;
-            filter: contrast(0.2) sepia(1) brightness(1.1) hue-rotate(-655deg) contrast(4);
+            filter: var(--widget-header-btn-active-filter);
         }
     }
 }

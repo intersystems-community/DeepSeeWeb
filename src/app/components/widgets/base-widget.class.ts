@@ -1,4 +1,13 @@
-import { ComponentFactoryResolver, ElementRef, HostBinding, OnDestroy, OnInit, Directive } from '@angular/core';
+import {
+    ComponentFactoryResolver,
+    ElementRef,
+    HostBinding,
+    OnDestroy,
+    OnInit,
+    Directive,
+    NgZone,
+    ChangeDetectorRef
+} from '@angular/core';
 import {UtilService} from '../../services/util.service';
 import {VariablesService} from '../../services/variables.service';
 import {StorageService} from '../../services/storage.service';
@@ -13,16 +22,14 @@ import {Subscription} from 'rxjs';
 import {CURRENT_NAMESPACE, NamespaceService} from '../../services/namespace.service';
 import {BroadcastService} from '../../services/broadcast.service';
 import {DomSanitizer} from '@angular/platform-browser';
+import {SidebarService} from '../../services/sidebar.service';
+import {WidgetComponent} from './base/widget/widget.component';
+import {DashboardService} from '../../services/dashboard.service';
 
-// TODO: for future refactoring
-// class WidgetButtons {
-//     values = false;
-//     top = false;
-//     zero = false;
-//     legend = false;
-//     pivot = false;
-//     fullscreen = false;
-// }
+export interface IAddonInfo {
+    type?: string;
+    chart?: string;
+}
 
 // Widget info object
 export interface IWidgetInfo {
@@ -31,9 +38,6 @@ export interface IWidgetInfo {
     y: number;
     cols: number;
     row: number;
-
-    // TODO: Widget buttons state for future
-    // buttons: WidgetButtons;
 
     // Widget parameters
     name: string;
@@ -111,14 +115,20 @@ export interface IWidgetInfo {
 export abstract class BaseWidget implements OnInit, OnDestroy {
 
     public model: any = {};
-    //public header: WidgetHeaderComponent;
+    // Parent angular component on which widget is created
+    parent: WidgetComponent;
+
+    // Widget data
     public widget: IWidgetInfo;
+
+    // Loading spinner, do now use directly
+    // use showLoading(), hideLoading() instead
     public isSpinner = true;
     protected drills = [];
     protected drillFilter = '';
     protected drillFilterDrills = [];
-
     protected pivotVariables = null;
+
 
     // Array of widget names that shall be filtered during drill down
     drillFilterWidgets = null;
@@ -168,19 +178,22 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
     // private subOnHeaderButton: Subscription;
 
     constructor(protected el: ElementRef,
-                // protected ws: WidgetService,
                 protected us: UtilService,
                 protected vs: VariablesService,
                 protected ss: StorageService,
                 protected ds: DataService,
                 protected fs: FilterService,
                 protected wts: WidgetTypeService,
+                private dbs: DashboardService,
                 protected cfr: ComponentFactoryResolver,
                 protected ns: NamespaceService,
                 protected route: ActivatedRoute,
                 public i18n: I18nService,
                 public bs: BroadcastService,
-                protected san: DomSanitizer) {
+                protected san: DomSanitizer,
+                protected sbs: SidebarService,
+                protected cd: ChangeDetectorRef,
+                protected zone: NgZone) {
     }
 
     ngOnInit() {
@@ -249,23 +262,11 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
 
         // Subscribe for col spec changes
         this.subColSpec = this.bs.subscribe('setColSpec:' + this.widget.name, (path) => this.onColSpecChanged(path));
-        this.subColSpecAll = this.bs.subscribe('setColSpec:*',  (path) => this.onColSpecChanged(path));
+        this.subColSpecAll = this.bs.subscribe('setColSpec:*', (path) => this.onColSpecChanged(path));
 
 
         this.subDataSourcechange = this.bs.subscribe('changeDataSource:' + this.widget.name, (pivot) => this.changeDataSource(pivot));
 
-
-        // this.$on('$destroy',  () {
-        //     filterListener();
-        //     filterAllListener();
-        //     colSpecListener();
-        //     colSpecAllListener();
-        //     pivotVarListener();
-        //     pivotVarAllListener();
-        //     changeDataSourceListener();
-        // TODO: destroy
-        //     this.destroy();
-        // });
 
         // TODO: filter count
         // if (this.filterCount === undefined) {
@@ -276,12 +277,12 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         //     });
         // }
 
-         if (this.isLinked()) {
-             this.subLinkedMdx = this.bs.subscribe('setLinkedMDX:' + this.widget.name, (mdx: string) => this.onSetLinkedMdx(null, mdx));
-         }
-         if (this.hasDependents()) {
-             this.subRefreshDepenend = this.bs.subscribe('widget:' + this.widget.name + ':refreshDependents', (v) => this.onRefreshDependents());
-         }
+        if (this.isLinked()) {
+            this.subLinkedMdx = this.bs.subscribe('setLinkedMDX:' + this.widget.name, (mdx: string) => this.onSetLinkedMdx(null, mdx));
+        }
+        if (this.hasDependents()) {
+            this.subRefreshDepenend = this.bs.subscribe('widget:' + this.widget.name + ':refreshDependents', (v) => this.onRefreshDependents());
+        }
 
         this.setupDrillFilter();
         this.setupChoseDataSource();
@@ -376,16 +377,13 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
 
         // If this is empty widget, find other choosers on other widgets with location = "dashboard"
         if (isEmptyWidget) {
-            let k = 0;
-            let desc = this.getDesc(k);
-            while (desc) {
-                if (desc.controls) {
+            const widgets = this.dbs.getWidgets();
+            for (let i = 0; i < widgets.length; i++) {
+                if (widgets[i].controls) {
                     choosers = choosers.concat(
-                        desc.controls.filter(filterChoosers).filter(c => c.location === 'dashboard')
+                        widgets[i].controls.filter(filterChoosers).filter(c => c.location === 'dashboard')
                     );
                 }
-                k++;
-                desc = this.getDesc(k);
             }
         }
 
@@ -465,117 +463,6 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         this.requestData();
     }
 
-
-    doExport(type) {
-        const opt = {
-            sourceWidth: Math.floor(screen.width / 2),
-            sourceHeight: Math.floor(screen.height / 2),
-            filename: this.widget.title || 'chart',
-            type: ''
-        };
-        switch (type) {
-            // case 'png':  this.chart.exportChart(opt); break;
-            case 'svg':
-                opt.type = 'image/svg+xml';
-                break;
-            case 'jpg':
-                opt.type = 'image/jpeg';
-                break;
-            case 'pdf':
-                opt.type = 'application/pdf';
-                break;
-            case 'xls': {
-                let mdx = this.getMDX();
-                if (this.lpt) {
-                    // mdx = this.lpt.getActualMDX();
-                    const lpt = this.lpt;
-                    mdx = lpt._dataSourcesStack[lpt._dataSourcesStack.length - 1].BASIC_MDX + lpt.dataSource.FILTERS;
-                }
-                const folder = this.ss.serverSettings.DefaultApp || '/csp/' + CURRENT_NAMESPACE;
-                const url = folder + '/_DeepSee.UI.MDXExcel.zen?MDX=' + encodeURIComponent(mdx);
-                window.open(url);
-                return;
-            }
-            case 'csv': {
-                this.exportToCsv();
-                return;
-            }
-        }
-        // TODO: export chart
-        // if (this.chart) { this.chart.exportChart(opt); }
-    }
-
-    exportToCsv() {
-        const d = this._currentData;
-        if (!this.lpt && !d) {
-            return;
-        }
-        let cats, ser, data;
-        if (this.lpt) {
-            ser = this.lpt.dataController.getData().dimensions[0];
-            cats = this.lpt.dataController.getData().dimensions[1];
-            data = this.lpt.dataController.getData().dataArray;
-        } else {
-            cats = d.Cols[1].tuples;
-            ser = d.Cols[0].tuples;
-            data = d.Data;
-        }
-        const nl = '\r\n';
-        const sep = '|';
-        let csvFile = '"sep=' + sep + '"' + nl;
-        let i, j;
-        // if (ser.length === 1) {
-        //
-        // } else {
-        // Build header
-        if (cats[0] && cats[0].dimension) {
-            csvFile += cats[0].dimension + sep;
-        }
-        for (j = 0; j < ser.length; j++) {
-            csvFile += ser[j].caption;
-            if (j !== ser.length - 1) {
-                csvFile += sep;
-            }
-        }
-        csvFile += nl;
-
-        // Build data
-        for (i = 0; i < (cats.length || (data.length / ser.length)); i++) {
-            if (cats[i] && cats[i].caption) {
-                csvFile += cats[i].caption + sep;
-            }
-            for (j = 0; j < ser.length; j++) {
-                csvFile += data[i * ser.length + j] || '0';
-                if (j !== ser.length - 1) {
-                    csvFile += sep;
-                }
-            }
-            csvFile += nl;
-        }
-        // }
-
-        const filename = (this.widget.title || 'data') + '.csv';
-        const blob = new Blob([csvFile], {type: 'text/csv;charset=utf-8;'});
-        if (navigator.msSaveBlob) { // IE 10+
-            navigator.msSaveBlob(blob, filename);
-        } else {
-            const link = document.createElement('a');
-            if (link.download !== undefined) { // feature detection
-                // Browsers that support HTML5 download attribute
-                const url = URL.createObjectURL(blob);
-                link.setAttribute('href', url);
-                link.setAttribute('download', filename);
-                link.style.visibility = 'hidden';
-                document.body.appendChild(link);
-                setTimeout(() => {
-                    link.click();
-                    document.body.removeChild(link);
-                }, 10);
-            }
-        }
-
-    }
-
     getDataByColumnName(data, columnName, dataIndex) {
         if (!data || !data.Data || !data.Cols || !data.Cols[0] || !data.Cols[0].tuples) {
             return;
@@ -604,7 +491,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
             return;
         }
         for (let i = 0; i < this.drillFilterWidgets.length; i++) {
-            this.bs.broadcast('drillFilter:' + this.drillFilterWidgets[i], { path: '', drills: []});
+            this.bs.broadcast('drillFilter:' + this.drillFilterWidgets[i], {path: '', drills: []});
         }
     }
 
@@ -773,8 +660,6 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
     }
 
 
-
-
     getDrillthroughMdx(mdx: string) {
         const m = mdx.toLowerCase();
         let selTxt = 'select non empty';
@@ -849,7 +734,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
                 const ddMdx = this.getDrillthroughMdx(mdx);
 
                 this.ds.execMDX(ddMdx)
-                // .error(this._onRequestError)
+                    // .error(this._onRequestError)
                     .then((data2: any) => {
                         if (!data2 || !data2.children || data2.children.length === 0) {
                             return;
@@ -901,11 +786,21 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
     }
 
     showLoading() {
+        if (this.isSpinner) {
+            return;
+        }
         this.isSpinner = true;
+        this.parent.cd.detectChanges();
+        this.cd.detectChanges();
     }
 
     hideLoading() {
+        if (!this.isSpinner) {
+            return;
+        }
         this.isSpinner = false;
+        this.parent.cd.detectChanges();
+        this.cd.detectChanges();
     }
 
     applyDrill(mdx: string) {
@@ -1133,6 +1028,11 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
     }
 
     retrieveData(data: any) {
+        this.hideLoading();
+        if (data.Error) {
+            this.showError(data.Error);
+            return;
+        }
     }
 
     /**
@@ -1221,11 +1121,6 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
                 this.bs.broadcast('setLinkedMDX:' + this.widget.dependents[i], customMdx || this.getMDX());
             }
         }
-    }
-
-    getDesc(idx: number): any {
-        // TODO: implement;
-        return {};
     }
 
     /**

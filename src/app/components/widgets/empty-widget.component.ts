@@ -46,8 +46,6 @@ export class EmptyWidgetComponent extends BaseWidget implements OnInit {
             this.fs.applyFilter(flt, true);
         }
         this.bs.broadcast('filterAll');
-        // TODO: update text
-        // this.updateFiltersText();
     }
 
     /**

@@ -63,6 +63,8 @@ export class I18nService {
 // All translations
 const TRANSLATIONS = {
     en: {
+        settingsImported: 'Settings has been imported successfully! Page will be reloaded.',
+        settingsReset: 'Settings has been reset successfully! Page will be reloaded.',
         resetClickFilter: 'Reset click filter',
         copyMDX: 'Copy MDX',
         seriesColor: 'Series colors',
@@ -164,6 +166,8 @@ const TRANSLATIONS = {
         fullscreen: "Toggle fullscreen"
     },
     de: {
+        settingsImported: 'Einstellungen wurden erfolgreich importiert!',
+        settingsReset: 'Einstellungen wurden erfolgreich zurückgesetzt!',
         resetClickFilter: 'Reset click filter',
         copyMDX: 'Copy MDX',
         seriesColor: 'Series colors',
@@ -265,6 +269,8 @@ const TRANSLATIONS = {
         fullscreen: "Vollbild umschalten"
     },
     cs: {
+        settingsImported: 'Nastavení bylo úspěšně importováno!',
+        settingsReset: 'Nastavení bylo úspěšně resetováno!',
         resetClickFilter: 'Reset click filter',
         copyMDX: 'Copy MDX',
         seriesColor: 'Series colors',
@@ -363,6 +369,8 @@ const TRANSLATIONS = {
         fullscreen: "Přepnout na celou obrazovku"
     },
     ru: {
+        settingsImported: 'Настройки были загружены успешно!',
+        settingsReset: 'Настройки были сброшены. Страница будет перегружена.',
         resetClickFilter: 'Сбросить click фильтр',
         copyMDX: 'Скопировать MDX',
         seriesColor: 'Цвет серий',

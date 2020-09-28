@@ -5,6 +5,7 @@ import {ErrorService, IError} from './services/error.service';
 import {ERROR_TOGGLE_ANIMATION} from './components/ui/error/error.component';
 import {HeaderService} from './services/header.service';
 import {ModalService} from './services/modal.service';
+import {NavigationStart, Router, RouterEvent} from '@angular/router';
 
 @Component({
     selector: 'app-root',
@@ -19,33 +20,44 @@ export class AppComponent implements OnInit {
     @ViewChild('sidebar') sidebar: SidebarComponent;
     errors: IError[];
 
-    constructor(public ss: SidebarService,
+    constructor(public sbs: SidebarService,
                 public hs: HeaderService,
                 public es: ErrorService,
-                public ms: ModalService) {
-
-    }
-
-    async addonsComponents() {
-        const { HtmlViewerComponent } = await import('./components/widgets/html-viewer.component');
-
+                public ms: ModalService,
+                private router: Router) {
     }
 
     ngOnInit() {
-        this.ss.sidebarToggle.subscribe((constructor) => {
+        // Hide sidebar on any route change
+        this.router.events.subscribe((e: RouterEvent) => {
+            if (e instanceof NavigationStart) {
+                this.sbs.sidebarToggle.next(null);
+            }
+        });
+        this.sbs.sidebarToggle.subscribe((constructor) => {
             this.isSidebar = !!constructor;
         });
     }
 
     onAnimDone() {
-        this.ss.onAnimEnd.emit();
+        this.sbs.onAnimEnd.emit();
     }
 
     onAnimStart() {
-        this.ss.onAnimStart.emit();
+        this.sbs.onAnimStart.emit();
     }
 
     trackError(idx: number, err: IError) {
         return err.id;
+    }
+
+    /**
+     * This method is not used. It needed to tell compiler that we will load addons
+     * from 'addons' folder, to compile it into separate bundles
+     */
+    notUsedOnlyToCompileAddons(addon: string) {
+        return [
+            import(/* webpackChunkName: 'addon-' */`src/addons/${addon}`)
+        ];
     }
 }

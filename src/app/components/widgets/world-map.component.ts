@@ -3,9 +3,9 @@ import {BaseWidget} from './base-widget.class';
 import * as  Highcharts from 'highcharts/highstock';
 import More from 'highcharts/highcharts-more';
 More(Highcharts);
-import  Tree from 'highcharts/modules/treemap';
+import Tree from 'highcharts/modules/treemap';
 Tree(Highcharts);
-import  Heatmap from 'highcharts/modules/heatmap';
+import Heatmap from 'highcharts/modules/heatmap';
 Heatmap(Highcharts);
 // Load the exporting module.
 import Exporting from 'highcharts/modules/exporting';

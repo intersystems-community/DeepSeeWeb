@@ -99,41 +99,6 @@ export class WidgetFilterComponent implements OnInit {
             onClose: () => {
                 this.openedFilter = -1;
             }
-        })
-
-        // const factory = this.cfr.resolveComponentFactory(FilterPopupComponent);
-        // const filterRef = this.filterPopup.createComponent(factory);
-        // const filterComp  = filterRef.instance;
-
-        // const el = filterRef.location.nativeElement;
-        // this.r2.setStyle(el, 'left', x + 'px');
-        // this.r2.setStyle(el, 'top', y + 'px');
-
-        // const obj = e.currentTarget.tagName.toUpperCase() === 'INPUT' ? e.currentTarget.nextElementSibling.offsetParent : e.currentTarget.offsetParent.offsetParent;
-        // if (obj) {
-        //     const rect = obj.getBoundingClientRect();
-        //     this.changeStyle('.ngdialog.ngdialog-theme-plain .ngdialog-content', 'margin-left', rect.left + 'px');
-        //     if (dsw.mobile) {
-        //         this.changeStyle('.ngdialog.ngdialog-theme-plain .ngdialog-content', 'margin-top', '0px');
-        //         this.changeStyle('.ngdialog.ngdialog-theme-plain .ngdialog-content', 'margin-left', '0px');
-        //         this.changeStyle('.ngdialog.ngdialog-theme-plain .ngdialog-content', 'width', window.innerWidth + 'px');
-        //         this.changeStyle('.ngdialog.ngdialog-theme-plain .ngdialog-content', 'height', '100%');
-        //     } else {
-        //         this.changeStyle('.ngdialog.ngdialog-theme-plain .ngdialog-content', 'margin-top', (rect.top + 16) + 'px');
-        //     }
-        // }
-        //
-        // let className = 'ngdialog-theme-plain';
-        // if (dsw.mobile) {
-        //     className += ' ngdialog-mobile';
-        // }
-        // TODO: show dialog
-        // ngDialog.open({
-        //     template: 'src/views/filter.html',
-        //     data: {filter: flt, dataSource: this.widget.dataSource, widget: this},
-        //     controller: 'filter',
-        //     showClose: false,
-        //     className: className
-        // });
+        });
     }
 }

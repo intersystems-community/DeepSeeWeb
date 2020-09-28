@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {Injectable, EventEmitter} from '@angular/core';
 import {DataService} from './data.service';
 import {dsw} from '../../environments/dsw';
 import {I18nService} from './i18n.service';
@@ -17,6 +17,8 @@ export class StorageService {
 
     private configLoaded = false;
     private isLocalStorage = false;
+
+    onSettingsChanged = new EventEmitter<any>();
 
     // Returns local or session storage depending on support
     public get storage(): Storage {
@@ -103,9 +105,6 @@ export class StorageService {
             }
         }
         this.i18n.current = settings.language || 'en';
-
-        // TODO: lang change broadcast
-        // $rootScope.$broadcast('lang:changed');
 
         // Get colors from theme
         const cols = Highcharts.getOptions().colors;

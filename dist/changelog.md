@@ -1,5 +1,29 @@
+#### 3.0.8a
+* added realtime customization of chart colors 
+* optimized widget loading on dashboard
+* added "view as" context menu item for charts
+* improved context menu design
+* added optimization for dashboard widget for future 'content-visibility' feature
+* optimized speed of dashboard widgets loading and user interaction
+* new implementation of chart printing(now printed as svg, faster and no flickering on main screen, as old implementation renders chart in DOM)
+* changed behavior of widgets while dragging, now they have infinitive vertical scroll
+* improved UX of context menu, if it opened near edge of the screen, it's to be opened opposite edge, so context menu can't never shown offscreen
+* fixed issue with missing controls on empty widget
+* small fix for sidebar positioning
+* simplified layout for text widget(removed % calcs, etc. small performance increase)
+* fixed issue during navigation when editing dashboard
+* fixed few memory leaks due to forgotten subscriptions
+
 #### 3.0.7a
-n
+* added missing import to csv/xls
+* added missing import to images (for charts)
+* fixed style for context menu
+* added sub menu items support for context menu
+* changed logo for login screen
+* fixed issue with chart series colors
+* fixed issue with public dsw 
+* added description for new url style in readme 
+
 
 #### 3.0.6a
 This is <b>alpha</b> release of newly rewritten DSW

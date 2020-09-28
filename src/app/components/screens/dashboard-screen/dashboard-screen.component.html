@@ -1,10 +1,12 @@
+<!--{{checkItems()}}-->
+
 <!-- Widgets grid -->
 <gridster [options]="tilesOptions" *ngIf="!isMobile" #gridster>
 
     <!-- Grid item -->
     <gridster-item
         class="tile"
-        *ngFor="let item of (data$ | async); let idx = index"
+        *ngFor="let item of data$ | async; let idx = index"
         [class.no-anim]="!isLoaded"
         [class.expanded]="item.isExpanded"
         [item]="item"
@@ -18,21 +20,35 @@
 <img src="assets/img/spinner.svg" [hidden]="isLoaded">
 
 <!-- Context menu -->
-<div #ctxMenu class="ctx-menu" [style.visibility]="ctxItem? 'visible': 'hidden'">
+<div #ctxMenu class="ctx-menu" style="visibility:hidden">
     <div (click)="refreshItem()">{{'refresh' | i18n}}</div>
     <div (click)="printItem()" *ngIf="ctxItem?.isChart">{{'print' | i18n}}</div>
     <div (click)="shareItem()">{{'share' | i18n}}</div>
     <div (click)="copyMDX()">{{'copyMDX' | i18n}}</div>
     <div class="divider"></div>
-    <div class="ctx-sub">
+
+    <!-- Export -->
+    <div class="ctx-sub" (mouseover)="showSubmenu(sub1, $event)">
         Export
-        <div class="ctx-menu">
+        <div class="ctx-menu" #sub1>
             <div *ngIf="ctxItem?.isChart" (click)="exportWidget('svg')">{{'svgImage' | i18n}}</div>
             <div *ngIf="ctxItem?.isChart" (click)="exportWidget('png')">{{'pngImage' | i18n}}</div>
             <div *ngIf="ctxItem?.isChart" (click)="exportWidget('jpg')">{{'jpgImage' | i18n}}</div>
             <div *ngIf="ctxItem?.isChart" (click)="exportWidget('pdf')">{{'pdfDoc' | i18n}}</div>
             <div (click)="exportWidget('xls')">{{'xlsDoc' | i18n}}</div>
             <div (click)="exportWidget('csv')">{{'csvDoc' | i18n}}</div>
+        </div>
+    </div>
+
+    <!-- View as -->
+    <div class="ctx-sub" *ngIf="ctxItem?.isChart" (mouseover)="showSubmenu(sub2, $event)">
+        {{'viewAs' | i18n}}
+        <div class="ctx-menu" #sub2>
+            <div (click)="setType('area')">Area chart</div>
+            <div (click)="setType('bar')">Bar chart</div>
+            <div (click)="setType('column')">Column chart</div>
+            <div (click)="setType('line')">Line chart</div>
+            <div (click)="setType('pie')">Pie chart</div>
         </div>
     </div>
 </div>

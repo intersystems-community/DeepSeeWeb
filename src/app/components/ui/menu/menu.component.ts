@@ -9,6 +9,7 @@ import {NamespaceSelectorComponent} from '../namespace-selector/namespace-select
 import {LanguageSelectorComponent} from '../language-selector/language-selector.component';
 import {ModalService} from '../../../services/modal.service';
 import {AboutComponent} from '../about/about.component';
+import {AppSettingsComponent} from '../app-settings/app-settings.component';
 
 @Component({
     selector: 'dsw-menu',
@@ -26,7 +27,7 @@ export class MenuComponent implements OnInit, OnDestroy {
                 private route: ActivatedRoute,
                 private ms: MenuService,
                 private modal: ModalService,
-                private ss: SidebarService,
+                private sbs: SidebarService,
                 private hs: HeaderService) {
         this.checkHome();
     }
@@ -59,13 +60,13 @@ export class MenuComponent implements OnInit, OnDestroy {
     }
 
     showNamespaceSelector() {
-        this.ss.sidebarToggle.next({
+        this.sbs.sidebarToggle.next({
             component: NamespaceSelectorComponent
         });
     }
 
     showLanguageSelector() {
-        this.ss.sidebarToggle.next({
+        this.sbs.sidebarToggle.next({
             component: LanguageSelectorComponent
         });
     }
@@ -77,6 +78,10 @@ export class MenuComponent implements OnInit, OnDestroy {
             closeByEsc: true,
             closeByBackdropClick: true
         });
-        this.ss.sidebarToggle.next(null);
+        this.sbs.sidebarToggle.next(null);
+    }
+
+    showSettingsMenu() {
+        this.sbs.sidebarToggle.next({component: AppSettingsComponent});
     }
 }

@@ -15,17 +15,6 @@ export class WPivotComponent extends BaseWidget implements OnInit, AfterViewInit
     @Input() widget: IWidgetInfo;
     isSpinner = false;
 
-
-    ngOnInit() {
-        super.ngOnInit();
-        // TODO: broadcast
-        // this..$on("print:" + this..item.$$hashKey, print);
-        // this..item.onDrillDown = onDrillDown;
-        // this..item.onDrillThrough = onDrillThrough;
-        // this..item.drillUp = doDrillUp;
-
-    }
-
     ngAfterViewInit() {
         this.createPivotTable();
     }
@@ -56,7 +45,7 @@ export class WPivotComponent extends BaseWidget implements OnInit, AfterViewInit
             columnResizeAnimation: true,
             locale: this.i18n.current,
             hideButtons: true,
-            formatNumbers: "#,###.##"
+            formatNumbers: '#,###.##'
         };
         delete this.widget.pivotMdx;
 

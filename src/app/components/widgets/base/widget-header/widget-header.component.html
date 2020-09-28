@@ -45,10 +45,8 @@
         <img src="assets/img/icons/fullscreen.svg">
     </button>
 
-    <!-- Settings -->
-    <button *ngIf="widget?.isChart" ng-click="item.showSettings()"
-            title="{{'changeColors' | i18n}}">
-<!--        <i class="fa fa-cog"></i>-->
+    <!-- Chart settings -->
+    <button *ngIf="widget?.isChart" title="{{'changeColors' | i18n}}" (click)="onClick('chartConfig')" >
         <img src="assets/img/icons/color_lens-black-18dp.svg">
     </button>
 

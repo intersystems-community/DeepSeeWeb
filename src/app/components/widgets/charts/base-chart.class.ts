@@ -1,5 +1,5 @@
 import {BaseWidget} from '../base-widget.class';
-import { AfterViewInit, OnInit, Directive } from '@angular/core';
+import {AfterViewInit, OnInit, Directive} from '@angular/core';
 import {dsw} from '../../../../environments/dsw';
 import * as numeral from 'numeral';
 import {YAxisOptions} from 'highcharts';
@@ -8,10 +8,13 @@ import {IButtonToggle} from '../../../services/widget.service';
 // Highcharts
 import * as  Highcharts from 'highcharts/highstock';
 import More from 'highcharts/highcharts-more';
+
 More(Highcharts);
-import  Tree from 'highcharts/modules/treemap';
+import Tree from 'highcharts/modules/treemap';
+
 Tree(Highcharts);
-import  Heatmap from 'highcharts/modules/heatmap';
+import Heatmap from 'highcharts/modules/heatmap';
+
 Heatmap(Highcharts);
 // Load the exporting module.
 import Exporting from 'highcharts/modules/exporting';
@@ -19,6 +22,9 @@ import {Subscription} from 'rxjs';
 // Initialize exporting module.
 Exporting(Highcharts);
 import HC_stock from 'highcharts/modules/stock';
+import {ChartConfigComponent, IThemeColors} from '../../ui/chart-config/chart-config.component';
+import {CURRENT_NAMESPACE} from '../../../services/namespace.service';
+
 HC_stock(Highcharts);
 
 export const DEF_ROW_COUNT = 20;
@@ -61,9 +67,23 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
             this.seriesTypes = this.widget.overrides[0].seriesTypes.split(',');
         }
 
-        this.subPrint = this.bs.subscribe("print:" + this.widget.name, () => {
+        this.subPrint = this.bs.subscribe('print:' + this.widget.name, () => {
             if (this.chart) {
-                this.chart.print();
+                const blob = new Blob(
+                    [this.chart.getSVG()],
+                    {type: 'image/svg+xml'}
+                );
+                const wnd = window.open(URL.createObjectURL(blob), '_blank');
+                wnd.onload = () => {
+                    const svg = wnd.document.querySelector('svg');
+                    svg.setAttribute('width', '100%');
+                    svg.setAttribute('height', '100%');
+                    svg.style.height = 'auto';
+                    wnd.print();
+                };
+                wnd.onafterprint = () => {
+                    wnd.close();
+                };
             }
         });
         this.setupChart();
@@ -90,8 +110,10 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
     }
 
     clearSeries() {
-        if (!this.chart) { return; }
-        while(this.chart.series.length > 0)
+        if (!this.chart) {
+            return;
+        }
+        while (this.chart.series.length > 0)
             this.chart.series[0].remove(false);
     }
 
@@ -102,48 +124,27 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
         super.destroy();
     }
 
-    /**
-     * Shows widget settings(actually color theme)
-     */
-    showSettings() {
-        let save = () => {
-            this.ss.setWidgetsSettings(this.widgetsSettings, this.widget.dashboard);
-            // TODO: reload here
-            // $window.location.reload();
-        };
-
-        // Create settings if not exists
-        if (!this.widgetsSettings[this.widget.name]) {
-            this.widgetsSettings[this.widget.name] = {};
-        }
-
-        // Create theme if not exists
-        if (!this.widgetsSettings[this.widget.name].themeColors) {
-            this.widgetsSettings[this.widget.name].themeColors = {};
-        }
-
-        // TODO: show dialog
-        // ngDialog.open({
-        //     template: 'src/views/settings.html',
-        //     data: {isWidgetSettings: true, widgetSettings: this.widgetsSettings[this.widget.name], saveWidgetSettings: save},
-        //     controller: 'settings',
-        //     disableAnimation: dsw.mobile,
-        //     showClose: true,
-        //     className: 'ngdialog-theme-default wnd-settings'
-        // });
-    }
-
     onHeaderButton(bt: IButtonToggle) {
         super.onHeaderButton(bt);
+        console.log(bt.name);
         switch (bt.name) {
-            case 'isLegend': this.toggleLegend(bt.state); break;
+            case 'isLegend':
+                this.toggleLegend(bt.state);
+                break;
             case 'showValues': {
                 (this.chartConfig.plotOptions.series.dataLabels as Highcharts.PlotSeriesDataLabelsOptions).enabled = bt.state;
                 this.updateChart();
                 break;
             }
-            case 'showZero': this.showZeroOnAxis(); break;
-            case 'isTop': this.limitSeriesAndData(); break;
+            case 'showZero':
+                this.showZeroOnAxis();
+                break;
+            case 'isTop':
+                this.limitSeriesAndData();
+                break;
+            case 'chartConfig':
+                this.showChartConfig();
+                break;
         }
     }
 
@@ -151,7 +152,9 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
      * Updates chart. Using when configuration has been changed
      */
     updateChart() {
-        if (!this.chart) { return; }
+        if (!this.chart) {
+            return;
+        }
         this.chart.update(this.chartConfig);
     }
 
@@ -232,7 +235,7 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
     }
 
     //showValues() {
-        //this.toggleButton('showValues');
+    //this.toggleButton('showValues');
     //}
 
 
@@ -283,15 +286,6 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
     }
 
     /**
-     * Requests chart data
-     */
-    reqestData() {
-        // TODO: show loading
-        //this.chartConfig.loading = true;
-        super.requestData();
-    }
-
-    /**
      * Callback for chart data request
      * @param {object} result chart data
      */
@@ -299,16 +293,12 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
         let i;
         this.hideLoading();
         // Clean up previous data
-        while(this.chart.series.length > 0) {
+        while (this.chart.series.length > 0) {
             this.chart.series[0].remove();
         }
 
-
         // Store current widget data
         this.widgetData = JSON.parse(JSON.stringify(result));
-
-        // TODO: show loading
-        //this.chartConfig.loading = false;
 
         if (result.Error) {
             this.showError(result.Error);
@@ -500,6 +490,7 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
      */
     setType(type) {
         this.chartConfig.chart.type = type;
+        this.updateChart();
     }
 
     /**
@@ -633,7 +624,6 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
             data.Cols[1] = {tuples: []};
         }
         if (data.Cols[1].tuples.length === 0) {
-            //TODO: lang
             data.Cols[1].tuples.push({caption: this.i18n.get('count')});
         }
 
@@ -755,12 +745,6 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
         const _this = this;
         const typeDesc = this.wts.getDesc(this.widget.type);
         this.chartConfig = {
-            // TODO: labels
-            // dataLabels: {
-            //     style: {
-            //         color: this.tc.hcTextColor
-            //     }
-            // },
             drilldown: {
                 activeAxisLabelStyle: {
                     color: this.tc.hcTextColor
@@ -788,7 +772,7 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
                 enabled: false
             },
             tooltip: {
-                formatter: function() {
+                formatter: function () {
                     /* jshint ignore:start */
                     let t: any = this;
                     /* jshint ignore:end */
@@ -825,7 +809,7 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
                     cursor: 'pointer',
                     point: {
                         events: {
-                            click: function(e: any) {
+                            click: function (e: any) {
                                 if (!e.point) {
                                     return;
                                 }
@@ -835,23 +819,18 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
                                         return;
                                     }
                                 }
-                                // TODO: loading
-                                //_this.chartConfig.loading = true;
-                                //_this.updateChart();
                                 _this.showLoading();
                                 _this.doDrill(e.point.path, e.point.name, e.point.category)
                                     .finally(() => {
                                         _this.hideLoading();
-                                        // TODO: loading
-                                        //_this.chartConfig.loading = false;
-                                        //_this.updateChart();
                                     });
                             }
                         }
                     },
                     dataLabels: {
+                        color: this.tc.hcTextColor,
                         enabled: this.widget.showValues === true,
-                        formatter: function() {
+                        formatter: function () {
                             /* jshint ignore:start */
                             let t = this;
                             /* jshint ignore:end */
@@ -865,12 +844,6 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
                         }
 
                     }
-                    // TODO: toggle series
-                    // events: {
-                    //     legendItemClick: function(event) {
-                    //         this.toggleSeries(this.index, !this.visible);
-                    //     }
-                    // }
                 }
             },
             yAxis: {
@@ -907,16 +880,6 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
             title: {
                 text: ''
             }
-            // TODO: init chart
-            // func: function(chart) {
-            //     if (!this.chart) {
-            //         this.chart = chart;
-            //     }
-            //     // TODO: reflow in timeout
-            //     // chart.reflow();
-            // }
-            // loading: true
-
         };
         this.showZeroOnAxis();
         // Set navigator style
@@ -966,7 +929,7 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
                         (this.chartConfig.yAxis[k] as YAxisOptions).type = l[k].axisType;
                         if (l[k].axisType === 'percent') {
                             this.chartConfig.yAxis[k].labels = {
-                                formatter: function() {
+                                formatter: function () {
                                     return this.value * 100 + '%';
                                 }
                             };
@@ -1021,5 +984,141 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
             };
             this.us.mergeRecursive(this.chartConfig, opt);
         }
+    }
+
+    /**
+     * Shows chart config on sidebar
+     */
+    private showChartConfig() {
+        const name = this.widget.name;
+        const widgetsSettings = this.ss.getWidgetsSettings(this.widget.dashboard) || {};
+        const save = () => {
+            this.ss.setWidgetsSettings(widgetsSettings, this.widget.dashboard);
+            // $window.location.reload();
+        };
+
+        // Create settings if not exists
+        if (!widgetsSettings[name]) {
+            widgetsSettings[name] = {};
+        }
+        // Create theme if not exists
+        if (!widgetsSettings[name].themeColors) {
+            widgetsSettings[name].themeColors = {};
+        }
+        // ngDialog.open({template: 'src/views/settings.html', data: {isWidgetSettings: true,  });
+        // }
+        this.sbs.sidebarToggle.next({
+            component: ChartConfigComponent,
+            inputs: {
+                widgetSettings: widgetsSettings[name],
+                onSave: save,
+                onUpdate: tc => this.updateColors(tc),
+                chart: this.chart
+            }
+        });
+    }
+
+    /**
+     * Updates chart colors via direct access to chart svg
+     * Used when configuring chart colors
+     * @param themeColors
+     */
+    updateColors(themeColors: IThemeColors) {
+        this.zone.runOutsideAngular(() => {
+
+            // Series fill color
+            if (themeColors.hcColors) {
+                for (let i = 0; i < this.chart.series.length; i++) {
+                    const series = this.chart.series[i];
+                    const color = themeColors.hcColors[i % themeColors.hcColors.length];
+                    series.data.forEach((d: any) => {
+                        d.color = color;
+                        const el = d.graphic.element;
+                        el.setAttribute('fill', color);
+                        el.setAttribute('stroke', color);
+                    });
+                    const l = (this.chart.legend.allItems[i] as any);
+                    if (l && l.legendSymbol) {
+                        const el = l.legendSymbol.element;
+                        el.setAttribute('fill', color);
+                        el.setAttribute('stroke', color);
+                    }
+
+                    this.chart.series[i].options.color = color;
+                    // this.chart.series[i].update(this.chart.series[i].options, false);
+                }
+            }
+
+            // Series border color
+            if (themeColors.hcBorderColor) {
+                for (let i = 0; i < this.chart.series.length; i++) {
+                    const series = this.chart.series[i];
+                    series.data.forEach((d: any) => {
+                        const el = d.graphic.element;
+                        el.setAttribute('stroke', themeColors.hcBorderColor);
+                    });
+                }
+            }
+
+            // Backgorund color
+            if (themeColors.hcBackground) {
+                const bg = (this.chart as any).chartBackground.element;
+                bg.setAttribute('fill', themeColors.hcBackground);
+                bg.setAttribute('stroke', themeColors.hcBackground);
+                this.chart.options.chart.backgroundColor = themeColors.hcBackground;
+            }
+
+            // Axis line color
+            if (themeColors.hcLineColor) {
+                const col = themeColors.hcLineColor;
+                this.chart.yAxis.forEach((a: any) => {
+                    this.chart.yAxis[0].options.minorGridLineColor = col;
+                    a.gridGroup.element.setAttribute('stroke', col);
+                    a.gridGroup.element.childNodes.forEach(c => {
+                        c.setAttribute('stroke', col);
+                    });
+                });
+                this.chart.xAxis.forEach((a: any) => {
+                    a.axisGroup.element.setAttribute('stroke', col);
+                    a.axisGroup.element.childNodes.forEach(c => {
+                        c.setAttribute('stroke', col);
+                    });
+                });
+            }
+
+            // Text color
+            const col = themeColors.hcTextColor;
+            if (col) {
+                // Set axis labels color
+                const processAxis = (a: any) => {
+                    a.labelGroup.element.setAttribute('fill', col);
+                    for (let i = 0; i < a.labelGroup.element.children.length; i++) {
+                        const child = a.labelGroup.element.children[i];
+                        child.setAttribute('fill', col);
+                        child.setAttribute('color', col);
+                        child.style.color = col;
+                        child.style.fill = col;
+                    }
+                };
+                this.chart.xAxis.forEach(processAxis);
+                this.chart.yAxis.forEach(processAxis);
+                // Set legend labels color
+                this.chart.options.legend.itemStyle.color = col;
+                this.chart.legend.allItems.forEach((l: any) => {
+                    l.color = col;
+                    l.options.color = col;
+                    l.legendItem.element.setAttribute('color', col);
+                    l.legendItem.element.setAttribute('fill', col);
+                    l.legendItem.element.style.fill = col;
+                    l.legendItem.element.style.color = col;
+                });
+                // Set data labels color
+                this.chart.series.forEach((s: any) => s.data.forEach(d => {
+                    const st = d.dataLabel.element.children[0].style;
+                    st.color = col;
+                    st.fill = col;
+                }));
+            }
+        });
     }
 }

@@ -1,10 +1,21 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    Input,
+    OnChanges,
+    OnDestroy,
+    OnInit,
+    SimpleChanges
+} from '@angular/core';
 import {dsw} from '../../../../environments/dsw';
 import {MenuService} from '../../../services/menu.service';
 import {SidebarService} from '../../../services/sidebar.service';
 import {DataService, ITileInfo} from '../../../services/data.service';
 import {StorageService} from '../../../services/storage.service';
 import {NamespaceService} from '../../../services/namespace.service';
+import {NavigationStart, Router, RouterEvent} from '@angular/router';
+import {Subscription} from 'rxjs';
 
 @Component({
     selector: 'dsw-home-editor',
@@ -12,7 +23,7 @@ import {NamespaceService} from '../../../services/namespace.service';
     styleUrls: ['./home-editor.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class HomeEditorComponent implements OnInit {
+export class HomeEditorComponent implements OnInit, OnDestroy {
     @Input() tiles: ITileInfo[];
     // @Input() tile: ITileInfo;
     @Input() folder: string;
@@ -20,7 +31,7 @@ export class HomeEditorComponent implements OnInit {
     model: any;
     private originalTiles: string;
 
-    set tile (value: ITileInfo) {
+    set tile(value: ITileInfo) {
         if (value !== this._tile) {
             this.requestWidgetList();
         }
@@ -32,12 +43,14 @@ export class HomeEditorComponent implements OnInit {
     }
 
     private _tile: ITileInfo;
+    private subRouteChange: Subscription;
 
     constructor(private ds: DataService,
                 private ms: MenuService,
-                private ss: SidebarService,
+                private sbs: SidebarService,
                 private st: StorageService,
                 private ns: NamespaceService,
+                private router: Router,
                 private cd: ChangeDetectorRef) {
         this.model = {
             colors: dsw.const.bgColorClasses,
@@ -47,11 +60,22 @@ export class HomeEditorComponent implements OnInit {
         };
     }
 
-    ngOnInit(): void {
+    ngOnInit() {
+        // Cancel editing on any navigation
+        this.subRouteChange = this.router.events.subscribe((e: RouterEvent) => {
+            if (e instanceof NavigationStart) {
+                this.onCancelEditing();
+            }
+        });
+
         this.saveOriginalTiles();
         this.requestWidgetList();
     }
 
+
+    ngOnDestroy() {
+        this.subRouteChange.unsubscribe();
+    }
 
     // ngOnChanges(changes: SimpleChanges) {
     //     console.log('fdsd');
@@ -78,6 +102,7 @@ export class HomeEditorComponent implements OnInit {
         const old = JSON.parse(this.originalTiles);
         old.forEach(t => this.tiles.push(t));
     }
+
     /**
      * Request widget list for editing tile
      */
@@ -200,6 +225,6 @@ export class HomeEditorComponent implements OnInit {
      */
     close() {
         this.ms.onEditDashboard.emit(false);
-        this.ss.sidebarToggle.next(null);
+        this.sbs.sidebarToggle.next(null);
     }
 }

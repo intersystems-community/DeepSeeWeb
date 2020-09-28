@@ -411,7 +411,6 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
         let count = 0;
         //polyCoordProp  = this.widget.proper Polygon Coords property
 
-        // TODO: new iteration
         idx = -1;
         item = this.mapData.Cols[0].tuples.filter((el) => {
             return el.caption === coordsProperty;

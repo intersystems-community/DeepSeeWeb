@@ -226,7 +226,7 @@ export class WidgetTypeService {
         TYPES[name] = {
             class: cl,
             type,
-            addonInfo
+            ...addonInfo,
         };
     }
 

@@ -1,0 +1,16 @@
+.actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    & > button {
+        width: 100%;
+        &:first-child {
+            margin-right: 5px;
+        }
+
+        &:last-child {
+            margin-left: 5px;
+        }
+    }
+}

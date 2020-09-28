@@ -60,9 +60,8 @@ export class FilterPopupComponent implements OnInit {
             this.prepareFilters();
             return;
         }
-        let related = [];
-        // TODO: changed from static
-        let filters = this.fs.items;
+        const related = [];
+        const filters = this.fs.items;
         // Get active filters
         let activeFilters = filters.filter(f => (f.targetProperty !== this.model.filter.targetProperty) && f.value !== '' || f.isInterval);
         // Reformat to DSZ filters
@@ -271,8 +270,6 @@ export class FilterPopupComponent implements OnInit {
             this.model.filter.values[i].checked = false;
         }
         this.fs.applyFilter(this.model.filter);
-        // TODO: implement this
-        // this.widget.updateFiltersText();
         this.close();
     }
 

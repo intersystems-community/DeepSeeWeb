@@ -14,6 +14,7 @@ import {CURRENT_NAMESPACE, NamespaceService} from '../../../services/namespace.s
 import {WidgetComponent} from '../../widgets/base/widget/widget.component';
 import {ErrorService} from '../../../services/error.service';
 import {I18nService} from '../../../services/i18n.service';
+import {FilterService} from '../../../services/filter.service';
 
 interface IHomeModel {
     tiles: ITileInfo[];
@@ -65,11 +66,11 @@ export class FolderScreenComponent implements OnInit, OnDestroy {
                 private ds: DataService,
                 private es: ErrorService,
                 private i18n: I18nService,
+                private fs: FilterService,
                 private ns: NamespaceService) {
         this.settings = st.getAppSettings();
 
-        // TODO: filter service
-        // Filters.clear();
+        this.fs.clear();
 
         this.model = {
             tiles: [],
@@ -79,10 +80,6 @@ export class FolderScreenComponent implements OnInit, OnDestroy {
             edItem: null
         };
 
-
-        // TODO: broadcast
-        // $scope.$on("refresh", function() {_this.requestData();});
-        // $scope.$on("search:dashboard", onSearchDashboard);
 
         // Reset filters query params
         // TODO: check query change
@@ -378,16 +375,11 @@ export class FolderScreenComponent implements OnInit, OnDestroy {
             console.warn('Can\'t find widget with index ' + tile.widget);
             return;
         }
-        // TODO: replace inline with tile. checking (tile != undefined) is enough to know if this widget in inline mode
+        // Replace inline with tile. checking (tile != undefined) is enough to know if this widget in inline mode
         result.widgets[tile.widget].inline = true;
         result.widgets[tile.widget].tile = tile;
         this.itemDescs.push(result.widgets[tile.widget]);
         tile.idx = this.itemDescs.length - 1;
-    }
-
-    onTransitionEnd(e: TransitionEvent) {
-        // TODO: refresh only for resize event
-        // console.log(e.propertyName, e.currentTarget);
     }
 
     /**

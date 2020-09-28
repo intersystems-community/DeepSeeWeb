@@ -9,17 +9,13 @@ import {dsw} from '../../../../environments/dsw';
     styleUrls: ['./wtext.component.scss']
 })
 export class WTextComponent extends BaseWidget implements OnInit {
-
     @ViewChildren('images') images: ElementRef[];
     @Input() widget: IWidgetInfo;
-
-
 
     ngOnInit(): void {
         this.model.textData = [];
         super.ngOnInit();
     }
-
 
     /**
      * Finds data property by name
@@ -39,7 +35,7 @@ export class WTextComponent extends BaseWidget implements OnInit {
 
     adjustSize() {
         this.images.forEach(image => {
-            const svg = image.nativeElement
+            const svg = image.nativeElement;
             const text = svg.firstChild;
             const bbox = text.getBBox();
 
@@ -53,7 +49,7 @@ export class WTextComponent extends BaseWidget implements OnInit {
      */
     retrieveData(result) {
         this.model.textData = [];
-        this.isSpinner = false;
+        this.hideLoading();
         if (result) {
             for (let i = 0; i < result.Cols[0].tuples.length; i++) {
                 let propFmt = '';
@@ -68,7 +64,7 @@ export class WTextComponent extends BaseWidget implements OnInit {
                 }
 
                 // Change font color, if widget is displayed on tile
-                let color = '#6b6464';
+                let color = 'var(--cl-text-widget-font)'; // getComputedStyle(document.documentElement).getPropertyValue('--cl-text-widget-font');
                 if (this.widget.tile) {
                     color = window.getComputedStyle(
                         document.querySelector('.' + dsw.const.fontColors[this.widget.tile.fontColor])
@@ -117,6 +113,7 @@ export class WTextComponent extends BaseWidget implements OnInit {
                 }
             }
         }
-        setTimeout(() => this.adjustSize(), 100);
+        this.cd.detectChanges();
+        setTimeout(() => this.adjustSize());
     }
 }

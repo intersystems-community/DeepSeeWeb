@@ -4,9 +4,11 @@ import {ModalComponent} from '../components/ui/modal/modal.component';
 
 const DEFAULT_BUTTONS = [{label: 'OK', default: true, autoClose: true}];
 
+type ModalButtonClickCallback = (modal?: ModalComponent, info?: IModal, button?: IModalButton) => void;
+
 export interface IModalButton {
     label: string;
-    click?: (modal?: ModalComponent, info?: IModal, button?: IModalButton) => void;
+    click?: ModalButtonClickCallback;
     autoClose?: boolean;
     default?: boolean;
 }
@@ -20,7 +22,7 @@ export interface IModal {
     buttons?: IModalButton[];
     component?: any;
     hideBackdrop?: boolean;
-    componentStyles?: {[key: string]:string};
+    componentStyles?: {[key: string]: string};
     onComponentInit?: (comp: any) => void;
     onClose?: () => void;
 }
@@ -38,14 +40,18 @@ export class ModalService {
     /**
      * Shows modal
      */
-    show(modal: IModal|string) {
+    show(modal: IModal|string, okCallback?: ModalButtonClickCallback) {
         // If show called with simple string mage modal with simple message
         if (typeof modal === 'string') {
             modal = {message: modal};
         }
 
         if (!modal.buttons) {
-            modal.buttons = DEFAULT_BUTTONS;
+            modal.buttons = JSON.parse(JSON.stringify(DEFAULT_BUTTONS));
+
+            if (okCallback) {
+                modal.buttons[0].click = okCallback;
+            }
         }
 
         const cur = this.modals.getValue();

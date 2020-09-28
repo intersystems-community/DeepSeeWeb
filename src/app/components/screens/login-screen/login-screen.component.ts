@@ -44,6 +44,9 @@ export class LoginScreenComponent implements OnInit {
 
         // TODO: toggle menu
         // $rootScope.$broadcast('toggleMenu', false);
+
+        const namespace = this.route.snapshot.queryParamMap.get('ns');
+        this.model.namespace = namespace || '';
     }
 
     initModel() {

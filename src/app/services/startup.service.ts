@@ -1,4 +1,4 @@
-import {EventEmitter, Injectable} from '@angular/core';
+import {Injectable} from '@angular/core';
 import {dsw} from '../../environments/dsw';
 import {DisplayGrid, GridsterConfigService, GridsterItem, GridsterItemComponentInterface} from 'angular-gridster2';
 import {DataService, NAMESPACE} from './data.service';
@@ -6,6 +6,12 @@ import {HttpClient} from '@angular/common/http';
 import {WidgetTypeService} from './widget-type.service';
 import {StorageService} from './storage.service';
 import {NamespaceService} from './namespace.service';
+import * as AngularCommon from '@angular/common';
+import * as AngularCore from '@angular/core';
+
+declare const __webpack_exports__: any;
+declare const __webpack_require__: any;
+declare const webpackJsonp: any;
 
 @Injectable({
     providedIn: 'root'
@@ -84,16 +90,20 @@ export class StartupService {
                 console.log(`Can't load addons: ${e}`);
             })
             .then((addons: any[]) => {
+                // Folr dev purposes, replace addons with devAddons if set in localstorage
+                if (localStorage.devAddons) {
+                    addons = JSON.parse(localStorage.devAddons);
+                }
+                const promises = [];
                 if (addons && addons.length) {
                     dsw.addons = [...addons];
                     for (let i = 0; i < dsw.addons.length; i++) {
-                        const a = dsw.addons[i].split('.');
-                        a.pop();
-                        dsw.addons[i] = a.join('.');
+                        const name = dsw.addons[i].split('/').pop().replace('.js', '');
+                        promises.push(this.loadAddon(dsw.addons[i], name));
                     }
                 }
-                return this.wt.initialize();
-            })
+                return Promise.all(promises);
+            });
             //.then(() => {
                 // TODO: broadcast
                 // $rootScope.$broadcast('addons:loaded', addons);
@@ -136,18 +146,70 @@ export class StartupService {
         if (window.location.href.split('#').pop().indexOf('widget=') !== -1) {
             GridsterConfigService.mobileBreakPoint = 0;
         }
+    }
 
-        GridsterConfigService.resizable.start = () => {
-            GridsterConfigService.isResizing = true;
-        };
-        GridsterConfigService.resizable.stop = () => {
-            GridsterConfigService.isResizing = false;
-        };
-        GridsterConfigService.draggable.start = () => {
-            GridsterConfigService.isDragging = true;
-        };
-        GridsterConfigService.draggable.stop = () => {
-            GridsterConfigService.isDragging = false;
-        };
+    private loadAddon(url: any, addonName: string) {
+        return new Promise((res, rej) => {
+            const script = document.createElement('script');
+            script.src = url;
+            document.head.appendChild(script);
+            script.onload = () => {
+
+            //fetch(url)
+//                .then(response => response.text())
+                //.then(source => {
+                //     if (!source) {
+                //         console.error(`Can't load addon: ${url}`);
+                //         res();
+                //         return;
+                //     }
+                    try {
+                        // Modules used during loading
+                        const modules = {
+                            '@angular/core': AngularCore,
+                            '@angular/common': AngularCommon
+                        };
+
+                        // Replace require
+                        const require = (module) => modules[module];
+
+                        // Eval addon source code
+                        // tslint:disable-next-line:no-eval
+                        // eval(source);
+
+                        // Save already exported components
+                        const exists = Object.keys(__webpack_exports__);
+
+                        // Get module from webpack
+                        const newModule = webpackJsonp[webpackJsonp.length - 1];
+                        const name = newModule[0];
+                        const moduleData = newModule[1];
+                        const key = Object.keys(moduleData)[0];
+                        // Exec module
+                        moduleData[key]('', __webpack_exports__, __webpack_require__);
+
+                        // Find all exported components
+                        const all = Object.keys(__webpack_exports__);
+                        // Find new one added comparing wit exists before
+                        const componentName = all.filter(c => exists.indexOf(c) === -1)[0];
+
+                        // Get addon info
+                        const info = __webpack_exports__[componentName].AddonInfo;
+
+                        // Register addon
+                        this.wt.register(addonName, info?.type || 'custom', __webpack_exports__[componentName], info);
+                        res();
+                    } catch (e) {
+                        console.error(e);
+                        res();
+                    }
+                };
+
+                script.onerror = () => res();
+                // .catch((e) => {
+                //     console.error(e);
+                //     res();
+                // });
+        });
     }
 }
