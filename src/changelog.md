@@ -1,4 +1,4 @@
-#### 3.0.8
+#### 3.0.9
 * fixed issue with default(without user configuration) widget placement on dashboards
 
 #### 3.0.8a
