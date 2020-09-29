@@ -1,7 +1,15 @@
+#### 3.0.8
+* fixed issue with default(without user configuration) widget placement on dashboards
+
 #### 3.0.8a
+* added support for addons
+* added settings menu
+* most of the settings now can be changed in realtime
+* added support for "ns" param on login screen
 * added realtime customization of chart colors 
 * optimized widget loading on dashboard
 * added "view as" context menu item for charts
+* added "export" to context menu
 * improved context menu design
 * added optimization for dashboard widget for future 'content-visibility' feature
 * optimized speed of dashboard widgets loading and user interaction
@@ -13,6 +21,8 @@
 * simplified layout for text widget(removed % calcs, etc. small performance increase)
 * fixed issue during navigation when editing dashboard
 * fixed few memory leaks due to forgotten subscriptions
+* changed layout of sidebar menus
+* small fixes for style variables of filter(for future correct themes support)
 
 #### 3.0.7a
 * added missing import to csv/xls

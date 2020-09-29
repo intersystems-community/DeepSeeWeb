@@ -1,3 +1,6 @@
+#### 3.0.8
+* fixed issue with default(without user configuration) widget placement on dashboards
+
 #### 3.0.8a
 * added support for addons
 * added settings menu

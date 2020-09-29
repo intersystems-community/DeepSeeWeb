@@ -35,7 +35,7 @@ import {BroadcastService} from '../../../services/broadcast.service';
 import {ExportingOptions} from 'highcharts';
 import {DashboardService} from '../../../services/dashboard.service';
 
-export const DEFAULT_COL_COUNT = 6;
+export const DEFAULT_COL_COUNT = 12;
 
 @Component({
     selector: 'dsw-dashboard-screen',
@@ -320,7 +320,11 @@ export class DashboardScreenComponent implements OnInit, OnDestroy {
         }
 
         if (result.displayInfo && result.displayInfo.gridRows && !this.settings.widgetHeight && !this.sharedWidget) {
-            this.tilesOptions.fixedRowHeight = Math.floor((window.innerHeight - 60) / (result.displayInfo.gridRows));
+            const headerHeight = 58;
+            const rows = result.displayInfo.gridRows;
+            const padding = 10;
+            this.tilesOptions.fixedRowHeight = Math.floor((window.innerHeight - (headerHeight + padding * (rows + 1))) / rows);
+            this.gridster.optionsChanged();
         }
 
         this.vs.init(result);
