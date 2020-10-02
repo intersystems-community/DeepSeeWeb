@@ -123,7 +123,7 @@ export class ChartConfigComponent implements OnInit {
             hcColors: opt.colors.slice(),
             hcBackground: opt.chart.backgroundColor as string,
             hcTextColor: (opt as any).labels.style.color,
-            hcBorderColor: '', // opt.plotOptions.bar.borderColor as string,
+            hcBorderColor: null, // opt.plotOptions.bar.borderColor as string,
             hcLineColor: '#FFFFFF' // ((this.chart as any).colorAxis as ColorAxisOptions).minorGridLineColor as string
         };
     }

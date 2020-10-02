@@ -10,6 +10,9 @@ import {ActivatedRoute, NavigationEnd, Router} from '@angular/router';
 import {UtilService} from '../../../services/util.service';
 import {StorageService} from '../../../services/storage.service';
 import {CURRENT_NAMESPACE} from '../../../services/namespace.service';
+import {TextAreaComponent} from '../text-area/text-area.component';
+import {ModalService} from '../../../services/modal.service';
+import {FilterService} from '../../../services/filter.service';
 
 /**
  * Breadcrumb
@@ -41,6 +44,8 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
                 public hs: HeaderService,
                 private ms: MenuService,
                 private us: UtilService,
+                private modal: ModalService,
+                private fs: FilterService,
                 private storage: StorageService,
                 private route: ActivatedRoute,
                 private router: Router
@@ -141,13 +146,31 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
             )).pipe(tap(path => {
                 this.path = path;
                 return path;
-            }))
+            }));
     }
 
+    /**
+     * Navigates to same dashboard on DeepSeeZen
+     */
     gotoZenDeepSee() {
-        const folder = this.storage.serverSettings.DefaultApp || "/csp/" + CURRENT_NAMESPACE;
+        const folder = this.storage.serverSettings.DefaultApp || '/csp/' + CURRENT_NAMESPACE;
         const dashboard = this.path[this.path.length - 1].url.split('/').slice(1).join('/');
-        const url = folder + "/_DeepSee.UserPortal.DashboardViewer.zen?DASHBOARD=" + dashboard;
+        const url = folder + '/_DeepSee.UserPortal.DashboardViewer.zen?DASHBOARD=' + dashboard;
         window.open(url);
+    }
+
+    /**
+     * Shows share dashboard screen
+     */
+    showShareDashboard() {
+        const url = this.fs.getFiltersShareUrl();
+        this.modal.show({
+            title: 'Share dashboard',
+            component: TextAreaComponent,
+            closeByEsc: true,
+            onComponentInit: (c: TextAreaComponent) => {
+                c.value = url;
+            }
+        });
     }
 }

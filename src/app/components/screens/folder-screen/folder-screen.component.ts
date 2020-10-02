@@ -201,6 +201,9 @@ export class FolderScreenComponent implements OnInit, OnDestroy {
      * @param {object} result Server response contains dashboard list
      */
     retrieveData(result, search: string) {
+        if (!result) {
+            return;
+        }
         if (result) {
             if (result.Error) {
                 this.es.show(result.data.Error);

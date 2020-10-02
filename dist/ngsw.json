@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1601379017875,
+  "timestamp": 1601644004761,
   "index": "/index.html",
   "assetGroups": [
     {
@@ -85,6 +85,7 @@
         "/assets/img/icons/reply-black-18dp.svg",
         "/assets/img/icons/settings-black-18dp.svg",
         "/assets/img/icons/settings-black-24dp.svg",
+        "/assets/img/icons/share-black-18dp.svg",
         "/assets/img/icons/trending-up.svg",
         "/assets/img/icons/view_headline-black-18dp.svg",
         "/assets/img/icons/view_list-black-18dp.svg",
@@ -156,6 +157,7 @@
     "/assets/img/icons/reply-black-18dp.svg": "2fdf92042122356b0c6ea8935a5be1cf54f1c0db",
     "/assets/img/icons/settings-black-18dp.svg": "049568fac03d046af4c4520247c782e354b5131c",
     "/assets/img/icons/settings-black-24dp.svg": "e017dfa1097253c400071a033fcbfa3e842cc399",
+    "/assets/img/icons/share-black-18dp.svg": "64a4914daf0d6233abd8fe54d1ffb0fabf1d1b60",
     "/assets/img/icons/trending-up.svg": "c5d45e0e22e3e345c3750d563577a4c38763d98a",
     "/assets/img/icons/view_headline-black-18dp.svg": "01accd756b9c0b4b55ef6aca4413e4c9950dd4e5",
     "/assets/img/icons/view_list-black-18dp.svg": "f7f5d413283ec41339a4242b96ff635597059b92",
@@ -169,8 +171,8 @@
     "/fontawesome-webfont.woff": "28b782240b3e76db824e12c02754a9731a167527",
     "/fontawesome-webfont.woff2": "d6f48cba7d076fb6f2fd6ba993a75b9dc1ecbf0c",
     "/index.html": "069cbaecb474b233e69e10cb70312a6979d104af",
-    "/main-es2015.js": "cc78de652017390c30c1c9c24b640faf52539e06",
-    "/main-es5.js": "e73a26d49cbbbc4a8290ec6ebd766cb371a6a6e1",
+    "/main-es2015.js": "bc25a0ed93877852da875929dea45be6b85a93e3",
+    "/main-es5.js": "a68d06aff167ac2ff45cbad867229b59d985e2c9",
     "/manifest.webmanifest": "a0317b87bee62078bd486789254e0eb8c679a4b3",
     "/polyfills-es2015.js": "3739b8ed3a9ea20a1c1a8c0ade32ad2f0b7736bc",
     "/polyfills-es5.js": "9e8de9b2247280d7a6516022a12aeeed3f6fa4e5",

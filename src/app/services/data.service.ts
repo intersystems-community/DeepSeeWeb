@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {dsw} from '../../environments/dsw';
 import {Observable, of} from 'rxjs';
@@ -62,6 +62,7 @@ export class DataService {
     public username = '';
 
     constructor(private route: ActivatedRoute,
+                private router: Router,
                 private http: HttpClient,
                 private es: ErrorService) {
     }
@@ -213,6 +214,10 @@ export class DataService {
      */
     handleError() {
         return catchError(err => {
+            if (err.status === 401) {
+                void this.router.navigateByUrl('/login');
+                return of();
+            }
             this.es.show(err.message);
             return of([]);
         });
@@ -406,30 +411,38 @@ export class DataService {
             }).toPromise();
     }
 
-    // /**
-    //  * Signs out
-    //  */
-    // signOut() {
-    //     _this.firstRun = true;
-    //     // delete sessionStorage.dashboarList;
-    //     $cookieStore.remove('CSPWSERVERID');
-    //     $cookieStore.remove('CacheLoginToken');
-    //     $cookieStore.remove('CSPSESSIONID-SP-80-UP-');
-    //     $cookieStore.remove('CSPSESSIONID-SP-80-UP-MDX2JSON-');
-    //
-    //     _this.username = '';
-    //     localStorage.userName = '';
-    //
-    //     return $http({
-    //         method: 'Get',
-    //         data: {},
-    //         url: _this.url + 'Logout?Namespace=' + getNamespace(),
-    //         withCredentials: true
-    //     }).then(function() {
-    //         $location.path('/login').search({});
-    //     }).then(transformResponse);
-    // }
-    //
+     /**
+      * Signs out
+      */
+     signOut() {
+         this.firstRun = true;
+         const deleteCookie = (name) => {
+             document.cookie = name + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+         };
+
+
+         const setCookie = (name, value, days) => {
+             const d = new Date();
+             d.setTime(d.getTime() + 24 * 60 * 60 * 1000 * days);
+             document.cookie = name + '=' + value + ';path=/;expires=' + d.toUTCString();
+         };
+
+         this.username = '';
+         try {
+             localStorage.userName = '';
+             sessionStorage.userName = '';
+         } catch {}
+
+         return this.http.get(this.url + `Logout?Namespace=${CURRENT_NAMESPACE}`, this.withCredentialsHeaders).toPromise()
+             .then(() => {
+                 setCookie('CSPWSERVERID', '', -1);
+                 setCookie('CacheLoginToken', '', -1);
+                 setCookie('CSPSESSIONID-SP-80-UP-', '', -1);
+                 setCookie('CSPSESSIONID-SP-80-UP-MDX2JSON-', '', -1);
+                 void this.router.navigateByUrl('/login');
+             });
+     }
+
     /**
      * Requests dashboard list
      * @returns {object} $http promise

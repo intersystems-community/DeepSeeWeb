@@ -183,6 +183,17 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
         return true;
     }
 
+    private saveSeriesVisiblilityState(name: string, visible: boolean) {
+        const widgetsSettings = this.ss.getWidgetsSettings(this.widget.dashboard);
+        if (!widgetsSettings[this.widget.name]) { widgetsSettings[this.widget.name] = {}; }
+        const ws = widgetsSettings[this.widget.name];
+        if (!ws.series) {
+            ws.series = {};
+        }
+        ws.series[name] = visible;
+        this.ss.setWidgetsSettings(widgetsSettings, this.widget.dashboard);
+    }
+
     // toggleSeries(index, visiblility) {
     //     this.widget[name] = !this.widget[name];
     //     const widgetsSettings = this.ss.getWidgetsSettings(this.widget.dashboard);
@@ -465,6 +476,15 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
         let curIdx = this.chartConfig.series.length;
         if (this.seriesTypes && this.seriesTypes[curIdx]) {
             data.type = this.seriesTypes[curIdx];
+        }
+
+        data.visible = true;
+        // Show or hide series depending on settings
+        if (this.widgetsSettings && this.widgetsSettings[this.widget.name] && this.widgetsSettings[this.widget.name].series) {
+            const sd = this.widgetsSettings[this.widget.name].series;
+            if (sd[data.name] === false) {
+                data.visible = false;
+            }
         }
         this.chart.addSeries(data);
     }
@@ -793,16 +813,16 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
             },
             plotOptions: {
                 column: {
-                    borderColor: this.tc.hcBorderColor
+                    borderColor: this.tc.hcBorderColor || undefined
                 },
                 bar: {
-                    borderColor: this.tc.hcBorderColor
+                    borderColor: this.tc.hcBorderColor || undefined
                 },
                 pie: {
-                    borderColor: this.tc.hcBorderColor
+                    borderColor: this.tc.hcBorderColor || undefined
                 },
                 treemap: {
-                    borderColor: this.tc.hcBorderColor
+                    borderColor: this.tc.hcBorderColor || undefined
                 },
                 series: {
                     opacity: this.tc.hcOpacity,
@@ -843,6 +863,10 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
                             return val;
                         }
 
+                    },
+                    events: {
+                        hide: (e: any) => this.saveSeriesVisiblilityState(e.target.name, e.target.visible),
+                        show: (e: any) => this.saveSeriesVisiblilityState(e.target.name, e.target.visible)
                     }
                 }
             },
@@ -1105,7 +1129,7 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
                 // Set legend labels color
                 this.chart.options.legend.itemStyle.color = col;
                 this.chart.legend.allItems.forEach((l: any) => {
-                    l.color = col;
+                   /* l.color = col; */
                     l.options.color = col;
                     l.legendItem.element.setAttribute('color', col);
                     l.legendItem.element.setAttribute('fill', col);

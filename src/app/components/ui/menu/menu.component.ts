@@ -10,6 +10,7 @@ import {LanguageSelectorComponent} from '../language-selector/language-selector.
 import {ModalService} from '../../../services/modal.service';
 import {AboutComponent} from '../about/about.component';
 import {AppSettingsComponent} from '../app-settings/app-settings.component';
+import {DataService} from '../../../services/data.service';
 
 @Component({
     selector: 'dsw-menu',
@@ -25,6 +26,7 @@ export class MenuComponent implements OnInit, OnDestroy {
 
     constructor(private router: Router,
                 private route: ActivatedRoute,
+                private ds: DataService,
                 private ms: MenuService,
                 private modal: ModalService,
                 private sbs: SidebarService,
@@ -56,7 +58,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     }
 
     logout() {
-        void this.router.navigateByUrl('/login');
+        void this.ds.signOut();
     }
 
     showNamespaceSelector() {

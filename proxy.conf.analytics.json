@@ -1,0 +1,29 @@
+{
+    "/config.json": {
+        "target": "https://analytics.community.intersystems.com/dsw/",
+        "secure": false,
+        "logLevel": "debug",
+        "changeOrigin": true
+    },
+    "/configs/": {
+        "target": "https://analytics.community.intersystems.com/dsw/",
+        "secure": false,
+        "logLevel": "debug",
+        "changeOrigin": true
+    },
+    "/csp/uspolygons.js": {
+        "target": "https://analytics.community.intersystems.com/csp/uspolygons.js",
+        "secure": false,
+        "logLevel": "debug",
+        "changeOrigin": true,
+        "rewrite": {
+            "^/csp/uspolygons.js": ""
+        }
+    },
+    "**": {
+        "target": "https://analytics.community.intersystems.com/",
+        "secure": false,
+        "logLevel": "debug",
+        "changeOrigin": true
+    }
+}

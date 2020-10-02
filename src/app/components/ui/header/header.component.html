@@ -9,6 +9,9 @@
     <button class="btn btn-icon square s60 btn-goto" (click)="gotoZenDeepSee()" *ngIf="!isSearch" [title]="'gotoDeepSee' | i18n">
         <img class="flip" src="assets/img/icons/reply-black-18dp.svg">
     </button>
+    <button class="btn btn-icon square s60" (click)="showShareDashboard()" *ngIf="!isSearch" [title]="'shareDashboard' | i18n">
+        <img src="assets/img/icons/share-black-18dp.svg">
+    </button>
 </div>
 <div>
     <input *ngIf="isSearch" [formControl]="searchField" type="search" placeholder="Search">

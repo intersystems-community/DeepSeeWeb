@@ -1,3 +1,11 @@
+#### 3.0.10
+* new feature: now visibility for series in legend stored in settings and can be predefined
+* added share dashboard button
+* fixed issue with fullscreen widget and context menu
+* fixed issue with 401 and redirect to login page
+* fixed issue with black borders on a chart after canceling color settings
+* fixed issue with missing real logout
+
 #### 3.0.9
 * fixed issue with default(without user configuration) widget placement on dashboards
 
