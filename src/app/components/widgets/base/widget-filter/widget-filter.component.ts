@@ -1,4 +1,5 @@
 import {
+    ChangeDetectorRef,
     Component,
     ComponentFactoryResolver,
     EventEmitter, HostBinding,
@@ -44,7 +45,7 @@ export class WidgetFilterComponent implements OnInit {
     constructor(private fs: FilterService,
                 private r2: Renderer2,
                 private ms: ModalService,
-                private cfr: ComponentFactoryResolver
+                private cd: ChangeDetectorRef
                 ) {
     }
 
@@ -94,10 +95,11 @@ export class WidgetFilterComponent implements OnInit {
                 top: y + 'px'
             },
             onComponentInit: (c: FilterPopupComponent) => {
-                c.initialize(this.widget, flt, this.widget.dataSource)
+                c.initialize(this.widget, flt, this.widget.dataSource);
             },
             onClose: () => {
                 this.openedFilter = -1;
+                this.cd.detectChanges();
             }
         });
     }

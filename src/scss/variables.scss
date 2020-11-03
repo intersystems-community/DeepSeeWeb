@@ -48,8 +48,19 @@ $sidebar-width: 322px;
     --cl-txt: #555555;
     --input-border-radius: 0px;
 
+    // Buttons
+    --cl-btn-main: #5cb85c;
+    --cl-btn-main-txt: #fff;
+    --cl-btn-main-border: #4cae4c;
+    --cl-btn-main-hover: #6eca6e;
+
+    --cl-btn-secondary: #363535;
+    --cl-btn-secondary-txt: #cccccc;
+    --cl-btn-secondary-border: #b4b2b2;
+    --cl-btn-secondary-hover: #dbdbdb;
+
     // Icon filter
-    --icon-filter: contrast(0.05);
+    // --icon-filter: contrast(0.05);
     --icon-filter: none;
 
     // Background colors for tiles
@@ -73,6 +84,9 @@ $sidebar-width: 322px;
     --cl-header-btn-hover-darken: rgba(0, 0, 0, 0.05);
 
     --header-height: 58px;
+
+    // Menu
+    --menu-item-icon-filter: none;
 
     // Sidebar
     --cl-sidebar-bg: var(--cl-header-btn-active);

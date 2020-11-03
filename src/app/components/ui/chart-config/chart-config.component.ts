@@ -1,9 +1,12 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {SidebarService} from '../../../services/sidebar.service';
 import {Chart, ColorAxisOptions, PlotSeriesDataLabelsOptions} from 'highcharts';
 import {StorageService} from '../../../services/storage.service';
 import * as  Highcharts from 'highcharts/highstock';
 import {IError} from '../../../services/error.service';
+import {Subscription} from 'rxjs';
+import {skip} from 'rxjs/operators';
+import {BroadcastService} from '../../../services/broadcast.service';
 
 export interface IThemeColors {
     hcColors: string[];
@@ -18,13 +21,15 @@ export interface IThemeColors {
     templateUrl: './chart-config.component.html',
     styleUrls: ['./../home-editor/home-editor.component.scss', './chart-config.component.scss']
 })
-export class ChartConfigComponent implements OnInit {
+export class ChartConfigComponent implements OnInit, OnDestroy {
     @Input() chart: Chart;
     @Input() widgetSettings: any;
     @Input() onSave: () => void;
     @Input() onUpdate: (themeColors: IThemeColors) => void;
 
     private key: string;
+    private isApplied = false;
+    private isChanged = false;
 
     model = {
         themeColors: {
@@ -38,8 +43,11 @@ export class ChartConfigComponent implements OnInit {
 
     // Store original colors to be able make cancel
     private originalColors: IThemeColors;
+    private globalOriginalColors: any;
 
-    constructor(private sbs: SidebarService, private ss: StorageService) {
+    constructor(private sbs: SidebarService,
+                private ss: StorageService,
+                private bs: BroadcastService) {
     }
 
     ngOnInit() {
@@ -47,29 +55,65 @@ export class ChartConfigComponent implements OnInit {
 
         // For widget settings use widget colors
         this.key = settings.theme || '';
-        const cols = this.widgetSettings.themeColors[this.key];
-        if (cols) {
-            this.model.themeColors = cols;
+
+        // Changing widget colors
+        if (this.widgetSettings) {
+            const cols = this.widgetSettings.themeColors[this.key];
+            if (cols) {
+                this.model.themeColors = JSON.parse(JSON.stringify(cols));
+            } else {
+                // this.widgetSettings.themeColors[this.key] = {};
+                // this.model.themeColors = {} as any; // this.widgetSettings.themeColors[this.key];
+            }
         } else {
-            this.widgetSettings.themeColors[this.key] = {};
-            this.model.themeColors = this.widgetSettings.themeColors[this.key];
+            // Changing global colors
+            if (settings.themeColors[this.key]) {
+                this.globalOriginalColors = JSON.parse(JSON.stringify(settings.themeColors[this.key]));
+            }
+            if (!settings.themeColors[this.key]) {
+                settings.themeColors[this.key] = this.model.themeColors;
+            } else {
+                this.model.themeColors = settings.themeColors[this.key];
+            }
         }
 
         this.initColors();
     }
 
+    ngOnDestroy() {
+        if (!this.isApplied) {
+            this.restoreColors();
+        }
+    }
+
     onCancel() {
-        this.restoreColors();
         this.sbs.sidebarToggle.next(null);
     }
 
     onApply() {
-        this.onSave();
+        this.isApplied = true;
+        if (this.onSave) {
+            // Call save on local widget
+            if (this.isChanged) {
+                this.widgetSettings.themeColors[this.key] = this.model.themeColors;
+            }
+            this.onSave();
+        } else {
+            // Save global theme colors
+            const settings = this.ss.getAppSettings();
+            settings.themeColors[this.key] = this.model.themeColors;
+            this.ss.setAppSettings(settings);
+        }
         this.sbs.sidebarToggle.next(null);
     }
 
     update() {
-        this.onUpdate(this.model.themeColors);
+        this.isChanged = true;
+        if (this.onUpdate) {
+            this.onUpdate(this.model.themeColors);
+        } else {
+            this.bs.broadcast('charts:update-colors', this.model.themeColors);
+        }
     }
 
     /**
@@ -110,8 +154,17 @@ export class ChartConfigComponent implements OnInit {
      * Restores original colors. Used by cancel button
      */
     private restoreColors() {
-        this.widgetSettings.themeColors[this.key] = this.originalColors;
-        this.onUpdate(this.originalColors);
+        if (this.widgetSettings) {
+            this.widgetSettings.themeColors[this.key] = this.originalColors;
+        } else {
+            const settings = this.ss.getAppSettings();
+            settings.themeColors[this.key] = this.globalOriginalColors;
+        }
+        if (this.onUpdate) {
+            this.onUpdate(this.originalColors);
+        } else {
+            this.bs.broadcast('charts:update-colors', this.originalColors);
+        }
     }
 
     /**p
@@ -138,6 +191,15 @@ export class ChartConfigComponent implements OnInit {
         this.model.themeColors.hcBackground = tc.hcBackground;
         this.model.themeColors.hcTextColor = tc.hcTextColor;
         this.model.themeColors.hcColors = tc.hcColors;
-        this.onUpdate(tc);
+        const colors = this.widgetSettings?.themeColors[this.key];
+        if (colors) {
+            this.widgetSettings.themeColors[this.key] = null;
+        }
+        if (this.onUpdate) {
+            this.onUpdate(tc);
+        } else {
+            this.bs.broadcast('charts:update-colors', tc);
+        }
+        this.isChanged = false;
     }
 }

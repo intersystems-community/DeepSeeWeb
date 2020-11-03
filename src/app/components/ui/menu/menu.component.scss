@@ -4,6 +4,7 @@
     position: relative;
     display: block;
     height: 100%;
+    user-select: none;
 }
 
 // Menu list style
@@ -51,6 +52,7 @@ li {
         height: 28px;
         min-width: 28px;
         margin-right: 10px;
+        filter: var(--menu-item-icon-filter);
     }
 
     &:hover > img {

@@ -22,15 +22,18 @@
 
 // Modal style
 .modal {
+    background-color: var(--cl-sidebar-bg);
+    color: var(--cl-sidebar-txt);
+
     max-height: 90vh;
     display: flex;
     flex-direction: column;
     padding: 20px;
     min-width: 320px;
     max-width: calc(100vw - 100px);
-    background-color: white;
+    // background-color: white;
     font-family: $font;
-    color: var(--cl-txt-main);
+    // color: var(--cl-txt-main);
     &.no-padding {
         padding: 0;
     }

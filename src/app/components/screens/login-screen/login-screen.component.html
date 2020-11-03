@@ -28,7 +28,7 @@
         <button [hidden]="model.isDesktop" class="btn btn-success" (click)="saveServer()"
                 desktop-hidden></button>
         <button id="login" class="btn btn-success" (click)="onLoginClick()">{{'signin' | i18n}}</button>
-        <button *ngIf="!model.oAuthUrl" id="btnLoginOAuth" class="btn btn-link"
+        <button *ngIf="model.oAuthUrl" id="btnLoginOAuth" class="btn btn-link"
                 (click)="onLoginOAuthClick()">{{'signinOAuth' | i18n}}</button>
     </div>
     <div class="msg-error" [hidden]="!model.error">

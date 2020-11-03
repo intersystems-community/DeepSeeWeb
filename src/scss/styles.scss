@@ -97,21 +97,21 @@ input:not([type=checkbox]), textarea {
 }
 
 .btn-success {
-    color: #fff;
-    background-color: #5cb85c;
-    border-color: #4cae4c;
+    color: var(--cl-btn-main-txt);
+    background-color: var(--cl-btn-main);
+    border-color: var(--cl-btn-main-border);
 
     &:hover {
-        background-color: #6eca6e;
+        background-color: var(--cl-btn-main-hover);
     }
 }
 
 .btn-gray {
-    color: #363535;
-    background-color: #cccccc;
-    border-color: #b4b2b2;
+    color: var(--cl-btn-secondary-txt);
+    background-color: var(--cl-btn-secondary);
+    border-color: var(--cl-btn-secondary-border);
     &:hover {
-        background-color: #dbdbdb;
+        background-color: var(--cl-btn-secondary-hover);
     }
 }
 
@@ -131,6 +131,9 @@ input:not([type=checkbox]), textarea {
     display: flex;
     justify-content: center;
     align-items: center;
+    & > img {
+        filter: var(--icon-filter);
+    }
 }
 
 .cl1 {

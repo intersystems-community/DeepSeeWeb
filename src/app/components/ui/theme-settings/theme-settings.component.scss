@@ -1,0 +1,48 @@
+@import "src/scss/variables";
+
+table {
+    font-size: 12px;
+    & > thead {
+        opacity: 0.7;
+    }
+    & td {
+        width: 50%;
+    }
+}
+
+.color {
+    height: 14px;
+    cursor: pointer;
+}
+
+.input {
+    height: 14px;
+}
+
+.container > .variables-container {
+    height: calc(100vh - var(--header-height) - var(--header-height) - 154px);
+    overflow: auto;
+
+
+    & {
+        scrollbar-width: thin;
+        scrollbar-color: var(--cl-header-bg) var(--cl-header-btn-hover);
+    }
+
+    /* Works on Chrome/Edge/Safari */
+    &::-webkit-scrollbar {
+        width: 12px;
+    }
+    &::-webkit-scrollbar-track {
+        background: var(--cl-header-btn-hover);
+    }
+    &::-webkit-scrollbar-thumb {
+        background-color: var(--cl-header-bg);
+        border-radius: 20px;
+        border: 3px solid var(--cl-header-btn-hover);
+    }
+}
+
+.btn-success {
+    margin-top: 10px;
+}

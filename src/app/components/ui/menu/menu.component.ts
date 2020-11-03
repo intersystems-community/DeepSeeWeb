@@ -11,6 +11,7 @@ import {ModalService} from '../../../services/modal.service';
 import {AboutComponent} from '../about/about.component';
 import {AppSettingsComponent} from '../app-settings/app-settings.component';
 import {DataService} from '../../../services/data.service';
+import {MenuSettingsComponent} from './menu-settings/menu-settings.component';
 
 @Component({
     selector: 'dsw-menu',
@@ -84,6 +85,6 @@ export class MenuComponent implements OnInit, OnDestroy {
     }
 
     showSettingsMenu() {
-        this.sbs.sidebarToggle.next({component: AppSettingsComponent});
+        this.sbs.sidebarToggle.next({component: MenuSettingsComponent});
     }
 }

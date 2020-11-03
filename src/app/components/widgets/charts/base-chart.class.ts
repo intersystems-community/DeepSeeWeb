@@ -42,6 +42,7 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
     protected firstRun = true;
     protected widgetsSettings: any;
     private subPrint: Subscription;
+    private subColorsConfig: Subscription;
 
 
     ngOnInit() {
@@ -91,6 +92,8 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
         if (this.widget.inline) {
             this.setupInline();
         }
+
+        this.subColorsConfig = this.bs.subscribe('charts:update-colors', (tc) => this.updateColors(tc));
     }
 
     ngAfterViewInit() {
@@ -118,6 +121,9 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
     }
 
     destroy() {
+        if (this.subColorsConfig) {
+            this.subColorsConfig.unsubscribe();
+        }
         if (this.subPrint) {
             this.subPrint.unsubscribe();
         }
@@ -126,7 +132,6 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
 
     onHeaderButton(bt: IButtonToggle) {
         super.onHeaderButton(bt);
-        console.log(bt.name);
         switch (bt.name) {
             case 'isLegend':
                 this.toggleLegend(bt.state);
@@ -1057,9 +1062,11 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
                     const color = themeColors.hcColors[i % themeColors.hcColors.length];
                     series.data.forEach((d: any) => {
                         d.color = color;
-                        const el = d.graphic.element;
-                        el.setAttribute('fill', color);
-                        el.setAttribute('stroke', color);
+                        const el = d.graphic?.element;
+                        if (el) {
+                            el.setAttribute('fill', color);
+                            el.setAttribute('stroke', color);
+                        }
                     });
                     const l = (this.chart.legend.allItems[i] as any);
                     if (l && l.legendSymbol) {
@@ -1078,8 +1085,10 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
                 for (let i = 0; i < this.chart.series.length; i++) {
                     const series = this.chart.series[i];
                     series.data.forEach((d: any) => {
-                        const el = d.graphic.element;
-                        el.setAttribute('stroke', themeColors.hcBorderColor);
+                        const el = d.graphic?.element;
+                        if (el) {
+                            el.setAttribute('stroke', themeColors.hcBorderColor);
+                        }
                     });
                 }
             }
@@ -1138,9 +1147,11 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
                 });
                 // Set data labels color
                 this.chart.series.forEach((s: any) => s.data.forEach(d => {
-                    const st = d.dataLabel.element.children[0].style;
-                    st.color = col;
-                    st.fill = col;
+                    const st = d.dataLabel?.element?.children[0]?.style;
+                    if (st) {
+                        st.color = col;
+                        st.fill = col;
+                    }
                 }));
             }
         });

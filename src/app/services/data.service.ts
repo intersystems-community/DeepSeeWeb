@@ -53,7 +53,10 @@ export class DataService {
 
     private withCredentialsHeaders = {withCredentials: true};
     private withoutCredentialsHeaders = {};
-    private withCredentialsTimeoutHeaders = {withCredentials: true, headers: new HttpHeaders({timeout: dsw.const.timeout.toString()})};
+    private withCredentialsTimeoutHeaders = {
+        withCredentials: true,
+        headers: new HttpHeaders({timeout: dsw.const.timeout.toString()})
+    };
     private withoutCredentialsTimeoutHeaders = {
         headers: new HttpHeaders({
             timeout: dsw.const.timeout.toString()
@@ -245,7 +248,7 @@ export class DataService {
             data.RequestedFilters = requestFilters;
         }
         return this.http.post(
-            this.url +'Filters?Namespace=' + CURRENT_NAMESPACE,
+            this.url + 'Filters?Namespace=' + CURRENT_NAMESPACE,
             data,
             this.withCredentialsTimeoutHeaders
         ).toPromise();
@@ -411,37 +414,45 @@ export class DataService {
             }).toPromise();
     }
 
-     /**
-      * Signs out
-      */
-     signOut() {
-         this.firstRun = true;
-         const deleteCookie = (name) => {
-             document.cookie = name + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-         };
+    /**
+     * Signs out
+     */
+    signOut() {
+        this.firstRun = true;
+        const deleteCookie = (name) => {
+            document.cookie = name + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+        };
 
 
-         const setCookie = (name, value, days) => {
-             const d = new Date();
-             d.setTime(d.getTime() + 24 * 60 * 60 * 1000 * days);
-             document.cookie = name + '=' + value + ';path=/;expires=' + d.toUTCString();
-         };
+        const setCookie = (name, value, days) => {
+            const d = new Date();
+            d.setTime(d.getTime() + 24 * 60 * 60 * 1000 * days);
+            document.cookie = name + '=' + value + ';path=/;expires=' + d.toUTCString();
+        };
 
-         this.username = '';
-         try {
-             localStorage.userName = '';
-             sessionStorage.userName = '';
-         } catch {}
+        this.username = '';
+        try {
+            localStorage.userName = '';
+            sessionStorage.userName = '';
+        } catch {
+        }
 
-         return this.http.get(this.url + `Logout?Namespace=${CURRENT_NAMESPACE}`, this.withCredentialsHeaders).toPromise()
-             .then(() => {
-                 setCookie('CSPWSERVERID', '', -1);
-                 setCookie('CacheLoginToken', '', -1);
-                 setCookie('CSPSESSIONID-SP-80-UP-', '', -1);
-                 setCookie('CSPSESSIONID-SP-80-UP-MDX2JSON-', '', -1);
-                 void this.router.navigateByUrl('/login');
-             });
-     }
+        const done = () => {
+            setCookie('CSPWSERVERID', '', -1);
+            setCookie('CacheLoginToken', '', -1);
+            setCookie('CSPSESSIONID-SP-80-UP-', '', -1);
+            setCookie('CSPSESSIONID-SP-80-UP-MDX2JSON-', '', -1);
+            void this.router.navigateByUrl('/login');
+        }
+
+        return this.http.get(this.url + `Logout?Namespace=${CURRENT_NAMESPACE}`, this.withCredentialsHeaders).toPromise()
+            .then(() => {
+                done();
+            })
+            .catch(() => {
+                done();
+            });
+    }
 
     /**
      * Requests dashboard list

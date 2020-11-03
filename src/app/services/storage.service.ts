@@ -57,7 +57,7 @@ export class StorageService {
      */
     saveUserSettings() {
         const us = JSON.parse(this.storage.userSettings || '{}');
-        us[CURRENT_NAMESPACE] = this.settings;
+        us[CURRENT_NAMESPACE.toLocaleLowerCase()] = this.settings;
         this.storage.userSettings = JSON.stringify(us);
     }
 
@@ -84,7 +84,7 @@ export class StorageService {
         // Override settings by user settings
         let userSettings = null;
         if (this.storage.userSettings) {
-            userSettings = JSON.parse(this.storage.userSettings)[CURRENT_NAMESPACE];
+            userSettings = JSON.parse(this.storage.userSettings)[CURRENT_NAMESPACE.toLocaleLowerCase()];
         }
         if (userSettings) {
             this.us.mergeRecursive(this.settings, userSettings);

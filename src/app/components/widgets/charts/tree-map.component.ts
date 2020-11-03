@@ -10,16 +10,17 @@ import {IButtonToggle} from '../../../services/widget.service';
 export class TreeMapComponent extends BaseChartClass implements OnInit {
     private isPercent = true;
     private totalSum = 0;
+    private prevData = null;
 
     ngOnInit() {
         super.ngOnInit();
         this.totalSum = 0;
 
         // Check for percentage
-        if (this.widget.overrides && this.widget.overrides[0] && this.widget.overrides[0].showPercentage === 0) this.isPercent = false;
+        if (this.widget.overrides && this.widget.overrides[0] && this.widget.overrides[0].showPercentage === 0) { this.isPercent = false; }
 
         // Load isLegend option if exists
-        if (this.hasOption("isLegend")) {
+        if (this.hasOption('isLegend')) {
             this.isPercent = this.widget.isLegend;
         }
         const _this = this;
@@ -35,10 +36,10 @@ export class TreeMapComponent extends BaseChartClass implements OnInit {
                     colorByPoint: true,
                     dataLabels: {
                         enabled: true,
-                        formatter: function () {
+                        formatter() {
                             // Define custom label formatter
                             if (_this.isPercent && _this.totalSum) {
-                                let percent = (this.point.value / _this.totalSum * 100).toFixed(2);
+                                const percent = (this.point.value / _this.totalSum * 100).toFixed(2);
                                 return `${this.point.caption} - ${percent}%`;
                             } else {
                                 return `${this.point.caption}`;
@@ -49,14 +50,14 @@ export class TreeMapComponent extends BaseChartClass implements OnInit {
                 }
             },
             tooltip: {
-                formatter: function () {
+                formatter() {
                     const cap = this.series.userOptions.caption;
                     const fmt = this.series.userOptions.format;
                     let v = this.point.value;
                     if (fmt) {
                         v = numeral(v).format(fmt);
                     }
-                    return this.point.caption + "<br>" + cap + ": <b>" + v + '</b>';
+                    return this.point.caption + '<br>' + cap + ': <b>' + v + '</b>';
                 }
             }
         };
@@ -77,12 +78,13 @@ export class TreeMapComponent extends BaseChartClass implements OnInit {
     }
 
     parseData(data) {
+        this.prevData = data;
         // this.chartConfig.series = [];
         let tempData = [];
-        if (!data.Cols[0].tuples.length) return;
+        if (!data.Cols[0].tuples.length) { return; }
 
         if (data.Cols[0].tuples[0].children) {
-            console.error("Data converter for this treemap chart not implemented!");
+            console.error('Data converter for this treemap chart not implemented!');
         } else {
             tempData = [];
             let total = 0;
@@ -92,8 +94,9 @@ export class TreeMapComponent extends BaseChartClass implements OnInit {
             for (let i = 0; i < data.Cols[1].tuples.length; i++) {
                 tempData.push({
                     caption: data.Cols[1].tuples[i].caption,
-                    id: data.Cols[1].tuples[i].caption + "<br>" + parseFloat((parseFloat(data.Data[i] as any) / total * 100) as any).toFixed(2).toString() + "%",
+                    id: data.Cols[1].tuples[i].caption + '<br>' + parseFloat((parseFloat(data.Data[i] as any) / total * 100) as any).toFixed(2).toString() + '%',
                     value: parseFloat(data.Data[i]),
+                    y: parseFloat(data.Data[i]),
                     path: data.Cols[1].tuples[i].path,
                     name: data.Cols[1].tuples[i].caption
                 });
@@ -107,17 +110,25 @@ export class TreeMapComponent extends BaseChartClass implements OnInit {
             }
             this.totalSum = data.Data.map(d => parseFloat(d) || 0).reduce((a, b) => a + b, 0);
             this.addSeries({
-                type: 'treemap',
+                // type: 'treemap',
                 data: tempData,
+                name: '',
                 layoutAlgorithm: 'squarified',
                 caption: cap,
                 format: fmt,
-                //layoutAlgorithm: 'strip',
+                // layoutAlgorithm: 'strip',
                 dataLabels: {
                     enabled: true
                 }
             });
         }
         // this.updateChart();
+    }
+
+    setType(type) {
+        this.clearSeries();
+        this.chartConfig.chart.type = type;
+        this.updateChart();
+        this.parseData(this.prevData);
     }
 }

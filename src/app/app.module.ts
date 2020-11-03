@@ -55,6 +55,9 @@ import {environment} from '../environments/environment';
 import {ChartConfigComponent} from './components/ui/chart-config/chart-config.component';
 import {ColorPickerModule} from 'ngx-color-picker';
 import { AppSettingsComponent } from './components/ui/app-settings/app-settings.component';
+import {ThemeSettingsComponent} from './components/ui/theme-settings/theme-settings.component';
+import {MenuSettingsComponent} from './components/ui/menu/menu-settings/menu-settings.component';
+import {BarChartComponent} from './components/widgets/charts/bar-chart.component';
 
 @NgModule({
     declarations: [
@@ -76,6 +79,7 @@ import { AppSettingsComponent } from './components/ui/app-settings/app-settings.
         WPivotComponent,
         MapWidgetComponent,
         ColumnChartComponent,
+        BarChartComponent,
         MainScreenComponent,
         WidgetHeaderComponent,
         WidgetFilterComponent,
@@ -100,7 +104,9 @@ import { AppSettingsComponent } from './components/ui/app-settings/app-settings.
         TimeChartComponent,
         AboutComponent,
         ChartConfigComponent,
-        AppSettingsComponent
+        AppSettingsComponent,
+        MenuSettingsComponent,
+        ThemeSettingsComponent
     ],
     imports: [
         BrowserAnimationsModule,

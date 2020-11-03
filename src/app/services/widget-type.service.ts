@@ -18,6 +18,7 @@ import {BullseyeChartComponent} from '../components/widgets/charts/bullseye-char
 import {PieChartComponent} from '../components/widgets/charts/pie-chart.component';
 import {XyChartComponent} from '../components/widgets/charts/xy-chart.component';
 import {TimeChartComponent} from '../components/widgets/charts/time-chart.component';
+import {BarChartComponent} from '../components/widgets/charts/bar-chart.component';
 
 export const ADDON_PREFIX = 'DSW.Addons.';
 
@@ -83,7 +84,7 @@ const TYPES = {
         chart: 'area'
     },
     barchart: {
-        class: ColumnChartComponent,
+        class: BarChartComponent,
         type: 'chart',
         chart: 'bar'
     },
@@ -92,7 +93,7 @@ const TYPES = {
         type: 'chart'
     },
     barchartstacked: {
-        class: ColumnChartComponent,
+        class: BarChartComponent,
         type: 'chart',
         chart: 'bar'
     },

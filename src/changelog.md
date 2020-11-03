@@ -1,3 +1,20 @@
+#### 3.0.11
+* Added global theming for charts
+
+**Note: if you store config on your server, then probably you need to reset charts color before use it, because colors are stored in your config. To do it: click on palette icon on chart header and press "Reset to default" button, then press "Apply". After that you can export new configuration file)**
+
+* Added themes support via files placed in /css/themes/*.css
+* Added inapp theme editor
+* Added downloading of custom themes 
+* fixed oAuth issue
+* fixed issue with interval filters
+* fixed issue with config reload on any route change
+* fixed issue with chart color configuration
+* fixed issue when closing chart color config via menu button
+* fixed logout issue when not authorized
+* fixed stacking bar chart issue  
+* fixed issue with chart type switching on treemap charts
+
 #### 3.0.10
 * new feature: now visibility for series in legend stored in settings and can be predefined
 * added share dashboard button

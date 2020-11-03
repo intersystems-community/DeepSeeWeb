@@ -68,8 +68,8 @@ h2 {
     // Pressed state
     &.active {
         background-color: var(--cl-header-btn-active);
-        border-bottom: 1px solid var(--cl-header-btn-active);
-        border-right: 1px solid var(--cl-header-border);
+        // border-bottom: 1px solid var(--cl-header-btn-active);
+        // border-right: 1px solid var(--cl-header-border);
 
         // Remove bottom line
         height: calc(100% + 1px);

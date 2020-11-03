@@ -12,6 +12,9 @@ export class ConfigResolver implements Resolve<any> {
     private model = {};
     private isLoaded = false;
 
+
+    private previousNS = '';
+
     constructor(private router: Router,
                 private ds: DataService,
                 private route: ActivatedRoute,
@@ -33,15 +36,22 @@ export class ConfigResolver implements Resolve<any> {
                 };
                 if (!CURRENT_NAMESPACE) {
                     if (!ns) {
-                        this.router.navigateByUrl('/login');
+                        void this.router.navigateByUrl('/login');
                         done();
                         return;
                     }
                     this.ns.setCurrent(ns);
                 }
+                if (this.previousNS === CURRENT_NAMESPACE) {
+                    done();
+                    return;
+                }
                 this.ds.loadConfig(CURRENT_NAMESPACE)
                     .then(conf => this.st.loadConfig(conf))
-                    .finally(() => done());
+                    .finally(() => {
+                        this.previousNS = CURRENT_NAMESPACE;
+                        done();
+                    });
             }
         );
     }

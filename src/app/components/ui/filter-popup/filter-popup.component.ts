@@ -21,6 +21,7 @@ export class FilterPopupComponent implements OnInit {
         isInterval: false,
         from: '',
         to: ''
+
     };
     isRelatedFilters = false;
     widget: IWidgetInfo;
@@ -49,6 +50,8 @@ export class FilterPopupComponent implements OnInit {
         }
 
         this.model.isAll = !this.isAnyChecked();
+
+        this.model.isInterval = filter.isInterval;
     }
 
     ngOnInit() {
@@ -110,14 +113,14 @@ export class FilterPopupComponent implements OnInit {
         }
         if (this.model.values.length !== 0) {
             if (this.model.values[this.model.filter.fromIdx]) {
-                this.model.from = this.model.values[this.model.filter.fromIdx];
+                this.model.from = this.model.values[this.model.filter.fromIdx].path;
             } else {
-                this.model.from = this.model.values[0];
-                if (this.model.values[this.model.filter.toIdx]) {
-                    this.model.to = this.model.values[this.model.filter.toIdx];
-                } else {
-                    this.model.to = this.model.values[0];
-                }
+                this.model.from = this.model.values[0].path;
+            }
+            if (this.model.values[this.model.filter.toIdx]) {
+                this.model.to = this.model.values[this.model.filter.toIdx].path;
+            } else {
+                this.model.to = this.model.values[0].path;
             }
         }
     }
@@ -266,6 +269,9 @@ export class FilterPopupComponent implements OnInit {
      * Dismiss filter and close dialog
      */
     removeFilter() {
+        this.model.filter.isInterval = false;
+        delete this.model.filter.fromIdx;
+        delete this.model.filter.toIdx;
         for (let i = 0; i < this.model.filter.values.length; i++) {
             this.model.filter.values[i].checked = false;
         }
@@ -280,8 +286,8 @@ export class FilterPopupComponent implements OnInit {
         this.model.filter.isExclude = this.model.isExclude;
         this.model.filter.isInterval = this.model.isInterval;
         if (this.model.filter.isInterval) {
-            this.model.filter.fromIdx = this.model.values.indexOf(this.model.from);
-            this.model.filter.toIdx = this.model.values.indexOf(this.model.to);
+            this.model.filter.fromIdx = this.model.values.findIndex(v => v.path === this.model.from);
+            this.model.filter.toIdx = this.model.values.findIndex(v => v.path === this.model.to);
         } else {
             delete this.model.filter.from;
             delete this.model.filter.to;

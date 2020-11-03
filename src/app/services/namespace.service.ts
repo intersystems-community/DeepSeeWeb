@@ -53,7 +53,7 @@ export class NamespaceService {
                 void this.router.navigateByUrl(CURRENT_NAMESPACE);
                 return;
             }
-            this.router.navigateByUrl('/login')
+            void this.router.navigateByUrl('/login');
         });
     }
 

@@ -1,23 +1,38 @@
 @import "../variables";
 
-// Background colors for tiles
 :root {
-    //--cl-main: #2a3f54;
-    //
-    //--cl-header-bg: var(--cl-main);
-    //--cl-header-border: var(--cl-main);
-    //--cl-header-txt: white;
-    //--cl-header-ico: white;
-    //
-    //--cl-sidebar-bg: var(--cl-main);
-    //--cl-sidebar-txt: white;
-    //
-    //--cl-text-widget-font: #000;
-    //--cl-widget-filter-txt: #000;
-    //--cl-widget-filter-bg: #FFF;
-    //--widget-header-btn-opacity: 1;
-    //--widget-header-btn-filter: invert(1);
-    //--widget-header-btn-active-filter: contrast(0.2) sepia(1) brightness(1.1) hue-rotate(-655deg) contrast(4);
+    --cl-main: #2a3f54;
+    --cl-accent: #0258f6;
+
+    --cl-btn-main: #5c79b8;
+    --cl-btn-main-txt:  #fff;
+    --cl-btn-main-border: #4c6bae;
+    --cl-btn-main-hover: #6e8bca;
+
+    --cl-btn-secondary-border: #3f2222;
+    --cl-btn-secondary-hover: #3f3f3f;
+
+
+    --cl-header-bg: var(--cl-main);
+    --cl-header-border: var(--cl-main);
+    --cl-header-txt: white;
+    --cl-header-ico: white;
+    --cl-sidebar-txt: white;
+
+    --cl-text-widget-font: #000;
+    --cl-widget-filter-txt: #fff;
+    --cl-widget-filter-bg: #364d64;
+    --widget-header-btn-opacity: 1;
+    --widget-header-btn-filter: invert(1);
+    --widget-header-btn-active-filter: contrast(0.2) sepia(1) brightness(1.1) hue-rotate(-655deg) contrast(4);
+
+    --cl-header-btn-hover: #445a70;
+    --cl-header-btn-active: #364d64;
+
+    --cl-sidebar-bg: #364d64;
+    --menu-item-icon-filter: invert(1);
+    --icon-filter: invert(1);
+
 }
 
 
