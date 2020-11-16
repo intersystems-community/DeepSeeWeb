@@ -15,7 +15,7 @@ import {DataService} from '../../services/data.service';
 import {FilterService} from '../../services/filter.service';
 import {ActivatedRoute} from '@angular/router';
 import {I18nService} from '../../services/i18n.service';
-import {WidgetTypeService} from '../../services/widget-type.service';
+import {IWidgetType, WidgetTypeService} from '../../services/widget-type.service';
 import * as Highcharts from 'highcharts';
 import {IButtonToggle} from '../../services/widget.service';
 import {Subscription} from 'rxjs';
@@ -25,10 +25,68 @@ import {DomSanitizer} from '@angular/platform-browser';
 import {SidebarService} from '../../services/sidebar.service';
 import {WidgetComponent} from './base/widget/widget.component';
 import {DashboardService} from '../../services/dashboard.service';
+import * as numeral from 'numeral';
+
+
+export type OBoolean = 'true' | 'false';
+export type OAxisType = 'percent' | '';
+
+
+export interface IAxisOverride {
+    title?: string;
+    axisType?: OAxisType;
+    majorGridStyle?: string;
+    maxValue?: number;
+    minValue?: number;
+    _type: string;
+}
+
+export interface IWidgetOverride {
+    axisTitleStyle: string;
+    chartPivot: number;
+    legendVisible: OBoolean;
+    seriesColorsOverride: string;
+    valueLabelFormat: string;
+    valueLabelStyle: string;
+    valueLabelsVisible: number;
+    xAxis: IAxisOverride;
+    yAxisList: IAxisOverride[];
+    seriesTypes: string;
+    showPercentage?: number;
+    _type: string;
+}
 
 export interface IAddonInfo {
     type?: string;
     chart?: string;
+}
+
+export type WidgetColumnDisplayType = 'trendLine' | 'plotBox' | 'itemNo' | 'value' | 'label' | '';
+export type WidgetColumnShowType = 'value';
+export type WidgetColumnSummaryType = 'sum' | '';
+
+export interface IWidgetDataProperties {
+    // align: string;
+    // baseValue: string
+    dataValue: string;
+    display: WidgetColumnDisplayType;
+    format: string;
+    label: string;
+    // name: string;
+    // override: string;
+    rangeLower: string | number;
+    rangeUpper: string | number;
+    thresholdLower: string | number;
+    thresholdUpper: string | number;
+    showAs: WidgetColumnShowType;
+    summary: WidgetColumnSummaryType;
+    /*style: string;
+    subtype: string;
+    summary: string;
+    summaryValue: string;
+    targetValue: string;
+    valueColumn: number;
+    width: string;*/
 }
 
 // Widget info object
@@ -38,6 +96,8 @@ export interface IWidgetInfo {
     y: number;
     cols: number;
     row: number;
+
+    dataProperties: IWidgetDataProperties[];
 
     // Widget parameters
     name: string;
@@ -54,7 +114,6 @@ export interface IWidgetInfo {
     Link: any;
     kpitype: string;
     mdx: string;
-    dataProperties: any;
     properties: any;
 
     isExpanded: boolean;
@@ -97,7 +156,7 @@ export interface IWidgetInfo {
 
     // Chart
     isLegend: boolean;
-    overrides: any[];
+    overrides: IWidgetOverride[];
     isChart: boolean;
     isBtnZero: boolean;
     isBtnValues: boolean;
@@ -113,63 +172,6 @@ export interface IWidgetInfo {
 
 @Directive()
 export abstract class BaseWidget implements OnInit, OnDestroy {
-
-    public model: any = {};
-    // Parent angular component on which widget is created
-    parent: WidgetComponent;
-
-    // Widget data
-    public widget: IWidgetInfo;
-
-    // Loading spinner, do now use directly
-    // use showLoading(), hideLoading() instead
-    public isSpinner = true;
-    protected drills = [];
-    protected drillFilter = '';
-    protected drillFilterDrills = [];
-    protected pivotVariables = null;
-
-
-    // Array of widget names that shall be filtered during drill down
-    drillFilterWidgets = null;
-    _currentData = null;
-
-    _kpiData = null;
-
-    // If widget on tile
-    protected tile = null;
-
-    // For light pivot
-    public lpt;
-
-    // For chart
-    public chart: Highcharts.Chart;
-    protected customColSpec = '';
-    protected customRowSpec = '';
-    protected customDataSource = '';
-    protected pivotData = null;
-    protected linkedMdx = '';
-    protected liveUpdateInterval = null;
-    protected canDoDrillthrough = false;
-
-    protected firstRun = true;
-    protected chartConfig: any;
-    protected onInit = () => {
-    };
-
-    private subLinkedMdx: Subscription;
-    private subRefreshDepenend: Subscription;
-    private subDrillFilter: Subscription;
-    private subDrillFilterAll: Subscription;
-    private subPivotVar: Subscription;
-    private subPivotVarAll: Subscription;
-    private subDataSourcechange: Subscription;
-    private subColSpec: Subscription;
-    private subColSpecAll: Subscription;
-    private hasDatasourceChoser = false;
-
-
-    createWidgetComponent: (type?: string) => void;
 
     @HostBinding('class.inline') get inline(): boolean {
         return this.widget.inline;
@@ -195,8 +197,84 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
                 protected cd: ChangeDetectorRef,
                 protected zone: NgZone) {
     }
+    dataInfo = null;
+
+    public model: any = {};
+    // Parent angular component on which widget is created
+    parent: WidgetComponent;
+
+    // Widget data
+    public widget: IWidgetInfo;
+
+    // Loading spinner, do now use directly
+    // use showLoading(), hideLoading() instead
+    public isSpinner = true;
+    protected drills = [];
+    protected drillFilter = '';
+    protected drillFilterDrills = [];
+    protected pivotVariables = null;
+
+    tc: any;
+    protected widgetsSettings: any;
+
+    // Array of widget names that shall be filtered during drill down
+    drillFilterWidgets = null;
+    _currentData = null;
+
+    _kpiData = null;
+
+    // If widget on tile
+    protected tile = null;
+
+    // For light pivot
+    public lpt;
+
+    // For chart
+    public chart: Highcharts.Chart;
+    protected customColSpec = '';
+    protected customRowSpec = '';
+    protected customDataSource = '';
+    protected pivotData = null;
+    protected linkedMdx = '';
+    protected liveUpdateInterval = null;
+    protected canDoDrillthrough = false;
+
+    protected firstRun = true;
+    protected chartConfig: any;
+
+    private subLinkedMdx: Subscription;
+    private subRefreshDepenend: Subscription;
+    private subDrillFilter: Subscription;
+    private subDrillFilterAll: Subscription;
+    private subPivotVar: Subscription;
+    private subPivotVarAll: Subscription;
+    private subDataSourcechange: Subscription;
+    private subColSpec: Subscription;
+    private subColSpecAll: Subscription;
+    private hasDatasourceChoser = false;
+    protected override: IWidgetOverride = null;
+    protected baseType = '';
+
+    createWidgetComponent: (type?: string) => void;
+    protected onInit = () => {
+    }
 
     ngOnInit() {
+        this.baseType = this.widget?.type;
+        this.override = this.getOverride();
+        const settings = this.ss.getAppSettings();
+
+        const theme = settings.theme || '';
+        this.widgetsSettings = this.ss.getWidgetsSettings(this.widget.dashboard) || {};
+        this.tc = settings.themeColors[theme] || {};
+
+        // Override theme colors by widget custom colors
+        if (this.widgetsSettings[this.widget.name] &&
+            this.widgetsSettings[this.widget.name].themeColors &&
+            this.widgetsSettings[this.widget.name].themeColors[theme]) {
+            this.tc = this.widgetsSettings[this.widget.name].themeColors[theme];
+        }
+
         if (this.widget && this.widget.drills) {
             this.drills = this.widget.drills;
         }
@@ -323,6 +401,13 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         this.destroy();
     }
 
+    private getOverride(): IWidgetOverride {
+        let t = this.baseType;
+        if (t === 'lineChartMarkers') {
+            t = 'lineChart';
+        }
+        return this.widget?.overrides?.find(o => o._type === t);
+    }
 
     /**
      * Setup action buttons for widget. Received from controls
@@ -1009,7 +1094,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         let i, j;
         const cats = [];
         for (i = 0; i < d.Properties.length; i++) {
-            cats.push({caption: d.Properties[i].caption || d.Properties[i].name});
+            cats.push({caption: d.Properties[i].caption || d.Properties[i].name, dimension: d.Properties[i].name});
         }
         res.Cols.push({tuples: cats});
 
@@ -1018,9 +1103,10 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
             for (j = 0; j < d.Properties.length; j++) {
                 res.Data.push(d.Series[i][d.Properties[j].name]);
             }
+            const name = d.Series[i]['%series'] || d.Series[i].seriesName;
             ser.push({
-                title: d.Series[i]['%series'],
-                caption: d.Series[i]['%series']
+                title: name,
+                caption: name
             });
         }
         res.Cols.push({tuples: ser});
@@ -1092,7 +1178,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         }
         this.clearError();
         setTimeout(() => this.broadcastDependents(), 0);
-        //this.firstRun = false;
+        // this.firstRun = false;
 
         // Check for variables
         if (mdx.indexOf('$') !== -1 && !this.pivotVariables) {
@@ -1108,7 +1194,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         })
             .finally(() => {
                 this.hideLoading();
-            })
+            });
     }
 
     /**
@@ -1132,7 +1218,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         }
         let msg = this.i18n.get('errWidgetRequest');
         switch (status) {
-            case 401:
+            case 401: case 403:
                 msg = this.i18n.get('errUnauth');
                 break;
             case 404:
@@ -1143,11 +1229,16 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
     }
 
     clearError() {
+        if (this.parent) {
+            this.parent.clearError();
+        }
 
     }
 
     showError(msg) {
-
+        if (this.parent) {
+            this.parent.showError(msg);
+        }
     }
 
     checkColSpec(mdx) {
@@ -1402,6 +1493,20 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
             this.widget.pivotMdx = customMdx || this.getMDX();
             this.changeWidgetType('pivot');
         }
+    }
+
+    formatNumber(v, format) {
+        let res;
+        if (format) {
+            res = numeral(v).format(format.replace(/;/g, ''));
+        } else {
+            res = v.toString();
+        }
+        if (this.dataInfo) {
+            res = res.replace(/,/g, this.dataInfo.numericGroupSeparator)
+                .replace(/\./g, this.dataInfo.decimalSeparator);
+        }
+        return res;
     }
 }
 

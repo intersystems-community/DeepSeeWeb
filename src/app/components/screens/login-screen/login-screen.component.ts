@@ -274,7 +274,7 @@ export class LoginScreenComponent implements OnInit {
             case 0:
                 this.showError(this.i18n.get('errNotFound'));
                 break;
-            case 401:
+            case 401: case 403:
                 this.showError(this.i18n.get('errUnauth'));
                 break;
             case 500:

@@ -6,6 +6,7 @@ import {ActivatedRoute} from '@angular/router';
 import {IButtonToggle, WidgetService} from '../../../../services/widget.service';
 import {NamespaceService} from '../../../../services/namespace.service';
 import {dsw} from '../../../../../environments/dsw';
+import {IWidgetType} from '../../../../services/widget-type.service';
 
 @Component({
     selector: 'dsw-widget-header',
@@ -18,6 +19,7 @@ export class WidgetHeaderComponent {
     @Output() onBack = new EventEmitter();
     @Output() onResetClickFilter = new EventEmitter();
 
+    typeDef: IWidgetType;
     widget: IWidgetInfo;
     private widgetsSettings: any;
 

@@ -48,6 +48,7 @@ export class ConfigResolver implements Resolve<any> {
                 }
                 this.ds.loadConfig(CURRENT_NAMESPACE)
                     .then(conf => this.st.loadConfig(conf))
+                    .catch(err => this.st.loadConfig(null))
                     .finally(() => {
                         this.previousNS = CURRENT_NAMESPACE;
                         done();

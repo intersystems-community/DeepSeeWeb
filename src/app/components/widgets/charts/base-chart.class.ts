@@ -1,8 +1,8 @@
-import {BaseWidget} from '../base-widget.class';
+import {BaseWidget, IWidgetOverride} from '../base-widget.class';
 import {AfterViewInit, OnInit, Directive} from '@angular/core';
 import {dsw} from '../../../../environments/dsw';
 import * as numeral from 'numeral';
-import {YAxisOptions} from 'highcharts';
+import {AxisTypeValue, YAxisOptions} from 'highcharts';
 import {IButtonToggle} from '../../../services/widget.service';
 
 // Highcharts
@@ -33,14 +33,12 @@ const DEF_COL_COUNT = 20;
 @Directive()
 export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit {
 
-    dataInfo = null;
     widgetData = null;
     seriesTypes = [];
     protected _selectedPoint;
     chartConfig: Highcharts.Options;
-    protected tc: any;
     protected firstRun = true;
-    protected widgetsSettings: any;
+
     private subPrint: Subscription;
     private subColorsConfig: Subscription;
 
@@ -51,17 +49,6 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
         this.widget.isChart = true;
         this.setupHeaderButtons();
 
-        const settings = this.ss.getAppSettings();
-
-        this.widgetsSettings = this.ss.getWidgetsSettings(this.widget.dashboard) || {};
-        this.tc = settings.themeColors[settings.theme] || {};
-
-        // Override theme colors by widget custom colors
-        if (this.widgetsSettings[this.widget.name] &&
-            this.widgetsSettings[this.widget.name].themeColors &&
-            this.widgetsSettings[this.widget.name].themeColors[settings.theme]) {
-            this.tc = this.widgetsSettings[this.widget.name].themeColors[settings.theme];
-        }
 
         // Check for series types
         if (this.widget.overrides && this.widget.overrides[0] && this.widget.overrides[0].seriesTypes) {
@@ -116,8 +103,9 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
         if (!this.chart) {
             return;
         }
-        while (this.chart.series.length > 0)
+        while (this.chart.series.length > 0) {
             this.chart.series[0].remove(false);
+        }
     }
 
     destroy() {
@@ -190,7 +178,9 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
 
     private saveSeriesVisiblilityState(name: string, visible: boolean) {
         const widgetsSettings = this.ss.getWidgetsSettings(this.widget.dashboard);
-        if (!widgetsSettings[this.widget.name]) { widgetsSettings[this.widget.name] = {}; }
+        if (!widgetsSettings[this.widget.name]) {
+            widgetsSettings[this.widget.name] = {};
+        }
         const ws = widgetsSettings[this.widget.name];
         if (!ws.series) {
             ws.series = {};
@@ -221,12 +211,12 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
             for (let i = 0; i < this.chartConfig.yAxis.length; i++) {
                 (this.chartConfig.yAxis[i] as any).prevMin = (this.chartConfig.yAxis[i] as YAxisOptions).min;
                 (this.chartConfig.yAxis[i] as any).min = 0;
-                //this.chartConfig.yAxis[i].min = 0;
+                // this.chartConfig.yAxis[i].min = 0;
             }
         } else {
             (this.chartConfig.yAxis as any).prevMin = (this.chartConfig.yAxis as any).min;
             (this.chartConfig.yAxis as any).min = 0;
-            //this.chartConfig.yAxis.min = 0;
+            // this.chartConfig.yAxis.min = 0;
         }
         this.updateChart();
     }
@@ -250,9 +240,9 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
         this.requestData();
     }
 
-    //showValues() {
-    //this.toggleButton('showValues');
-    //}
+    // showValues() {
+    // this.toggleButton('showValues');
+    // }
 
 
     /**
@@ -265,21 +255,6 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
             });
         }
     }
-
-    formatNumber(v, format) {
-        let res;
-        if (format) {
-            res = numeral(v).format(format.replace(/;/g, ''));
-        } else {
-            res = v.toString();
-        }
-        if (this.dataInfo) {
-            res = res.replace(/,/g, this.dataInfo.numericGroupSeparator)
-                .replace(/\./g, this.dataInfo.decimalSeparator);
-        }
-        return res;
-    }
-
 
     initFormatForSeries(d) {
         const getFormat = (d) => {
@@ -478,7 +453,7 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
         data.color = cols[(this.chart.series.length % cols.length) || 0];
 
         // Check chart type
-        let curIdx = this.chartConfig.series.length;
+        const curIdx = this.chartConfig.series.length;
         if (this.seriesTypes && this.seriesTypes[curIdx]) {
             data.type = this.seriesTypes[curIdx];
         }
@@ -555,7 +530,7 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
             return el.action === 'setRowCount';
         })[0];
         const rowCount = cont ? (cont.value || DEF_ROW_COUNT) : DEF_ROW_COUNT;
-        //rowCount = 20;
+        // rowCount = 20;
         if (this.chartConfig.plotOptions.series.stacking === 'normal' || !this.chartConfig.plotOptions.series.stacking) {
             const cats = d.Cols[1].tuples;
             const ser = d.Cols[0].tuples;
@@ -643,7 +618,7 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
     parseData(d) {
         const data = d;
         let i;
-        let currentAxis = 0;
+        const currentAxis = 0;
         // Add non exists axis as count
         if (!data.Cols[1]) {
             data.Cols[1] = {tuples: []};
@@ -657,7 +632,9 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
         if (d && d.Info) {
             this.dataInfo = d.Info;
         }
-        (this.chartConfig.yAxis as Highcharts.YAxisOptions).min = this.getMinValue(data.Data);
+
+        this.setupAxisMinMax(data.Data);
+
         this.chartConfig.series = [];
         (this.chartConfig.xAxis as Highcharts.XAxisOptions).categories = [];
         for (i = 0; i < data.Cols[1].tuples.length; i++) {
@@ -704,7 +681,7 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
                 }
             }
         } else {
-            for (let j = data.Cols[0].tuples.length - 1; j >= 0; j--) {
+            for (let j = 0; j < data.Cols[0].tuples.length; j++) {
 
                 if (colCountControl) {
                     if (j >= colCountControl.value) {
@@ -732,7 +709,7 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
                 }
                 this.addSeries({
                     data: tempData,
-                    name: name,
+                    name,
                     format: format || this.getFormat(data)
                 });
             }
@@ -769,6 +746,19 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
     private setupChart() {
         const _this = this;
         const typeDesc = this.wts.getDesc(this.widget.type);
+
+        function axisFormatter() {
+            let v = this.value;
+            const ov = _this.override;
+            const fmt = ov?.valueLabelFormat;
+            const t = _this.baseType;
+            if (ov?.yAxisList[0]?.axisType === 'percent' ||
+                (ov?.xAxis.axisType === 'percent' && (t === 'barChart' || t === 'barChartStacked'))) {
+                v = _this.formatNumber(v, '#%');
+            }
+            return v;
+        }
+
         this.chartConfig = {
             drilldown: {
                 activeAxisLabelStyle: {
@@ -797,11 +787,12 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
                 enabled: false
             },
             tooltip: {
-                formatter: function () {
+                formatter() {
+                    const ov = _this.override;
                     /* jshint ignore:start */
-                    let t: any = this;
+                    const t: any = this;
                     /* jshint ignore:end */
-                    let fmt = (t.series.options as any).format;
+                    const fmt = ov?.valueLabelFormat || (t.series.options as any).format;
                     let val = t.y;
                     if (fmt) {
                         val = _this.formatNumber(val, fmt);
@@ -834,7 +825,7 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
                     cursor: 'pointer',
                     point: {
                         events: {
-                            click: function (e: any) {
+                            click(e: any) {
                                 if (!e.point) {
                                     return;
                                 }
@@ -855,11 +846,12 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
                     dataLabels: {
                         color: this.tc.hcTextColor,
                         enabled: this.widget.showValues === true,
-                        formatter: function () {
+                        formatter() {
+                            const ov = _this.override;
                             /* jshint ignore:start */
-                            let t = this;
+                            const t = this;
                             /* jshint ignore:end */
-                            let fmt = (t.series.options as any).format;
+                            const fmt = ov?.valueLabelFormat || (t.series.options as any).format;
                             let val = t.y;
 
                             if (fmt) {
@@ -882,8 +874,10 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
                 },
                 labels: {
                     style: {
-                        color: this.tc.hcTextColor
-                    }
+                        color: this.tc.hcTextColor,
+                        textOverflow: 'none'
+                    },
+                    formatter: axisFormatter
                 },
                 minorGridLineColor: this.tc.hcLineColor,
                 gridLineColor: this.tc.hcLineColor,
@@ -896,8 +890,10 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
                     text: ''
                 },
                 labels: {
+                    // formatter: axisFormatter,
                     style: {
-                        color: this.tc.hcTextColor
+                        color: this.tc.hcTextColor,
+                        textOverflow: 'none'
                     }
                 },
                 minorGridLineColor: this.tc.hcLineColor,
@@ -949,16 +945,19 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
             }];
             if (this.widget.overrides && this.widget.overrides[0] && this.widget.overrides[0]._type === 'comboChart') {
                 const combo = this.widget.overrides[0];
-                let l = combo.yAxisList;
+                const l = combo.yAxisList;
                 if (l && l.length) {
                     for (let k = 0; k < l.length; k++) {
                         if (l[k].title) {
-                            this.chartConfig.yAxis[k].title = l[k].title;
+                            if (!this.chartConfig.yAxis[k].title) {
+                                this.chartConfig.yAxis[k].title = {};
+                            }
+                            this.chartConfig.yAxis[k].title.text = l[k].title;
                         }
-                        (this.chartConfig.yAxis[k] as YAxisOptions).type = l[k].axisType;
+                        (this.chartConfig.yAxis[k] as YAxisOptions).type = l[k].axisType as AxisTypeValue;
                         if (l[k].axisType === 'percent') {
                             this.chartConfig.yAxis[k].labels = {
-                                formatter: function () {
+                                formatter() {
                                     return this.value * 100 + '%';
                                 }
                             };
@@ -1060,6 +1059,13 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
                 for (let i = 0; i < this.chart.series.length; i++) {
                     const series = this.chart.series[i];
                     const color = themeColors.hcColors[i % themeColors.hcColors.length];
+
+                    // For charts with lines
+                    const el = series.graph?.element;
+                    if (el) {
+                        el.setAttribute('stroke', color);
+                    }
+
                     series.data.forEach((d: any) => {
                         d.color = color;
                         const el = d.graphic?.element;
@@ -1070,9 +1076,12 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
                     });
                     const l = (this.chart.legend.allItems[i] as any);
                     if (l && l.legendSymbol) {
-                        const el = l.legendSymbol.element;
-                        el.setAttribute('fill', color);
-                        el.setAttribute('stroke', color);
+                        [l.legendSymbol.element, l.legendLine.element].forEach(el => {
+                            if (el) {
+                                el.setAttribute('fill', color);
+                                el.setAttribute('stroke', color);
+                            }
+                        });
                     }
 
                     this.chart.series[i].options.color = color;
@@ -1138,7 +1147,7 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
                 // Set legend labels color
                 this.chart.options.legend.itemStyle.color = col;
                 this.chart.legend.allItems.forEach((l: any) => {
-                   /* l.color = col; */
+                    /* l.color = col; */
                     l.options.color = col;
                     l.legendItem.element.setAttribute('color', col);
                     l.legendItem.element.setAttribute('fill', col);
@@ -1155,5 +1164,36 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
                 }));
             }
         });
+    }
+
+    /**
+     * Setups min and max values for chart axis
+     * Uses overrides or calculated from data
+     * @param data
+     */
+    private setupAxisMinMax(data) {
+        const ov = this.override;
+        const yAxis = this.chartConfig.yAxis as Highcharts.YAxisOptions;
+        const xAxis = this.chartConfig.xAxis as Highcharts.XAxisOptions;
+
+        yAxis.min = 0;
+        let axis = ov?.yAxisList[0];
+
+        // Swap axis for bar charts
+        if (this.baseType === 'barChart' || this.baseType === 'barChartStacked') {
+            axis = ov?.xAxis;
+        }
+
+        if (axis?.minValue !== undefined) {
+            yAxis.min = axis.minValue;
+        }
+/*
+        else {
+            yAxis.min = this.getMinValue(data);
+        }
+*/
+        if (axis?.maxValue !== undefined) {
+            yAxis.max = axis.maxValue;
+        }
     }
 }

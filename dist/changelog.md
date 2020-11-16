@@ -1,3 +1,17 @@
+#### 3.0.12
+* added support for DSZ min/max values for axis options
+* added support for DSZ percent  display option (values and axis)
+* added 403 handling as 401 due to new IRIS 2020.4 version
+* changed title position on widget titles to left
+* fixed issue with theming when there is no config file hosted 
+* fixed issue with empty dashboard after navigating back or with breadcrumbs
+* fixed issue with series order on charts. now order equal to mdx2json result
+* fixed issue with color adjustment for charts with markers
+* updated to new lightpivot version
+* added support for errors display in light pivot
+* fixed issue with invisible error messages
+* updated mdx2json dependency to support new versions 
+
 #### 3.0.11
 * Added global theming for charts
 

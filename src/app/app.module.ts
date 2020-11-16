@@ -58,6 +58,7 @@ import { AppSettingsComponent } from './components/ui/app-settings/app-settings.
 import {ThemeSettingsComponent} from './components/ui/theme-settings/theme-settings.component';
 import {MenuSettingsComponent} from './components/ui/menu/menu-settings/menu-settings.component';
 import {BarChartComponent} from './components/widgets/charts/bar-chart.component';
+import {ScorecardWidgetComponent} from './components/widgets/scorecard/scorecard-widget';
 
 @NgModule({
     declarations: [
@@ -106,7 +107,8 @@ import {BarChartComponent} from './components/widgets/charts/bar-chart.component
         ChartConfigComponent,
         AppSettingsComponent,
         MenuSettingsComponent,
-        ThemeSettingsComponent
+        ThemeSettingsComponent,
+        ScorecardWidgetComponent
     ],
     imports: [
         BrowserAnimationsModule,

@@ -19,117 +19,145 @@ import {PieChartComponent} from '../components/widgets/charts/pie-chart.componen
 import {XyChartComponent} from '../components/widgets/charts/xy-chart.component';
 import {TimeChartComponent} from '../components/widgets/charts/time-chart.component';
 import {BarChartComponent} from '../components/widgets/charts/bar-chart.component';
+import {ScorecardWidgetComponent} from '../components/widgets/scorecard/scorecard-widget';
 
 export const ADDON_PREFIX = 'DSW.Addons.';
 
-interface IWidgetType {
+export interface IWidgetType {
     class?: Type<unknown>;
     type: string;
+    chart: string;
+    allowShowAsPivot: boolean;
 }
 
 const TYPES = {
+    regular: {
+        class: ScorecardWidgetComponent,
+        allowShowAsPivot: true
+    },
     fuelgauge: {
         class: FuelGaugeChartComponent,
         type: 'chart',
-        chart: 'gauge'
+        chart: 'gauge',
+        allowShowAsPivot: true
     },
     bullseyechart: {
         class: BullseyeChartComponent,
         type: 'chart',
-        chart: 'pie'
+        chart: 'pie',
+        allowShowAsPivot: true
     },
     speedometer: {
         class: SpeedometerChartComponent,
         type: 'chart',
-        chart: 'gauge'
+        chart: 'gauge',
+        allowShowAsPivot: true
     },
     bubblechart: {
         class: BubbleChartComponent,
         type: 'chart',
-        chart: 'bubble'
+        chart: 'bubble',
+        allowShowAsPivot: true
     },
     treemapchart: {
         class: TreeMapComponent,
         type: 'chart',
-        chart: 'treemap'
+        chart: 'treemap',
+        allowShowAsPivot: true
     },
     hilowchart: {
         class: HiLowChartComponent,
         type: 'chart',
-        chart: 'boxplot'
+        chart: 'boxplot',
+        allowShowAsPivot: true
     },
     piechart3d: {
         class: PieChartComponent,
         type: 'chart',
-        chart: 'pie'
+        chart: 'pie',
+        allowShowAsPivot: true
     },
     donutchart3d: {
         class: PieChartComponent,
         type: 'chart',
-        chart: 'pie'
+        chart: 'pie',
+        allowShowAsPivot: true
     },
     donutchart: {
         class: PieChartComponent,
         type: 'chart',
-        chart: 'pie'
+        chart: 'pie',
+        allowShowAsPivot: true
     },
     piechart: {
         class: PieChartComponent,
         type: 'chart',
-        chart: 'pie'
+        chart: 'pie',
+        allowShowAsPivot: true
     },
     areachart: {
         class: AreaChartComponent,
         type: 'chart',
-        chart: 'area'
+        chart: 'area',
+        allowShowAsPivot: true
     },
     barchart: {
         class: BarChartComponent,
         type: 'chart',
-        chart: 'bar'
+        chart: 'bar',
+        allowShowAsPivot: true
     },
     'isc.kkbanalitics.portlets.stacionarkkbportlet': {
         // class: BarChartPercent,
-        type: 'chart'
+        type: 'chart',
+        allowShowAsPivot: true
     },
     barchartstacked: {
         class: BarChartComponent,
         type: 'chart',
-        chart: 'bar'
+        chart: 'bar',
+        allowShowAsPivot: true
     },
     linechart: {
         class: LineChartComponent,
         type: 'chart',
-        chart: 'line'
+        chart: 'line',
+        allowShowAsPivot: true
     },
     linechartmarkers: {
         class: LineChartComponent,
         type: 'chart',
-        chart: 'line'
+        chart: 'line',
+        allowShowAsPivot: true
     },
     combochart: {
         class: LineChartComponent,
         type: 'chart',
-        chart: 'line'
+        chart: 'line',
+        allowShowAsPivot: true
     },
     columnchart: {
         class: ColumnChartComponent,
         type: 'chart',
-        chart: 'column'
+        chart: 'column',
+        allowShowAsPivot: true
     },
     columnchartstacked: {
         class: ColumnChartComponent,
         type: 'chart',
-        chart: 'column'
+        chart: 'column',
+        allowShowAsPivot: true
     },
     xychart: {
         class: XyChartComponent,
         type: 'chart',
-        chart: 'scatter'
+        chart: 'scatter',
+        allowShowAsPivot: true
     },
     timechart: {
         class: TimeChartComponent,
-        type: 'chart'
+        type: 'chart',
+        allowShowAsPivot: true
     },
     pivot: {
         class: WPivotComponent,
@@ -141,28 +169,34 @@ const TYPES = {
     },
     textmeter: {
         class: WTextComponent,
-        type: 'text'
+        type: 'text',
+        allowShowAsPivot: true
     },
     map: {
         class: MapWidgetComponent,
-        type: 'map'
+        type: 'map',
+        allowShowAsPivot: true
     },
     'deepsee.enhancedmapportlet': {
         class: MapWidgetComponent,
-        type: 'map'
+        type: 'map',
+        allowShowAsPivot: true
     },
     'rf.mapportlet': {
         class: MapWidgetComponent,
-        type: 'map'
+        type: 'map',
+        allowShowAsPivot: true
     },
     'dsw.addons.htmlviewer': {
         class: HtmlViewerComponent
     },
     'dsw.addons.dsw.worldmap': {
-        class: WorldMapComponent
+        class: WorldMapComponent,
+        allowShowAsPivot: true
     },
     'dsw.addons.worldmap': {
-        class: WorldMapComponent
+        class: WorldMapComponent,
+        allowShowAsPivot: true
     }
 
 };

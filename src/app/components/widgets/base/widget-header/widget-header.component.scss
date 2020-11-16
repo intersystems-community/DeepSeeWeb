@@ -18,12 +18,7 @@
     text-overflow: ellipsis;
     border-bottom: 1px solid var(--cl-header-border);
 
-    & > div {
-        display: inline-flex;
-        align-items: center;
-        font-size: 14px;
-        font-weight: bold;
-
+    & > .drag-handle {
         position: absolute;
         left: 0;
         right: 0;
@@ -90,4 +85,12 @@
     & > img {
         height: 100%;
     }
+}
+
+.title-text {
+    pointer-events: none;
+    margin-right: auto;
+    margin-left: 4px;
+    font-size: 14px;
+    font-weight: bold;
 }

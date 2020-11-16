@@ -109,7 +109,7 @@ export class FolderScreenComponent implements OnInit, OnDestroy {
             this.hs.onSearch.pipe(distinctUntilChanged())
         ]).pipe(
             map(([segments, data, search]) => {
-                this.folder = segments.map(s => s.path).join('/') || '';
+                this.folder = decodeURIComponent(segments.map(s => s.path).join('/') || '');
                 this.isLoading = false;
                 const d = this.retrieveData(JSON.parse(JSON.stringify(data)), search as any || '');
                 this.isSpinner = false;

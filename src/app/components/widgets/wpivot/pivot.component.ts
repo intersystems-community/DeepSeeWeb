@@ -39,7 +39,12 @@ export class WPivotComponent extends BaseWidget implements OnInit, AfterViewInit
             triggers: {
                 drillDown: (p) => this.onDrillDown(p),
                 back: (p) => this.onDrillDown(p),
-                cellDrillThrough: () => this.onDrillThrough()
+                cellDrillThrough: () => this.onDrillThrough(),
+                responseHandler: (info) => {
+                    if (info.status !== 200) {
+                        this.showError(info.xhr.responseText);
+                    }
+                }
             },
             loadingMessageHTML: '<img src="assets/img/spinner.svg">',
             columnResizeAnimation: true,
@@ -110,6 +115,7 @@ export class WPivotComponent extends BaseWidget implements OnInit, AfterViewInit
             }
             this.broadcastDependents();
             if (this.lpt.getActualMDX() !== newMdx) {
+                this.clearError();
                 this.lpt.changeBasicMDX(newMdx);
             }
         }

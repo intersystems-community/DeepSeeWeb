@@ -392,6 +392,7 @@ export class WidgetComponent implements OnInit, OnDestroy, AfterViewInit {
         }
         this.destroyComponent();
         this.container.clear();
+        // const typeDef = this.wts.getDesc(type || this.widget.type);
         const t = this.wts.getClass(type || this.widget.type);
         if (t) {
             this.widget.isSupported = true;
@@ -402,7 +403,7 @@ export class WidgetComponent implements OnInit, OnDestroy, AfterViewInit {
             this.component.model = this.model;
             this.component.parent = this;
             this.component.createWidgetComponent = (type: string) => {
-                this.createWidgetComponent(type)
+                this.createWidgetComponent(type);
             };
             // this.component.header = this.header;
             if (this.header) {

@@ -1,4 +1,4 @@
-import {Component, Input, OnDestroy, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {SidebarService} from '../../../services/sidebar.service';
 import {Chart, ColorAxisOptions, PlotSeriesDataLabelsOptions} from 'highcharts';
 import {StorageService} from '../../../services/storage.service';
@@ -16,6 +16,14 @@ export interface IThemeColors {
     hcBorderColor: string;
 }
 
+export interface IChartConfigAppearance {
+    showSeries?: boolean[];
+    showBackground?: boolean;
+    showLines?: boolean;
+    showText?: boolean;
+    showBorder?: boolean;
+}
+
 @Component({
     selector: 'dsw-chart-config',
     templateUrl: './chart-config.component.html',
@@ -25,6 +33,7 @@ export class ChartConfigComponent implements OnInit, OnDestroy {
     @Input() chart: Chart;
     @Input() widgetSettings: any;
     @Input() onSave: () => void;
+    @Input() appearance: IChartConfigAppearance;
     @Input() onUpdate: (themeColors: IThemeColors) => void;
 
     private key: string;
@@ -47,6 +56,7 @@ export class ChartConfigComponent implements OnInit, OnDestroy {
 
     constructor(private sbs: SidebarService,
                 private ss: StorageService,
+                private cd: ChangeDetectorRef,
                 private bs: BroadcastService) {
     }
 
