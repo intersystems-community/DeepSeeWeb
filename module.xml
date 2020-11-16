@@ -8,7 +8,7 @@
       <Dependencies>
         <ModuleReference>
           <Name>MDX2JSON</Name>
-          <Version>2.2.0</Version>
+          <Version>2.*</Version>
         </ModuleReference>
       </Dependencies>
       <SystemSetting Name="CSP.DefaultFileCharset" Value="UTF-8"/>
