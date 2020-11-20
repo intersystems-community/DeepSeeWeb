@@ -228,7 +228,7 @@ dsw-widget-filter + * {
 }
 
 // Pivot styles
-.lpt-tableBlock {
+/*.lpt-tableBlock {
     background-color: var(--cl-widget-bg);
     color: var(--cl-widget-filter-txt);
 }
@@ -263,7 +263,7 @@ dsw-widget-filter + * {
 // Row hover glow
 .lpt .lpt-tableBlock tr:hover td {
     box-shadow: var(--pivot-row-hover);
-}
+}*/
 
 .lpt-tableBlock {
    /* &::-webkit-scrollbar {

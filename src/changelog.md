@@ -1,3 +1,6 @@
+#### 3.0.14
+* removed non-complete styles from future release (issue with pivot colors)
+
 #### 3.0.13
 * added "tuples.children" data format support for map widget
 * fixed issue with markers on map widget 
