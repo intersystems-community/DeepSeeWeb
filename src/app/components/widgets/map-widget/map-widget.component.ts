@@ -17,6 +17,7 @@ import * as proj from 'ol/proj';
     selector: 'dsw-map-widget',
     templateUrl: './map-widget.component.html',
     styles: [`
+        @import "/src/scss/variables.scss";
         :host {
             position: relative;
         }
@@ -33,7 +34,29 @@ import * as proj from 'ol/proj';
             -moz-box-shadow: 2px 2px 4px #7f7f7f;
             box-shadow: 2px 2px 4px #7f7f7f;
             padding: 2px 3px;
-
+        }
+        .map-popup {
+            margin-bottom: 0px;
+            border-color: rgb(176, 176, 176);
+            padding: 4px;
+            -webkit-box-shadow: 1px 1px 9px 0px rgba(50, 50, 50, 0.5);
+            -moz-box-shadow: 1px 1px 9px 0px rgba(50, 50, 50, 0.5);
+            box-shadow: 1px 1px 9px 0px rgba(50, 50, 50, 0.5);
+            background-color: var(--cl-widget-bg);
+            color: var(--cl-widget-header-txt);
+            position: relative;
+        }
+        .map-popup:after {
+            content: " ";
+            display: block;
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: 8px 4px 0 4px;
+            bottom: -8px;
+            left: calc(50% - 4px);
+            position: absolute;
+            border-color: var(--cl-widget-bg) transparent transparent transparent;
         }
     `]
 })
@@ -133,7 +156,7 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
         if (this.tooltip) {
             this.tooltip.nativeElement.style.display = 'none';
         }
-        this.hidePopup();
+        // this.hidePopup();
     }
 
     rejectTooltipCreation() {
@@ -552,13 +575,18 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
             this.map.updateSize();
         }, 0);
 
+        if (result.Error) {
+            this.showError(result.Error);
+            return;
+        }
+
         this.hideTooltip();
         this.markers.clear();
         this.mapData = result;
         this.buildPolygons();
 
         let min = [Number.MAX_VALUE, Number.MAX_VALUE];
-        let max = [Number.MIN_VALUE, Number.MIN_VALUE];
+        let max = [-Number.MAX_VALUE, -Number.MAX_VALUE];
 
         if (result && this.map) {
             let size = result.Cols[0].tuples.length;
@@ -591,14 +619,19 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
                 return;
             }
 
-            for (let i = 0; i < result.Cols[1].tuples.length; i++) {
+            let list = result.Cols[1].tuples;
+            if (list[0]?.children) {
+                list = list[0]?.children;
+            }
+
+            for (let i = 0; i < list.length; i++) {
                 if (result.Data[k + latIdx] === '' || result.Data[k + latIdx] === undefined ||
                     result.Data[k + lonIdx] === '' || result.Data[k + lonIdx] === undefined) {
                     continue;
                 }
                 let lat = parseFloat(result.Data[k + latIdx] || 0);
                 let lon = parseFloat(result.Data[k + lonIdx] || 0);
-                let name = result.Cols[1].tuples[i].caption;
+                let name = list[i].caption;
                 let point = new geom.Point([lat, lon]);
                 point.transform('EPSG:4326', 'EPSG:900913');
 
@@ -615,8 +648,8 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
                     labels: labels,
                     values: values,
                     dataIdx: k,
-                    path: result.Cols[1].tuples[i].path,
-                    desc: result.Cols[1].tuples[i].title
+                    path: list[i].path,
+                    desc: list[i].title
                 });
                 if (parseFloat(lon.toString()) < min[1]) {
                     min[1] = parseFloat(lon.toString());
@@ -649,7 +682,7 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
                 this.centerView(min, max);
             }
 
-
+            this.centerView(min, max);
             /* var p1 = proj.transform([min[0], min[1]], 'EPSG:4326', 'EPSG:900913');
              var p2 = proj.transform([max[0], max[1]], 'EPSG:4326', 'EPSG:900913');
              if (features.length !== 0) this.map.getView().fit([p1[0], p1[1], p2[0], p2[1]], this.map.getSize());
@@ -672,7 +705,7 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
                 anchorXUnits: 'fraction',
                 anchorYUnits: 'pixels',
                 opacity: 1,
-                src: 'img/map-marker-red.png'
+                src: 'assets/img/map-marker-red.png'
             })
         });
 
@@ -780,7 +813,8 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
                 title = this.getDataByColumnName(this.mapData, 'Name', dataIdx);
             }
             if (!title) {
-                title = (this.mapData.Cols[1].tuples[Math.floor(dataIdx / this.mapData.Cols[0].tuples.length)].caption || '');
+                const list = this.mapData.Cols[1].tuples[0]?.children || this.mapData.Cols[1].tuples;
+                title = (list[Math.floor(dataIdx / this.mapData.Cols[0].tuples.length)].caption || '');
             }
             if (title) {
                 this.showTooltip(title, e.pixel[0], e.pixel[1]);
@@ -829,6 +863,7 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
     }
 
     onMapClick(evt) {
+        this.hidePopup();
         if (dsw.mobile) {
             if (evt.originalEvent.touches && evt.originalEvent.touches.length !== 1) {
                 return;
@@ -865,12 +900,26 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
             if (contentProp) {
                 content = this.getDataByColumnName(this.mapData, contentProp, dataIdx);
             } else {
-
                 content = this.mapData.Cols[1].tuples[Math.floor(dataIdx / this.mapData.Cols[0].tuples.length)].caption ||
                     this.mapData.Cols[1].tuples[Math.floor(dataIdx / this.mapData.Cols[0].tuples.length)].desc || '';
             }
             if (!content) {
-                content = this.getDataByColumnName(this.mapData, "Name", dataIdx);
+                content = '<b>' + feature.get('name') + '</b><br/>';
+                if (this.mapData.Cols[0].tuples.length) {
+                    for (let i = 0; i < this.mapData.Cols[0].tuples.length; i++) {
+                        const caption = this.mapData.Cols[0].tuples[i].caption;
+                        if (caption.toLowerCase() === 'latitude' || caption.toLowerCase() === 'longitude') {
+                            continue;
+                        }
+                        const v = this.getDataByColumnName(this.mapData, caption, dataIdx);
+                        content += `${caption}: <span style="opacity: 0.6">${v}</span>`;
+                        if (i !== this.mapData.Cols[0].tuples.length - 1) {
+                            content += '<br/>';
+                        }
+                    }
+                } else {
+                    content = this.getDataByColumnName(this.mapData, "Name", dataIdx);
+                }
             }
             if (!content) {
                 return;
@@ -899,6 +948,7 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
              'content': feature.get('name')
              });*/
             //$(element).popover('show');
+            this.popupElement.innerHTML = content;
             this.showPopup();
 
         }

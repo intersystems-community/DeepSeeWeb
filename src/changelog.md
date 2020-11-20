@@ -1,4 +1,11 @@
+#### 3.0.13
+* added "tuples.children" data format support for map widget
+* fixed issue with markers on map widget 
+* added errors display for datasource requests
+* fixed issue with incorrect initial view bounds for some maps
+
 #### 3.0.12
+* added support for "scorecard"("regular") widget type
 * added support for DSZ min/max values for axis options
 * added support for DSZ percent  display option (values and axis)
 * added 403 handling as 401 due to new IRIS 2020.4 version

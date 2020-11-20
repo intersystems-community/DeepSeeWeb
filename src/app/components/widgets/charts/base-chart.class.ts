@@ -781,7 +781,7 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
             },
             chart: {
                 type: typeDesc?.chart || 'column',
-                backgroundColor: this.tc.hcBackground
+                backgroundColor: this.tc.hcBackground || 'transparent'
             },
             credits: {
                 enabled: false

@@ -43,9 +43,9 @@ input, textarea, select {
     padding: 6px 12px;
     font-size: 14px;
     color: #555;
-    background-color: #fff;
+    background-color: var(--cl-input-bg);
     background-image: none;
-    border: 1px solid #ccc;
+    border: 1px solid var(--cl-input-border);
     -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
     box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
     -webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;
@@ -225,4 +225,56 @@ dsw-widget-filter + * {
 // For flipping icons
 .flip {
     transform: scaleX(-1);
+}
+
+// Pivot styles
+.lpt-tableBlock {
+    background-color: var(--cl-widget-bg);
+    color: var(--cl-widget-filter-txt);
+}
+
+// Cells
+.lpt-topHeader th,
+.lpt-leftHeader th,
+.lpt .lpt-headerValue,
+.lpt-header {
+    background: var(--cl-widget-filter-bg);
+    color: var(--cl-widget-filter-txt);
+    border-color: var(--cl-pivot-cell-border);
+}
+
+// Borders
+.lpt .lpt-headerValue,
+.lpt td,
+.lpt th,
+.lpt .lpt-header,
+.lpt .lpt-bottomSection, .lpt .lpt-topSection
+{
+    border-color: var(--cl-pivot-cell-border);
+}
+
+// Cell hover
+.lpt-clickable:hover,
+.lpt .lpt-leftHeader th:last-child:hover
+{
+    background: var(--cl-pivot-cell-hover);
+}
+
+// Row hover glow
+.lpt .lpt-tableBlock tr:hover td {
+    box-shadow: var(--pivot-row-hover);
+}
+
+.lpt-tableBlock {
+   /* &::-webkit-scrollbar {
+        width: 17px;
+    }
+    &::-webkit-scrollbar-track {
+        background: var(--cl-widget-filter-bg);
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: var(--cl-widget-filter-bg);
+        opacity: 0.6;
+    }*/
 }

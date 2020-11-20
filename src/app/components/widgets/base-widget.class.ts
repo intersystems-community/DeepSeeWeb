@@ -1082,7 +1082,11 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
             }
         } else {
             if (ds) {
-                this.ds.getPivotData(ds).then(data => this._retriveDataSource(data));
+                this.ds.getPivotData(ds)
+                    .then(data => this._retriveDataSource(data))
+                    .catch(e => {
+                        this.showError(e.error?.Error || e.message);
+                    });
             }
         }
     }

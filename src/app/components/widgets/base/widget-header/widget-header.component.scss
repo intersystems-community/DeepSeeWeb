@@ -7,12 +7,12 @@
     flex: 0 0 auto;
     justify-content: space-between;
     font-family: $font;
-    background: var(--cl-header-bg);
+    background: var(--cl-widget-header-bg);
     height: var(--tile-header-height);
     padding: 0;
     font-size: 8pt;
     text-align: center;
-    color: var(--cl-header-txt);
+    color: var(--cl-widget-header-txt);
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -28,7 +28,7 @@
     & > span {
         display: inline-flex;
         align-items: center;
-        background: var(--cl-header-bg);
+        // background: var(--cl-header-bg);
         z-index: 1;
         flex-direction: row-reverse;
     }

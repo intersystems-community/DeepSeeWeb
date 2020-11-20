@@ -109,11 +109,22 @@ $sidebar-width: 322px;
     --cl-widget-bg: white;
     --cl-widget-header-btn-active: #A9FFA1;
     --cl-text-widget-font: #6b6464;
+    --cl-widget-header-bg: var(--cl-header-bg);
+    --cl-widget-header-txt: var(--cl-header-txt);
     --cl-widget-filter-txt: var(--cl-header-txt);
     --cl-widget-filter-bg:  var(--cl-header-bg);
     --widget-header-btn-opacity: 0.5;
     --widget-header-btn-filter: none;
     --widget-header-btn-active-filter: contrast(0.2) sepia(1) brightness(1.1) hue-rotate(-655deg) contrast(4);
+
+    // Forms
+    --cl-input-bg: white;
+    --cl-input-border: #ccc;
+
+    // Pivot
+    --cl-pivot-cell-border: rgb(208, 208, 208);
+    --cl-pivot-cell-hover: #FFF7D7;
+    --pivot-row-hover: inset 0 0 30px #fff5b9;
 }
 
 //:root {
