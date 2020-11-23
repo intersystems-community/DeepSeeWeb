@@ -1,3 +1,6 @@
+#### 3.0.15
+* deployment fix
+
 #### 3.0.14
 * removed non-complete styles from future release (issue with pivot colors)
 
