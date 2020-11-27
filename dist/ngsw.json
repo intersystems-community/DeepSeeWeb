@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1606121346685,
+  "timestamp": 1606477409520,
   "index": "/index.html",
   "assetGroups": [
     {
@@ -11,20 +11,20 @@
         "ignoreVary": true
       },
       "urls": [
-        "/addon-0-es2015.js",
-        "/addon-0-es5.js",
-        "/addon-2-es2015.js",
-        "/addon-2-es5.js",
+        "/addon-0-es2015.263e536550dde3d0857b.js",
+        "/addon-0-es5.263e536550dde3d0857b.js",
+        "/addon-2-es2015.cdd93adaa71495a5181d.js",
+        "/addon-2-es5.cdd93adaa71495a5181d.js",
         "/index.html",
-        "/main-es2015.js",
-        "/main-es5.js",
+        "/main-es2015.dd1fd73a39553199b8a1.js",
+        "/main-es5.dd1fd73a39553199b8a1.js",
         "/manifest.webmanifest",
-        "/polyfills-es2015.js",
-        "/polyfills-es5.js",
-        "/runtime-es2015.js",
-        "/runtime-es5.js",
-        "/scripts.js",
-        "/styles.css"
+        "/polyfills-es2015.a2ab82093780d8d06e3b.js",
+        "/polyfills-es5.be050e78013fed739085.js",
+        "/runtime-es2015.c662531aec9a2642b68d.js",
+        "/runtime-es5.c662531aec9a2642b68d.js",
+        "/scripts.dc4b9ee28ff8fe5c520d.js",
+        "/styles.465c8df73b53c718ad04.css"
       ],
       "patterns": []
     },
@@ -95,21 +95,35 @@
         "/assets/img/map-marker-red.png",
         "/assets/img/spinner.svg",
         "/assets/uspolygons.json",
-        "/fontawesome-webfont.eot",
-        "/fontawesome-webfont.svg",
-        "/fontawesome-webfont.ttf",
-        "/fontawesome-webfont.woff",
-        "/fontawesome-webfont.woff2"
+        "/fontawesome-webfont.1e59d2330b4c6deb84b3.ttf",
+        "/fontawesome-webfont.20fd1704ea223900efa9.woff2",
+        "/fontawesome-webfont.8b43027f47b20503057d.eot",
+        "/fontawesome-webfont.c1e38fd9e0e74ba58f7a.svg",
+        "/fontawesome-webfont.f691f37e57f04c152e23.woff"
       ],
       "patterns": []
     }
   ],
-  "dataGroups": [],
+  "dataGroups": [
+    {
+      "name": "api",
+      "patterns": [
+        "\\/mdx2json"
+      ],
+      "strategy": "freshness",
+      "maxSize": 0,
+      "maxAge": 0,
+      "cacheQueryOptions": {
+        "ignoreVary": true
+      },
+      "version": 1
+    }
+  ],
   "hashTable": {
-    "/addon-0-es2015.js": "fb08cf21fa0a30ef3532300479c40c338562b9dd",
-    "/addon-0-es5.js": "93ac861c90b0a0145bf5c854d56e095af34b8b1c",
-    "/addon-2-es2015.js": "03b7fdfac8b6eee0e0b61fd6cc48770c89684f15",
-    "/addon-2-es5.js": "ae64c7ba9ef193c0946e68353a716089fc50c0f4",
+    "/addon-0-es2015.263e536550dde3d0857b.js": "fb08cf21fa0a30ef3532300479c40c338562b9dd",
+    "/addon-0-es5.263e536550dde3d0857b.js": "93ac861c90b0a0145bf5c854d56e095af34b8b1c",
+    "/addon-2-es2015.cdd93adaa71495a5181d.js": "03b7fdfac8b6eee0e0b61fd6cc48770c89684f15",
+    "/addon-2-es5.cdd93adaa71495a5181d.js": "ae64c7ba9ef193c0946e68353a716089fc50c0f4",
     "/assets/fonts/RobotoCondensed-Bold-Cyr-Ex.woff2": "5c90a1a2459ad3fdb8d4828917162b7ee7dfc76e",
     "/assets/fonts/RobotoCondensed-Bold-Cyr.woff2": "122560becff778032eed54b47a6924c29e009ac2",
     "/assets/fonts/RobotoCondensed-Bold-Ex.woff2": "6be5d862def58ea5c30879afa237526c075779fb",
@@ -169,21 +183,21 @@
     "/assets/img/map-marker-red.png": "70c28ef588c7649466f4c931e1dd46bbdb7bb036",
     "/assets/img/spinner.svg": "9e398b32f7b937c5052b7fbfa9b1993a517dcc14",
     "/assets/uspolygons.json": "8d73e23a0d4f01dc95a0162a75c9663177db5452",
-    "/fontawesome-webfont.eot": "d980c2ce873dc43af460d4d572d441304499f400",
-    "/fontawesome-webfont.svg": "98a8aa5cf7d62c2eff5f07ede8d844b874ef06ed",
-    "/fontawesome-webfont.ttf": "13b1eab65a983c7a73bc7997c479d66943f7c6cb",
-    "/fontawesome-webfont.woff": "28b782240b3e76db824e12c02754a9731a167527",
-    "/fontawesome-webfont.woff2": "d6f48cba7d076fb6f2fd6ba993a75b9dc1ecbf0c",
-    "/index.html": "069cbaecb474b233e69e10cb70312a6979d104af",
-    "/main-es2015.js": "30ea36377760a8f6bb05e2f23c87e407982dd8d8",
-    "/main-es5.js": "8898869f77231791b925f77ab19d9b05cbfb2822",
+    "/fontawesome-webfont.1e59d2330b4c6deb84b3.ttf": "13b1eab65a983c7a73bc7997c479d66943f7c6cb",
+    "/fontawesome-webfont.20fd1704ea223900efa9.woff2": "d6f48cba7d076fb6f2fd6ba993a75b9dc1ecbf0c",
+    "/fontawesome-webfont.8b43027f47b20503057d.eot": "d980c2ce873dc43af460d4d572d441304499f400",
+    "/fontawesome-webfont.c1e38fd9e0e74ba58f7a.svg": "98a8aa5cf7d62c2eff5f07ede8d844b874ef06ed",
+    "/fontawesome-webfont.f691f37e57f04c152e23.woff": "28b782240b3e76db824e12c02754a9731a167527",
+    "/index.html": "d6c3f39fdc7ded627155ed1eef3c4ecc652989bf",
+    "/main-es2015.dd1fd73a39553199b8a1.js": "eead5c615b500a5a74a41b90044374ff8812bdd4",
+    "/main-es5.dd1fd73a39553199b8a1.js": "d1da7c0cc61df16077847c1c74cf462ac9dde1cc",
     "/manifest.webmanifest": "a0317b87bee62078bd486789254e0eb8c679a4b3",
-    "/polyfills-es2015.js": "3739b8ed3a9ea20a1c1a8c0ade32ad2f0b7736bc",
-    "/polyfills-es5.js": "9e8de9b2247280d7a6516022a12aeeed3f6fa4e5",
-    "/runtime-es2015.js": "d63ebf7dbe178934d78d3c143282e317d5018e49",
-    "/runtime-es5.js": "0e178d22e54e51a110423a3be18e70723eee599d",
-    "/scripts.js": "ddce4e7cf164a2e1144e429629f08b2d3bb7385a",
-    "/styles.css": "5bbddf0d4cbfb7fbe0a4fcc8a2544fa5424ca33a"
+    "/polyfills-es2015.a2ab82093780d8d06e3b.js": "3739b8ed3a9ea20a1c1a8c0ade32ad2f0b7736bc",
+    "/polyfills-es5.be050e78013fed739085.js": "9e8de9b2247280d7a6516022a12aeeed3f6fa4e5",
+    "/runtime-es2015.c662531aec9a2642b68d.js": "e2444b86306f41f6a2ccb46c10eb735e69d13c87",
+    "/runtime-es5.c662531aec9a2642b68d.js": "0c5cedbaa8fa133dccd8ea5b375b0114d683596c",
+    "/scripts.dc4b9ee28ff8fe5c520d.js": "ddce4e7cf164a2e1144e429629f08b2d3bb7385a",
+    "/styles.465c8df73b53c718ad04.css": "6788a88b5f5f47d92e60b79e44d80b3e1f6b5ffa"
   },
   "navigationUrls": [
     {

@@ -1,3 +1,7 @@
+#### 3.0.16
+* fixed service worker api issue(caching of api requests, leading to caching 401 or freezes requests)
+* fixed build to prevent caching of app files 
+ 
 #### 3.0.15
 * deployment fix
 
