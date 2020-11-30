@@ -5,7 +5,12 @@
         {
             "name": "api",
             "urls": [
-                "/mdx2json"
+                "/MDX2JSON",
+                "/MDX2JSON/**",
+                "/MDX2JSON/*",
+                "/mdx2json",
+                "/mdx2json/*",
+                "/mdx2json/**"
             ],
             "cacheConfig": {
                 "maxSize": 0,

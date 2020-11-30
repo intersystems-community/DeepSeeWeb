@@ -673,9 +673,9 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
             }
         }
 
-        if (location.search.indexOf('embed=') === -1) {
+        /*if (location.search.indexOf('embed=') === -1) {
             url += '&embed=1';
-        }
+        }*/
 
         if (newWindow) {
             window.open(url, '_blank');

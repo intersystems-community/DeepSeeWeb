@@ -1,3 +1,8 @@
+#### 3.0.17
+* removed "embed" parameter from navigate action
+* service worker backend path fixes
+* fixed contrast theme white text on map widget popup issue 
+
 #### 3.0.16
 * fixed service worker api issue(caching of api requests, leading to caching 401 or freezes requests)
 * fixed build to prevent caching of app files 

@@ -36,13 +36,14 @@ import * as proj from 'ol/proj';
             padding: 2px 3px;
         }
         .map-popup {
+            background-color: var(--cl-widget-filter-bg);
             margin-bottom: 0px;
             border-color: rgb(176, 176, 176);
             padding: 4px;
             -webkit-box-shadow: 1px 1px 9px 0px rgba(50, 50, 50, 0.5);
             -moz-box-shadow: 1px 1px 9px 0px rgba(50, 50, 50, 0.5);
             box-shadow: 1px 1px 9px 0px rgba(50, 50, 50, 0.5);
-            background-color: var(--cl-widget-bg);
+            /*background-color: var(--cl-widget-bg);*/
             color: var(--cl-widget-header-txt);
             position: relative;
         }
@@ -56,7 +57,7 @@ import * as proj from 'ol/proj';
             bottom: -8px;
             left: calc(50% - 4px);
             position: absolute;
-            border-color: var(--cl-widget-bg) transparent transparent transparent;
+            border-color: var(--cl-widget-filter-bg) transparent transparent transparent;
         }
     `]
 })
