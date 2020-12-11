@@ -81,4 +81,8 @@ export class UtilService {
         }
         return obj1;
     }
+
+    isMobile(): boolean {
+        return document.body.offsetWidth <= 576;
+    }
 }

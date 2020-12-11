@@ -32,10 +32,11 @@ export class HomeEditorComponent implements OnInit, OnDestroy {
     private originalTiles: string;
 
     set tile(value: ITileInfo) {
-        if (value !== this._tile) {
+        const needRefresh = value !== this._tile;
+        this._tile = value;
+        if (needRefresh) {
             this.requestWidgetList();
         }
-        this._tile = value;
     }
 
     get tile(): ITileInfo {
@@ -215,8 +216,8 @@ export class HomeEditorComponent implements OnInit, OnDestroy {
      * On save button click
      */
     onSaveTiles() {
-        // TODO: refresh tile inline widgets after tile change
         this.saveTiles();
+        this.st.onTilesChanged.emit();
         this.close();
     }
 

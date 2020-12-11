@@ -1,3 +1,5 @@
+@import "/src/scss/breakpoints";
+
 :host{
     display: flex;
     width: 100%;
@@ -6,6 +8,16 @@
     justify-content: center;
     background: url('^assets/img/bg.jpg');
     background-size: cover;
+
+   /* @include sm {
+        background: #7F7FD5;  !* fallback for old browsers *!
+        !*
+        background: -webkit-linear-gradient(to right, #91EAE4, #86A8E7, #7F7FD5);  !* Chrome 10-25, Safari 5.1-6 *!
+        background: linear-gradient(to right, #91EAE4, #86A8E7, #7F7FD5); !* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ *!
+        *!
+
+        background: linear-gradient(to right bottom, #91eae473, #86a8e78f, #7f7fd5a8);
+    }*/
 }
 
 // Login container
@@ -13,14 +25,26 @@
     position: relative;
     width: 300px;
     padding: 25px 25px;
-    background-color: white;
+    // background-color: white;
     box-shadow: #00000045 0 0 4px 0;
     margin-bottom: 20vh;
+    background-color: transparent;
+    backdrop-filter: blur(6px);
     & > div:first-child {
         width: 100%;
         display: flex;
         justify-content: center;
         align-items: center;
+    }
+
+    @include sm {
+
+       /* background-color: rgba(255, 255, 255, 0.4);
+        -webkit-backdrop-filter: blur(10px);*/
+
+        /*border: 1px solid rgb(255 255 255 / 39%);
+        box-shadow: 0 10px 40px #00000033;
+        border-radius: 20px;*/
     }
 }
 
@@ -52,12 +76,48 @@ img {
 input {
     margin-bottom: 16px;
     width: 100%;
+
+    @include sm {
+        height: 40px;
+        /*margin-bottom: 16px;
+        width: 100%;
+        height: 40px;
+        border-radius: 10px;
+        border: 1px solid #ffffff61;
+        box-shadow: 0 10px 10px #0000000d;
+        background: #ffffff47;
+
+        background: linear-gradient(to right bottom, #91eae473, #86a8e78f, #7f7fd5a8);*/
+    /*    margin-bottom: 16px;
+        width: 100%;
+        height: 40px;
+        border-radius: 10px;
+        border: 1px solid #ffffff61;
+        // box-shadow: 0 10px 10px #0000000d;
+        background: #ffffff47;
+        background:linear-gradient(to left top, #ffffff73, #86a8e712, #ffffff00);
+
+        &:focus {
+            outline: none;
+            border: 1px solid #0400ff40;
+        }*/
+    }
 }
 
 .btn {
     width: 100%;
     display: block;
     margin-bottom: 4px;
+    height: 40px;
+   /* @include sm {
+        height: 40px;
+        border-radius: 10px;
+        border: none;
+        box-shadow: 0 10px 20px #00000036;
+        background: #1D976C;
+        background: -webkit-linear-gradient(to right, #93F9B9, #1D976C);
+        background: linear-gradient(to right bottom, #93F9B9, #1D976C);
+    }*/
 }
 
 

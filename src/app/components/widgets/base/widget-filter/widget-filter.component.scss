@@ -1,4 +1,5 @@
 @import "src/scss/variables";
+@import "src/scss/breakpoints";
 
 :host {
     position: relative;
@@ -35,6 +36,10 @@
             outline: none; // 1px solid var(--cl-accent);
             outline-offset: -1px;
         }
+
+        @include sm {
+            height: 34px;
+        }
     }
 
     &.active {
@@ -45,6 +50,20 @@
         // background-color: var(--cl-header-bg);
         background-color: var(--cl-widget-filter-bg);
         box-shadow: 0 0 4px 0 #00000070;
+
+        @include sm {
+            /*box-shadow: 0 0 20px 2000px var(--cl-widget-filter-bg);
+            z-index: 1;*/
+
+           /* left: 0;
+            position: absolute;
+            right: 0;*/
+        }
+    }
+
+    @include sm {
+        width: auto !important;
+        flex: 1 1 25% !important;
     }
 }
 

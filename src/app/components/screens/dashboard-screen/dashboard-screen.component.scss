@@ -1,4 +1,5 @@
 @import "src/scss/variables";
+@import "src/scss/breakpoints";
 
 :host {
     display: block;
@@ -8,6 +9,21 @@
 
 gridster {
     background: var(--cl-bg);
+}
+
+/*gridster.mobile {
+    @include sm {
+        padding: 0 !important;
+        white-space: nowrap;
+    }
+}*/
+
+.mobile-widgets {
+    display: flex;
+    width: fit-content;
+    transition: transform 0.2s linear;
+    white-space: nowrap;
+    height: 100%;
 }
 
 .tile {
@@ -41,12 +57,28 @@ gridster {
             pointer-events: none;
         }
     }
+
+    @include sm {
+        position: static;
+        margin-bottom: 0 !important;
+        width: 100vw;
+        //height: calc(100% - 1px) !important;
+        // height: calc(100% - var(--header-height)) !important;
+        // min-width: 10vw;
+        //height: calc(var(--vh, 1vh) * 100 - var(--header-height)) !important;
+        // height: calc(var(--vh, 1vh) * 100 - var(--header-height)) !important;
+        display: inline-flex !important;
+        // transform: none !important;
+        border: none;
+    }
 }
 
 // Context menu
 .ctx-menu {
     font-family: $font;
     position: absolute;
+    top: 0;
+    left: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -109,4 +141,69 @@ gridster {
     &:hover > div {
         display: block;
     }
+}
+
+.pager {
+    display: none;
+    position: absolute;
+    left: 0;
+    width: 100vw;
+    bottom: calc(var(--header-height) - 10px);
+    z-index: 1;
+    align-items: center;
+    justify-content: center;
+
+    & > div {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 2px;
+        background-color: var(--cl-widget-bg);
+        border-radius: 20px;
+        border: 1px solid var(--cl-header-border);
+        height: 20px;
+    }
+
+    & > div > span {
+        width: 9px;
+        height: 9px;
+        border-radius: 20px;
+        background-color: var(--cl-header-bg);
+        border: 1px solid var(--cl-header-border);
+        margin-left: 4px;
+        margin-right: 4px;
+        /*transition-property: width, height;
+        transition-duration: 0.2s;
+        transition-timing-function: linear;
+*/
+        &.active {
+            width: 14px;
+            height: 14px;
+            position: relative;
+           /* &:after {
+                position: absolute;
+                content: " ";
+                display: block;
+                width: 7px;
+                height: 7px;
+                border-radius: 20px;
+                left: 3px;
+                top: 3px;
+                background-color: var(--cl-header-txt);
+            }*/
+            // background-color: var(--cl-header-bg);
+        }
+    }
+
+    @include sm {
+        display: flex;
+    }
+}
+
+.mobile-filter {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 10;
 }

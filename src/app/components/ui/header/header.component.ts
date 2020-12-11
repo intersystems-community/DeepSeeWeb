@@ -29,8 +29,12 @@ interface IPathNav {
 })
 export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
     searchField = new FormControl();
+    private subTitle: Subscription;
     private subOnSearch: Subscription;
     private subOnSearchReset: Subscription;
+    private subShareDashboard: Subscription;
+    private subGotoDSZ: Subscription;
+    private subToggleMobileFilter: Subscription;
 
     private pathSegments: IPathNav[] = [];
 
@@ -38,7 +42,11 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
     namespace = '';
     isSearch = false;
 
-    private path: IPathNav[] = [];
+    isSearchActive = false;
+    title = '';
+
+    path: IPathNav[] = [];
+    isMobileFilterButton = false;
 
     constructor(public ss: SidebarService,
                 public hs: HeaderService,
@@ -65,10 +73,30 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     ngOnInit() {
-        this.namespace = 'IRISAPP';
+        this.namespace = CURRENT_NAMESPACE;
+
+        this.subTitle = this.ms.onSetTitle.subscribe(t => {
+            this.title = t || this.path[this.path?.length - 1]?.title || '';
+        });
+
+        this.subShareDashboard = this.hs.shareDashboardEmitter.subscribe(() => {
+            this.showShareDashboard();
+        });
+
+        this.subGotoDSZ = this.hs.gotoZenDeepSeeEmitter.subscribe(() => {
+            this.gotoZenDeepSee();
+        });
+
+        this.subToggleMobileFilter = this.hs.mobileFilterToggle.subscribe((state: boolean) => {
+            this.isMobileFilterButton = state;
+        });
     }
 
     ngOnDestroy() {
+        this.subToggleMobileFilter.unsubscribe();
+        this.subShareDashboard.unsubscribe();
+        this.subGotoDSZ.unsubscribe();
+        this.subTitle.unsubscribe();
         this.subOnSearch.unsubscribe();
         this.subOnSearchReset.unsubscribe();
     }
@@ -80,7 +108,6 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
                 // Cancel editing during search
                 this.ms.onEditDashboard.emit(false);
                 this.ss.sidebarToggle.next(null);
-
                 // Emit search event
                 this.hs.onSearch.next(term);
             });
@@ -88,6 +115,7 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
         this.subOnSearchReset = this.hs.onSearchReset.subscribe(() => {
             this.searchField.setValue('', {emitEvent: false});
             this.hs.onSearch.next('');
+            this.isSearchActive = false;
         });
     }
 
@@ -172,5 +200,12 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
                 c.value = url;
             }
         });
+    }
+
+    /**
+     * Shows mobile filter dialog
+     */
+    toggleMobileFilter() {
+        this.hs.toggleMobileFilterDialog();
     }
 }

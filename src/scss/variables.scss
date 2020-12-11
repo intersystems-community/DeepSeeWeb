@@ -8,7 +8,7 @@ $tileBorder: #e0e0e0;
 $labelColor: $fontColor;
 
 $sidebar-width: 322px;
-
+$mobile-folder-height: 80px;
 //:root {
 //    --cl-bg: #ffffff;
 //    --cl-accent: #ffffff;
@@ -125,6 +125,17 @@ $sidebar-width: 322px;
     --cl-pivot-cell-border: rgb(208, 208, 208);
     --cl-pivot-cell-hover: #FFF7D7;
     --pivot-row-hover: inset 0 0 30px #fff5b9;
+
+
+
+
+
+
+
+
+
+   /* --cl-bg: linear-gradient(to right, #009fff, #ec2f4b);
+    --cl-widget-bg: rgba(255,255,255,0.3);*/
 }
 
 //:root {
@@ -169,4 +180,5 @@ $sidebar-width: 322px;
 //    --tile-border-radius: 4px;
 //}
 //$cl-btn-hover: rgba(255,255,255,0.1);
+
 

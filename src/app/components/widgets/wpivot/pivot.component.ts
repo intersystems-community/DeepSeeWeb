@@ -67,6 +67,7 @@ export class WPivotComponent extends BaseWidget implements OnInit, AfterViewInit
         }
 
         this.widget.backButton = this.lpt.DRILL_LEVEL !== 0;
+        this.parent.cd.detectChanges();
     }
 
     onDrillThrough() {
@@ -75,6 +76,7 @@ export class WPivotComponent extends BaseWidget implements OnInit, AfterViewInit
         }
         this._oldMdx = this.lpt.getActualMDX();
         this.widget.backButton = true;
+        this.parent.cd.detectChanges();
         return true;
     }
 
@@ -91,7 +93,7 @@ export class WPivotComponent extends BaseWidget implements OnInit, AfterViewInit
             this.drills.pop();
             this.doDrillFilter(p.path, this.drills);
         }
-
+        this.parent.cd.detectChanges();
         this.broadcastDependents(p.mdx);
     }
 

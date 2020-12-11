@@ -19,6 +19,7 @@ export class StorageService {
     private isLocalStorage = false;
 
     onSettingsChanged = new EventEmitter<any>();
+    onTilesChanged = new EventEmitter();
 
     // Returns local or session storage depending on support
     public get storage(): Storage {

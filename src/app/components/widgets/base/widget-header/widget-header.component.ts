@@ -7,6 +7,7 @@ import {IButtonToggle, WidgetService} from '../../../../services/widget.service'
 import {NamespaceService} from '../../../../services/namespace.service';
 import {dsw} from '../../../../../environments/dsw';
 import {IWidgetType} from '../../../../services/widget-type.service';
+import {HeaderService} from '../../../../services/header.service';
 
 @Component({
     selector: 'dsw-widget-header',
@@ -28,6 +29,7 @@ export class WidgetHeaderComponent {
                 private ws: WidgetService,
                 public cd: ChangeDetectorRef,
                 private ns: NamespaceService,
+                private hs: HeaderService,
                 private route: ActivatedRoute) {
     }
 
@@ -99,5 +101,9 @@ export class WidgetHeaderComponent {
             return false;
         }
         return this.widget.type === dsw.const.emptyWidgetClass;
+    }
+
+    closeMobileFilter() {
+        this.hs.toggleMobileFilterDialog();
     }
 }

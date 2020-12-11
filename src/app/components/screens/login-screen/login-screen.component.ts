@@ -5,7 +5,7 @@ import {dsw} from '../../../../environments/dsw';
 import {ActivatedRoute, Router} from '@angular/router';
 import {HeaderService} from '../../../services/header.service';
 import {SidebarService} from '../../../services/sidebar.service';
-import {NamespaceService} from '../../../services/namespace.service';
+import {CURRENT_NAMESPACE, NamespaceService} from '../../../services/namespace.service';
 
 declare var cordova: any;
 
@@ -45,8 +45,13 @@ export class LoginScreenComponent implements OnInit {
         // TODO: toggle menu
         // $rootScope.$broadcast('toggleMenu', false);
 
-        const namespace = this.route.snapshot.queryParamMap.get('ns');
-        this.model.namespace = namespace || '';
+        let namespace = this.route.snapshot.queryParamMap.get('ns');
+        const from = this.route.snapshot.queryParamMap.get('from');
+        if (from) {
+            namespace = from.split('/').filter(p => p)[0];
+        }
+
+        this.model.namespace = namespace || CURRENT_NAMESPACE || '';
     }
 
     initModel() {
@@ -221,16 +226,14 @@ export class LoginScreenComponent implements OnInit {
         }
         localStorage.DSWMobileServer = this.model.server;
         // TODO: load settings here
-        //Storage.loadServerSettings(res);
+        // Storage.loadServerSettings(res);
         localStorage.userName = this.ds.username;
 
         // Set namespaces
         this.ns.setNamespaces(res.Mappings.Mapped);
         this.ns.setCurrent(namespace);
 
-        // Listened in menu.js
         const from = this.route.snapshot.queryParamMap.get('from');
-        const search = {};
         if (from) {
             this.router.navigateByUrl(from);
         } else {

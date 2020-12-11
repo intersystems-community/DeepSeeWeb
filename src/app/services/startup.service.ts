@@ -8,6 +8,7 @@ import {StorageService} from './storage.service';
 import {NamespaceService} from './namespace.service';
 import * as AngularCommon from '@angular/common';
 import * as AngularCore from '@angular/core';
+import {UtilService} from './util.service';
 
 declare const __webpack_exports__: any;
 declare const __webpack_require__: any;
@@ -20,6 +21,7 @@ export class StartupService {
     constructor(private ds: DataService,
                 private http: HttpClient,
                 private wt: WidgetTypeService,
+                private us: UtilService,
                 private st: StorageService,
                 private ns: NamespaceService) {
     }
@@ -28,8 +30,12 @@ export class StartupService {
      * Initializes app startup
      */
     initialize() {
-        dsw.mobile = screen.availWidth <= 600;
+        dsw.mobile = screen.availWidth <= 576;
         this.setupGridster();
+
+        if (this.us.isMobile()) {
+            this.setupMobile();
+        }
 
         return new Promise((res, rej) => {
             Promise.all([
@@ -37,7 +43,7 @@ export class StartupService {
                 this.ds.loadMainConfig(),
                 this.loadAddons()
             ])
-           .finally(()=> res());
+           .finally(() => res());
         });
         // TODO: mobile support
         // if (dsw.mobile) {
@@ -137,11 +143,12 @@ export class StartupService {
         GridsterConfigService.resizable.enabled = false;
         GridsterConfigService.draggable.enabled = false;
         GridsterConfigService.margin = 5;
-        GridsterConfigService.isMobile = dsw.mobile; // stacks the grid items if true;
-        if (dsw.mobile) {
-            GridsterConfigService.mobileBreakPoint = 2000;// if the screen is not wider that this, remove the grid layout and stack the items
+        // GridsterConfigService.isMobile = dsw.mobile; // stacks the grid items if true;
+        GridsterConfigService.mobileBreakPoint = 576;
+       /* if (dsw.mobile) {
+            GridsterConfigService.mobileBreakPoint = 576;// if the screen is not wider that this, remove the grid layout and stack the items
             //gridsterConfig.mobileModeEnabled = true;
-        }
+        }*/
         // Check for shared widget screen and disable mobile breakpoint
         if (window.location.href.split('#').pop().indexOf('widget=') !== -1) {
             GridsterConfigService.mobileBreakPoint = 0;
@@ -210,6 +217,15 @@ export class StartupService {
                 //     console.error(e);
                 //     res();
                 // });
+        });
+    }
+
+    private setupMobile() {
+        // We listen to the resize event
+        window.addEventListener('resize', () => {
+            // We execute the same script as before
+            const  vh = window.innerHeight * 0.01;
+            document.documentElement.style.setProperty('--vh', `${vh}px`);
         });
     }
 }

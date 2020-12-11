@@ -6,6 +6,7 @@ import {EventEmitter, Injectable} from '@angular/core';
 export class MenuService {
     // Triggers dashboard editing mode on/off
     public onEditDashboard = new EventEmitter<boolean>();
+    onSetTitle = new EventEmitter<string>();
 
     constructor() {
     }

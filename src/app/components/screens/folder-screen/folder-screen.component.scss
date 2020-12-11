@@ -1,4 +1,5 @@
 @import "./src/scss/variables";
+@import "./src/scss/breakpoints";
 
 :host {
     display: block;
@@ -36,7 +37,13 @@ gridster {
         opacity: 1;
         outline: 2px solid var(--cl-accent);
     }
-
+    @include sm {
+        border: none;
+        border-bottom: var(--tile-border);
+        display: flex !important;
+        justify-content: flex-start;
+        align-items: center;
+    }
 }
 
 .tile label {
@@ -51,12 +58,25 @@ gridster {
     bottom: 8px;
     top: auto;
     text-align: left;
+
+    @include sm {
+        position: static;
+        font-size: 18px;
+    }
 }
 
 .tile-icon {
     height: 100%;
     width: 100%;
     overflow: hidden;
+
+    @include sm {
+        width: $mobile-folder-height;
+        height: $mobile-folder-height;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
 }
 
 .tile-icon svg {
@@ -66,71 +86,18 @@ gridster {
     margin-top: 10%;
     margin-left: 25%;
     margin-right: 25%;
-}
 
-//.tile .text-widget-label {
-//    background-image: none;
-//    font-family: 'Segoe UI', 'Open Sans', serif;
-//    color: black;
-//}
+    @include sm {
+        height: 80%;
+        width: 80%;
+        margin: 0;
+    }
+}
 
 dsw-widget {
     pointer-events: none;
+    &.transparent {
+        background-color: transparent;
+    }
 }
-
-//.btn-edit {
-//    font: $font;
-//    cursor: pointer;
-//    overflow: hidden;
-//    border: none;
-//    background: transparent none;
-//    box-shadow: none;
-//    outline: none;
-//    text-shadow: none;
-//    position: fixed;
-//    right: 10px;
-//    bottom: 10px;
-//    font-size: x-large;
-//    width: 2em;
-//    z-index: 101;
-//    transition: width 0.2s linear;
-//    white-space: nowrap;
-//
-//    &.active {
-//        width: 5em;
-//    }
-//}
-//
-//.sidebar {
-//    display: flex;
-//    flex-wrap: wrap;
-//    overflow: hidden;
-//    width: 100%;
-//    position: fixed;
-//    bottom: 0px;
-//    //border-top: 1px solid rgb(101, 84, 255);
-//    z-index: 100;
-//    padding: 10px 130px 0 10px;
-//    background-color: #FAFAFA;
-//    box-shadow: none;
-//    -webkit-box-shadow: none;
-//    -moz-box-shadow: none;
-//    border-top: 1px solid #fafafa;
-//    &.closed {
-//        display: none;
-//    }
-//    & label {
-//        font: $font;
-//        display: block;
-//        margin-bottom: 2px;
-//    }
-//    & select {
-//        min-width: 150px;
-//    }
-//}
-//.sidebar-block {
-//    display: inline-block;
-//    margin-right: 10px;
-//    margin-bottom: 10px;
-//}
 

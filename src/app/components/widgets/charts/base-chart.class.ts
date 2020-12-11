@@ -144,11 +144,11 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
     /**
      * Updates chart. Using when configuration has been changed
      */
-    updateChart() {
+    updateChart(redraw = false, anim = false) {
         if (!this.chart) {
             return;
         }
-        this.chart.update(this.chartConfig);
+        this.chart.update(this.chartConfig, redraw, false, anim);
     }
 
     // toggleValues() {
@@ -722,7 +722,8 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
                 series[k].yAxis = series.length - 1 - k;
             }
         }
-        this.chart.update(this.chartConfig);
+        // this.chart.update(this.chartConfig);
+        this.updateChart();
         this.chart.redraw(true);
     }
 

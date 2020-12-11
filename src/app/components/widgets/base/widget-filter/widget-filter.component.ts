@@ -1,7 +1,7 @@
 import {
     ChangeDetectorRef,
     Component,
-    ComponentFactoryResolver,
+    ComponentFactoryResolver, ElementRef,
     EventEmitter, HostBinding,
     Input,
     OnInit,
@@ -14,6 +14,7 @@ import {IWidgetInfo} from '../../base-widget.class';
 import {FilterPopupComponent} from '../../../ui/filter-popup/filter-popup.component';
 import {FilterService} from '../../../../services/filter.service';
 import {ModalService} from '../../../../services/modal.service';
+import {UtilService} from '../../../../services/util.service';
 
 @Component({
     selector: 'dsw-widget-filter',
@@ -45,6 +46,8 @@ export class WidgetFilterComponent implements OnInit {
     constructor(private fs: FilterService,
                 private r2: Renderer2,
                 private ms: ModalService,
+                private el: ElementRef,
+                private us: UtilService,
                 private cd: ChangeDetectorRef
                 ) {
     }
@@ -81,7 +84,12 @@ export class WidgetFilterComponent implements OnInit {
         const b = target.getBoundingClientRect();
         const x = b.x - 2; // 2 is padding
         const y = b.y + b.height;
-
+        const isMobile = this.us.isMobile();
+        let height;
+        if (isMobile) {
+            const headerHeight = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--header-height'), 10);
+            height = window.document.body.offsetHeight - headerHeight - this.el.nativeElement.offsetHeight;
+        }
         this.ms.show({
             component: FilterPopupComponent,
             hideBackdrop: true,
@@ -92,7 +100,8 @@ export class WidgetFilterComponent implements OnInit {
             componentStyles: {
                 position: 'absolute',
                 left: x + 'px',
-                top: y + 'px'
+                top: y + 'px',
+                height: isMobile ? `${height}px` : undefined
             },
             onComponentInit: (c: FilterPopupComponent) => {
                 c.initialize(this.widget, flt, this.widget.dataSource);

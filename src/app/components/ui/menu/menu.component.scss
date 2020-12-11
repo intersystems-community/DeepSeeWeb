@@ -88,3 +88,9 @@ li {
 .spinner {
     margin-left: 86px;
 }
+
+.divider {
+    height: 1px;
+    width: 100%;
+    background-color: var(--cl-header-border);
+}

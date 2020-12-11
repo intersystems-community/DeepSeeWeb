@@ -1,8 +1,5 @@
-<!--{{checkItems()}}-->
-
-<!-- Widgets grid -->
-<gridster [options]="tilesOptions" *ngIf="!isMobile" #gridster>
-
+<!-- Widgets grid for desktop -->
+<gridster [options]="tilesOptions" #gridster *ngIf="!isMobile">
     <!-- Grid item -->
     <gridster-item
         class="tile"
@@ -16,6 +13,25 @@
         <dsw-widget #widgets [widget]="item"></dsw-widget>
     </gridster-item>
 </gridster>
+
+<!-- Widgets list for mobile -->
+<div class='mobile-widgets' *ngIf="isMobile" [style.transform]="'translateX(calc(100vw * ' +- page + '))'">
+    <div class="tile" *ngFor="let item of data$ | async; let idx = index">
+        <dsw-widget #widgets [widget]="item"></dsw-widget>
+    </div>
+
+    <div class="tile mobile-filter" *ngIf="isMobileFilterVisible" [style.transform]="'translateX(calc(-100vw * ' +- page + '))'">
+        <dsw-widget [widget]="mobileFilter"></dsw-widget>
+    </div>
+</div>
+
+<!-- Mobile pages -->
+<div class="pager" [hidden]="isMobileFilterVisible">
+    <div>
+        <span *ngFor="let w of dbs.getWidgets(); let idx = index" [class.active]="idx === page"></span>
+    </div>
+</div>
+
 
 <img src="assets/img/spinner.svg" [hidden]="isLoaded">
 

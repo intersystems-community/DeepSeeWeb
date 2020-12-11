@@ -12,6 +12,8 @@ import {AboutComponent} from '../about/about.component';
 import {AppSettingsComponent} from '../app-settings/app-settings.component';
 import {DataService} from '../../../services/data.service';
 import {MenuSettingsComponent} from './menu-settings/menu-settings.component';
+import {CURRENT_NAMESPACE} from '../../../services/namespace.service';
+import {TextAreaComponent} from '../text-area/text-area.component';
 
 @Component({
     selector: 'dsw-menu',
@@ -86,5 +88,13 @@ export class MenuComponent implements OnInit, OnDestroy {
 
     showSettingsMenu() {
         this.sbs.sidebarToggle.next({component: MenuSettingsComponent});
+    }
+
+    shareDashboard() {
+        this.hs.shareDashboard();
+    }
+
+    gotoZenDeepSee() {
+        this.hs.gotoZenDeepSee();
     }
 }

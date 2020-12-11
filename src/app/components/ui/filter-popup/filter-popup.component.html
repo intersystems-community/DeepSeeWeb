@@ -1,23 +1,23 @@
 <!-- Header line -->
 <div class="header">
     <!-- Search field -->
-    <input type="search" placeholder="{{'search' | i18n}}" [(ngModel)]="model.search" (change)="onSearch()" (keydown.enter)="searchFilters()" dswAutoFocus>
+    <input type="search" placeholder="{{'search' | i18n}}" [(ngModel)]="model.search" (change)="onSearch()" (keydown.enter)="searchFilters()" dswAutoFocus="desktop">
 
     <span>
         <!-- Apply button -->
         <button class="btn" (click)="acceptFilter()">
-            <img class="ico ico-accept" src="assets/img/icons/check.svg">
+            <img class="ico ico-accept" src="assets/img/icons/check-black-18dp.svg">
             {{'accept' | i18n}}
         </button>
         <button class="btn" (click)="removeFilter()">
-<!--            <img class="ico ico-accept" src="assets/img/icons/sync-black-18dp.svg">-->
+            <img class="ico ico-accept" src="assets/img/icons/undo-black-18dp.svg">
             {{'dismiss' | i18n}}
         </button>
         <!--        <button class="btn" (click)="removeFilter()"><i class="fa fa-eraser"></i>&nbsp;{{'dismiss' | i18n}}</button>-->
         <!-- Close button -->
         <button class="btn" (click)="close()">
-            <img class="ico ico-close" src="assets/img/icons/close.svg">
-<!--            {{'close' | i18n}}-->
+            <img class="ico ico-close" src="assets/img/icons/close-black-18dp.svg">
+            {{'close' | i18n}}
         </button>
 
     </span>

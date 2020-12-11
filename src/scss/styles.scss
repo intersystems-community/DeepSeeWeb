@@ -2,7 +2,19 @@
 @import "variables";
 @import "fonts";
 @import "gridster";
+@import "breakpoints";
 
+.only-sm {
+    @media (min-width: #{$screen-sm-min}) {
+        display: none !important;
+    }
+}
+
+.only-desktop {
+    @include sm {
+        display: none !important;
+    }
+}
 
 @mixin icon {
     filter: var(--icon-filter);
@@ -22,6 +34,10 @@ html, body {
     & * {
         box-sizing: border-box;
         //font-family: $font;
+    }
+
+    @include sm {
+        position: fixed;
     }
 }
 
@@ -205,11 +221,6 @@ input:not([type=checkbox]), textarea {
     color: var(--cl-txt);
 }
 
-// Needed to make greater than  LPT zindex, so user can resize widget
-.gridster-item:hover .gridster-item-resizable-handler.handle-se {
-    z-index: 1000;
-}
-
 // Set dynamic component to fir all free space
 dsw-widget-filter + * {
     height: 100%;
@@ -227,8 +238,10 @@ dsw-widget-filter + * {
     transform: scaleX(-1);
 }
 
+/*
+
 // Pivot styles
-/*.lpt-tableBlock {
+.lpt-tableBlock {
     background-color: var(--cl-widget-bg);
     color: var(--cl-widget-filter-txt);
 }
@@ -263,10 +276,10 @@ dsw-widget-filter + * {
 // Row hover glow
 .lpt .lpt-tableBlock tr:hover td {
     box-shadow: var(--pivot-row-hover);
-}*/
+}
 
 .lpt-tableBlock {
-   /* &::-webkit-scrollbar {
+    &::-webkit-scrollbar {
         width: 17px;
     }
     &::-webkit-scrollbar-track {
@@ -276,5 +289,6 @@ dsw-widget-filter + * {
     &::-webkit-scrollbar-thumb {
         background: var(--cl-widget-filter-bg);
         opacity: 0.6;
-    }*/
+    }
 }
+*/

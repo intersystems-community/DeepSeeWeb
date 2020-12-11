@@ -1,4 +1,18 @@
 <ul>
+    <!-- Share dashboard -->
+    <li *ngIf="!isHome" (click)="shareDashboard()" class="only-sm">
+        <img src="assets/img/icons/share-black-18dp.svg">
+        {{'shareDashboard' | i18n}}
+    </li>
+
+    <!-- Goto DSZ -->
+    <li *ngIf="!isHome" (click)="gotoZenDeepSee()" class="only-sm">
+        <img src="assets/img/icons/reply-black-18dp.svg">
+        {{'gotoDeepSee' | i18n}}
+    </li>
+
+    <div class="divider only-sm"></div>
+
     <li *ngIf="isHome" (click)="editDashboard()">
         <img src="assets/img/icons/edit-black-18dp.svg">
         Edit dashboard

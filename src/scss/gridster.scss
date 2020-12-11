@@ -1,3 +1,6 @@
+@import "variables";
+@import "breakpoints";
+
 .no-anim {
     -webkit-transition: none !important;
     transition: none !important;
@@ -16,5 +19,25 @@
 gridster-item:hover .gridster-item-resizable-handler.handle-se {
     border-color: transparent transparent var(--cl-accent) !important;
     z-index: 10;
+}
+
+// Needed to make greater than  LPT zindex, so user can resize widget
+.gridster-item:hover .gridster-item-resizable-handler.handle-se {
+    z-index: 1000;
+}
+
+// Mobile item height
+.gridster.mobile gridster-item {
+    @include sm {
+        height: $mobile-folder-height !important; // Because gridster uses inline styles
+        margin-bottom: 0 !important;
+    }
+}
+
+// Remove padding for mobile
+.gridster.mobile {
+    @include sm {
+        padding: 0 !important;
+    }
 }
 

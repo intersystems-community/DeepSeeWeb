@@ -1,10 +1,11 @@
 import {
+    AfterViewInit,
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
-    ElementRef,
+    ElementRef, HostListener,
     OnDestroy,
-    OnInit,
+    OnInit, QueryList,
     Renderer2,
     ViewChild,
     ViewChildren
@@ -34,8 +35,23 @@ import {CURRENT_NAMESPACE, NamespaceService} from '../../../services/namespace.s
 import {BroadcastService} from '../../../services/broadcast.service';
 import {ExportingOptions} from 'highcharts';
 import {DashboardService} from '../../../services/dashboard.service';
+import {MenuService} from '../../../services/menu.service';
+import {WTextComponent} from '../../widgets/text/wtext.component';
+import {BaseChartClass} from '../../widgets/charts/base-chart.class';
+
+const SWIPE_TIME_THRESHOLD = 200;
+const SWIPE_PIXELS_Y_THRESHOLD = 100;
+const SWIPE_PIXELS_X_THRESHOLD = 50;
 
 export const DEFAULT_COL_COUNT = 12;
+interface ITouchInfo {
+    startTime: number;
+    endTime: number;
+    sx: number;
+    sy: number;
+    ex: number;
+    ey: number;
+}
 
 @Component({
     selector: 'dsw-dashboard-screen',
@@ -43,8 +59,8 @@ export const DEFAULT_COL_COUNT = 12;
     styleUrls: ['./dashboard-screen.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DashboardScreenComponent implements OnInit, OnDestroy {
-    @ViewChildren('widgets') widgets: WidgetComponent[];
+export class DashboardScreenComponent implements OnInit, OnDestroy, AfterViewInit {
+    @ViewChildren('widgets') widgets: QueryList<WidgetComponent>;
     @ViewChild('ctxMenu') ctxMenu: ElementRef;
     @ViewChild('gridster') gridster: GridsterComponent;
 
@@ -53,6 +69,10 @@ export class DashboardScreenComponent implements OnInit, OnDestroy {
     private readonly sharedWidget: string;
     private readonly subReset: Subscription;
     private subCtxClose: Subscription;
+    private subMobileFilterDialog: Subscription;
+    private touchInfo: ITouchInfo;
+    page = 0;
+
     model: any;
     ctxItem: IWidgetInfo = null;
     tilesOptions: GridsterConfig = {
@@ -73,6 +93,8 @@ export class DashboardScreenComponent implements OnInit, OnDestroy {
     data$: Observable<any>;
     isLoaded = false;
     itemsInitialized = 0;
+    mobileFilter: IWidgetInfo;
+    isMobileFilterVisible = false;
 
     private subSettingsChanged: Subscription;
 
@@ -83,16 +105,19 @@ export class DashboardScreenComponent implements OnInit, OnDestroy {
                 private ss: StorageService,
                 private es: ErrorService,
                 private hs: HeaderService,
-                private dbs: DashboardService,
+                public dbs: DashboardService,
                 private router: Router,
                 private i18n: I18nService,
                 private ns: NamespaceService,
                 private cd: ChangeDetectorRef,
                 private bs: BroadcastService,
                 private r2: Renderer2,
+                private ms: MenuService,
                 private route: ActivatedRoute) {
 
         this.hs.resetSearch();
+        this.hs.hideMobileFilterButton();
+        // this.ms.onSetTitle.emit('');
         this.sharedWidget = this.route.snapshot.queryParamMap.get('widget');
 
         this.tilesOptions.draggable.start = () => {
@@ -129,10 +154,12 @@ export class DashboardScreenComponent implements OnInit, OnDestroy {
         this.subSettingsChanged = this.ss.onSettingsChanged.subscribe(settings => {
             this.tilesOptions.maxCols = settings.colCount || DEFAULT_COL_COUNT;
             this.tilesOptions.minCols = this.tilesOptions.maxCols;
-            this.gridster.optionsChanged();
-            setTimeout(() => {
-                this.gridster.resize();
-            }, 1000);
+            if (this.gridster) {
+                this.gridster.optionsChanged();
+                setTimeout(() => {
+                    this.gridster.resize();
+                }, 1000);
+            }
         });
 
         if (this.sharedWidget) {
@@ -157,9 +184,14 @@ export class DashboardScreenComponent implements OnInit, OnDestroy {
             };
         }
 
-        this.isMobile = dsw.mobile;
+        this.isMobile = this.us.isMobile();
         this.subReset = this.bs.subscribe('resetWidgets', () => {
             window.location.reload();
+        });
+
+        this.subMobileFilterDialog = this.hs.mobileFilterDialogToggle.subscribe(() => {
+           this.isMobileFilterVisible = !this.isMobileFilterVisible;
+           this.cd.detectChanges();
         });
     }
 
@@ -194,8 +226,15 @@ export class DashboardScreenComponent implements OnInit, OnDestroy {
         // };
     }
 
+    ngAfterViewInit() {
+       /* if (this.isMobile) {
+            (this.gridster).onResize = () => {};
+        }*/
+    }
+
     ngOnDestroy() {
         window.onafterprint = null;
+        this.subMobileFilterDialog.unsubscribe();
         if (this.subCtxClose) {
             this.subCtxClose.unsubscribe();
         }
@@ -324,7 +363,9 @@ export class DashboardScreenComponent implements OnInit, OnDestroy {
             const rows = result.displayInfo.gridRows;
             const padding = 10;
             this.tilesOptions.fixedRowHeight = Math.floor((window.innerHeight - (headerHeight + padding * (rows + 1))) / rows);
-            this.gridster.optionsChanged();
+            if (this.gridster) {
+                this.gridster.optionsChanged();
+            }
         }
 
         this.vs.init(result);
@@ -364,7 +405,7 @@ export class DashboardScreenComponent implements OnInit, OnDestroy {
         this.dbs.setWidgets(this.widgetInfo);
         for (i = 0; i < result.widgets.length; i++) {
             result.widgets[i].dashboard = path;
-            if (this.sharedWidget && i != this.sharedWidget) {
+            if (this.sharedWidget && i !== this.sharedWidget) {
                 continue;
             }
             // Create item for model
@@ -427,6 +468,13 @@ export class DashboardScreenComponent implements OnInit, OnDestroy {
             if (!this.sharedWidget) {
                 this.fillDependentWidgets(item, result.widgets);
             }
+
+            if (this.isMobile && item.type === dsw.const.emptyWidgetClass) {
+                this.mobileFilter = item;
+                this.hs.showMobileFilterButton();
+                continue;
+            }
+
             this.widgetInfo.push(item);
         }
 
@@ -435,6 +483,14 @@ export class DashboardScreenComponent implements OnInit, OnDestroy {
         }
 
         this.dbs.setWidgets(this.widgetInfo);
+
+        // Update title
+        this.ms.onSetTitle.emit(this.dbs.getWidgets()[this.page].title);
+
+        if (this.isMobile) {
+            this.isLoaded = true;
+        }
+
         return this.widgetInfo;
     }
 
@@ -733,5 +789,61 @@ export class DashboardScreenComponent implements OnInit, OnDestroy {
             this.r2.setStyle(sub, 'transform', `translateX(${-ox}px) translateY(${-oy}px)`);
             this.r2.setStyle(sub, 'visibility', 'visible');
         });
+    }
+
+    @HostListener('touchstart', ['$event'])
+    onTouchStart(e: TouchEvent) {
+        this.touchInfo = {
+            startTime: performance.now(),
+            endTime: 0,
+            sx: e.changedTouches[0].screenX,
+            sy: e.changedTouches[0].screenY,
+            ex: 0,
+            ey: 0
+        };
+    }
+
+    @HostListener('touchend', ['$event'])
+    onTouchEnd(e: TouchEvent) {
+        if (this.isMobileFilterVisible) {
+            return;
+        }
+        const ti = this.touchInfo;
+        ti.endTime = performance.now();
+        ti.ex = e.changedTouches[0].screenX;
+        ti.ey = e.changedTouches[0].screenY;
+        if (ti.endTime - ti.startTime > SWIPE_TIME_THRESHOLD) {
+            return;
+        }
+        if (Math.abs(ti.ey - ti.sy) > SWIPE_PIXELS_Y_THRESHOLD) {
+            return;
+        }
+        if (Math.abs(ti.ex - ti.sx) < SWIPE_PIXELS_X_THRESHOLD) {
+            return;
+        }
+        const dx = ti.ex > ti.sx ? -1 : 1;
+        this.page += dx;
+        const count = this.dbs.getWidgets().length;
+        if (this.page < 0) {
+            this.page = 0;
+        }
+        if (this.page > count - 1) {
+            this.page = count - 1;
+        }
+
+        // Update title
+        this.ms.onSetTitle.emit(this.dbs.getWidgets()[this.page].title);
+
+        // Redraw some widgets
+        const comp = this.widgets.toArray()[this.page].component;
+        if (comp instanceof WTextComponent) {
+            comp.adjustSize();
+            return;
+        }
+        if (comp instanceof BaseChartClass && comp.chartConfig.chart.type !== 'treemap') {
+            comp.updateChart(true, false);
+            //comp.onResize();
+            return;
+        }
     }
 }

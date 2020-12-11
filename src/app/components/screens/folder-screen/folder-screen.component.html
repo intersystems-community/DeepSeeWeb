@@ -9,10 +9,10 @@
         (click)="onItemClicked(tile)"
     >
         <!-- Inline widget -->
-        <dsw-widget #widgets *ngIf="this.itemDescs[tile.idx]" [widget]="this.itemDescs[tile.idx]"></dsw-widget>
+        <dsw-widget #widgets *ngIf="itemDescs[tile.idx]" [widget]="itemDescs[tile.idx]" [class.transparent]="itemDescs[tile.idx].inline"></dsw-widget>
 
         <!-- Icon -->
-        <div class="tile-icon">
+        <div class="tile-icon" [hidden]="itemDescs[tile.idx]">
             <svg viewBox="-10 -16 20 20" [class]="model.fontColors[tile.fontColor]">
                 <g>
                     <text text-anchor="middle" font-size="16px">{{model.icons[tile.icon]}}</text>
@@ -23,6 +23,7 @@
         <!-- Title -->
         <label [hidden]="tile.hideTitle" [class]="model.fontColors[tile.fontColor]">
             <span>{{tile.customTitle || tile.title}}</span>
+            <!--<span>{{tile.fullPath}}</span>-->
         </label>
     </gridster-item>
 </gridster>

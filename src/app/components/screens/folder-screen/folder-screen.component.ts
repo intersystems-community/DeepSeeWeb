@@ -7,7 +7,7 @@ import {DataService, ITileInfo} from '../../../services/data.service';
 import {HomeEditorComponent} from '../../ui/home-editor/home-editor.component';
 import {SidebarService} from '../../../services/sidebar.service';
 import {MenuService} from '../../../services/menu.service';
-import {debounceTime, distinctUntilChanged, map, switchMap} from 'rxjs/operators';
+import {debounceTime, distinctUntilChanged, map, startWith, switchMap} from 'rxjs/operators';
 import {combineLatest, fromEvent, Observable, Subscription} from 'rxjs';
 import {HeaderService} from '../../../services/header.service';
 import {CURRENT_NAMESPACE, NamespaceService} from '../../../services/namespace.service';
@@ -34,12 +34,14 @@ export class FolderScreenComponent implements OnInit, OnDestroy {
     @ViewChild('gridster', {read: ElementRef, static: true}) gridster: ElementRef;
     private settings: any;
     private folder = '';
+    private subOnTilesChanged;
 
     itemDescs = [];
 
     isResizing = false;
     model: IHomeModel;
     tilesOptions: GridsterConfig = {
+        mobileBreakpoint: 576,
         margin: 20,
         draggable: {
             enabled: false
@@ -69,7 +71,7 @@ export class FolderScreenComponent implements OnInit, OnDestroy {
                 private fs: FilterService,
                 private ns: NamespaceService) {
         this.settings = st.getAppSettings();
-
+        this.ms.onSetTitle.emit('');
         this.fs.clear();
 
         this.model = {
@@ -96,7 +98,12 @@ export class FolderScreenComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
+        /*this.subOnTilesChanged = this.st.onTilesChanged.subscribe(() => {
+
+        });*/
+
         this.data$ = combineLatest([
+            this.st.onTilesChanged.pipe(startWith('')),
             this.route.url,
             this.route.params.pipe(
                 switchMap(params => {
@@ -108,7 +115,7 @@ export class FolderScreenComponent implements OnInit, OnDestroy {
             ),
             this.hs.onSearch.pipe(distinctUntilChanged())
         ]).pipe(
-            map(([segments, data, search]) => {
+            map(([notUsed_OnlyForRefreshAfterTilesSettingsChanged, segments, data, search]) => {
                 this.folder = decodeURIComponent(segments.map(s => s.path).join('/') || '');
                 this.isLoading = false;
                 const d = this.retrieveData(JSON.parse(JSON.stringify(data)), search as any || '');

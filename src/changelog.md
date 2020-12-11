@@ -1,3 +1,12 @@
+#### 3.0.18
+* **added mobile support** 
+* fixed issue with unable to choose a widget for tile
+* fixed issue with no changes until refresh, after choosing widget for tile
+* fixed white background issue for widgets on tiles
+* fixed issue with a scroll during home screen setup
+* after redirecting to login screen due to 401/403, previous url stored and user redirected back after successful login
+* now login screen fills previous namespace or namespace from saved url after 401/403 redirect
+ 
 #### 3.0.17
 * removed "embed" parameter from navigate action
 * service worker backend path fixes

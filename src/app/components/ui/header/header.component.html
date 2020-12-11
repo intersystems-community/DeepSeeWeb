@@ -1,20 +1,37 @@
 <div>
-    <button class="btn square" [class.active]="!!(ss.sidebarToggle | async)?.component" (click)="toggleMenu()">
+    <button class="btn square btn-side-menu" [class.active]="!!(ss.sidebarToggle | async)?.component" (click)="toggleMenu()">
         <img src="assets/img/logo.svg">
     </button>
-    <h2>
+    <h2 class="breadcrumbs">
 <!--        <a routerLink="/" class="path">DeepSeeWeb</a>-->
-        <a [routerLink]="p.url" class="path" *ngFor="let p of path$ | async; let idx = index">{{p.title}}</a>
+        <div class="only-sm" *ngIf="!isSearch">{{title}}</div>
+        <div [class.no-opacity]="isSearch">
+            <a [routerLink]="p.url" class="path" *ngFor="let p of path$ | async; let idx = index" [class.show-only-last]="isSearch">{{p.title}}</a>
+        </div>
     </h2>
-    <button class="btn btn-icon square s60 btn-goto" (click)="gotoZenDeepSee()" *ngIf="!isSearch" [title]="'gotoDeepSee' | i18n">
+
+    <!-- Goto DSZ -->
+    <button class="btn btn-icon square s60 btn-goto only-desktop" (click)="gotoZenDeepSee()" *ngIf="!isSearch" [title]="'gotoDeepSee' | i18n">
         <img class="flip" src="assets/img/icons/reply-black-18dp.svg">
     </button>
-    <button class="btn btn-icon square s60" (click)="showShareDashboard()" *ngIf="!isSearch" [title]="'shareDashboard' | i18n">
+
+    <!-- Share dashboard -->
+    <button class="btn btn-icon square s60 only-desktop" (click)="showShareDashboard()" *ngIf="!isSearch" [title]="'shareDashboard' | i18n">
         <img src="assets/img/icons/share-black-18dp.svg">
     </button>
+
+    <!-- Mobile filter -->
+    <div class="btn btn-icon square btn-mobile-filter only-sm" (click)="toggleMobileFilter()" *ngIf="!isSearch && isMobileFilterButton">
+        <img src="assets/img/icons/filter_alt-black-18dp.svg">
+    </div>
 </div>
-<div>
-    <input *ngIf="isSearch" [formControl]="searchField" type="search" placeholder="Search">
-<!--    <label><i class="fa fa-database"></i>{{namespace}}</label>-->
-<!--    <button class="btn square"><i class="fa fa-sign-out"></i></button>-->
+<div class="search-block" [hidden]="!isSearch">
+    <div [class.active]="isSearchActive">
+        <input #inp [formControl]="searchField" type="search" placeholder="Search" (blur)="isSearchActive = false" (keydown.enter)="isSearchActive = false">
+    </div>
+    <span class="btn-search" [class.active]="isSearchActive" (click)="isSearchActive = !isSearchActive; isSearchActive ? inp.focus() : null">
+        <img src="assets/img/icons/search-black-18dp.svg">
+    </span>
+
 </div>
+

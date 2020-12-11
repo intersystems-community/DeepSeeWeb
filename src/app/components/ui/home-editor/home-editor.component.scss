@@ -1,8 +1,9 @@
 @import "src/scss/variables";
 
 :host {
-    display: block;
-    height: 100%;
+    display: flex;
+    flex-direction: column;
+    height: calc(100% - var(--header-height));
         //margin-top: calc(-1 * var(--header-height));
     //height: calc(100% + var(--header-height));
     //background-color: var(--cl-sidebar-bg);
@@ -72,6 +73,7 @@ input[type=checkbox] {
     margin-left: 10px;
     margin-right: 10px;
     overflow-y: auto;
+    height: 100%;
 }
 
 input {
