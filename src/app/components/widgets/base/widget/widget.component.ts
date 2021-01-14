@@ -225,7 +225,7 @@ export class WidgetComponent implements OnInit, OnDestroy, AfterViewInit {
      */
     changeType(t: string) {
         this.widget.type = t;
-        if ((this.component.chart)) {
+        if (this.component.chart) {
             (this.component as BaseChartClass).setType(t);
         }
     }

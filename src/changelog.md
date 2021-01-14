@@ -1,3 +1,10 @@
+#### 3.0.19
+* migrated to Angular 11
+* updated Highcharts version
+* fixed issue with values display button(series disappeared)
+* fixed issue with changing type of chart
+* added ability to remove widget from tile 
+
 #### 3.0.18
 * **added mobile support** 
 * fixed issue with unable to choose a widget for tile

@@ -122,6 +122,7 @@ export class HomeEditorComponent implements OnInit, OnDestroy {
             this.model.widgetList = data.widgets.map((w, n) => {
                 return {idx: n, name: w.title || w.name};
             });
+            this.model.widgetList = [{idx: '', name: ''}, ...this.model.widgetList];
             this.cd.detectChanges();
         }
     }

@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1607698354960,
+  "timestamp": 1610609656041,
   "index": "/index.html",
   "assetGroups": [
     {
@@ -11,18 +11,18 @@
         "ignoreVary": true
       },
       "urls": [
-        "/addon-0-es2015.263e536550dde3d0857b.js",
-        "/addon-0-es5.263e536550dde3d0857b.js",
-        "/addon-2-es2015.cdd93adaa71495a5181d.js",
-        "/addon-2-es5.cdd93adaa71495a5181d.js",
+        "/addon-0-es2015.d69199dc82bc0b285ad1.js",
+        "/addon-0-es5.d69199dc82bc0b285ad1.js",
+        "/addon-2-es2015.00caf2dd05d5200e3804.js",
+        "/addon-2-es5.00caf2dd05d5200e3804.js",
         "/index.html",
-        "/main-es2015.3bcfdfe47a5b02571c2c.js",
-        "/main-es5.3bcfdfe47a5b02571c2c.js",
+        "/main-es2015.4728b0197826e192610f.js",
+        "/main-es5.4728b0197826e192610f.js",
         "/manifest.webmanifest",
-        "/polyfills-es2015.a2ab82093780d8d06e3b.js",
-        "/polyfills-es5.be050e78013fed739085.js",
-        "/runtime-es2015.c662531aec9a2642b68d.js",
-        "/runtime-es5.c662531aec9a2642b68d.js",
+        "/polyfills-es2015.e722d8e07c8b3dd12ba1.js",
+        "/polyfills-es5.3f87319853bf7f03530f.js",
+        "/runtime-es2015.5358dd2149829617764c.js",
+        "/runtime-es5.5358dd2149829617764c.js",
         "/scripts.dc4b9ee28ff8fe5c520d.js",
         "/styles.8ae27f1ef2eed7b32042.css"
       ],
@@ -129,10 +129,10 @@
     }
   ],
   "hashTable": {
-    "/addon-0-es2015.263e536550dde3d0857b.js": "fb08cf21fa0a30ef3532300479c40c338562b9dd",
-    "/addon-0-es5.263e536550dde3d0857b.js": "93ac861c90b0a0145bf5c854d56e095af34b8b1c",
-    "/addon-2-es2015.cdd93adaa71495a5181d.js": "03b7fdfac8b6eee0e0b61fd6cc48770c89684f15",
-    "/addon-2-es5.cdd93adaa71495a5181d.js": "ae64c7ba9ef193c0946e68353a716089fc50c0f4",
+    "/addon-0-es2015.d69199dc82bc0b285ad1.js": "8058ee28adf0aad57cff6fce3f8aeed664516ad7",
+    "/addon-0-es5.d69199dc82bc0b285ad1.js": "05161cfb2acc3b91901dda4ddc36ffd178748c0d",
+    "/addon-2-es2015.00caf2dd05d5200e3804.js": "e9ec54e7a1f7fc691054d4cf0f3e153523c42119",
+    "/addon-2-es5.00caf2dd05d5200e3804.js": "f0ff1868760887a1cb247bb0e00645f73728ca07",
     "/assets/fonts/RobotoCondensed-Bold-Cyr-Ex.woff2": "5c90a1a2459ad3fdb8d4828917162b7ee7dfc76e",
     "/assets/fonts/RobotoCondensed-Bold-Cyr.woff2": "122560becff778032eed54b47a6924c29e009ac2",
     "/assets/fonts/RobotoCondensed-Bold-Ex.woff2": "6be5d862def58ea5c30879afa237526c075779fb",
@@ -201,15 +201,15 @@
     "/fontawesome-webfont.8b43027f47b20503057d.eot": "d980c2ce873dc43af460d4d572d441304499f400",
     "/fontawesome-webfont.c1e38fd9e0e74ba58f7a.svg": "98a8aa5cf7d62c2eff5f07ede8d844b874ef06ed",
     "/fontawesome-webfont.f691f37e57f04c152e23.woff": "28b782240b3e76db824e12c02754a9731a167527",
-    "/index.html": "b5a95090b3253e7678983bb73d866fe63bc5c26d",
-    "/main-es2015.3bcfdfe47a5b02571c2c.js": "272b0fea94742049ccc02c20a39a3a65fd9e540a",
-    "/main-es5.3bcfdfe47a5b02571c2c.js": "4885d0879fd2abce0e9adc6bcbccf5a110029eb9",
+    "/index.html": "533d0456704dc16ecd313d2061295460dbc5f978",
+    "/main-es2015.4728b0197826e192610f.js": "004f45539ad6559411cb471706b9958ef83cd607",
+    "/main-es5.4728b0197826e192610f.js": "2c08e6471b4fe9e1d9fe3d8aad50de7b2fd8c0fd",
     "/manifest.webmanifest": "a0317b87bee62078bd486789254e0eb8c679a4b3",
-    "/polyfills-es2015.a2ab82093780d8d06e3b.js": "3739b8ed3a9ea20a1c1a8c0ade32ad2f0b7736bc",
-    "/polyfills-es5.be050e78013fed739085.js": "9e8de9b2247280d7a6516022a12aeeed3f6fa4e5",
-    "/runtime-es2015.c662531aec9a2642b68d.js": "e2444b86306f41f6a2ccb46c10eb735e69d13c87",
-    "/runtime-es5.c662531aec9a2642b68d.js": "0c5cedbaa8fa133dccd8ea5b375b0114d683596c",
-    "/scripts.dc4b9ee28ff8fe5c520d.js": "ddce4e7cf164a2e1144e429629f08b2d3bb7385a",
+    "/polyfills-es2015.e722d8e07c8b3dd12ba1.js": "9d9d442a25b0f9dea51e1b2db8d5533ac2b5241e",
+    "/polyfills-es5.3f87319853bf7f03530f.js": "5d4769990e180c96e93f55e9f076cfdb261f88ee",
+    "/runtime-es2015.5358dd2149829617764c.js": "09628e9c74f6af51be1df2c0965d4ad572dbbb09",
+    "/runtime-es5.5358dd2149829617764c.js": "63e5619f46fb8be402c312ae7a84c858acada9fc",
+    "/scripts.dc4b9ee28ff8fe5c520d.js": "d292ed20529fd47ed85388eabb577c718a643f8d",
     "/styles.8ae27f1ef2eed7b32042.css": "6c1ae5d135664f8c38a1296aaa598da4010be631"
   },
   "navigationUrls": [
@@ -229,5 +229,6 @@
       "positive": false,
       "regex": "^\\/(?:.+\\/)?[^/]*__[^/]*\\/.*$"
     }
-  ]
+  ],
+  "navigationRequestStrategy": "performance"
 }
