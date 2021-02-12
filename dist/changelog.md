@@ -1,3 +1,6 @@
+#### 3.0.20
+* fixed issue with column formatting in LPT
+
 #### 3.0.19
 * migrated to Angular 11
 * updated Highcharts version
