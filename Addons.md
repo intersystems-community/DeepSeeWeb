@@ -12,7 +12,7 @@ To create addon, follow next steps:
 4. Make copy of this file as starting point for addon creation, eg. `/src/addons/my-addon.component.ts`.
 All files placed in `/src/addons` folder are treated as addons and are to be compiled in separate JS files.
 5. Modify file `/src/addons/my-addon.component.ts` to implement features you need
-6. Run command `npm run build` to build project and compile all addons placed in `/src/addons` folder
+6. Run command `npm run build:addons` to build project and compile all addons placed in `/src/addons` folder
 7. After build, check folder `dist`. There are files named `addon-0`, `addon-1`, etc. This is compiled addons, due to angular compilator files have such names, so you need identify which one is you addon.
 This can be simply made by opening file and checking class name inside:
 ```javascript
