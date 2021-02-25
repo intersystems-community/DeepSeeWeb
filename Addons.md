@@ -1,10 +1,10 @@
-#DSW Addons
+# DSW Addons
 
-##1. Intro
+## 1. Intro
 DeepSeeWeb supports user addons, that can be created as TypeScript files and compiled to JS.
 This files are to be placed in `/addons` folder on a website in root of DSW. The file name should be equal to portlet name that used for custom widget.
 
-##2. Creating addon
+## 2. Creating addon
 To create addon, follow next steps:
 1. Clone DSW repo https://github.com/intersystems-community/DeepSeeWeb
 2. Setup dev environment to work with project, run `npm install` 
