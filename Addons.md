@@ -2,7 +2,7 @@
 
 ## 1. Intro
 DeepSeeWeb supports user addons, that can be created as TypeScript files and compiled to JS.
-This files are to be placed in `/addons` folder on a website in root of DSW. The file name should be equal to portlet name that used for custom widget.
+These files are to be placed in `/addons` folder on a website in root of DSW. The file name should be equal to portlet name(with prefix `DSW.Addons.`) that used for a custom widget.
 
 **Note: DSW auto-generates portlets for all addons placed in `/addons` folder with names: `DSW.Addons.{filename}`.**
 
@@ -25,7 +25,7 @@ Copy renamed file into `/addons` folder of your DSW root on a website.
 For a file deployed to `addons/my-addon.component.js` will be created portlet `DSW.Addons.my-addon.component`.
 
 ## 3. Addon versioning
-DSW is a developing application, so sometimes new features can be introduced that is not compatible with old version of DSW.
+DSW is a developing application, so sometimes new features can be introduced that is not compatible with an old version of DSW.
 That's why addon systems supports version checking. All addons include their version:
 ```typescript
 static AddonInfo: IAddonInfo = {       
@@ -71,7 +71,7 @@ There are different services and helpers that can be used via base class:
 |bs|BroadcastService|Used to broadcast messages between widgets, eg.: `this.bs.broadcast('refresh:' + widgetName);`|;
 |san|DomSanitizer|Used to inject secure html content in angular apps|
 |sbs|SidebarService|Used to show/hide sidebar|
-|cd|ChangeDetectorRef|Used to manually cause change detection for component, if operation runned outside angular zone, eg.:`this.cd.detectChanges();`|
+|cd|ChangeDetectorRef|Used to manually cause change detection for component, if operation ran outside angular zone, eg.:`this.cd.detectChanges();`|
 |zone|NgZone|Angular zone service. Used to run code outside angular zone, eg.: `this.zone.runOutsideAngular(() => { /* code */  })'`|
  
  
@@ -80,26 +80,26 @@ There are base methods that can be overridden:
 
 |Name|Description|
 | --- | --- |
-|ngOnInit|Initialization of addon. Make all preparations here. Do not acces DOM from this method|
+|ngOnInit|Initialization of addon. Make all preparations here. Do not access DOM from this method|
 |ngAfterViewInit|Initialization of DOM can be made here|
 |requestData|Make all http or other request here|
-|retrieveData|Default data parser can be overriden here. Process data here, that was returned by MDX or other requests|
+|retrieveData|Default data parser can be overridden here. Process data here, that was returned by MDX or other requests|
 |doDrill|Override default drill down behavior|
 |doDrillUp|Override default drill up behavior|
 |doDrillFilter|Override default drill filter behavior|
-|performAction|Ovverride widgets actions, eg.: `navigate`, `newwindow`|
+|performAction|Override widgets actions, eg.: `navigate`, `newwindow`|
 |showLoading|Show loading spinner|
 |hideLoading|Hide loading spinner|
 |showError|Show widget error message|
 |hideError|Hide widget error message|
 |getMDX|Returns widget MDX string|
-|onResize|Callback after component resizing ends. Recalc all sizes here if needed|
+|onResize|Callback after component resizing ends. Recalculate all sizes here if needed|
 |formatNumber|Formats number with desired format|
 |destroy|Callback on widget destroy. Remove all data and make cleanup here|
 
 ### 4.4. Widget information
 Access to widget information can be done via `this.widget`. Check `IWidgetInfo` interface for more information.
-This section will be updated with more details in future. 
+This section will be updated with more details in the future. 
 
 ## 5.Technical part
 Addons is a simple TypeScript file, that compiled via TSC.
@@ -131,7 +131,7 @@ const require = (m) => modules[m];
 After a shim, addon code executed and loads modules with newly defined `require` function.
 So all modules loaded from running DSW.
 
-This allows using addons compilled on different machines, because default Angular CLI produces bundles with `__webpack_require__(id)`, where `id` is different for different builds.
+This allows usage of addons compiled on different machines, because default Angular CLI produces bundles with `__webpack_require__(id)`, where `id` is different for different builds.
 So in previous version addons can be loaded only from the same DSW build. 
 
 ### 6. Local testing
