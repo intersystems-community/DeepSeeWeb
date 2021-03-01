@@ -1,6 +1,6 @@
 #### 3.1.1
 * changed folder for built addons to `dist-addons`
-* now all built addons are included in distribution undef `addons` folder
+* now all built addons are included in distribution under `addons` folder
 * WoldMap and HtmlViewer now separated from build and bundled as addons
 * updated addons documentation(added section about local testing, added portlet information)
 * added highcharts missing modules for addons

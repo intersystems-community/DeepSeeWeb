@@ -34,7 +34,7 @@ developer must recompile addon with appropriate sources of DSW and set a new ver
 
 However, addon with an inappropriate version still  loaded and executed, but can work incorrectly or throw exceptions.
 
-*Note: version should be set as number, **not as reference**.*
+*Note: version should be set as number, **not as reference** and be always equal to `BaseWidget.CURRENT_ADDON_VERSION`, don't increment version after each build, only check it equal to version in base class.*
 
 ## 4. Development info
 Each addon is Angular component written on TypeScript. Each file can export only one class.
