@@ -1,4 +1,4 @@
-import { version } from '../../package.json';
+import * as pkg from '../../package.json';
 
 export const dsw = {
     // TODO: add type for addons
@@ -20,7 +20,7 @@ export const dsw = {
             '\uf02d', '\uf073', '\uf0ac', '\uf005', '\uf071', '\uf05a',
             '\uf104'],
         timeout: 60000,
-        ver: version,
+        ver: pkg.version,
         emptyWidgetClass: 'MDX2JSON.EmptyPortlet'.toLowerCase()
     }
 };

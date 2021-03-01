@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {Compiler, Injectable} from '@angular/core';
 import {dsw} from '../../environments/dsw';
 import {DisplayGrid, GridsterConfigService, GridsterItem, GridsterItemComponentInterface} from 'angular-gridster2';
 import {DataService, NAMESPACE} from './data.service';
@@ -8,11 +8,20 @@ import {StorageService} from './storage.service';
 import {NamespaceService} from './namespace.service';
 import * as AngularCommon from '@angular/common';
 import * as AngularCore from '@angular/core';
+import * as AngularRouter from '@angular/router';
+import * as BrowserDynamic from '@angular/platform-browser-dynamic';
+import * as BrowserModuleAll from '@angular/platform-browser';
 import {UtilService} from './util.service';
-
-declare const __webpack_exports__: any;
-declare const __webpack_require__: any;
-declare const webpackJsonp: any;
+import {BaseWidget} from "../components/widgets/base-widget.class";
+import {BaseChartClass} from "../components/widgets/charts/base-chart.class";
+import {BrowserModule} from "@angular/platform-browser";
+import {VariablesService} from "./variables.service";
+import {FilterService} from "./filter.service";
+import {DashboardService} from "./dashboard.service";
+import {I18nService} from "./i18n.service";
+import {BroadcastService} from "./broadcast.service";
+import {SidebarService} from "./sidebar.service";
+import {AppModule} from "../app.module";
 
 @Injectable({
     providedIn: 'root'
@@ -23,6 +32,7 @@ export class StartupService {
                 private wt: WidgetTypeService,
                 private us: UtilService,
                 private st: StorageService,
+                private compiler: Compiler,
                 private ns: NamespaceService) {
     }
 
@@ -37,7 +47,7 @@ export class StartupService {
             this.setupMobile();
         }
 
-        return new Promise((res, rej) => {
+        return new Promise((res: any, rej) => {
             Promise.all([
                 //  this.loadServerSettings(),
                 this.ds.loadMainConfig(),
@@ -110,13 +120,6 @@ export class StartupService {
                 }
                 return Promise.all(promises);
             });
-            //.then(() => {
-                // TODO: broadcast
-                // $rootScope.$broadcast('addons:loaded', addons);
-            ///})
-            //.then(() => {
-               // return this.loadSettings();
-            //});
     }
 
     private setupGridster() {
@@ -156,8 +159,88 @@ export class StartupService {
     }
 
     private loadAddon(url: any, addonName: string) {
-        return new Promise((res, rej) => {
-            const script = document.createElement('script');
+        return new Promise((res: any, rej) => {
+            const s = '/assets/test.js';
+            fetch(s)
+            // import(s)
+                .then(async r => {
+                    const file = await r.text();
+
+                    // Create exports object to store module exports
+                    const exports = {};
+
+                    // Shared modules for "require"
+                    const modules = {
+                        '@angular/core': AngularCore,
+                        '@angular/common': AngularCommon,
+                        '@angular/router': AngularRouter,
+                        '@angular/platform-browser-dynamic': BrowserDynamic,
+                        '@angular/platform-browser': BrowserModuleAll,
+                        '../app/services/util.service': { UtilService },
+                        '../app/services/variables.service': { VariablesService },
+                        '../app/services/storage.service': { StorageService },
+                        '../app/services/data.service': { DataService },
+                        '../app/services/filter.service': { FilterService },
+                        '../app/services/widget-type.service': { WidgetTypeService },
+                        '../app/services/dashboard.service': { DashboardService },
+                        '../app/services/namespace.service': { NamespaceService },
+                        '../app/services/i18n.service': { I18nService },
+                        '../app/services/broadcast.service': { BroadcastService },
+                        '../app/services/sidebar.service': { SidebarService },
+                        '../app/components/widgets/base-widget.class': { BaseWidget },
+                        '../app/components/widgets/charts/base-chart.class': { BaseChartClass },
+                        '../app/app.module': { AppModule }
+                    };
+
+                    // Replace require
+                    const require = (m) => modules[m];
+
+                    // Eval addon script file
+                    // tslint:disable-next-line:no-eval
+                    eval(file);
+
+                    // Find component in exports
+                    // Only one export is allowed so component is first function
+                    let module: any;
+                    let name = '';
+                    for (const k in exports) {
+                        if (exports[k].toString().startsWith('class')) {
+                            module = exports[k];
+                            name = k;
+                            break;
+                        }
+                    }
+
+                   /* const moduleFactory = this.compiler.compileModuleSync(name);
+                    const moduleRef = moduleFactory.create(this.parentInjector);
+                    const resolver = moduleRef.componentFactoryResolver;
+                    const compFactory = resolver.resolveComponentFactory(AComponent);*/
+                    if (module) {
+
+                        /*const compiledModule = this.compiler.compileModuleAndAllComponentsSync(module);
+
+                        // Get addon info
+                        const factory = compiledModule.componentFactories[0];
+                        const info = (factory.componentType as any).AddonInfo;
+                        const curVer = BaseWidget.CURRENT_ADDON_VERSION;
+                        if (info.version !== curVer) {
+                            console.warn(`Addon '${url}' version is not equal to supported addons version of DSW installed. Current version: ${curVer}, addon version: ${info.version}. Please recompile your addon with appropriate DSW version.`);
+                        }*/
+                        const info = module.AddonInfo;
+                        this.wt.register(name.toLowerCase(), info?.type || 'custom', module, info);
+                        //this.wt.register(factory.componentType.name.toLowerCase(), info?.type || 'custom', factory.componentType, info);
+                    } else {
+                        console.warn(`Can't load addon for file: ${url}. Exported class not found.`);
+                    }
+                    res();
+                })
+                .catch(e => {
+                    console.error(e);
+                    res();
+                });
+
+
+            /*const script = document.createElement('script');
             script.src = url;
             document.head.appendChild(script);
             script.onload = () => {
@@ -216,7 +299,7 @@ export class StartupService {
                 // .catch((e) => {
                 //     console.error(e);
                 //     res();
-                // });
+                // });*/
         });
     }
 

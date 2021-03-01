@@ -10,15 +10,125 @@ To create addon, follow next steps:
 2. Setup dev environment to work with project, run `npm install` 
 3. There is addon example in `/src/addons/simple-addon.component.ts`
 4. Make copy of this file as starting point for addon creation, eg. `/src/addons/my-addon.component.ts`.
-All files placed in `/src/addons` folder are treated as addons and are to be compiled in separate JS files.
+All files placed in `/src/addons` folder are treated as addons and are to be compiled in separate JS files
 5. Modify file `/src/addons/my-addon.component.ts` to implement features you need
-6. Run command `npm run build:addons` to build project and compile all addons placed in `/src/addons` folder
-7. After build, check folder `dist`. There are files named `addon-0`, `addon-1`, etc. This is compiled addons, due to angular compilator files have such names, so you need identify which one is you addon.
-This can be simply made by opening file and checking class name inside:
-```javascript
-function(t,e,o){"use strict";o.r(e),o.d(e,"MyAddonComponent"
-```
-8. After finding file with your addon, rename a file to name of custom portlet, that would be used for this widget type. 
+6. Run command `npm run build:addons` to compile all addons placed in `/src/addons` folder
+7. After build, all compiled addons are to be placed in `/dist/commonjs/src/addons` folder
+8. Rename your addon file to name of custom portlet, that would be used for this widget type. 
 Copy renamed file into `/addons` folder of your DSW root on a website
+
+## 3. Addon versioning
+DSW is a developing application, so sometimes new features can be introduced that is not compatible with old version of DSW.
+That's why addon systems supports version checking. All addons include their version:
+```typescript
+static AddonInfo: IAddonInfo = {       
+    version: 1,
+    type: 'custom'
+};
+```
+This version needed to compare version from `BaseWidget.CURRENT_ADDON_VERSION` of hosted DSW, and if these versions are not equal, 
+developer must recompile addon with appropriate sources of DSW and set a new version of addon as **number**.
+
+However, addon with an inappropriate version still  loaded and executed, but can work incorrectly or throw exceptions.
+
+*Note: version should be set as number, **not as reference**.*
+
+## 4. Development info
+Each addon is Angular component written on TypeScript. Each file can export only one class.
+
+### 4.1. Inheritance
+Addon always must be inherited from `BaseWidget`. Addon also can be inherited from `BaseChartClass` for using Highcharts implementation.
+
+Inheritance: `BaseWidget < BaseChartClass < AddonClass`
+
+Addon constructor never should be modified, because DSW have base class `BaseWidget` and `super()` is called from addon constructor.
+So any difference in constructors will cause errors.
+
+### 4.2. Services
+There are different services and helpers that can be used via base class:
+
+|Name|Type|Description|
+| --- | --- | --- |
+|el|ElementRef|Reference to angular element. Used to work with DOM element of addon, eg.: `const bounds = this.el.nativeElement.getBoundingClientRect();`|
+|us|UtilService|Utils service. Has some utility functions, eg. `this.us.mergeRecursive(obj1, ibj2);`|;
+|vs|VariablesService|Service to work with `applyvariable` controls on widgets|
+|ss|StorageService|Used to store application settings, widget settings, etc., eg.: `this.dashboardSettings = this.ss.getWidgetsSettings(dashboard());`
+|ds|DataService|Used to mage requests, execute MDX, retrieve pivot data, etc.|
+|fs|FilterService|Used to work with widget filters|
+|wts|WidgetTypeService|Used to store widget type configuration, which type is map/chart, etc.|
+|dbs|DashboardService|Used to store and retrieve dashboard information|
+|cfr|ComponentFactoryResolve|Internal angular service. Used for dynamic component creation|
+|ns|NamespaceService|Used to work with namespaces, eg.: `const list = this.ns.getNamespaces();`. Use `CURRENT_NAMESPACE` variable to access current namespace|
+|route|ActivatedRoute|Angular activated route|
+|i18n|I18nService|Used to get translation for strings, eg.:`const errorText = this.i18n.get('errNoDashboards')`|
+|bs|BroadcastService|Used to broadcast messages between widgets, eg.: `this.bs.broadcast('refresh:' + widgetName);`|;
+|san|DomSanitizer|Used to inject secure html content in angular apps|
+|sbs|SidebarService|Used to show/hide sidebar|
+|cd|ChangeDetectorRef|Used to manually cause change detection for component, if operation runned outside angular zone, eg.:`this.cd.detectChanges();`|
+|zone|NgZone|Angular zone service. Used to run code outside angular zone, eg.: `this.zone.runOutsideAngular(() => { /* code */  })'`|
+ 
+ 
+ ### 4.3. Methods
+There are base methods that can be overridden:
+
+|Name|Description|
+| --- | --- |
+|ngOnInit|Initialization of addon. Make all preparations here. Do not acces DOM from this method|
+|ngAfterViewInit|Initialization of DOM can be made here|
+|requestData|Make all http or other request here|
+|retrieveData|Default data parser can be overriden here. Process data here, that was returned by MDX or other requests|
+|doDrill|Override default drill down behavior|
+|doDrillUp|Override default drill up behavior|
+|doDrillFilter|Override default drill filter behavior|
+|performAction|Ovverride widgets actions, eg.: `navigate`, `newwindow`|
+|showLoading|Show loading spinner|
+|hideLoading|Hide loading spinner|
+|showError|Show widget error message|
+|hideError|Hide widget error message|
+|getMDX|Returns widget MDX string|
+|onResize|Callback after component resizing ends. Recalc all sizes here if needed|
+|formatNumber|Formats number with desired format|
+|destroy|Callback on widget destroy. Remove all data and make cleanup here|
+
+### 4.4. Widget information
+Access to widget information can be done via `this.widget`. Check `IWidgetInfo` interface for more information.
+This section will be updated with more details in future. 
+
+## 5.Technical part
+Addons is a simple TypeScript file, that compiled via TSC.
+
+Npm script `build:addons` just a shortcut for command: `tsc --project ./src/addons`.
+So TSC uses configuration file: `./src/addons/tsconfig.json`
+
+Module is set to `CommonJS`. CommonJS is used for simple purpose: 
+all references to external modules in compiled file will be replaced to `require('module')` function call, so:
+1. No additional code produced
+2. We can reuse loaded modules during addon loading, eg.: `@angular/core`, `@angular/common`, etc.
+
+Now dsw can shim `require` function and use already loaded modules like this(code from `startup.service.ts`):
+```typescript
+const modules = {
+    '@angular/core': AngularCore,
+    '@angular/common': AngularCommon,
+    '@angular/router': AngularRouter,
+    '@angular/platform-browser-dynamic': BrowserDynamic,
+    '@angular/platform-browser': BrowserModuleAll,
+    '../app/services/util.service': { UtilService },
+    '../app/services/variables.service': { VariablesService },
+    '../app/services/storage.service': { StorageService }
+    /* more code here */
+}
+// Replace require
+const require = (m) => modules[m];
+```
+After a shim, addon code executed and loads modules with newly defined `require` function.
+So all modules loaded from running DSW.
+
+This allows using addons compilled on different machines, because default Angular CLI produces bundles with `__webpack_require__(id)`, where `id` is different for different builds.
+So in previous version addons can be loaded only from the same DSW build. 
+
+
+
+ 
 
  

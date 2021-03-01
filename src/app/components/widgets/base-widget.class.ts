@@ -6,7 +6,7 @@ import {
     OnInit,
     Directive,
     NgZone,
-    ChangeDetectorRef
+    ChangeDetectorRef, Inject, Injector
 } from '@angular/core';
 import {UtilService} from '../../services/util.service';
 import {VariablesService} from '../../services/variables.service';
@@ -56,8 +56,10 @@ export interface IWidgetOverride {
     _type: string;
 }
 
+export type IAddonType = 'custom' | 'chart' | 'map';
 export interface IAddonInfo {
-    type?: string;
+    version?: number;
+    type?: IAddonType;
     chart?: string;
 }
 
@@ -173,30 +175,73 @@ export interface IWidgetInfo {
 @Directive()
 export abstract class BaseWidget implements OnInit, OnDestroy {
 
+    static CURRENT_ADDON_VERSION = 1;
+
     @HostBinding('class.inline') get inline(): boolean {
         return this.widget.inline;
     }
 
     // private subOnHeaderButton: Subscription;
 
-    constructor(protected el: ElementRef,
-                protected us: UtilService,
-                protected vs: VariablesService,
-                protected ss: StorageService,
-                protected ds: DataService,
-                protected fs: FilterService,
-                protected wts: WidgetTypeService,
-                private dbs: DashboardService,
-                protected cfr: ComponentFactoryResolver,
-                protected ns: NamespaceService,
-                protected route: ActivatedRoute,
-                public i18n: I18nService,
-                public bs: BroadcastService,
-                protected san: DomSanitizer,
-                protected sbs: SidebarService,
-                protected cd: ChangeDetectorRef,
-                protected zone: NgZone) {
+    // Services
+    protected el: ElementRef = null;
+    protected us: UtilService = null;
+    protected vs: VariablesService = null;
+    protected ss: StorageService = null;
+    protected ds: DataService = null;
+    protected fs: FilterService = null;
+    protected wts: WidgetTypeService = null;
+    protected dbs: DashboardService = null;
+    protected cfr: ComponentFactoryResolver = null;
+    protected ns: NamespaceService = null;
+    protected route: ActivatedRoute = null;
+    public i18n: I18nService = null;
+    public bs: BroadcastService = null;
+    protected san: DomSanitizer = null;
+    protected sbs: SidebarService = null;
+    protected cd: ChangeDetectorRef = null;
+    protected zone: NgZone = null;
+
+    /*constructor(@Inject(ElementRef) protected el: ElementRef,
+                @Inject(UtilService) protected us: UtilService,
+                @Inject(VariablesService) protected vs: VariablesService,
+                @Inject(StorageService) protected ss: StorageService,
+                @Inject(DataService) protected ds: DataService,
+                @Inject(FilterService) protected fs: FilterService,
+                @Inject(WidgetTypeService) protected wts: WidgetTypeService,
+                @Inject(DashboardService) private dbs: DashboardService,
+                @Inject(ComponentFactoryResolver) protected cfr: ComponentFactoryResolver,
+                @Inject(NamespaceService) protected ns: NamespaceService,
+                @Inject(ActivatedRoute) protected route: ActivatedRoute,
+                @Inject(I18nService) public i18n: I18nService,
+                @Inject(BroadcastService) public bs: BroadcastService,
+                @Inject(DomSanitizer) protected san: DomSanitizer,
+                @Inject(SidebarService) protected sbs: SidebarService,
+                @Inject(ChangeDetectorRef) protected cd: ChangeDetectorRef,
+                @Inject(NgZone) protected zone: NgZone) {
+    }*/
+
+    constructor(@Inject(Injector) protected inj: Injector) {
+        // Inject services
+        this.el = this.inj.get(ElementRef);
+        this.us = this.inj.get(UtilService);
+        this.vs = this.inj.get(VariablesService);
+        this.ss = this.inj.get(StorageService);
+        this.ds = this.inj.get(DataService);
+        this.fs = this.inj.get(FilterService);
+        this.wts = this.inj.get(WidgetTypeService);
+        this.dbs = this.inj.get(DashboardService);
+        this.cfr = this.inj.get(ComponentFactoryResolver);
+        this.ns = this.inj.get(NamespaceService);
+        this.route = this.inj.get(ActivatedRoute);
+        this.i18n = this.inj.get(I18nService);
+        this.bs = this.inj.get(BroadcastService);
+        this.san = this.inj.get(DomSanitizer);
+        this.sbs = this.inj.get(SidebarService);
+        this.cd = this.inj.get(ChangeDetectorRef);
+        this.zone = this.inj.get(NgZone);
     }
+
     dataInfo = null;
 
     public model: any = {};
@@ -792,7 +837,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
      * @returns {IPromise<T>}
      */
     doDrill(path?: string, name?: string, category?: string, noDrillCallback?: () => void) {
-        return new Promise((res, rej) => {
+        return new Promise((res: any, rej) => {
             this.clearError();
             // Apply drill filter if clickfilter is exists
             this.doDrillFilter(path, this.drills);

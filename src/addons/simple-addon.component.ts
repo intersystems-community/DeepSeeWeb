@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, Inject, Injector, OnInit, ViewChild} from '@angular/core';
 import {BaseWidget, IAddonInfo} from '../app/components/widgets/base-widget.class';
 
 @Component({
@@ -29,17 +29,66 @@ import {BaseWidget, IAddonInfo} from '../app/components/widgets/base-widget.clas
 })
 export class SimpleAddonComponent extends BaseWidget implements OnInit, AfterViewInit {
     static AddonInfo: IAddonInfo = {
+        // Version of addon system, should be specified manually as number, not reference
+        // version always should be equal to BaseWidget.CURRENT_ADDON_VERSION
+        // used to compare unsupported addons when breaking changes are made into BaseWidget
+        // Note: do not use reference to BaseWidget.CURRENT_ADDON_VERSIO here!
+        // specify number MANUALLY
+        version: 1,
+        // Widget type
+        // 'custom' for all non-standard widgets
+        // 'chart' for highcharts widget
         type: 'custom'
     };
     @ViewChild('canvas', {static: false}) canvas: ElementRef;
 
+    /**
+     * You can use following services from base class
+     *   el: ElementRef;
+     *   us: UtilService;
+     *   vs: VariablesService;
+     *   ss: StorageService;
+     *   ds: DataService;
+     *   fs: FilterService;
+     *   wts: WidgetTypeService;
+     *   dbs: DashboardService;
+     *   cfr: ComponentFactoryResolver;
+     *   ns: NamespaceService;
+     *   route: ActivatedRoute;
+     *   i18n: I18nService;
+     *   bs: BroadcastService;
+     *   san: DomSanitizer;
+     *   sbs: SidebarService;
+     *   cd: ChangeDetectorRef;
+     *   zone: NgZone;
+     *
+     *   example:
+     *   {
+     *       const filters = this.fs.getWidgetFilters('Windget 1');
+     *   }
+     */
 
+    /**
+     * Constructor of addon class
+     * Always stay UNCHANGED, do not modify
+     * initialize your addon inside ngOnInit method
+     */
+    constructor(@Inject(Injector) protected inj: Injector) {
+        super(inj);
+    }
+
+    /**
+     * Initialization
+     */
     ngOnInit() {
         super.ngOnInit();
         // Initialize addon here
         console.log('Hello!');
     }
 
+    /**
+     * Initialization after DOM element has been created and accessible
+     */
     ngAfterViewInit() {
         // Here you can access this.el.nativeElement, to manipulate DOM
         this.drawOnCanvas();
@@ -60,12 +109,18 @@ export class SimpleAddonComponent extends BaseWidget implements OnInit, AfterVie
         ctx.stroke();
     }
 
+    /**
+     * Request data from server if needed
+     */
     requestData() {
         super.requestData();
         // You can make you own data request here if it not supposed to run MDX
         // Or you need to call external REST API
     }
 
+    /**
+     * Parse retrieved data
+     */
     retrieveData(data: any) {
         super.retrieveData(data);
         // Here you can parse data, and display it as needed
@@ -77,16 +132,23 @@ export class SimpleAddonComponent extends BaseWidget implements OnInit, AfterVie
         console.log(data);
     }
 
+    /**
+     * Drilldown processing
+     */
     doDrill(path?: string, name?: string, category?: string, noDrillCallback?: () => void): Promise<unknown> {
         return super.doDrill(path, name, category, noDrillCallback);
-        // Custom drill processing
     }
 
+    /**
+     * Drillup processing
+     */
     doDrillUp() {
         super.doDrillUp();
-        // Custom drillup processing
     }
 
+    /**
+     * Resize callback
+     */
     onResize() {
         // Use to redraw widget after resize event
         super.onResize();

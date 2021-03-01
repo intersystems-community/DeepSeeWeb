@@ -396,7 +396,9 @@ export class WidgetComponent implements OnInit, OnDestroy, AfterViewInit {
         const t = this.wts.getClass(type || this.widget.type);
         if (t) {
             this.widget.isSupported = true;
+
             const factory = this.cfr.resolveComponentFactory<BaseWidget>(t as any);
+            // const factory = typeDef.factory as any;
             this.componentRef = this.container.createComponent<BaseWidget>(factory);
             this.component = this.componentRef.instance;
             this.component.widget = this.widget;

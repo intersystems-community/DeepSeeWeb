@@ -1,3 +1,13 @@
+#### 3.1.0
+* introduced new addon system. use `./src/addons/simple-addon.component.ts` as reference. ***Do not compile old addons - they won't work***.
+Now there is no need to compile DSW with addon. Addon can be used in different build of DSW.
+* added addon versioning support, checks and warning if inappropriate addon version loaded in DSW 
+* added detailed addons documentation `Addons.md`
+* added detailed addon example code with comments
+* now addon builder produces correct and same names for addon files `my-addon.ts` > `my-addon.js` (previously, Angular CLI creates `addon-0`, `addon-1`, etc.)
+* now, after addition of new services to base widget class, there is no need to recompile and redeploy all addons  
+* updated to Angular 11.2.3 
+
 #### 3.0.20
 * fixed issue with column formatting in LPT
 

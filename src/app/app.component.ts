@@ -55,9 +55,9 @@ export class AppComponent implements OnInit {
      * This method is not used. It needed to tell compiler that we will load addons
      * from 'addons' folder, to compile it into separate bundles
      */
-    notUsedOnlyToCompileAddons(addon: string) {
+    /*notUsedOnlyToCompileAddons(addon: string) {
         return [
-            import(/* webpackChunkName: 'addon-' */`src/addons/${addon}`)
+            import(/!* webpackChunkName: 'addon-' *!/`src/addons/${addon}`)
         ];
-    }
+    }*/
 }

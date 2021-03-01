@@ -1,0 +1,10 @@
+{
+    "compilerOptions": {
+        "experimentalDecorators": true,
+        "target": "ES2015",
+        "moduleResolution": "Node",
+        "module": "CommonJS",
+        "resolveJsonModule": true,
+        "outDir": "../../dist/commonjs/"
+    }
+}
