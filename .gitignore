@@ -46,3 +46,4 @@ Thumbs.db
 
 # addons compilation modules
 /dist/commonjs
+/dist-addons
