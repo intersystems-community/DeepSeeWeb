@@ -4,7 +4,9 @@
 DeepSeeWeb supports user addons, that can be created as TypeScript files and compiled to JS.
 This files are to be placed in `/addons` folder on a website in root of DSW. The file name should be equal to portlet name that used for custom widget.
 
-**Note: DSW auto-generates portlets for all addons placed in `/addons` folder with names: `DSW.Addons.{filename}`**
+**Note: DSW auto-generates portlets for all addons placed in `/addons` folder with names: `DSW.Addons.{filename}`.**
+
+For file `my-addon.component.js` will be created `DSW.Addons.my-addon.component` portlet.
 
 ## 2. Creating addon
 To create addon, follow next steps:
@@ -18,7 +20,9 @@ All files placed in `/src/addons` folder are treated as addons and are to be com
 7. After build, all compiled addons are to be placed in `/dist-addons/src/addons` folder
 8. Rename your addon file to name of custom portlet, that would be used for this widget type. 
 By default DSW creates portlets with name: `DSW.Addons.{filename}`(without extension).
-Copy renamed file into `/addons` folder of your DSW root on a website
+Copy renamed file into `/addons` folder of your DSW root on a website.
+
+For file deployed to `addons/my-addon.component.js` will be created portlet `DSW.Addons.my-addon.component`.
 
 ## 3. Addon versioning
 DSW is a developing application, so sometimes new features can be introduced that is not compatible with old version of DSW.
