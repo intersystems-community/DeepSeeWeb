@@ -1,27 +1,32 @@
+import * as AngularCore from '@angular/core';
 import {Compiler, Injectable} from '@angular/core';
 import {dsw} from '../../environments/dsw';
-import {DisplayGrid, GridsterConfigService, GridsterItem, GridsterItemComponentInterface} from 'angular-gridster2';
-import {DataService, NAMESPACE} from './data.service';
+import {DisplayGrid, GridsterConfigService} from 'angular-gridster2';
+import {DataService} from './data.service';
 import {HttpClient} from '@angular/common/http';
 import {WidgetTypeService} from './widget-type.service';
 import {StorageService} from './storage.service';
 import {NamespaceService} from './namespace.service';
 import * as AngularCommon from '@angular/common';
-import * as AngularCore from '@angular/core';
 import * as AngularRouter from '@angular/router';
 import * as BrowserDynamic from '@angular/platform-browser-dynamic';
 import * as BrowserModuleAll from '@angular/platform-browser';
+import * as HighchartsHighstock from 'highcharts/highstock';
+import * as HighchartsMore from 'highcharts/highcharts-more';
+import * as HighchartsModulesTreemap from 'highcharts/modules/treemap';
+import * as HighchartsModulesHeatmap from 'highcharts/modules/heatmap';
+import * as HighchartsModulesExporting from 'highcharts/modules/exporting';
+import * as HighchartsModulesMap from 'highcharts/modules/map';
 import {UtilService} from './util.service';
-import {BaseWidget} from "../components/widgets/base-widget.class";
-import {BaseChartClass} from "../components/widgets/charts/base-chart.class";
-import {BrowserModule} from "@angular/platform-browser";
-import {VariablesService} from "./variables.service";
-import {FilterService} from "./filter.service";
-import {DashboardService} from "./dashboard.service";
-import {I18nService} from "./i18n.service";
-import {BroadcastService} from "./broadcast.service";
-import {SidebarService} from "./sidebar.service";
-import {AppModule} from "../app.module";
+import {BaseWidget} from '../components/widgets/base-widget.class';
+import {BaseChartClass} from '../components/widgets/charts/base-chart.class';
+import {VariablesService} from './variables.service';
+import {FilterService} from './filter.service';
+import {DashboardService} from './dashboard.service';
+import {I18nService} from './i18n.service';
+import {BroadcastService} from './broadcast.service';
+import {SidebarService} from './sidebar.service';
+import {AppModule} from '../app.module';
 
 @Injectable({
     providedIn: 'root'
@@ -160,8 +165,7 @@ export class StartupService {
 
     private loadAddon(url: any, addonName: string) {
         return new Promise((res: any, rej) => {
-            const s = '/assets/test.js';
-            fetch(s)
+            fetch(url)
             // import(s)
                 .then(async r => {
                     const file = await r.text();
@@ -176,6 +180,12 @@ export class StartupService {
                         '@angular/router': AngularRouter,
                         '@angular/platform-browser-dynamic': BrowserDynamic,
                         '@angular/platform-browser': BrowserModuleAll,
+                        'highcharts/highstock': HighchartsHighstock,
+                        'highcharts/highcharts-more': HighchartsMore,
+                        'highcharts/modules/treemap': HighchartsModulesTreemap,
+                        'highcharts/modules/heatmap': HighchartsModulesHeatmap,
+                        'highcharts/modules/exporting': HighchartsModulesExporting,
+                        'highcharts/modules/map': HighchartsModulesMap,
                         '../app/services/util.service': { UtilService },
                         '../app/services/variables.service': { VariablesService },
                         '../app/services/storage.service': { StorageService },
@@ -227,8 +237,9 @@ export class StartupService {
                             console.warn(`Addon '${url}' version is not equal to supported addons version of DSW installed. Current version: ${curVer}, addon version: ${info.version}. Please recompile your addon with appropriate DSW version.`);
                         }*/
                         const info = module.AddonInfo;
-                        this.wt.register(name.toLowerCase(), info?.type || 'custom', module, info);
-                        //this.wt.register(factory.componentType.name.toLowerCase(), info?.type || 'custom', factory.componentType, info);
+                        const fileName = url.split('/').pop().toLowerCase().replace('dsw.addons.', '');
+                        this.wt.register(fileName.split('.').slice(0, -1).join('.'), info?.type || 'custom', module, info);
+                        // this.wt.register(factory.componentType.name.toLowerCase(), info?.type || 'custom', factory.componentType, info);
                     } else {
                         console.warn(`Can't load addon for file: ${url}. Exported class not found.`);
                     }

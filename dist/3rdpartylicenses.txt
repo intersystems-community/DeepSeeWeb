@@ -50,9 +50,6 @@ MIT
 @angular/service-worker
 MIT
 
-@highcharts/map-collection
-SEE LICENSE IN LICENSE.md
-
 angular-gridster2
 MIT
 MIT License

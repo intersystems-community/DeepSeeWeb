@@ -34,8 +34,6 @@ import {FilterPopupComponent} from './components/ui/filter-popup/filter-popup.co
 import {ModalComponent} from './components/ui/modal/modal.component';
 import {EmptyWidgetComponent} from './components/widgets/empty-widget.component';
 import {TreeMapComponent} from './components/widgets/charts/tree-map.component';
-import {HtmlViewerComponent} from './components/widgets/html-viewer.component';
-import {WorldMapComponent} from './components/widgets/world-map.component';
 import {BubbleChartComponent} from './components/widgets/charts/bubble-chart.component';
 import {NamespaceSelectorComponent} from './components/ui/namespace-selector/namespace-selector.component';
 import {LanguageSelectorComponent} from './components/ui/language-selector/language-selector.component';
@@ -59,6 +57,20 @@ import {ThemeSettingsComponent} from './components/ui/theme-settings/theme-setti
 import {MenuSettingsComponent} from './components/ui/menu/menu-settings/menu-settings.component';
 import {BarChartComponent} from './components/widgets/charts/bar-chart.component';
 import {ScorecardWidgetComponent} from './components/widgets/scorecard/scorecard-widget';
+// Highcharts
+import * as  Highcharts from 'highcharts/highstock';
+import More from 'highcharts/highcharts-more';
+More(Highcharts);
+import Tree from 'highcharts/modules/treemap';
+Tree(Highcharts);
+import Heatmap from 'highcharts/modules/heatmap';
+Heatmap(Highcharts);
+// Load the exporting module.
+import Exporting from 'highcharts/modules/exporting';
+// Initialize exporting module.
+Exporting(Highcharts);
+import Map from 'highcharts/modules/map';
+Map(Highcharts);
 
 @NgModule({
     declarations: [
@@ -88,8 +100,6 @@ import {ScorecardWidgetComponent} from './components/widgets/scorecard/scorecard
         ModalComponent,
         EmptyWidgetComponent,
         TreeMapComponent,
-        HtmlViewerComponent,
-        WorldMapComponent,
         BubbleChartComponent,
         NamespaceSelectorComponent,
         LanguageSelectorComponent,

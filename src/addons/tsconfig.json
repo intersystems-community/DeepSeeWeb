@@ -5,6 +5,6 @@
         "moduleResolution": "Node",
         "module": "CommonJS",
         "resolveJsonModule": true,
-        "outDir": "../../dist/commonjs/"
+        "outDir": "../../dist-addons/"
     }
 }

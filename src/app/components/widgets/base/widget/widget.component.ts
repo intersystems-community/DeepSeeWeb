@@ -392,7 +392,6 @@ export class WidgetComponent implements OnInit, OnDestroy, AfterViewInit {
         }
         this.destroyComponent();
         this.container.clear();
-        // const typeDef = this.wts.getDesc(type || this.widget.type);
         const t = this.wts.getClass(type || this.widget.type);
         if (t) {
             this.widget.isSupported = true;

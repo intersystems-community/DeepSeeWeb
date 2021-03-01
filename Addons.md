@@ -4,6 +4,8 @@
 DeepSeeWeb supports user addons, that can be created as TypeScript files and compiled to JS.
 This files are to be placed in `/addons` folder on a website in root of DSW. The file name should be equal to portlet name that used for custom widget.
 
+**Note: DSW auto-generates portlets for all addons placed in `/addons` folder with names: `DSW.Addons.{filename}`**
+
 ## 2. Creating addon
 To create addon, follow next steps:
 1. Clone DSW repo https://github.com/intersystems-community/DeepSeeWeb
@@ -13,8 +15,9 @@ To create addon, follow next steps:
 All files placed in `/src/addons` folder are treated as addons and are to be compiled in separate JS files
 5. Modify file `/src/addons/my-addon.component.ts` to implement features you need
 6. Run command `npm run build:addons` to compile all addons placed in `/src/addons` folder
-7. After build, all compiled addons are to be placed in `/dist/commonjs/src/addons` folder
+7. After build, all compiled addons are to be placed in `/dist-addons/src/addons` folder
 8. Rename your addon file to name of custom portlet, that would be used for this widget type. 
+By default DSW creates portlets with name: `DSW.Addons.{filename}`(without extension).
 Copy renamed file into `/addons` folder of your DSW root on a website
 
 ## 3. Addon versioning
@@ -127,7 +130,14 @@ So all modules loaded from running DSW.
 This allows using addons compilled on different machines, because default Angular CLI produces bundles with `__webpack_require__(id)`, where `id` is different for different builds.
 So in previous version addons can be loaded only from the same DSW build. 
 
+### 6. Local testing
+If you need test some local files during `ng serve`, you can use dev addons definition, eg.:
+```javascript
+localStorage.devAddons = '["addons/world-map.component.js", "addons/html-viewer.component.js"]';
+``` 
+Server response will be ignored and local definition is to be used for addon loading.
 
+*Note: addons should be previously compiled locally.* 
 
  
 

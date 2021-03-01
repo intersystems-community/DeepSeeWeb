@@ -28,7 +28,12 @@
                             "src/assets",
                             "src/config.json",
                             "src/changelog.md",
-                            "src/manifest.webmanifest"
+                            "src/manifest.webmanifest",
+                            {
+                                "glob": "*",
+                                "input": "dist-addons/src/addons",
+                                "output": "addons"
+                            }
                         ],
                         "styles": [
                             "src/scss/lightPivotTable.min.css",

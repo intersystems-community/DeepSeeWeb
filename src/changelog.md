@@ -1,3 +1,11 @@
+#### 3.1.1
+* changed folder for built addons to `dist-addons`
+* now all built addons are included in distribution undef `addons` folder
+* WoldMap and HtmlViewer now separated from build and bundled as addons
+* updated addons documentation(added section about local testing, added portlet information)
+* added highcharts missing modules for addons
+* fixed issue with widget type comparison for addons
+
 #### 3.1.0
 * introduced new addon system. use `./src/addons/simple-addon.component.ts` as reference. ***Do not compile old addons - they won't work***.
 Now there is no need to compile DSW with addon. Addon can be used in different build of DSW.

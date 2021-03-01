@@ -6,8 +6,6 @@ import {MapWidgetComponent} from '../components/widgets/map-widget/map-widget.co
 import {ColumnChartComponent} from '../components/widgets/charts/column-chart.component';
 import {EmptyWidgetComponent} from '../components/widgets/empty-widget.component';
 import {TreeMapComponent} from '../components/widgets/charts/tree-map.component';
-import {HtmlViewerComponent} from '../components/widgets/html-viewer.component';
-import {WorldMapComponent} from '../components/widgets/world-map.component';
 import {BubbleChartComponent} from '../components/widgets/charts/bubble-chart.component';
 import {LineChartComponent} from '../components/widgets/charts/line-chart.component';
 import {HiLowChartComponent} from '../components/widgets/charts/hi-low-chart.component';
@@ -187,18 +185,17 @@ const TYPES = {
         type: 'map',
         allowShowAsPivot: true
     },
-    'dsw.addons.htmlviewer': {
+    /*'dsw.addons.htmlviewer': {
         class: HtmlViewerComponent
-    },
-    'dsw.addons.dsw.worldmap': {
+    },*/
+    /*'dsw.addons.dsw.worldmap': {
         class: WorldMapComponent,
         allowShowAsPivot: true
     },
     'dsw.addons.worldmap': {
         class: WorldMapComponent,
         allowShowAsPivot: true
-    }
-
+    }*/
 };
 
 TYPES[dsw.const.emptyWidgetClass] = {
@@ -271,10 +268,14 @@ export class WidgetTypeService {
      * @returns {object|undefined} Class constructor function
      */
     getClass(name: string): Type<unknown> {
-        if (!TYPES[name.toLowerCase()]) {
+        let key = name.toLowerCase();
+        if (!TYPES[key]) {
+            key = key.replace('dsw.addons.', '');
+        }
+        if (!TYPES[key]) {
             return;
         }
-        return TYPES[name.toLowerCase()].class;
+        return TYPES[key].class;
     }
 
     /**
@@ -283,7 +284,11 @@ export class WidgetTypeService {
      * @returns {object} Type description
      */
     getDesc(name: string): any {
-        return TYPES[name.toLowerCase()];
+        let key = name.toLowerCase();
+        if (!TYPES[key]) {
+            key = key.replace('dsw.addons.', '');
+        }
+        return TYPES[key];
     }
 
     /**
@@ -292,9 +297,13 @@ export class WidgetTypeService {
      * @returns {string|undefined} Type group
      */
     getType(name: string): string {
-        if (!TYPES[name.toLowerCase()]) {
+        let key = name.toLowerCase();
+        if (!TYPES[key]) {
+            key = key.replace('dsw.addons.', '');
+        }
+        if (!TYPES[key]) {
             return '';
         }
-        return TYPES[name.toLowerCase()].type;
+        return TYPES[key].type;
     }
 }
