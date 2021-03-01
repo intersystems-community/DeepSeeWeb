@@ -139,6 +139,9 @@ Server response will be ignored and local definition is to be used for addon loa
 
 *Note: addons should be previously compiled locally.* 
 
- 
+### 7. Sample code
+There are two real addons that used on some environments:
+1. "Word Map", addon uses Highcharts map to display map, instead of default OSM: `./src/addons/world-map.component.ts`
+2. "Html viewer", addon displays html pages by url passed in widget `Data` (`properties.Data`) field: `./src/addons/html-viewer.component.ts` 
 
  
