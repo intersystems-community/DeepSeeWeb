@@ -1,3 +1,6 @@
+#### 3.1.3
+* fixed parallel addons loading issue
+
 #### 3.1.2
 * temporary disabled buildOptimizer to be able load addons on production releases
 * added error logging for missing modules during addon loading

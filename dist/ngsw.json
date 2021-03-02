@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1614701525651,
+  "timestamp": 1614719023027,
   "index": "/index.html",
   "assetGroups": [
     {
@@ -12,25 +12,15 @@
       },
       "urls": [
         "/index.html",
-        "/main-es2015.2698413fb5962d5019e4.js",
-        "/main-es2015.98836691beef64332151.js",
-        "/main-es5.2698413fb5962d5019e4.js",
-        "/main-es5.98836691beef64332151.js",
+        "/main-es2015.44fecf711a233765e66b.js",
+        "/main-es5.44fecf711a233765e66b.js",
         "/manifest.webmanifest",
-        "/ngsw-worker.js",
         "/polyfills-es2015.8ca86dfdef400db0fdce.js",
-        "/polyfills-es2015.c43fac92182a722a13d0.js",
-        "/polyfills-es5.82ceab63f315c87b993c.js",
         "/polyfills-es5.ffe25fc3709e45cf17a7.js",
-        "/runtime-es2015.a4dadbc03350107420a4.js",
         "/runtime-es2015.d9dfb3154655064d0b8f.js",
-        "/runtime-es5.a4dadbc03350107420a4.js",
         "/runtime-es5.d9dfb3154655064d0b8f.js",
-        "/safety-worker.js",
         "/scripts.d7af4ef2231e97fd0f0b.js",
-        "/styles.548a75df710a9bee057b.css",
-        "/styles.8ae27f1ef2eed7b32042.css",
-        "/worker-basic.min.js"
+        "/styles.8ae27f1ef2eed7b32042.css"
       ],
       "patterns": []
     },
@@ -203,26 +193,16 @@
     "/fontawesome-webfont.8b43027f47b20503057d.eot": "d980c2ce873dc43af460d4d572d441304499f400",
     "/fontawesome-webfont.c1e38fd9e0e74ba58f7a.svg": "98a8aa5cf7d62c2eff5f07ede8d844b874ef06ed",
     "/fontawesome-webfont.f691f37e57f04c152e23.woff": "28b782240b3e76db824e12c02754a9731a167527",
-    "/index.html": "5fc8df12d3247a04d490bfc651929f5808d58a49",
-    "/main-es2015.2698413fb5962d5019e4.js": "123ca6b7d0e588292ae3e4652bf8bc6cf2470ecd",
-    "/main-es2015.98836691beef64332151.js": "7e168a7d3132ffc3d36f63f37fad0a50be97cb13",
-    "/main-es5.2698413fb5962d5019e4.js": "2f5b225cc1972d3b187c686ef1601603d8889395",
-    "/main-es5.98836691beef64332151.js": "105b0cd7dfafa413ada20eec33185bbee9ec20b0",
+    "/index.html": "2ee8c8ddbb6dcd9b1958115b87423089452776ab",
+    "/main-es2015.44fecf711a233765e66b.js": "2d6792210f19d74b3791080520cd5739caa06e2c",
+    "/main-es5.44fecf711a233765e66b.js": "c9325da1b9e1c4aea7254d4f36d872a347bd90ff",
     "/manifest.webmanifest": "a0317b87bee62078bd486789254e0eb8c679a4b3",
-    "/ngsw-worker.js": "dc34c15c57886928257bc5535ffabfecc5f42182",
     "/polyfills-es2015.8ca86dfdef400db0fdce.js": "f470ace128480d7bfab339583f2c959d28b17deb",
-    "/polyfills-es2015.c43fac92182a722a13d0.js": "b2b42c137c7f033fd6640629368b3a5d31f3b6f4",
-    "/polyfills-es5.82ceab63f315c87b993c.js": "4cc32a93d80c501ee3d0b8cee523e762bb4937d0",
     "/polyfills-es5.ffe25fc3709e45cf17a7.js": "d286859f4fd9eaa1da8e6deafbe4764a5f2aa247",
-    "/runtime-es2015.a4dadbc03350107420a4.js": "a9aafcf49f49145093fc831efd9b8e2f6c71bb9c",
     "/runtime-es2015.d9dfb3154655064d0b8f.js": "8fa0f1104722967d17ff31db8a086e9967381682",
-    "/runtime-es5.a4dadbc03350107420a4.js": "a9aafcf49f49145093fc831efd9b8e2f6c71bb9c",
     "/runtime-es5.d9dfb3154655064d0b8f.js": "8fa0f1104722967d17ff31db8a086e9967381682",
-    "/safety-worker.js": "621305af46855d5b3083d0319d385f1dc01a6f18",
     "/scripts.d7af4ef2231e97fd0f0b.js": "e3ce97093889f54c2a9a207042d202dca4f63320",
-    "/styles.548a75df710a9bee057b.css": "6c1ae5d135664f8c38a1296aaa598da4010be631",
-    "/styles.8ae27f1ef2eed7b32042.css": "6c1ae5d135664f8c38a1296aaa598da4010be631",
-    "/worker-basic.min.js": "621305af46855d5b3083d0319d385f1dc01a6f18"
+    "/styles.8ae27f1ef2eed7b32042.css": "6c1ae5d135664f8c38a1296aaa598da4010be631"
   },
   "navigationUrls": [
     {

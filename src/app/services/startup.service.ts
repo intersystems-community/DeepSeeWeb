@@ -106,25 +106,28 @@ export class StartupService {
     // }
 
     private async loadAddons() {
-        return this.ds.loadAddons()
-            .catch((e) => {
-                console.log(`Can't load addons: ${e}`);
-            })
-            .then((addons: any[]) => {
-                // Folr dev purposes, replace addons with devAddons if set in localstorage
-                if (localStorage.devAddons) {
-                    addons = JSON.parse(localStorage.devAddons);
-                }
-                const promises = [];
-                if (addons && addons.length) {
-                    dsw.addons = [...addons];
-                    for (let i = 0; i < dsw.addons.length; i++) {
-                        const name = dsw.addons[i].split('/').pop().replace('.js', '');
-                        promises.push(this.loadAddon(dsw.addons[i], name));
+        return new Promise((res: any) => {
+            this.ds.loadAddons()
+                .catch((e) => {
+                    console.log(`Can't load addons: ${e}`);
+                    res();
+                })
+                .then((addons: any[]) => {
+                    // Folr dev purposes, replace addons with devAddons if set in localstorage
+                    if (localStorage.devAddons) {
+                        addons = JSON.parse(localStorage.devAddons);
                     }
-                }
-                return Promise.all(promises);
-            });
+                    const promises = [];
+                    if (addons && addons.length) {
+                        dsw.addons = [...addons];
+                        for (let i = 0; i < dsw.addons.length; i++) {
+                            const name = dsw.addons[i].split('/').pop().replace('.js', '');
+                            promises.push(this.loadAddon(dsw.addons[i], name));
+                        }
+                    }
+                    Promise.all(promises).finally(() => res());
+                });
+        });
     }
 
     private setupGridster() {
