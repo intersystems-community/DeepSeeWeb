@@ -203,7 +203,12 @@ export class StartupService {
                     };
 
                     // Replace require
-                    const require = (m) => modules[m];
+                    const require = (m) => {
+                        if (!modules[m]) {
+                            console.error(`Can't find module ${m} in required shim.`);
+                        }
+                        return modules[m];
+                    };
 
                     // Eval addon script file
                     // tslint:disable-next-line:no-eval
@@ -236,10 +241,15 @@ export class StartupService {
                         if (info.version !== curVer) {
                             console.warn(`Addon '${url}' version is not equal to supported addons version of DSW installed. Current version: ${curVer}, addon version: ${info.version}. Please recompile your addon with appropriate DSW version.`);
                         }*/
+
+                        const fileName = url.split('/').pop().toLowerCase().replace('dsw.addons.', '')
+                            .split('.').slice(0, -1).join('.');
+
                         const info = module.AddonInfo;
-                        const fileName = url.split('/').pop().toLowerCase().replace('dsw.addons.', '');
-                        this.wt.register(fileName.split('.').slice(0, -1).join('.'), info?.type || 'custom', module, info);
-                        // this.wt.register(factory.componentType.name.toLowerCase(), info?.type || 'custom', factory.componentType, info);
+
+                        this.wt.register(fileName, info?.type || 'custom', module, info);
+
+                        //this.wt.register(fileName, info?.type || 'custom', factory.componentType, info);
                     } else {
                         console.warn(`Can't load addon for file: ${url}. Exported class not found.`);
                     }

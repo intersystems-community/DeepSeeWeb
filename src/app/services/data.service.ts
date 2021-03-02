@@ -46,7 +46,12 @@ export class DataService {
     public firstRun = true;
 
     public get url() {
-        return '/' + MDX2JSON + '/';
+        let prefix = '';
+        const redirect = localStorage.getItem('connectorRedirect');
+        if (redirect) {
+            prefix = redirect;
+        }
+        return prefix + '/' + MDX2JSON + '/';
     }
 
     public dashboardList = new Map<string, string>();

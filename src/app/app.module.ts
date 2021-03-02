@@ -1,5 +1,5 @@
 import {BrowserModule} from '@angular/platform-browser';
-import {APP_INITIALIZER, NgModule} from '@angular/core';
+import {APP_INITIALIZER, CompilerFactory, NgModule} from '@angular/core';
 
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
@@ -52,7 +52,7 @@ import {ServiceWorkerModule} from '@angular/service-worker';
 import {environment} from '../environments/environment';
 import {ChartConfigComponent} from './components/ui/chart-config/chart-config.component';
 import {ColorPickerModule} from 'ngx-color-picker';
-import { AppSettingsComponent } from './components/ui/app-settings/app-settings.component';
+import {AppSettingsComponent} from './components/ui/app-settings/app-settings.component';
 import {ThemeSettingsComponent} from './components/ui/theme-settings/theme-settings.component';
 import {MenuSettingsComponent} from './components/ui/menu/menu-settings/menu-settings.component';
 import {BarChartComponent} from './components/widgets/charts/bar-chart.component';
@@ -60,17 +60,22 @@ import {ScorecardWidgetComponent} from './components/widgets/scorecard/scorecard
 // Highcharts
 import * as  Highcharts from 'highcharts/highstock';
 import More from 'highcharts/highcharts-more';
-More(Highcharts);
 import Tree from 'highcharts/modules/treemap';
-Tree(Highcharts);
 import Heatmap from 'highcharts/modules/heatmap';
-Heatmap(Highcharts);
 // Load the exporting module.
 import Exporting from 'highcharts/modules/exporting';
+import Map from 'highcharts/modules/map';
+
+More(Highcharts);
+Tree(Highcharts);
+Heatmap(Highcharts);
 // Initialize exporting module.
 Exporting(Highcharts);
-import Map from 'highcharts/modules/map';
 Map(Highcharts);
+
+export function createCompiler(compilerFactory: CompilerFactory) {
+    return compilerFactory.createCompiler();
+}
 
 @NgModule({
     declarations: [
@@ -136,6 +141,11 @@ Map(Highcharts);
         DataService,
         StartupService,
         ConfigResolver,
+        /*
+        {provide: COMPILER_OPTIONS, useValue: {}, multi: true},
+        {provide: CompilerFactory, useClass: JitCompilerFactory, deps: [COMPILER_OPTIONS]},
+        {provide: Compiler, useFactory: createCompiler, deps: [CompilerFactory]},*/
+
         {
             provide: APP_INITIALIZER,
             useFactory: (start: StartupService) => () => start.initialize(),

@@ -1,3 +1,7 @@
+#### 3.1.2
+* temporary disabled buildOptimizer to be able load addons on production releases
+* added error logging for missing modules during addon loading
+
 #### 3.1.1
 * changed folder for built addons to `dist-addons`
 * now all built addons are included in distribution under `addons` folder
