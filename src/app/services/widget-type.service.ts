@@ -185,6 +185,14 @@ const TYPES = {
         type: 'map',
         allowShowAsPivot: true
     },
+    horizontalcontrols: {
+        class: EmptyWidgetComponent,
+        type: 'empty'
+    },
+    verticalcontrols: {
+        class: EmptyWidgetComponent,
+        type: 'empty'
+    }
     /*'dsw.addons.htmlviewer': {
         class: HtmlViewerComponent
     },*/

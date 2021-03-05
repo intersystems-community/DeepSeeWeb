@@ -1,8 +1,9 @@
+/* tslint:disable:no-string-literal */
 import {BaseWidget, IWidgetOverride} from '../base-widget.class';
 import {AfterViewInit, OnInit, Directive} from '@angular/core';
 import {dsw} from '../../../../environments/dsw';
 import * as numeral from 'numeral';
-import {AxisTypeValue, YAxisOptions} from 'highcharts';
+import {AxisTypeValue, SeriesOptionsType, XAxisOptions, YAxisOptions} from 'highcharts';
 import {IButtonToggle} from '../../../services/widget.service';
 
 // Highcharts
@@ -99,12 +100,13 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
         }
     }
 
-    clearSeries() {
-        if (!this.chart) {
+    clearSeries(chart?: Highcharts.Chart) {
+        const c = chart || this.chart;
+        if (!c) {
             return;
         }
-        while (this.chart.series.length > 0) {
-            this.chart.series[0].remove(false);
+        while (c.series.length > 0) {
+            c.series[0].remove(false);
         }
     }
 
@@ -222,7 +224,10 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
             (this.chartConfig.yAxis as any).min = 0;
             // this.chartConfig.yAxis.min = 0;
         }
-        this.updateChart();
+        /*if (this.chart) {
+            this.chart.update(this.chartConfig, undefined, undefined, undefined);
+        }*/
+        this.updateChart(true);
     }
 
     showZeroOnAxis() {
@@ -231,13 +236,21 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
         } else {
             if (this.chartConfig.yAxis instanceof Array) {
                 for (let i = 0; i < this.chartConfig.yAxis.length; i++) {
-                    (this.chartConfig.yAxis[i] as any).min = (this.chartConfig.yAxis[i] as any).prevMin;
+                    const prev = (this.chartConfig.yAxis[i] as any).prevMin;
+                    (this.chartConfig.yAxis[i] as any).min = prev;
+                    if (this.chart) {
+                        this.chart.yAxis[i].min = prev;
+                    }
                 }
             } else {
-                (this.chartConfig.yAxis as any).min = (this.chartConfig.yAxis as any).prevMin;
+                const prev = (this.chartConfig.yAxis as any).prevMin;
+                (this.chartConfig.yAxis as any).min = prev;
+                if (this.chart) {
+                    (this.chart.yAxis as YAxisOptions).min = prev;
+                }
             }
+            this.updateChart(true);
         }
-        this.updateChart();
     }
 
     limitSeriesAndData() {
@@ -357,7 +370,6 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
                 this.setYAxisMinToZero();
             }
             if (this.firstRun) {
-
                 // Load series toggle from settings
                 let widgetsSettings = this.ss.getWidgetsSettings(this.widget.dashboard);
                 if (!this.us.isEmbedded()) {
@@ -431,7 +443,8 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
      * Adds series to chart
      * @param {object} data Series data
      */
-    addSeries(data) {
+    addSeries(data, chart?: Highcharts.Chart, conf?: Highcharts.Options) {
+        const c = chart || this.chart;
         if (data && data.data && data.data.length !== 0) {
             let isEmpty = true;
             let exists = false;
@@ -454,10 +467,10 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
             }
         }
         const cols = this.tc.hcColors || Highcharts.getOptions().colors;
-        data.color = cols[(this.chart.series.length % cols.length) || 0];
+        data.color = cols[(c.series.length % cols.length) || 0];
 
         // Check chart type
-        const curIdx = this.chartConfig.series.length;
+        const curIdx = (conf || this.chartConfig).series.length;
         if (this.seriesTypes && this.seriesTypes[curIdx]) {
             data.type = this.seriesTypes[curIdx];
         }
@@ -470,7 +483,7 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
                 data.visible = false;
             }
         }
-        this.chart.addSeries(data);
+        c.addSeries(data);
     }
 
     /**
@@ -672,7 +685,7 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
                     if (data.Cols[0].tuples[t].children) {
                         this.addSeries({
                             data: tempData,
-                            name: data.Cols[0].tuples[t].caption + '/' + data.Cols[0].tuples[t].children[c].caption,
+                            name: data.Cols[0].tuples[t].caption, // + '/' + data.Cols[0].tuples[t].children[c].caption,
                             format: data.Cols[0].tuples[t].children[c].format || this.getFormat(data)
                         });
                     } else {
@@ -911,7 +924,10 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
                 text: ''
             }
         };
-        this.showZeroOnAxis();
+        // this.removeUndefinedColors(this.chartConfig);
+
+        // this.showZeroOnAxis();
+
         // Set navigator style
         this.chartConfig.navigator = {
             outlineColor: this.tc.hcLineColor,
@@ -1199,6 +1215,61 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
 */
         if (axis?.maxValue !== undefined) {
             yAxis.max = axis.maxValue;
+        }
+    }
+
+    private removeUndefinedColors(conf: Highcharts.Options) {
+        const remove = (obj, prop) => {
+            if (obj[prop] === undefined) {
+                delete obj[prop];
+            }
+        };
+        remove(conf.plotOptions.column, 'borderColor');
+        remove(conf.plotOptions.bar, 'borderColor');
+        remove(conf.plotOptions.pie, 'borderColor');
+        remove(conf.plotOptions.treemap, 'borderColor');
+        remove(conf.plotOptions.treemap, 'borderColor');
+
+        remove(conf.drilldown.activeAxisLabelStyle, 'color');
+        remove(conf.drilldown.activeDataLabelStyle, 'color');
+
+        remove(conf.legend.itemStyle, 'color');
+
+        remove(conf.chart, 'backgroundColor');
+
+        remove(conf.plotOptions.series, 'opacity');
+        remove(conf.plotOptions.series.dataLabels, 'color');
+
+        remove((conf.yAxis as YAxisOptions).labels.style, 'color');
+        remove(conf.yAxis, 'minorGridLineColor');
+        remove(conf.yAxis, 'gridLineColor');
+        remove(conf.yAxis, 'lineColor');
+        remove(conf.yAxis, 'tickColor');
+
+        remove((conf.xAxis as XAxisOptions).labels.style, 'color');
+        remove(conf.xAxis, 'minorGridLineColor');
+        remove(conf.xAxis, 'gridLineColor');
+        remove(conf.xAxis, 'lineColor');
+        remove(conf.xAxis, 'tickColor');
+
+        this.removeEmptyObjects(conf);
+    }
+
+    private removeEmptyObjects(conf: Highcharts.Options) {
+        let found = true;
+        while (found) {
+            found = false;
+            Object.keys(conf).forEach(k => {
+                if (typeof conf[k] === 'object' && !Array.isArray(conf[k])) {
+                    const keys = Object.keys(conf[k]);
+                    if (keys.length === 0) {
+                        found = true;
+                        delete conf[k];
+                    } else {
+                        this.removeEmptyObjects(conf[k]);
+                    }
+                }
+            });
         }
     }
 }

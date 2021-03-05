@@ -66,7 +66,7 @@ export class FilterPopupComponent implements OnInit {
         const related = [];
         const filters = this.fs.items;
         // Get active filters
-        let activeFilters = filters.filter(f => (f.targetProperty !== this.model.filter.targetProperty) && f.value !== '' || f.isInterval);
+        let activeFilters = filters.filter(f => !f.isInterval && ((f.targetProperty !== this.model.filter.targetProperty) && f.value !== ''));
         // Reformat to DSZ filters
         activeFilters.forEach(f => {
             f.Value = f.value;

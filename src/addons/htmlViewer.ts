@@ -7,7 +7,7 @@ import {BaseWidget, IAddonInfo} from "../app/components/widgets/base-widget.clas
     template: `
         <iframe [src]="url" style="border: none; width:100%; height:100%; flex: 1 1 100%"></iframe>`
 })
-export class HtmlViewerComponent extends BaseWidget implements OnInit, OnDestroy {
+export class HtmlViewer extends BaseWidget implements OnInit, OnDestroy {
     static AddonInfo: IAddonInfo = {
         // Version of addon system, should be specified manually as number, not reference
         // version always should be equal to BaseWidget.CURRENT_ADDON_VERSION

@@ -9,10 +9,10 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.HtmlViewerComponent = void 0;
+exports.HtmlViewer = void 0;
 const core_1 = require("@angular/core");
 const base_widget_class_1 = require("../app/components/widgets/base-widget.class");
-let HtmlViewerComponent = class HtmlViewerComponent extends base_widget_class_1.BaseWidget {
+let HtmlViewer = class HtmlViewer extends base_widget_class_1.BaseWidget {
     /**
      * Constructor of addon class
      * Always stay UNCHANGED, do not modify
@@ -38,7 +38,7 @@ let HtmlViewerComponent = class HtmlViewerComponent extends base_widget_class_1.
         super.ngOnDestroy();
     }
 };
-HtmlViewerComponent.AddonInfo = {
+HtmlViewer.AddonInfo = {
     // Version of addon system, should be specified manually as number, not reference
     // version always should be equal to BaseWidget.CURRENT_ADDON_VERSION
     // used to compare unsupported addons when breaking changes are made into BaseWidget
@@ -50,11 +50,11 @@ HtmlViewerComponent.AddonInfo = {
     // 'chart' for highcharts widget
     type: 'custom'
 };
-HtmlViewerComponent = __decorate([
+HtmlViewer = __decorate([
     core_1.Component({
         template: `
         <iframe [src]="url" style="border: none; width:100%; height:100%; flex: 1 1 100%"></iframe>`
     }),
     __param(0, core_1.Inject(core_1.Injector))
-], HtmlViewerComponent);
-exports.HtmlViewerComponent = HtmlViewerComponent;
+], HtmlViewer);
+exports.HtmlViewer = HtmlViewer;

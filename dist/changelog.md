@@ -1,3 +1,17 @@
+#### 3.1.4
+* added support for "horizontalControls"/"verticalControls" widgets
+* added icon for PWA for Android/IOS 
+* fixed issue with "Show Zero" button (#171)
+* improved meter widget (#166):
+  * added support for multiple meters
+  * added display of labels
+  * added display of threshold
+  * added display of target value
+  * fixed issue with values in range 0..1
+* fixed issues with date interval filters (#167)
+* fixed issues with dimension details (#172)
+* removed '-' character from addons (#174)
+
 #### 3.1.3
 * fixed parallel addons loading issue
 

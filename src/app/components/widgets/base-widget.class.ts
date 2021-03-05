@@ -80,6 +80,7 @@ export interface IWidgetDataProperties {
     rangeUpper: string | number;
     thresholdLower: string | number;
     thresholdUpper: string | number;
+    targetValue: string | number;
     showAs: WidgetColumnShowType;
     summary: WidgetColumnSummaryType;
     /*style: string;

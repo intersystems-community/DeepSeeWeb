@@ -100,7 +100,8 @@ export class WidgetHeaderComponent {
         if (!this.widget) {
             return false;
         }
-        return this.widget.type === dsw.const.emptyWidgetClass;
+        const t = this.widget.type;
+        return t === dsw.const.emptyWidgetClass || t === 'horizontalControls' || t === 'verticalControls';
     }
 
     closeMobileFilter() {

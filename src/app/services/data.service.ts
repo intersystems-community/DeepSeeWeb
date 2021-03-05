@@ -448,7 +448,7 @@ export class DataService {
             setCookie('CSPSESSIONID-SP-80-UP-', '', -1);
             setCookie('CSPSESSIONID-SP-80-UP-MDX2JSON-', '', -1);
             void this.router.navigateByUrl('/login');
-        }
+        };
 
         return this.http.get(this.url + `Logout?Namespace=${CURRENT_NAMESPACE}`, this.withCredentialsHeaders).toPromise()
             .then(() => {
