@@ -6,23 +6,23 @@ These files are to be placed in `/addons` folder on a website in root of DSW. Th
 
 **Note: DSW auto-generates portlets for all addons placed in `/addons` folder with names: `DSW.Addons.{filename}`.**
 
-For file `myAaddon.js` will be created `DSW.Addons.myAaddon` portlet.
+For file `myAddon.js` will be created `DSW.Addons.myAddon` portlet.
 
 ## 2. Creating addon
 To create an addon, follow next steps:
 1. Clone DSW repo https://github.com/intersystems-community/DeepSeeWeb
 2. Setup dev environment to work with project, run `npm install` 
 3. There is addon example in `/src/addons/simpleAddon.ts`
-4. Make copy of this file as starting point for addon creation, eg. `/src/addons/myAaddon.ts`.
+4. Make copy of this file as starting point for addon creation, eg. `/src/addons/myAddon.ts`.
 All files placed in `/src/addons` folder are treated as addons and are to be compiled in separate JS files
-5. Modify file `/src/addons/myAaddon.ts` to implement features you need
+5. Modify file `/src/addons/myAddon.ts` to implement features you need
 6. Run command `npm run build:addons` to compile all addons placed in `/src/addons` folder
 7. After build, all compiled addons are to be placed in `/dist-addons/src/addons` folder
 8. Rename your addon file to name of custom portlet, that would be used for this widget type. 
 By default, DSW creates portlets with a name: `DSW.Addons.{filename}`(without extension).
 Copy renamed file into `/addons` folder of your DSW root on a website.
 
-For a file deployed to `addons/myAaddon.js` will be created portlet `DSW.Addons.myAaddon`.
+For a file deployed to `addons/myAddon.js` will be created portlet `DSW.Addons.myAddon`.
 
 ## 3. Addon versioning
 DSW is a developing application, so sometimes new features can be introduced that is not compatible with an old version of DSW.
