@@ -229,8 +229,8 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
         //     }
         // }
         // url = 'uspolygons.js';
-        //this.ds.getFile(url)
-        this.ds.getFile('assets/uspolygons.json')
+        this.ds.getFile(url)
+            // this.ds.getFile('assets/uspolygons.json')
             .then(data => this.onPolyFileLoaded(data))
             .finally(() =>  this.hideLoading());
 

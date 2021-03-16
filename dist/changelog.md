@@ -1,3 +1,6 @@
+#### 3.1.7
+* fixed issue with map polygon loading
+
 #### 3.1.6
 * added missing main.js to dist
 
