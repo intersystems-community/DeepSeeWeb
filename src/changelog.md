@@ -1,3 +1,6 @@
+#### 3.1.6
+* added missing main.js to dist
+
 #### 3.1.5
 * fixed polygon filename issue while loading polygons
 * polygon in js format supported
