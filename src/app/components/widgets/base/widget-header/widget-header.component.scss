@@ -117,6 +117,8 @@
 }
 
 button.btn-with-text {
+    cursor: pointer;
+    color: var(--cl-widget-header-txt);
     display: flex;
     align-items: center;
     & > img {
@@ -124,6 +126,7 @@ button.btn-with-text {
     }
     & > label {
         display: block;
+        cursor: pointer;
     }
 
     @include sm {

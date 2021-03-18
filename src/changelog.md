@@ -1,3 +1,7 @@
+#### 3.1.8
+* fixed issue with settings loading and DefaultApp
+* fixed styling issue with "Reset click filter" and "Back button"
+
 #### 3.1.7
 * fixed issue with map polygon loading
 

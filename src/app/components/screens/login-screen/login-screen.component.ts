@@ -6,6 +6,7 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {HeaderService} from '../../../services/header.service';
 import {SidebarService} from '../../../services/sidebar.service';
 import {CURRENT_NAMESPACE, NamespaceService} from '../../../services/namespace.service';
+import {StorageService} from "../../../services/storage.service";
 
 declare var cordova: any;
 
@@ -23,6 +24,7 @@ export class LoginScreenComponent implements OnInit {
                 private hs: HeaderService,
                 private ss: SidebarService,
                 private ns: NamespaceService,
+                private st: StorageService,
                 private route: ActivatedRoute,
                 private router: Router) {
         this.hs.visible$.next(false);
@@ -232,6 +234,9 @@ export class LoginScreenComponent implements OnInit {
         // Set namespaces
         this.ns.setNamespaces(res.Mappings.Mapped);
         this.ns.setCurrent(namespace);
+
+        // Save server settings
+        this.st.loadServerSettings(res);
 
         const from = this.route.snapshot.queryParamMap.get('from');
         if (from) {

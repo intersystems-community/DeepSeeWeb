@@ -4,6 +4,7 @@ import {BehaviorSubject, Observable, Subscription} from 'rxjs';
 import {ActivatedRoute, ActivatedRouteSnapshot, NavigationEnd, Router, RouterStateSnapshot} from '@angular/router';
 import {filter, map, switchMap, tap} from 'rxjs/operators';
 import {subscriptionLogsToBeFn} from 'rxjs/internal/testing/TestScheduler';
+import {DataService} from "./data.service";
 
 const KEY_NAMESPACES = 'dsw.namespaces';
 const KEY_NAMESPACE = 'dsw.namespace';
@@ -16,8 +17,9 @@ export class NamespaceService {
     private list: string [];
     private readonly onNavEnd: Subscription;
 
-
-    constructor(private ss: StorageService, private router: Router, private route: ActivatedRoute) {
+    constructor(private ss: StorageService,
+                private router: Router,
+                private route: ActivatedRoute) {
         this.loadNamespaces();
 
         // this.route.params.pipe(

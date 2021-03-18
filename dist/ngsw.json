@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1615935492243,
+  "timestamp": 1616079366966,
   "index": "/index.html",
   "assetGroups": [
     {
@@ -12,20 +12,15 @@
       },
       "urls": [
         "/index.html",
-        "/main-es2015.3fd027e9684b8f9ea15d.js",
-        "/main-es2015.4d4afb3a0126829bb1ab.js",
-        "/main-es5.3fd027e9684b8f9ea15d.js",
-        "/main-es5.4d4afb3a0126829bb1ab.js",
+        "/main-es2015.13e87dc857a3980ad4db.js",
+        "/main-es5.13e87dc857a3980ad4db.js",
         "/manifest.webmanifest",
-        "/ngsw-worker.js",
         "/polyfills-es2015.8ca86dfdef400db0fdce.js",
         "/polyfills-es5.ffe25fc3709e45cf17a7.js",
         "/runtime-es2015.d9dfb3154655064d0b8f.js",
         "/runtime-es5.d9dfb3154655064d0b8f.js",
-        "/safety-worker.js",
         "/scripts.d7af4ef2231e97fd0f0b.js",
-        "/styles.8ae27f1ef2eed7b32042.css",
-        "/worker-basic.min.js"
+        "/styles.8ae27f1ef2eed7b32042.css"
       ],
       "patterns": []
     },
@@ -100,7 +95,6 @@
         "/assets/img/logo.svg",
         "/assets/img/map-marker-red.png",
         "/assets/img/spinner.svg",
-        "/assets/uspolygons.json",
         "/fontawesome-webfont.1e59d2330b4c6deb84b3.ttf",
         "/fontawesome-webfont.20fd1704ea223900efa9.woff2",
         "/fontawesome-webfont.8b43027f47b20503057d.eot",
@@ -194,27 +188,21 @@
     "/assets/img/logo.svg": "092c35c22b6f1a9dbeb9d138e615da0cb3248394",
     "/assets/img/map-marker-red.png": "70c28ef588c7649466f4c931e1dd46bbdb7bb036",
     "/assets/img/spinner.svg": "9e398b32f7b937c5052b7fbfa9b1993a517dcc14",
-    "/assets/uspolygons.json": "8d73e23a0d4f01dc95a0162a75c9663177db5452",
     "/fontawesome-webfont.1e59d2330b4c6deb84b3.ttf": "13b1eab65a983c7a73bc7997c479d66943f7c6cb",
     "/fontawesome-webfont.20fd1704ea223900efa9.woff2": "d6f48cba7d076fb6f2fd6ba993a75b9dc1ecbf0c",
     "/fontawesome-webfont.8b43027f47b20503057d.eot": "d980c2ce873dc43af460d4d572d441304499f400",
     "/fontawesome-webfont.c1e38fd9e0e74ba58f7a.svg": "98a8aa5cf7d62c2eff5f07ede8d844b874ef06ed",
     "/fontawesome-webfont.f691f37e57f04c152e23.woff": "28b782240b3e76db824e12c02754a9731a167527",
-    "/index.html": "aa06e5f96241d3416c2e625507e0975f64e2e220",
-    "/main-es2015.3fd027e9684b8f9ea15d.js": "4e00dc9394f317a19add6552d6cba825644bfc5b",
-    "/main-es2015.4d4afb3a0126829bb1ab.js": "879e4614a7f74562425d0697e08c741de7582d2b",
-    "/main-es5.3fd027e9684b8f9ea15d.js": "679358e98b599a1b1cb8bd94f3587859277c1da8",
-    "/main-es5.4d4afb3a0126829bb1ab.js": "67e6206e3eb1d65ef5f10c334283ec7ecda4ac9d",
+    "/index.html": "ca460aceedfc6f09566fadc8a993cd5b8277210f",
+    "/main-es2015.13e87dc857a3980ad4db.js": "bcd5ccdcd5dce75a41cbb67609be4c73c4cf09b3",
+    "/main-es5.13e87dc857a3980ad4db.js": "be5ea4469dcc87228c52d0ab97cf84f46a0490ac",
     "/manifest.webmanifest": "b848c77a4ea79860cc030444d6b4138668e449ae",
-    "/ngsw-worker.js": "b44316be1c1338e9e8bd30ee40946085916c58e4",
     "/polyfills-es2015.8ca86dfdef400db0fdce.js": "f470ace128480d7bfab339583f2c959d28b17deb",
     "/polyfills-es5.ffe25fc3709e45cf17a7.js": "d286859f4fd9eaa1da8e6deafbe4764a5f2aa247",
     "/runtime-es2015.d9dfb3154655064d0b8f.js": "8fa0f1104722967d17ff31db8a086e9967381682",
     "/runtime-es5.d9dfb3154655064d0b8f.js": "8fa0f1104722967d17ff31db8a086e9967381682",
-    "/safety-worker.js": "f532926317210be6e2679d21748dc44a35389807",
     "/scripts.d7af4ef2231e97fd0f0b.js": "e3ce97093889f54c2a9a207042d202dca4f63320",
-    "/styles.8ae27f1ef2eed7b32042.css": "6c1ae5d135664f8c38a1296aaa598da4010be631",
-    "/worker-basic.min.js": "f532926317210be6e2679d21748dc44a35389807"
+    "/styles.8ae27f1ef2eed7b32042.css": "6c1ae5d135664f8c38a1296aaa598da4010be631"
   },
   "navigationUrls": [
     {

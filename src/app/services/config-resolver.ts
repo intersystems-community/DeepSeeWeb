@@ -12,8 +12,7 @@ export class ConfigResolver implements Resolve<any> {
     private model = {};
     private isLoaded = false;
 
-
-    private previousNS = '';
+    previousNS = '';
 
     constructor(private router: Router,
                 private ds: DataService,
@@ -46,14 +45,29 @@ export class ConfigResolver implements Resolve<any> {
                     done();
                     return;
                 }
-                this.ds.loadConfig(CURRENT_NAMESPACE)
+                const p1 = this.ds.loadConfig(CURRENT_NAMESPACE)
                     .then(conf => this.st.loadConfig(conf))
-                    .catch(err => this.st.loadConfig(null))
+                    .catch(err => this.st.loadConfig(null));
+
+                const p2 = this.loadServerSettings();
+
+                Promise.all([p1, p2])
                     .finally(() => {
                         this.previousNS = CURRENT_NAMESPACE;
                         done();
                     });
             }
         );
+    }
+
+    loadServerSettings() {
+        return new Promise((res: any) => {
+            this.ds.getSettings(CURRENT_NAMESPACE)
+                .then((data: any) => {
+                    this.st.loadServerSettings(data);
+                })
+                .finally(() => res());
+        });
+
     }
 }

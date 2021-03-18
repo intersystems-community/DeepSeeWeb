@@ -20,12 +20,12 @@ export class NamespaceSelectorComponent {
                 private router: Router) {
         this.ds.getSettings(CURRENT_NAMESPACE)
             .then((settings: any) => {
-                this.ns.setNamespaces(settings.Mappings.Mapped)
+                this.ns.setNamespaces(settings.Mappings.Mapped);
             })
             .finally(() => {
                 this.isLoading = false;
                 this.items = ns.getNamespaces();
-            })
+            });
     }
 
     /**
