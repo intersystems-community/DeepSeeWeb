@@ -1,3 +1,6 @@
+#### 3.1.9
+* fixed issue with data values as empty string
+
 #### 3.1.8
 * fixed issue with settings loading and DefaultApp
 * fixed styling issue with "Reset click filter" and "Back button"

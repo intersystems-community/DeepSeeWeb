@@ -457,6 +457,9 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
                     continue;
                 }
                 exists = true;
+                if (v.y === '') {
+                    v.y = 0;
+                }
                 if (v.y !== 0 && v.y !== '' && v.y !== null && v.y !== undefined) {
                     isEmpty = false;
                     break;
