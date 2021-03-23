@@ -8,16 +8,18 @@
         "declaration": false,
         "downlevelIteration": true,
         "experimentalDecorators": true,
+        "resolveJsonModule": true,
+        "esModuleInterop": true,
         "module": "es2020",
         "moduleResolution": "node",
         "importHelpers": true,
         "target": "es2015",
         "paths": {
             "ol": [
-                "node_modules/ol/src"
+                "./node_modules/ol"
             ],
             "ol/*": [
-                "node_modules/ol/src/*"
+                "./node_modules/ol/*"
             ]
         },
         "lib": [
