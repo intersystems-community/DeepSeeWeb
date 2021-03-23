@@ -31,8 +31,9 @@ jobs:
           git config --local user.name "GitHub Action"
           git add ./dist/*
           git commit -am "Automated commit of dist"
-      - name: GitHub Push
-          uses: ad-m/github-push-action@v0.6.0
-            with:
-              github_token: ${{ secrets.TOKEN }}
-              branch: ${{ github.ref }}
+#      - name: GitHub Push
+#          uses: ad-m/github-push-action@v0.6.0
+#            with:
+#              github_token: ${{ secrets.TOKEN }}
+#              branch: ${{ github.ref }}
+#
