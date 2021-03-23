@@ -25,13 +25,16 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
+      - name: Installing modules (npm i)
+        run: |
+            npm i
+
       - name: Updating version for ZPM
         run: |
           node ./.github/sync-zpm-version
 
       - name: Building DSW and addons
         run: |
-          npm i
           npm run build:addons
           npm run build
 
