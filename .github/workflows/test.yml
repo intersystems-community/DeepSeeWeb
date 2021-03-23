@@ -1,12 +1,14 @@
-name: Docker Image CI
-on: [push]
-
+on: push
+name: test
 jobs:
     build:
-      runs-on: ubuntu-latest
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                node-version: [15.x]
         steps:
           - uses: actions/checkout@v1
-          - name: Build the docker-compose
+          - name: Build the docker
             run: |
               docker-compose build
               docker-compose up -d
