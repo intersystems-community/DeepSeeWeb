@@ -24,7 +24,7 @@ describe("Site loading", () => {
     test('Login page', async () => {
         const browser = await puppeteer.launch();
         const page = await browser.newPage();
-        await page.goto('http://127.0.0.1:51773/dsw.index');
+        await page.goto('http://127.0.0.1:51773/dsw/index.html#/login');
         await page.screenshot({ path: './e2e/screenshots/login-page.png' });
     });
 });
