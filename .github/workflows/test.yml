@@ -4,9 +4,6 @@ on: [push]
 jobs:
     build:
       runs-on: ubuntu-latest
-        env:
-          PORT: 8000
-
         steps:
           - uses: actions/checkout@v1
           - name: Build the docker-compose
