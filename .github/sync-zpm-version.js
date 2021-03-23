@@ -22,3 +22,4 @@ parser.parseString(data, function (err, result) {
     console.log('Changing version of Module.xml to: ' + pkg.version);
     fs.writeFileSync('module.xml', xml);
 });
+
