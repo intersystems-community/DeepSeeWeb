@@ -25,7 +25,7 @@ do $SYSTEM.OBJ.Load("Installer.cls", "ck") \
   set sc = ##class(App.Installer).setup() \
   zn "IRISAPP" \
   zpm "install dsw" \
-  zpm "install samples-bi" \
+  zpm "install samples-bi"
 
 # bringing the standard shell back
 SHELL ["/bin/bash", "-c"]
