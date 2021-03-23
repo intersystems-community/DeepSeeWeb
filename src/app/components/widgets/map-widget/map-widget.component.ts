@@ -1,13 +1,13 @@
 import {AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {BaseWidget} from '../base-widget.class';
 import {dsw} from '../../../../environments/dsw';
-import Map from 'ol/map';
-import View, {FitOptions} from 'ol/view';
+import Map from 'ol/Map';
+import View, {FitOptions} from 'ol/View';
 import {Tile, Vector} from 'ol/layer';
-import Overlay from 'ol/overlay';
+import Overlay from 'ol/Overlay';
 import {OSM, XYZ, Vector as SourceVector} from 'ol/source';
-import Feature from 'ol/feature';
-import Collection from 'ol/collection';
+import Feature from 'ol/Feature';
+import Collection from 'ol/Collection';
 import {defaults as control_defaults} from 'ol/control';
 import {Style, Fill, Stroke, Icon} from 'ol/style';
 import {Point, Polygon} from 'ol/geom';
