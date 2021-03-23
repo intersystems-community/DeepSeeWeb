@@ -28,7 +28,7 @@ do $SYSTEM.OBJ.Load("Installer.cls", "ck") \
   zpm "install samples-bi" \
 
 # bringing the standard shell back
- SHELL ["/bin/bash", "-c"]
+SHELL ["/bin/bash", "-c"]
 
 # special extract treatment for hate-speech dataset
 # RUN mkdir /data/hate-speech/ \
