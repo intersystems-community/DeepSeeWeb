@@ -47,7 +47,8 @@
                         ],
                         "scripts": [
                             "node_modules/systemjs/dist/system.min.js",
-                            "src/app/lib/lightPivotTable.js"
+                            "src/app/lib/lightPivotTable.js",
+                            "node_modules/apexcharts/dist/apexcharts.min.js"
                         ]
                     },
                     "configurations": {

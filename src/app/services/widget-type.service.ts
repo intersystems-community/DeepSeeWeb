@@ -18,6 +18,8 @@ import {XyChartComponent} from '../components/widgets/charts/xy-chart.component'
 import {TimeChartComponent} from '../components/widgets/charts/time-chart.component';
 import {BarChartComponent} from '../components/widgets/charts/bar-chart.component';
 import {ScorecardWidgetComponent} from '../components/widgets/scorecard/scorecard-widget';
+import {StorageService} from "./storage.service";
+import {ApexChartComponent} from "../components/widgets/apex-charts/apex-chart-base.component";
 
 export const ADDON_PREFIX = 'DSW.Addons.';
 
@@ -101,6 +103,7 @@ const TYPES = {
     },
     barchart: {
         class: BarChartComponent,
+        apexClass: ApexChartComponent,
         type: 'chart',
         chart: 'bar',
         allowShowAsPivot: true
@@ -118,12 +121,14 @@ const TYPES = {
     },
     linechart: {
         class: LineChartComponent,
+        apexClass: ApexChartComponent,
         type: 'chart',
         chart: 'line',
         allowShowAsPivot: true
     },
     linechartmarkers: {
         class: LineChartComponent,
+        apexClass: ApexChartComponent,
         type: 'chart',
         chart: 'line',
         allowShowAsPivot: true
@@ -136,6 +141,7 @@ const TYPES = {
     },
     columnchart: {
         class: ColumnChartComponent,
+        apexClass: ApexChartComponent,
         type: 'chart',
         chart: 'column',
         allowShowAsPivot: true
@@ -216,7 +222,7 @@ TYPES[dsw.const.emptyWidgetClass] = {
 })
 export class WidgetTypeService {
 
-    constructor() {
+    constructor(private ss: StorageService) {
     }
 
     initialize() {
@@ -282,6 +288,13 @@ export class WidgetTypeService {
         }
         if (!TYPES[key]) {
             return;
+        }
+
+        if (TYPES[key].chart) {
+            const settings = this.ss.getAppSettings();
+            if (settings.isApexCharts && TYPES[key].apexClass) {
+                return TYPES[key].apexClass;
+            }
         }
         return TYPES[key].class;
     }

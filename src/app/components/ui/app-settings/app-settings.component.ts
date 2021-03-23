@@ -26,6 +26,7 @@ export class AppSettingsComponent implements OnInit {
         this.model = {
             isSaveFilters: this.settings.isSaveFilters === undefined ? true : this.settings.isSaveFilters,
             isRelatedFilters: this.settings.isRelatedFilters === undefined ? true : this.settings.isRelatedFilters,
+            isApexCharts: this.settings.isApexCharts === undefined ? false : this.settings.isApexCharts,
             colCount: this.settings.colCount || DEFAULT_COL_COUNT
         };
     }
@@ -45,6 +46,7 @@ export class AppSettingsComponent implements OnInit {
     private applySettrings() {
         this.settings.isSaveFilters = !!this.model.isSaveFilters;
         this.settings.isRelatedFilters = !!this.model.isRelatedFilters;
+        this.settings.isApexCharts = !!this.model.isApexCharts;
         this.settings.colCount = this.model.colCount;
 
         this.ss.onSettingsChanged.emit(this.settings);

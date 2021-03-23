@@ -53,6 +53,7 @@ export interface IWidgetOverride {
     yAxisList: IAxisOverride[];
     seriesTypes: string;
     showPercentage?: number;
+    seriesYAxes: string;
     _type: string;
 }
 
@@ -1557,6 +1558,21 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
                 .replace(/\./g, this.dataInfo.decimalSeparator);
         }
         return res;
+    }
+
+    /**
+     * Fix data. Removes empty values
+     * @param {Array} tempData Data
+     */
+    fixData(tempData) {
+        for (let g = 0; g < tempData.length; g++) {
+            if (!tempData[g].y && tempData[g].y !== 0) {
+                tempData[g].y = null;
+            }
+            if (tempData[g].y === '' || tempData[g].y === undefined) {
+                tempData[g].y = null;
+            }
+        }
     }
 }
 

@@ -65,6 +65,8 @@ import Heatmap from 'highcharts/modules/heatmap';
 // Load the exporting module.
 import Exporting from 'highcharts/modules/exporting';
 import Map from 'highcharts/modules/map';
+import {NgApexchartsModule} from "ng-apexcharts";
+import {ApexChartComponent} from "./components/widgets/apex-charts/apex-chart-base.component";
 
 More(Highcharts);
 Tree(Highcharts);
@@ -123,7 +125,8 @@ export function createCompiler(compilerFactory: CompilerFactory) {
         AppSettingsComponent,
         MenuSettingsComponent,
         ThemeSettingsComponent,
-        ScorecardWidgetComponent
+        ScorecardWidgetComponent,
+        ApexChartComponent
     ],
     imports: [
         BrowserAnimationsModule,
@@ -134,7 +137,8 @@ export function createCompiler(compilerFactory: CompilerFactory) {
         AppRoutingModule,
         HttpClientModule,
         ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
-        ColorPickerModule
+        ColorPickerModule,
+        NgApexchartsModule
     ],
     providers: [
         I18nService,
