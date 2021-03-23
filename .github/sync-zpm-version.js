@@ -6,7 +6,7 @@ const util = require('util');
 const parser = new xml2js.Parser();
 const xmlBuilder = new xml2js.Builder();
 
-const data = fs.readFileSync('./Module.xml');
+const data = fs.readFileSync('./module.xml');
 
 
 parser.parseString(data, function (err, result) {
