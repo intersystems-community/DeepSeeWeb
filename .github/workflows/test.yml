@@ -16,7 +16,7 @@ jobs:
           - name: Check running containers
             run: docker ps -a
 
-          - neme: Create directory for screenshots
+          - name: Create directory for screenshots
             run: mkdir -p ./e2e/screenshots
 
           - name: Install modules(npm i)
