@@ -22,12 +22,23 @@ describe("Version", () => {
     });*/
 });
 
+function delay(time) {
+    return new Promise(function(resolve) {
+        setTimeout(resolve, time)
+    });
+}
 
 describe("Site loading", () => {
     test('Login page', async () => {
             browser = await puppeteer.launch();
             const page = await browser.newPage();
+            await page.setViewport({
+                width: 1600,
+                height: 720,
+                deviceScaleFactor: 1,
+            });
             await page.goto('http://127.0.0.1:52773/dsw/index.html#/login');
+            await delay(1000);
             await page.screenshot({path: './e2e/screenshots/login-page.png'});
     });
 });
