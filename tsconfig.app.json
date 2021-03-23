@@ -3,7 +3,10 @@
     "compilerOptions": {
         "outDir": "./out-tsc/app",
         "resolveJsonModule": true,
-        "types": []
+        "types": [],
+        "paths": {
+            "ol": ["./node_modules/ol"]
+        }
     },
     "files": [
         "src/main.ts",

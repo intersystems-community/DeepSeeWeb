@@ -2,7 +2,7 @@ import {AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild} from
 import {BaseWidget} from '../base-widget.class';
 import {dsw} from '../../../../environments/dsw';
 import Map from 'ol/Map';
-import View from 'ol/View';
+import View, {FitOptions} from 'ol/View';
 import * as Layer from 'ol/Layer';
 import Overlay from 'ol/Overlay';
 import * as Source from 'ol/Source';
@@ -380,7 +380,8 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
             let p2 = proj.transform([max[0], max[1]], 'EPSG:4326', 'EPSG:900913');
             //console.log([p1[0], p1[1], p2[0], p2[1]]);
             //console.log(this.map.getSize());
-            this.map.getView().fit([p1[0], p1[1], p2[0], p2[1]], this.map.getSize());
+            // TODO: check remove FitOptions
+            this.map.getView().fit([p1[0], p1[1], p2[0], p2[1]], this.map.getSize() as FitOptions);
             /*this.map.getView().fit([p1[0], p1[1], p2[0], p2[1]], this.map.getSize(),
                 {
                     padding: [10, 10, 10, 10],
@@ -715,7 +716,7 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
                 anchorYUnits: 'pixels',
                 opacity: 1,
                 src: 'assets/img/map-marker-red.png'
-            })
+            } as any) // TODO: remove any
         });
 
 
@@ -762,7 +763,7 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
             source: new Source.Vector({
                 features: collection,
                 useSpatialIndex: false // optional, might improve performance
-            }),
+            } as any), // TODO: remove any
             style: this.hoverStyle,
             updateWhileAnimating: true, // optional, for instant visual feedback
             updateWhileInteracting: true // optional, for instant visual feedback
@@ -787,7 +788,7 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
             positioning: 'bottom-center',
             offset: [0, -40],
             stopEvent: false
-        });
+        } as any); // TODO: remove any
         this.map.addOverlay(this.popup);
 
         this.map.on('click', (e) => this.onMapClick(e));
@@ -837,7 +838,7 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
         }
         let pixel = this.map.getEventPixel(e.originalEvent);
         let hit = this.map.hasFeatureAtPixel(pixel);
-        this.map.getTarget().style.cursor = hit ? 'pointer' : '';
+        (this.map.getTarget() as HTMLElement).style.cursor = hit ? 'pointer' : '';
 
         this.featureOverlay.getSource().clear();
         if (feature) {
