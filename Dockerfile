@@ -36,5 +36,5 @@ do $SYSTEM.OBJ.Load("Installer.cls", "ck") \
 
 # load demo stuff
 RUN iris start IRIS
-RM -r /usr/irissys/csp/dsw/*
+RUN rm -r /usr/irissys/csp/dsw/*
 COPY /dist/* /usr/irissys/csp/dsw/
