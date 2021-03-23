@@ -15,17 +15,17 @@ USER ${ISC_PACKAGE_MGRUSER}
 COPY  Installer.cls .
 # COPY  src src
 # COPY iris.script /tmp/iris.script
-COPY irissession.sh /
+#COPY irissession.sh /
 
-RUN \
-  do $SYSTEM.OBJ.Load("Installer.cls", "ck") \
-  set sc = ##class(App.Installer).setup() \
-  zn "IRISAPP" \
-  zpm "install dsw" \
-  zpm "install samples-bi" \
+#RUN \
+# do $SYSTEM.OBJ.Load("Installer.cls", "ck") \
+#  set sc = ##class(App.Installer).setup() \
+#  zn "IRISAPP" \
+#  zpm "install dsw" \
+#  zpm "install samples-bi" \
 
 # bringing the standard shell back
-SHELL ["/bin/bash", "-c"]
+# SHELL ["/bin/bash", "-c"]
 
 # special extract treatment for hate-speech dataset
 # RUN mkdir /data/hate-speech/ \
