@@ -21,16 +21,18 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-      - name: npm install and npm run build
+      - name: Building DSW and addons
         run: |
           npm i
+          npm run build:addons
           npm run build
-      - name: commit dist
+      - name: Deploying dist to master
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add ./dist/*
           git commit -am "Automated commit of dist"
+          git push
 #      - name: GitHub Push
 #          uses: ad-m/github-push-action@v0.6.0
 #            with:
