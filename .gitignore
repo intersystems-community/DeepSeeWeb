@@ -47,3 +47,4 @@ Thumbs.db
 # addons compilation modules
 /dist/commonjs
 /dist-addons
+/e2e/screenshots

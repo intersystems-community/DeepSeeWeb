@@ -4,6 +4,12 @@ const xml2js = require('xml2js');
 const puppeteer = require('puppeteer');
 
 let browser = null;
+let page = null;
+const URL = 'http://127.0.0.1:52773/dsw/index.html#/';
+// const URL = 'http://samples-bi.demo.community.intersystems.com/dsw/index.html#/';
+const DEF_LOGIN = '_SYSTEM';
+const DEF_PASS = 'SYS';
+const DEF_NS = 'USER';
 
 describe("Version", () => {
     test("Check module.xml version", async () => {
@@ -29,18 +35,52 @@ function delay(time) {
 }
 
 describe("Site loading", () => {
-    test('Login page', async () => {
-            browser = await puppeteer.launch();
-            const page = await browser.newPage();
-            await page.setViewport({
-                width: 1600,
-                height: 720,
-                deviceScaleFactor: 1,
-            });
-            await page.goto('http://127.0.0.1:52773/dsw/index.html#/login');
-            await delay(1000);
-            await page.screenshot({path: './e2e/screenshots/login-page.png'});
+    test('Login page display', async () => {
+        browser = await puppeteer.launch();
+        page = await browser.newPage();
+        await page.setDefaultTimeout(5000);
+        await page.setViewport({
+            width: 1600,
+            height: 720,
+            deviceScaleFactor: 1,
+        });
+
+        await page.goto(URL + 'login', {
+            waitUntil: 'networkidle0'
+        });
+        await page.waitForSelector('.login-form')
     });
+
+    test('Version on login page', async () => {
+        await page.waitForSelector('.ver')
+        let element = await page.$('.ver');
+        let value = await page.evaluate(el => el.textContent, element)
+        expect(value).toBe(pkg.version);
+    });
+});
+
+describe("Authorization", () => {
+    test('Login', async () => {
+        let input = await page.waitForSelector('#dswLogin');
+        await input.type(DEF_LOGIN);
+        input = await page.waitForSelector('#dswPasword');
+        await input.type(DEF_PASS);
+        input = await page.waitForSelector('#ns');
+        await input.type(DEF_NS);
+        await page.click('#login');
+
+        await page.waitForSelector('dsw-header');
+    });
+});
+
+describe("Dashboards", () => {
+    test('Listing', async () => {
+        await page.waitForSelector('gridster-item');
+    });
+});
+
+afterEach(async () => {
+    await page?.screenshot({path: './e2e/screenshots/' + expect.getState().currentTestName + '.png'});
 });
 
 afterAll(async () => {
