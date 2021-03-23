@@ -1,3 +1,9 @@
+#### 3.1.11
+* fixed combo chart display issue
+* added support for min/max values for combo chart percentage axis
+* added support axis types for combo chart
+* fixed issue with percentage axis labels rounding(eg. 52.33333333%)
+
 #### 3.1.10
 * added missing files
 

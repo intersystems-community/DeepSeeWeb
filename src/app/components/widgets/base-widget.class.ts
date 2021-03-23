@@ -53,6 +53,7 @@ export interface IWidgetOverride {
     yAxisList: IAxisOverride[];
     seriesTypes: string;
     showPercentage?: number;
+    seriesYAxes?: string;
     _type: string;
 }
 

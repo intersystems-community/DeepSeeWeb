@@ -335,37 +335,37 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
             }
             this.parseData(result);
 
-            if (this.widget.type.toLowerCase() === 'combochart') {
-                for (i = 0; i < this.chart.series.length; i++) {
-                    if (this.chart.series[i].type) {
-                        continue;
-                    }
-                    switch (i % 3) {
-                        case 0:
-                            this.chart.series[i].options.type = this.seriesTypes[i] || 'bar';
-                            this.chart.series[i].options.zIndex = 2;
-                            this.chart.series[i].options.color = Highcharts.getOptions().colors[1];
-                            this.chart.series[i].update(this.seriesTypes[i] || 'bar', true);
-                            break;
-                        case 1:
-                            this.chart.series[i].options.type = this.seriesTypes[i] || 'line';
-                            this.chart.series[i].options.yAxis = 1;
-                            this.chart.series[i].options.color = Highcharts.getOptions().colors[2];
-                            this.chart.series[i].options.zIndex = 0;
-                            this.chart.series[i].update(this.seriesTypes[i] || 'line', true);
-                            break;
-                        case 2:
-                            this.chart.series[i].options.type = this.seriesTypes[i] || 'area';
-                            this.chart.series[i].update(this.seriesTypes[i] || 'area', true);
-                            break;
-                    }
-                    // TODO: fix combo chart
-                    this.chartConfig.yAxis[i].title = {
-                        text: this.chart.series[i].name
-                    };
-                }
-                this.updateChart();
-            }
+            /* if (this.widget.type.toLowerCase() === 'combochart') {
+                 for (i = 0; i < this.chart.series.length; i++) {
+                     if (this.chart.series[i].type) {
+                         continue;
+                     }
+                     switch (i % 3) {
+                         case 0:
+                             this.chart.series[i].options.type = this.seriesTypes[i] || 'bar';
+                             this.chart.series[i].options.zIndex = 2;
+                             this.chart.series[i].options.color = Highcharts.getOptions().colors[1];
+                             this.chart.series[i].update(this.seriesTypes[i] || 'bar', true);
+                             break;
+                         case 1:
+                             this.chart.series[i].options.type = this.seriesTypes[i] || 'line';
+                             this.chart.series[i].options.yAxis = 1;
+                             this.chart.series[i].options.color = Highcharts.getOptions().colors[2];
+                             this.chart.series[i].options.zIndex = 0;
+                             this.chart.series[i].update(this.seriesTypes[i] || 'line', true);
+                             break;
+                         case 2:
+                             this.chart.series[i].options.type = this.seriesTypes[i] || 'area';
+                             this.chart.series[i].update(this.seriesTypes[i] || 'area', true);
+                             break;
+                     }
+                     // TODO: fix combo chart
+                     this.chartConfig.yAxis[i].title = {
+                         text: this.chart.series[i].name
+                     };
+                 }
+                 this.updateChart(true);
+             }*/
             if (this.widget.showZero) {
                 this.setYAxisMinToZero();
             }
@@ -486,6 +486,26 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
                 data.visible = false;
             }
         }
+
+        // Set axis for combo chart
+        if (this.widget.type.toLowerCase() === 'combochart') {
+            const o = this.widget.overrides.find(ov => ov._type.toLowerCase() === 'combochart');
+            let sy: number[] = [];
+            if (o && o.seriesYAxes) {
+                sy = o.seriesYAxes.split(',').map(el => parseInt(el, 10));
+            }
+            let st: string[] = [];
+            if (o.seriesTypes) {
+                st = o.seriesTypes.split(',');
+            }
+            const idx = this.chart.series.length;
+            data.type = st[idx] || (idx === 0 ? 'bar' : 'line');
+            data.yAxis = sy[idx] || 0;
+            /*const series = this.chartConfig.series;
+            for (let k = 0; k < series.length; k++) {
+                series[k].yAxis = sy[k] || 0;
+            }*/
+        }
         c.addSeries(data);
     }
 
@@ -511,21 +531,6 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
     setType(type) {
         this.chartConfig.chart.type = type;
         this.updateChart(true);
-    }
-
-    /**
-     * Fix data. Removes empty values
-     * @param {Array} tempData Data
-     */
-    fixData(tempData) {
-        for (let g = 0; g < tempData.length; g++) {
-            if (!tempData[g].y && tempData[g].y !== 0) {
-                tempData[g].y = null;
-            }
-            if (tempData[g].y === '' || tempData[g].y === undefined) {
-                tempData[g].y = null;
-            }
-        }
     }
 
     /**
@@ -734,14 +739,11 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
                 });
             }
         }
-
-        // Set axis for combo chart
-        if (this.widget.type.toLowerCase() === 'combochart') {
-            const series = this.chartConfig.series;
-            for (let k = 0; k < series.length; k++) {
-                series[k].yAxis = series.length - 1 - k;
-            }
-        }
+        /*const series = this.chartConfig.series;
+             for (let k = 0; k < series.length; k++) {
+                 series[k].yAxis = series.length - 1 - k;
+             }
+         }*/
         // this.chart.update(this.chartConfig);
         this.updateChart();
         this.chart.redraw(true);
@@ -968,8 +970,8 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
                 }
             }];
             if (this.widget.overrides && this.widget.overrides[0] && this.widget.overrides[0]._type === 'comboChart') {
-                const combo = this.widget.overrides[0];
-                const l = combo.yAxisList;
+                const combo = this.widget.overrides.find(ov => ov._type.toLowerCase() === 'combochart');
+                const l = combo?.yAxisList;
                 if (l && l.length) {
                     for (let k = 0; k < l.length; k++) {
                         if (l[k].title) {
@@ -978,13 +980,27 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
                             }
                             this.chartConfig.yAxis[k].title.text = l[k].title;
                         }
-                        (this.chartConfig.yAxis[k] as YAxisOptions).type = l[k].axisType as AxisTypeValue;
-                        if (l[k].axisType === 'percent') {
-                            this.chartConfig.yAxis[k].labels = {
-                                formatter() {
-                                    return this.value * 100 + '%';
-                                }
-                            };
+                        if (l[k].axisType) {
+                            (this.chartConfig.yAxis[k] as YAxisOptions).type = l[k].axisType as AxisTypeValue;
+                            if (l[k].axisType === 'percent') {
+                                this.chartConfig.yAxis[k].min = 0;
+                                this.chartConfig.yAxis[k].max = 1;
+                                // this.chartConfig.yAxis[k].tickInterval = 0.25;
+                                // this.chartConfig.yAxis[k].minTickInterval = 0.25;
+                                this.chartConfig.yAxis[k].endOnTick = false;
+                                this.chartConfig.yAxis[k].labels = {
+                                    formatter() {
+                                        return (this.value * 100).toFixed(0) + '%';
+                                    }
+                                };
+                            }
+                        }
+
+                        if (l[k].maxValue !== undefined) {
+                            (this.chartConfig.yAxis[k] as YAxisOptions).max = l[k].maxValue;
+                        }
+                        if (l[k].minValue !== undefined) {
+                            (this.chartConfig.yAxis[k] as YAxisOptions).min = l[k].minValue;
                         }
                     }
                 }
@@ -1211,11 +1227,11 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
         if (axis?.minValue !== undefined) {
             yAxis.min = axis.minValue;
         }
-/*
-        else {
-            yAxis.min = this.getMinValue(data);
-        }
-*/
+        /*
+                else {
+                    yAxis.min = this.getMinValue(data);
+                }
+        */
         if (axis?.maxValue !== undefined) {
             yAxis.max = axis.maxValue;
         }
@@ -1273,6 +1289,21 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
                     }
                 }
             });
+        }
+    }
+
+    /**
+     * Fix data. Removes empty values
+     * @param {Array} tempData Data
+     */
+    fixData(tempData) {
+        for (let g = 0; g < tempData.length; g++) {
+            if (!tempData[g].y && tempData[g].y !== 0) {
+                tempData[g].y = null;
+            }
+            if (tempData[g].y === '' || tempData[g].y === undefined) {
+                tempData[g].y = null;
+            }
         }
     }
 }
