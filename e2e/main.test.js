@@ -3,6 +3,8 @@ const pkg = require('./../package.json');
 const xml2js = require('xml2js');
 const puppeteer = require('puppeteer');
 
+let browser = null;
+
 describe("Version", () => {
     test("Check module.xml version", async () => {
         const parser = new xml2js.Parser();
@@ -20,11 +22,17 @@ describe("Version", () => {
     });*/
 });
 
+
 describe("Site loading", () => {
     test('Login page', async () => {
-        const browser = await puppeteer.launch();
-        const page = await browser.newPage();
-        await page.goto('http://127.0.0.1:51773/dsw/index.html#/login');
-        await page.screenshot({ path: './e2e/screenshots/login-page.png' });
+            browser = await puppeteer.launch();
+            const page = await browser.newPage();
+            await page.goto('http://127.0.0.1:52773/dsw/index.html#/login');
+            await page.screenshot({path: './e2e/screenshots/login-page.png'});
     });
 });
+
+afterAll(async () => {
+    await browser.close();
+});
+
