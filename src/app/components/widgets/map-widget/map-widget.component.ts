@@ -3,15 +3,15 @@ import {BaseWidget} from '../base-widget.class';
 import {dsw} from '../../../../environments/dsw';
 import Map from 'ol/Map';
 import View, {FitOptions} from 'ol/View';
-import * as Layer from 'ol/Layer';
+import {Tile, Vector} from 'ol/Layer';
 import Overlay from 'ol/Overlay';
-import * as Source from 'ol/Source';
+import {OSM, XYZ, Vector as SourceVector} from 'ol/Source';
 import Feature from 'ol/Feature';
 import Collection from 'ol/Collection';
-import * as control from 'ol/control';
-import * as style from 'ol/style';
-import * as geom from 'ol/geom';
-import * as proj from 'ol/proj';
+import {defaults as control_defaults} from 'ol/control';
+import {Style, Fill, Stroke, Icon} from 'ol/style';
+import {Point, Polygon} from 'ol/geom';
+import {transform} from 'ol/proj';
 
 @Component({
     selector: 'dsw-map-widget',
@@ -117,20 +117,20 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
         const appS = this.ss.getAppSettings();
         let layersSource;
         if (!appS.tileServer) {
-            layersSource = new Source.OSM({ wrapX: true });
+            layersSource = new OSM({ wrapX: true });
         } else {
-            layersSource = new Source.XYZ({ url: appS.tileServer });
+            layersSource = new XYZ({ url: appS.tileServer });
         }
 
         const map = new Map({
             layers: [
                 //raster,
-                new Layer.Tile({
-                    //source: new Source.MapQuest({layer: 'osm', url: 'https://otile{1-4}-s.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.jpg?access_token=Z2AeMd4y8ipY2WAeYP2HQF9s51FDPZ0f' })
+                new Tile({
+                    //source: new MapQuest({layer: 'osm', url: 'https://otile{1-4}-s.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.jpg?access_token=Z2AeMd4y8ipY2WAeYP2HQF9s51FDPZ0f' })
                     source: layersSource
                 })
             ],
-            controls: control.defaults({
+            controls: control_defaults({
                 attributionOptions: {
                     collapsible: false
                 }
@@ -370,14 +370,14 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
         }
 
         if (this.drills.length === 0 && (!isNaN(lat) && !isNaN(lon) && !isNaN(zoom)) && (lat !== undefined && lon !== undefined && zoom !== undefined)) {
-            this.map.getView().setCenter(proj.transform([lon, lat], 'EPSG:4326', 'EPSG:900913'));
+            this.map.getView().setCenter(transform([lon, lat], 'EPSG:4326', 'EPSG:900913'));
             this.map.getView().setZoom(zoom);
         } else {
             if (Math.abs(min[0] - max[0]) < 0.00000001 && Math.abs(min[1] - max[1]) < 0.00000001) {
                 return;
             }
-            let p1 = proj.transform([min[0], min[1]], 'EPSG:4326', 'EPSG:900913');
-            let p2 = proj.transform([max[0], max[1]], 'EPSG:4326', 'EPSG:900913');
+            let p1 = transform([min[0], min[1]], 'EPSG:4326', 'EPSG:900913');
+            let p2 = transform([max[0], max[1]], 'EPSG:4326', 'EPSG:900913');
             //console.log([p1[0], p1[1], p2[0], p2[1]]);
             //console.log(this.map.getSize());
             // TODO: check remove FitOptions
@@ -497,7 +497,7 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
                         continue;
                     }
 
-                    let point = new geom.Point([lon, lat]);
+                    let point = new Point([lon, lat]);
                     point.transform('EPSG:4326', 'EPSG:3857');
 
                     let ll = lon;
@@ -545,8 +545,8 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
             }
             //poly = poly.reverse();
             let feature = new Feature({
-                geometry: new geom.Polygon(poly),
-                //geometry: new geom.MultiPolygon([poly]),
+                geometry: new Polygon(poly),
+                //geometry: new MultiPolygon([poly]),
                 key: key,
                 title: polyTitle,
                 dataIdx: t * l,
@@ -555,12 +555,12 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
             });
 
             value = this.mapData.Data[t * l + colorPropertyIdx];
-            feature.setStyle(new style.Style({
+            feature.setStyle(new Style({
                 zIndex: 0,
-                fill: new style.Fill({
+                fill: new Fill({
                     color: (this.getFeatureColor(key, ((value - minV) * 255) / (maxV - minV))) || 'none'
                 }),
-                stroke: new style.Stroke({
+                stroke: new Stroke({
                     color: 'rgba(0, 0, 0, 0.3)',
                     width: 1
                 })
@@ -642,7 +642,7 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
                 let lat = parseFloat(result.Data[k + latIdx] || 0);
                 let lon = parseFloat(result.Data[k + lonIdx] || 0);
                 let name = list[i].caption;
-                let point = new geom.Point([lat, lon]);
+                let point = new Point([lat, lon]);
                 point.transform('EPSG:4326', 'EPSG:900913');
 
                 let labels = [];
@@ -693,8 +693,8 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
             }
 
             this.centerView(min, max);
-            /* var p1 = proj.transform([min[0], min[1]], 'EPSG:4326', 'EPSG:900913');
-             var p2 = proj.transform([max[0], max[1]], 'EPSG:4326', 'EPSG:900913');
+            /* var p1 = transform([min[0], min[1]], 'EPSG:4326', 'EPSG:900913');
+             var p2 = transform([max[0], max[1]], 'EPSG:4326', 'EPSG:900913');
              if (features.length !== 0) this.map.getView().fit([p1[0], p1[1], p2[0], p2[1]], this.map.getSize());
 
              this.map.updateSize();*/
@@ -708,9 +708,9 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
      */
     initialize() {
         // Create style for marker
-        this.iconStyle = new style.Style({
+        this.iconStyle = new Style({
             zIndex: 100,
-            image: new style.Icon({
+            image: new Icon({
                 anchor: [0.5, 40],
                 anchorXUnits: 'fraction',
                 anchorYUnits: 'pixels',
@@ -720,27 +720,27 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
         });
 
 
-        this.polyStyle = new style.Style({
+        this.polyStyle = new Style({
             zIndex: 0,
-            stroke: new style.Stroke({
+            stroke: new Stroke({
                 color: 'rgba(0, 0, 0, 0.5)',
                 width: 1
             })
         });
 
-        this.hoverStyle = new style.Style({
+        this.hoverStyle = new Style({
             zIndex: 1,
-            stroke: new style.Stroke({
+            stroke: new Stroke({
                 color: 'blue',
                 width: 2
             })
         });
 
         // Setup polys
-        this.polys = new Source.Vector({
+        this.polys = new SourceVector({
             features: []
         });
-        let vectorLayer = new Layer.Vector({
+        let vectorLayer = new Vector({
             source: this.polys,
             style: this.polyStyle
         });
@@ -748,7 +748,7 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
         this.map.addLayer(vectorLayer);
 
         // Setup clustering
-        this.markers = new Source.Vector({
+        this.markers = new SourceVector({
             features: []
         });
         /*var clusterSource = new Source.Cluster({
@@ -758,9 +758,9 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
 
         // Create overlay for hover
         let collection = new Collection();
-        this.featureOverlay = new Layer.Vector({
+        this.featureOverlay = new Vector({
             map: this.map,
-            source: new Source.Vector({
+            source: new SourceVector({
                 features: collection,
                 useSpatialIndex: false // optional, might improve performance
             } as any), // TODO: remove any
@@ -774,7 +774,7 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
 
 
         // Create layer for markers
-        vectorLayer = new Layer.Vector({
+        vectorLayer = new Vector({
             source: this.markers,
             style: this.iconStyle
         });
