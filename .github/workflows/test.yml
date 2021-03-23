@@ -12,5 +12,21 @@ jobs:
             run: |
               docker-compose build
               docker-compose up -d
+
           - name: Check running containers
             run: docker ps -a
+
+          - neme: Create directory for screenshots
+            run: mkdir -p ./e2e/screenshots
+
+          - name: Install modules(npm i)
+            run: npm i
+
+          - name: Running test
+            run: npm test
+
+          - name: Archive artifacts
+            uses: actions/upload-artifact@v2
+            with:
+              name: screenshots
+              path: ./e2e/screenshots
