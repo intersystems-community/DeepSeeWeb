@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Export generator="Cache" version="25">
   <Document name="dsw.ZPM">
     <Module>
@@ -12,14 +12,7 @@
         </ModuleReference>
       </Dependencies>
       <SystemSetting Name="CSP.DefaultFileCharset" Value="UTF-8"/>
-      <CSPApplication
-        Url="/dsw"
-        SourcePath="/dist"
-        DeployPath="{$cspdir}/dsw"
-        ServeFiles="1"
-        Recurse="1"
-        CookiePath="/dsw"
-       />
+      <CSPApplication Url="/dsw" SourcePath="/dist" DeployPath="{$cspdir}/dsw" ServeFiles="1" Recurse="1" CookiePath="/dsw"/>
     </Module>
   </Document>
 </Export>

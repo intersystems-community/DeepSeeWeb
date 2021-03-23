@@ -24,21 +24,22 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
+
+      - name: Updating version for ZPM
+        run: |
+          node ./.github/sync-zpm-version
+
       - name: Building DSW and addons
         run: |
           npm i
           npm run build:addons
           npm run build
+
       - name: Deploying dist to master
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add ./dist/*
+          git add ./module.xml
           git commit -am "Automated commit of dist"
           git push
-#      - name: GitHub Push
-#          uses: ad-m/github-push-action@v0.6.0
-#            with:
-#              github_token: ${{ secrets.TOKEN }}
-#              branch: ${{ github.ref }}
-#
