@@ -28,12 +28,6 @@ describe("Version", () => {
     });*/
 });
 
-function delay(time) {
-    return new Promise(function(resolve) {
-        setTimeout(resolve, time)
-    });
-}
-
 describe("Site loading", () => {
     test('Login page display', async () => {
         browser = await puppeteer.launch();

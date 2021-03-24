@@ -1,5 +1,9 @@
-on: push
-name: test
+on:
+    workflow_run:
+        workflows: ["Build Angular"]
+        types:
+            - completed
+name: Test UI
 jobs:
     build:
         runs-on: ubuntu-latest
@@ -26,6 +30,7 @@ jobs:
             run: npm test
 
           - name: Archive artifacts
+            if: always()
             uses: actions/upload-artifact@v2
             with:
               name: screenshots
