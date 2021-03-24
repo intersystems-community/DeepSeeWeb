@@ -11,15 +11,15 @@ const DEF_LOGIN = '_SYSTEM';
 const DEF_PASS = 'SYS';
 
 const SCR_WIDTH = 1600;
-const SCR_HEIGHT = 1200;
+const SCR_HEIGHT = 900;
 
 // const URL = 'http://samples-bi.demo.community.intersystems.com/dsw/index.html#/';
 // const DEF_NS = 'USER';
 
 let consoleOut = '';
 
-describe("Version", () => {
-    test("Check module.xml version", async () => {
+describe("1. Version »", () => {
+    test("1.1. Check module.xml version", async () => {
         const parser = new xml2js.Parser();
         const xmlFile = fs.readFileSync('./module.xml', 'utf8');
         parser.parseString(xmlFile, function (err, result) {
@@ -35,8 +35,8 @@ describe("Version", () => {
     });*/
 });
 
-describe("Site loading", () => {
-    test('Login page display', async () => {
+describe("2. Site loading »", () => {
+    test('2.1. Login page display', async () => {
         browser = await puppeteer.launch();
         page = await browser.newPage();
 
@@ -68,7 +68,7 @@ describe("Site loading", () => {
         await page.waitForSelector('.login-form')
     });
 
-    test('Version on login page', async () => {
+    test('2.2. Version on login page', async () => {
         await page.waitForSelector('.ver')
         let element = await page.$('.ver');
         let value = await page.evaluate(el => el.textContent, element)
@@ -76,8 +76,8 @@ describe("Site loading", () => {
     });
 });
 
-describe("Authorization", () => {
-    test('Login', async () => {
+describe("3. Authorization »", () => {
+    test('3.3. Login', async () => {
         let input = await page.waitForSelector('#dswLogin');
         await input.type(DEF_LOGIN);
         input = await page.waitForSelector('#dswPasword');
@@ -90,8 +90,8 @@ describe("Authorization", () => {
     });
 });
 
-describe("Dashboards", () => {
-    test('Listing', async () => {
+describe("4. Dashboards »", () => {
+    test('4.1. Listing', async () => {
         await page.waitForSelector('gridster-item');
     });
 });
