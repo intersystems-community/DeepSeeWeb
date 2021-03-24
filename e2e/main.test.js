@@ -10,6 +10,9 @@ const DEF_NS = 'IRISAPP';
 const DEF_LOGIN = '_SYSTEM';
 const DEF_PASS = 'SYS';
 
+const SCR_WIDTH = 1600;
+const SCR_HEIGHT = 1200;
+
 // const URL = 'http://samples-bi.demo.community.intersystems.com/dsw/index.html#/';
 // const DEF_NS = 'USER';
 
@@ -54,8 +57,8 @@ describe("Site loading", () => {
 
         await page.setDefaultTimeout(5000);
         await page.setViewport({
-            width: 1600,
-            height: 720,
+            width: SCR_WIDTH,
+            height: SCR_HEIGHT,
             deviceScaleFactor: 1,
         });
 
