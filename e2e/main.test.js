@@ -9,7 +9,7 @@ const URL = 'http://127.0.0.1:52773/dsw/index.html#/';
 // const URL = 'http://samples-bi.demo.community.intersystems.com/dsw/index.html#/';
 const DEF_LOGIN = '_SYSTEM';
 const DEF_PASS = 'SYS';
-const DEF_NS = 'USER';
+const DEF_NS = 'IRISAPP';
 
 describe("Version", () => {
     test("Check module.xml version", async () => {
