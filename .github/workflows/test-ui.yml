@@ -1,9 +1,9 @@
-on: push
-#on:
-#    workflow_run:
-#        workflows: ["Build Angular"]
-#        types:
-#            - completed
+# on: push
+on:
+    workflow_run:
+        workflows: ["Build Angular"]
+        types:
+            - completed
 name: Test UI
 jobs:
     build:
