@@ -37,4 +37,4 @@ SHELL ["/bin/bash", "-c"]
 # load demo stuff
 RUN iris start IRIS
 RUN rm -r /usr/irissys/csp/dsw/*
-COPY /home/runner/work/DeepSeeWeb/DeepSeeWeb/dist/* /usr/irissys/csp/dsw/
+COPY ./dist/* /usr/irissys/csp/dsw/
