@@ -6,10 +6,14 @@ const puppeteer = require('puppeteer');
 let browser = null;
 let page = null;
 const URL = 'http://127.0.0.1:52773/dsw/index.html#/';
-// const URL = 'http://samples-bi.demo.community.intersystems.com/dsw/index.html#/';
+const DEF_NS = 'IRISAPP';
 const DEF_LOGIN = '_SYSTEM';
 const DEF_PASS = 'SYS';
-const DEF_NS = 'IRISAPP';
+
+// const URL = 'http://samples-bi.demo.community.intersystems.com/dsw/index.html#/';
+// const DEF_NS = 'USER';
+
+let consoleOut = '';
 
 describe("Version", () => {
     test("Check module.xml version", async () => {
@@ -32,6 +36,22 @@ describe("Site loading", () => {
     test('Login page display', async () => {
         browser = await puppeteer.launch();
         page = await browser.newPage();
+
+        // Catch all failed requests like 4xx..5xx status codes
+        page.on('requestfailed', request => {
+            consoleOut +=`url: ${request.url()}, errText: ${request.failure().errorText}, method: ${request.method()}\n`
+        });
+        // Catch console log errors
+        page.on("pageerror", err => {
+            consoleOut += `Page error: ${err.toString()}\n`;
+        });
+        // Catch all console messages
+        page.on('console', msg => {
+            consoleOut += msg.text() + '\n';
+            consoleOut += '    ' + msg.location().url + '\n';
+        });
+
+
         await page.setDefaultTimeout(5000);
         await page.setViewport({
             width: 1600,
@@ -78,6 +98,7 @@ afterEach(async () => {
 });
 
 afterAll(async () => {
+    fs.writeFileSync('./e2e/screenshots/console.log', consoleOut);
     await browser.close();
 });
 

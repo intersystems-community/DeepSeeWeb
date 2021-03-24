@@ -21,10 +21,10 @@ jobs:
           - name: Check running containers
             run: docker ps -a
 
-          - name: Create directory for screenshots
+          - name: Create directory for artifacts
             run: mkdir -p ./e2e/screenshots
 
-          - name: Install modules(npm i)
+          - name: Install node modules
             run: npm i
 
           - name: Running test
