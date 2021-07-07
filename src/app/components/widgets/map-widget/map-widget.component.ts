@@ -10,8 +10,9 @@ import Feature from 'ol/Feature';
 import Collection from 'ol/Collection';
 import {defaults as control_defaults} from 'ol/control';
 import {Style, Fill, Stroke, Icon} from 'ol/style';
-import {Point, Polygon} from 'ol/geom';
+import {Point, Polygon, MultiPolygon} from 'ol/geom';
 import {transform} from 'ol/proj';
+import GeoJSON from 'ol/format/GeoJSON';
 
 @Component({
     selector: 'dsw-map-widget',
@@ -83,6 +84,7 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
     private hoverStyle;
     private polyStyle;
     private polyData = null;
+    private isGeoJSON = false;
 
     ngOnInit() {
         super.ngOnInit();
@@ -211,7 +213,10 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
     }
 
     requestPolygons() {
-        let fileName = this.widget.name + '.js';
+        let fileName = this.widget.name;
+        if (this.widget.name.indexOf('.') === -1) {
+            fileName += '.js';
+        }
         if (this.widget.properties && this.widget.properties.coordsJsFile) {
             fileName = this.widget.properties.coordsJsFile;
         }
@@ -228,10 +233,11 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
         //         // if (localStorage.connectorRedirect) url = "map.js";
         //     }
         // }
-        // url = 'uspolygons.js';
+        /// url = 'uspolygons.js';
+        // this.ds.getFile('/assets/UAMap.geojson')
         this.ds.getFile(url)
             .then(data => this.onPolyFileLoaded(data))
-            .finally(() =>  this.hideLoading());
+            .finally(() => this.hideLoading());
 
        /* this.ds.getFile('assets/us-all.geo.json')
             .then(data => this.onPolyJSONFileLoaded(data))
@@ -240,6 +246,20 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
     }
 
     onPolyFileLoaded(result) {
+        this.isGeoJSON = false;
+        // Try to load GEOJSON first
+        try {
+            const data = JSON.parse(result);
+            this.polyData = data;
+            this.isGeoJSON = true;
+            this.buildPolygons();
+            //this.buildGeoJSON(data);
+
+            return;
+        } catch (e) {
+            // This is not GEOJSON. Continue loading as JS script
+        }
+
         // This "var" is needed to exec polys js file and path this variable to context of this file
         // tslint:disable-next-line:no-var-keyword
         var polys = {};
@@ -402,6 +422,12 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
         if (this.widget.properties && this.widget.properties.coordsProperty) {
             coordsProperty = this.widget.properties.coordsProperty;
         }
+        if (this.widget.dataProperties) {
+            const prop = this.widget.dataProperties.find(pr => pr.name === 'coordsProperty');
+            if (prop) {
+                coordsProperty = prop.dataValue;
+            }
+        }
         if (!this.polyData || !this.map || !this.mapData) {
             return;
         }
@@ -465,27 +491,36 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
             if (idx !== -1) {
                 pkey = this.mapData.Data[t * l + idx];
             }
-            if (!this.polyData[pkey]) {
+            parts = this.getPartsByKey(pkey, coordsProperty);
+
+            if (!parts) {
                 continue;
             }
 
-            parts = this.polyData[pkey].split(';');
-            let poly = [];
+            // parts = this.polyData[pkey].split(';');
+            const polys = [];
             count++;
 
 
             for (k = 0; k < parts.length; k++) {
+                let poly = [];
                 if (!parts[k]) {
                     continue;
                 }
-                let coords = parts[k].split(' ');
+                let coords = parts[k];
+                if (typeof coords === 'string') {
+                    coords = coords.split(' ');
+                }
 
                 let polyCoords = [];
                 for (i in coords) {
                     if (!coords[i]) {
                         continue;
                     }
-                    let c = coords[i].split(',');
+                    let c = coords[i];
+                    if (typeof c === 'string') {
+                        c = c.split(',');
+                    }
                     if (c.length < 2) {
                         continue;
                     }
@@ -528,6 +563,8 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
                     }
                     poly = tmp;
                 }
+
+                polys.push(polyCoords);
             }
 
             // Find poly title
@@ -545,9 +582,9 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
             }
             //poly = poly.reverse();
             let feature = new Feature({
-                geometry: new Polygon(poly),
-                //geometry: new MultiPolygon([poly]),
-                key: key,
+                geometry: new Polygon(polys),
+                //geometry: new MultiPolygon(polys.sort((a1, a2) => a1.length < a2.length ? 1: -1)),
+                key,
                 title: polyTitle,
                 dataIdx: t * l,
                 path: this.mapData.Cols[1].tuples[t].path,
@@ -572,7 +609,11 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
         this.featureOverlay.getSource().clear();
         this.polys.clear();
         this.polys.addFeatures(features);
-        this.centerView(min, max);
+        // this.polys.addFeatures(new GeoJSON().readFeatures(this.polyData))
+        setTimeout(() => {
+            this.centerView(min, max);
+        });
+
     }
 
     /**
@@ -914,7 +955,7 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
                     this.mapData.Cols[1].tuples[Math.floor(dataIdx / this.mapData.Cols[0].tuples.length)].desc || '';
             }
             if (!content) {
-                content = '<b>' + feature.get('name') + '</b><br/>';
+                content = '<b>' + (feature.get('name') || feature.values_.title) + '</b><br/>';
                 if (this.mapData.Cols[0].tuples.length) {
                     for (let i = 0; i < this.mapData.Cols[0].tuples.length; i++) {
                         const caption = this.mapData.Cols[0].tuples[i].caption;
@@ -967,6 +1008,24 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
     onResize() {
         if (this.map) {
             this.map.updateSize();
+        }
+    }
+
+    private buildGeoJSON(data: any) {
+
+    }
+
+    private getPartsByKey(pkey: string, coordsProperty = 'Key') {
+        if (this.isGeoJSON) {
+            const feature = this.polyData.features.find(f => f.properties[coordsProperty] === pkey);
+            if (!feature) {
+                return;
+            }
+            return feature.geometry.coordinates.flat();
+        } else {
+            if (this.polyData[pkey]) {
+                return this.polyData[pkey].split(';');
+            }
         }
     }
 }

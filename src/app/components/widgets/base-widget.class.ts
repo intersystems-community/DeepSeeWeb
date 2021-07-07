@@ -71,6 +71,7 @@ export type WidgetColumnSummaryType = 'sum' | '';
 export interface IWidgetDataProperties {
     // align: string;
     // baseValue: string
+    name: string;
     dataValue: string;
     display: WidgetColumnDisplayType;
     format: string;

@@ -1,3 +1,11 @@
+#### 3.1.13
+* added GeoJSON support for map widget:
+   * type of widget should be "map"
+   * name of the widget should be the same as GeoJSON file with extension, eg. "map.geojson"
+   * use "coordsProperty" data property to set name of key field to link data with properties in GeoJSON (It's a must to have field in data named as "coordsProperty" value, so it can be linked with properties of GeoJSON)
+   * to show custom tooltips on polygons - add "TooltipValue" field to data
+* fixed issue with title on map popup   
+        
 #### 3.1.11
 * fixed combo chart display issue
 * added support for min/max values for combo chart percentage axis
