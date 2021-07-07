@@ -5,7 +5,8 @@
       <Name>dsw</Name>
       <Version>3.1.13</Version>
       <Packaging>module</Packaging>
-      <Dependencies>
+      <Description>DeepSeeWeb (DSW) is an Angular UI layer for IRIS BI (DeepSee) dashboards</Description>
+        <Dependencies>
         <ModuleReference>
           <Name>MDX2JSON</Name>
           <Version>2.*</Version>
