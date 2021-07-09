@@ -12,6 +12,15 @@ export class WTextComponent extends BaseWidget implements OnInit, AfterViewInit 
     @ViewChildren('images') images: ElementRef[];
     @Input() widget: IWidgetInfo;
 
+    @HostBinding('style.flex-direction')
+    get flexDirection() {
+        const el = this.el?.nativeElement;
+        if (!el) {
+            return;
+        }
+        return el.offsetWidth > el.offsetHeight ? 'row' : 'column';
+    }
+
     ngOnInit(): void {
         this.model.textData = [];
         super.ngOnInit();

@@ -46,6 +46,8 @@ label {
     margin: 10px;
     background-color: #fafafa;
     padding: 10px;
+    min-height: 0;
+    min-width: 0;
 
     & > label {
         height: auto;
