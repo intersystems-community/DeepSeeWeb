@@ -1,3 +1,9 @@
+#### 3.1.14
+* fixed issue with filter values (#182)
+* added error display if there isn't pivot variable exists
+* added series for pie chart (#181)
+* changed styles for text meters (#142)
+
 #### 3.1.13
 * added GeoJSON support for map widget:
    * type of widget should be "map"

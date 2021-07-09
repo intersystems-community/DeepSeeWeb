@@ -381,14 +381,21 @@ export class FilterService {
         flt.value = val;
         if (!noRefresh) {
             if (flt.targetArray.length !== 0) {
-                // Listened in widget.js
+                // Listened in widget.component.ts
                 for (i = 0; i < flt.targetArray.length; i++) {
                     this.bs.broadcast('filter' + flt.targetArray[i], flt);
                 }
             } else {
-                // Listened in widget.js
+                // Listened in widget.component.ts
                 if (flt.target === '*' || flt.target === '') {
                     this.bs.broadcast('filterAll', flt);
+                }
+            }
+
+            if (flt.sourceArray.length !== 0) {
+                // Listened in widget.component.ts
+                for (i = 0; i < flt.sourceArray.length; i++) {
+                    this.bs.broadcast('updateFilterText' + flt.sourceArray[i], flt);
                 }
             }
         }

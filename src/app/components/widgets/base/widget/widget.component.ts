@@ -50,6 +50,7 @@ export class WidgetComponent implements OnInit, OnDestroy, AfterViewInit {
     hasActions = false;
 
     private subFilter: Subscription;
+    private subUpdateFilterText: Subscription;
     private subFilterAll: Subscription;
     private subRefresh: Subscription;
     private subCopyMdx: Subscription;
@@ -101,6 +102,7 @@ export class WidgetComponent implements OnInit, OnDestroy, AfterViewInit {
 
         // Filter subscriptions
         this.subFilter = this.bs.subscribe('filter' + this.widget.name, flt => this.applyFilter(flt));
+        this.subUpdateFilterText = this.bs.subscribe('updateFilterText' + this.widget.name, flt => this.updateFilterText(flt));
         this.subFilterAll = this.bs.subscribe('filterAll', flt => this.applyFilter(flt));
 
         this.subRefresh = this.bs.subscribe('refresh:' + this.widget.name, () => this.requestData());
@@ -154,6 +156,9 @@ export class WidgetComponent implements OnInit, OnDestroy, AfterViewInit {
         }
         if (this.subFilter) {
             this.subFilter.unsubscribe();
+        }
+        if (this.subUpdateFilterText) {
+            this.subUpdateFilterText.unsubscribe();
         }
         if (this.subFilterAll) {
             this.subFilterAll.unsubscribe();
@@ -464,5 +469,9 @@ export class WidgetComponent implements OnInit, OnDestroy, AfterViewInit {
 
     onFilter(idx: number) {
 
+    }
+
+    private updateFilterText(flt: any) {
+        this.updateFiltersText();
     }
 }

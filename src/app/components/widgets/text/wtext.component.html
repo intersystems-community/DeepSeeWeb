@@ -1,3 +1,4 @@
+<!--
 <div
     *ngFor="let item of model.textData; let idx = index"
     class='item'
@@ -14,13 +15,14 @@
         </text>
     </svg>
 </div>
+-->
 
-<!--<div *ngFor="let item of model.textData; let idx = index" class='item2'>-->
-<!--    <svg #images class='text-widget'>-->
-<!--        <text [style.fill]='item.valueColor'>{{item.value}}-->
-<!--            <tspan style='font-size: 4px;fill:red'>{{item.deltaNeg}}</tspan>-->
-<!--            <tspan style='font-size: 4px;fill:green'>{{item.delta}}</tspan>-->
-<!--        </text>-->
-<!--    </svg>-->
-<!--    <label>{{item.label}}</label>-->
-<!--</div>-->
+<div *ngFor="let item of model.textData; let idx = index" class='item2'>
+    <svg #images class='text-widget'>
+        <text [style.fill]='item.valueColor'>{{item.value}}
+            <tspan style='font-size: 4px;fill:red'>{{item.deltaNeg}}</tspan>
+            <tspan style='font-size: 4px;fill:green'>{{item.delta}}</tspan>
+        </text>
+    </svg>
+    <label>{{item.label}}</label>
+</div>

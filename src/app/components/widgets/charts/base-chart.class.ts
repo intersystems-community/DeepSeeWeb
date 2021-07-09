@@ -506,6 +506,7 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
                 series[k].yAxis = sy[k] || 0;
             }*/
         }
+        data.showInLegend = true;
         c.addSeries(data);
     }
 

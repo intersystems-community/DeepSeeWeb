@@ -1236,7 +1236,10 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         if (mdx.indexOf('$') !== -1 && !this.pivotVariables) {
             this.ds.getPivotVariables(this.widget.cube).then((d) => {
                 this.pivotVariables = d;
-            });
+            })
+                .catch(e => {
+                   this.showError(e.message);
+                });
         }
 
         this.showLoading();

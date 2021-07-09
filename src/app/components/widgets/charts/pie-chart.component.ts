@@ -60,7 +60,8 @@ export class PieChartComponent extends BaseChartClass implements OnInit {
                     cursor: 'pointer',
                     dataLabels: {
                         enabled: this.widget.showValues
-                    }
+                    },
+                    showInLegend: true
                 },
                 series: {
                     dataLabels: {
@@ -91,7 +92,7 @@ export class PieChartComponent extends BaseChartClass implements OnInit {
            //  delete this.chartConfig.plotOptions.series.dataLabels.formatter;
             // delete this.chartConfig.plotOptions.pie.dataLabels.formatter;
         }
-        this.updateChart();
+        this.updateChart(true, true);
     }
 
     // toggleLegend(state: boolean) {
