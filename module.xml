@@ -3,10 +3,10 @@
   <Document name="dsw.ZPM">
     <Module>
       <Name>dsw</Name>
-      <Version>3.1.13</Version>
+      <Version>3.1.14</Version>
       <Packaging>module</Packaging>
       <Description>DeepSeeWeb (DSW) is an Angular UI layer for IRIS BI (DeepSee) dashboards</Description>
-        <Dependencies>
+      <Dependencies>
         <ModuleReference>
           <Name>MDX2JSON</Name>
           <Version>2.*</Version>
