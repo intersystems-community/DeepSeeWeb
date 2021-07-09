@@ -1,3 +1,6 @@
+#### 3.1.15
+* text widget changes meters direction depending on aspect ration. for tall widgets meters are to be displayed as rows, for wide widgets - as columns
+
 #### 3.1.14
 * fixed issue with filter values (#182)
 * added error display if there isn't pivot variable exists
