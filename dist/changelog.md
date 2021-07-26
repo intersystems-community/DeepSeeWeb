@@ -1,3 +1,9 @@
+#### 3.1.16
+* added "View As" options: "Stacked bar chart", "Stacked column chart" (#179)
+* fixed formatting for charts (#185)
+* added percentage display for pie chart (#187)
+* added annotations display for pie chart (#186)
+ 
 #### 3.1.15
 * text widget changes meters direction depending on aspect ration. for tall widgets meters are to be displayed as rows, for wide widgets - as columns
 
