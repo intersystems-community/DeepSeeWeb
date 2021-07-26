@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, EventEmitter, Output} from '@angular/core';
+import {ChangeDetectorRef, Component, EventEmitter, Input, Output} from '@angular/core';
 import {IWidgetInfo} from '../../base-widget.class';
 import {StorageService} from '../../../../services/storage.service';
 import {UtilService} from '../../../../services/util.service';
@@ -15,12 +15,11 @@ import {HeaderService} from '../../../../services/header.service';
     styleUrls: ['./widget-header.component.scss']
 })
 export class WidgetHeaderComponent {
-
+    @Input() typeDesc: IWidgetType;
     @Output() onButtonClick = new EventEmitter<IButtonToggle>();
     @Output() onBack = new EventEmitter();
     @Output() onResetClickFilter = new EventEmitter();
 
-    typeDef: IWidgetType;
     widget: IWidgetInfo;
     private widgetsSettings: any;
 
@@ -42,6 +41,13 @@ export class WidgetHeaderComponent {
         this.loadToolbarButton(this.widgetsSettings, 'isTop');
         this.loadToolbarButton(this.widgetsSettings, 'showZero');
         this.loadToolbarButton(this.widgetsSettings, 'showValues');
+
+        const btns = this.typeDesc?.headerButtons;
+        if (btns) {
+            for (let i = 0; i < btns.length; i++) {
+                this.loadToolbarButton(this.widgetsSettings, btns[i].id, btns[i].defValue);
+            }
+        }
     }
 
     /**
@@ -60,7 +66,7 @@ export class WidgetHeaderComponent {
     /**
      * Loads state for button
      */
-    loadToolbarButton(settings: any, name: string) {
+    loadToolbarButton(settings: any, name: string, defValue?: boolean) {
         // For embedded widgets firstly try to settings param from URL
         if (this.us.isEmbedded()) {
             const param = this.route.snapshot.queryParamMap.get(name);
@@ -78,6 +84,10 @@ export class WidgetHeaderComponent {
         if (settings[this.widget.name]) {
             if (settings[this.widget.name][name] !== undefined) {
                 this.widget[name] = this.widgetsSettings[this.widget.name][name];
+            } else {
+                if (defValue !== undefined) {
+                    this.widget[name] = defValue;
+                }
             }
         }
     }

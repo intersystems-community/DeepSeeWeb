@@ -21,12 +21,38 @@ import {ScorecardWidgetComponent} from '../components/widgets/scorecard/scorecar
 
 export const ADDON_PREFIX = 'DSW.Addons.';
 
+export interface IHeaderButton {
+    id: string;
+    text: string;
+    icon: string;
+    tooltip?: string;
+    defValue?: boolean;
+}
+
 export interface IWidgetType {
     class?: Type<unknown>;
     type: string;
     chart: string;
     allowShowAsPivot: boolean;
+    headerButtons?: IHeaderButton[];
 }
+
+// TODO: add translation
+const btnPieChart: IHeaderButton[] = [
+    {
+        id: 'btn.ShowAnnotations',
+        text: 'Show annotations',
+        tooltip: 'Show annotations',
+        icon: '/assets/img/icons/format_color_text_black_18dp.svg',
+        defValue: true
+    },
+    {
+        id: 'btn.ShowPercents',
+        text: 'Show percents',
+        tooltip: 'Show percents',
+        icon: '/assets/img/icons/percentage.svg'
+    }
+];
 
 const TYPES = {
     regular: {
@@ -43,6 +69,7 @@ const TYPES = {
         class: BullseyeChartComponent,
         type: 'chart',
         chart: 'pie',
+        headerButtons: btnPieChart,
         allowShowAsPivot: true
     },
     speedometer: {
@@ -73,24 +100,28 @@ const TYPES = {
         class: PieChartComponent,
         type: 'chart',
         chart: 'pie',
+        headerButtons: btnPieChart,
         allowShowAsPivot: true
     },
     donutchart3d: {
         class: PieChartComponent,
         type: 'chart',
         chart: 'pie',
+        headerButtons: btnPieChart,
         allowShowAsPivot: true
     },
     donutchart: {
         class: PieChartComponent,
         type: 'chart',
         chart: 'pie',
+        headerButtons: btnPieChart,
         allowShowAsPivot: true
     },
     piechart: {
         class: PieChartComponent,
         type: 'chart',
         chart: 'pie',
+        headerButtons: btnPieChart,
         allowShowAsPivot: true
     },
     areachart: {

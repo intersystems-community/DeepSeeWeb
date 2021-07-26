@@ -530,6 +530,27 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
      * @param {string} type Chart type
      */
     setType(type) {
+        delete this.chart.options.plotOptions.series.stacking;
+        const oldType = this.chartConfig.chart.type;
+        let doubleRefresh = false;
+        if (type === 'barchartstacked') {
+            type = 'bar';
+            this.chart.options.plotOptions.series.stacking = 'normal';
+        }
+        if (type === 'columnchartstacked') {
+            type = 'column';
+            this.chart.options.plotOptions.series.stacking = 'normal';
+        }
+
+        if (oldType === type) {
+            if (oldType === 'bar') {
+                this.chartConfig.chart.type = 'column';
+            } else {
+                this.chartConfig.chart.type = 'bar';
+            }
+            this.updateChart(true);
+        }
+
         this.chartConfig.chart.type = type;
         this.updateChart(true);
     }
@@ -818,9 +839,7 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
                     /* jshint ignore:end */
                     const fmt = ov?.valueLabelFormat || (t.series.options as any).format;
                     let val = t.y;
-                    if (fmt) {
-                        val = _this.formatNumber(val, fmt);
-                    }
+                    val = _this.formatNumber(val, fmt);
                     let a = (t.point.name || t.x || '') + '<br>' + (t.point.title ? (t.point.title + '<br>') : '') + t.series.name + ': <b>' + val + '</b><br>';
                     if (t.point.percentage) {
                         a += parseFloat(t.point.percentage).toFixed(2).toString() + '%';
@@ -878,9 +897,7 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
                             const fmt = ov?.valueLabelFormat || (t.series.options as any).format;
                             let val = t.y;
 
-                            if (fmt) {
-                                val = _this.formatNumber(val, fmt);
-                            }
+                            val = _this.formatNumber(val, fmt);
                             return val;
                         }
 

@@ -1,6 +1,7 @@
 <!-- Widget header -->
 <dsw-widget-header
     #header
+    [typeDesc]="typeDesc"
     [hidden]="widget?.tile"
     (onButtonClick)="onHeaderButton($event)"
     (onBack)="onHeaderButtonBack()"

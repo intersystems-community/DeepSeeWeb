@@ -54,6 +54,18 @@
     </button>
 </ng-container>
 
+
+<!-- Custom Buttons -->
+<button
+    *ngFor="let btn of typeDesc?.headerButtons"
+    (click)="onClick(btn.id)"
+    [class.active]="widget[btn.id]"
+    [title]="btn.tooltip"
+>
+    <img [src]="btn.icon">
+    <label>{{btn.text}}</label>
+</button>
+
 <!-- Toggle legend -->
 <button *ngIf="widget?.isChart && !widget.noToggleLegend" (click)="onClick('isLegend')"
         [class.active]="widget?.isLegend"

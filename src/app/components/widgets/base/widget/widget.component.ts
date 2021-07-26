@@ -16,7 +16,7 @@ import {StorageService} from '../../../../services/storage.service';
 import {DataService} from '../../../../services/data.service';
 import {VariablesService} from '../../../../services/variables.service';
 import {I18nService} from '../../../../services/i18n.service';
-import {WidgetTypeService} from '../../../../services/widget-type.service';
+import {IWidgetType, WidgetTypeService} from '../../../../services/widget-type.service';
 import {IButtonToggle} from '../../../../services/widget.service';
 import {WidgetHeaderComponent} from '../widget-header/widget-header.component';
 import {NamespaceService} from '../../../../services/namespace.service';
@@ -43,6 +43,8 @@ export class WidgetComponent implements OnInit, OnDestroy, AfterViewInit {
         filters: null
     };
     @Input() widget: IWidgetInfo;
+
+    typeDesc: IWidgetType;
 
     private componentRef: ComponentRef<BaseWidget>;
     public component: BaseWidget;
@@ -397,7 +399,8 @@ export class WidgetComponent implements OnInit, OnDestroy, AfterViewInit {
         }
         this.destroyComponent();
         this.container.clear();
-        const t = this.wts.getClass(type || this.widget.type);
+        this.typeDesc = this.wts.getDesc(type || this.widget.type);
+        const t = this.typeDesc?.class; // this.wts.getClass(type || this.widget.type);
         if (t) {
             this.widget.isSupported = true;
 
@@ -413,6 +416,7 @@ export class WidgetComponent implements OnInit, OnDestroy, AfterViewInit {
             };
             // this.component.header = this.header;
             if (this.header) {
+                this.header.typeDesc = this.typeDesc;
                 this.header.widget = this.widget;
                 this.header.loadButtons();
             }

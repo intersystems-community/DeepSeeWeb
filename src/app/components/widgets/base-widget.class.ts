@@ -31,7 +31,6 @@ import * as numeral from 'numeral';
 export type OBoolean = 'true' | 'false';
 export type OAxisType = 'percent' | '';
 
-
 export interface IAxisOverride {
     title?: string;
     axisType?: OAxisType;

@@ -357,7 +357,6 @@ export class DashboardScreenComponent implements OnInit, OnDestroy, AfterViewIni
             this.es.show(this.i18n.get('errNoWidgets'));
             return;
         }
-
         if (result.displayInfo && result.displayInfo.gridRows && !this.settings.widgetHeight && !this.sharedWidget) {
             const headerHeight = 58;
             const rows = result.displayInfo.gridRows;

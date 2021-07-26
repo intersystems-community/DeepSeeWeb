@@ -127,8 +127,10 @@ export class TreeMapComponent extends BaseChartClass implements OnInit {
 
     setType(type) {
         this.clearSeries();
-        this.chartConfig.chart.type = type;
-        this.updateChart();
+        /*this.chartConfig.chart.type = type;
+        this.updateChart();*/
+        super.setType(type);
+
         this.parseData(this.prevData);
     }
 }

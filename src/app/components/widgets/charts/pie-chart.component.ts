@@ -9,12 +9,13 @@ import {IButtonToggle} from '../../../services/widget.service';
 })
 export class PieChartComponent extends BaseChartClass implements OnInit {
 
+
     ngOnInit() {
         super.ngOnInit();
         // $scope.item.toggleLegend = toggleLegend;
         // $scope.item.toggleValues = toggleValues;
         this.widget.isBtnValues = true;
-        this.widget.noToggleLegend = true;
+        //this.widget.noToggleLegend = true;
         let opt = {series: {allowPointSelect: true, stickyTracking: false}} as any;
         if (!this.chartConfig.plotOptions) {
             this.chartConfig.plotOptions = {};
@@ -48,8 +49,8 @@ export class PieChartComponent extends BaseChartClass implements OnInit {
                     }
                 }
             };
-            this.us.mergeRecursive(this.chartConfig, opt);
 
+            this.us.mergeRecursive(this.chartConfig, opt);
         }
 
         const _this = this;
@@ -59,7 +60,32 @@ export class PieChartComponent extends BaseChartClass implements OnInit {
                     allowPointSelect: true,
                     cursor: 'pointer',
                     dataLabels: {
-                        enabled: this.widget.showValues
+                        enabled: true,
+                        formatter: function() {
+                            const ov = _this.override;
+                            /* jshint ignore:start */
+                            const t: any = this;
+                            /* jshint ignore:end */
+                            const fmt = ov?.valueLabelFormat || (t.series.options as any).format;
+
+                            let name = this.point.name;
+                            let value = _this.formatNumber(this.y, fmt);
+                            if (!_this.widget.showValues) {
+                                value = '';
+                            }
+
+                            if (_this.widget['btn.ShowAnnotations'] === false) {
+                                name = '';
+                            }
+
+                            let percent = _this.formatNumber(this.point.percentage, '#.##') + '%';
+                            if (!_this.widget['btn.ShowPercents']) {
+                                percent = '';
+                            }
+
+
+                            return [name, value, percent].filter(i => i).join(', ');
+                        }
                     },
                     showInLegend: true
                 },
@@ -84,7 +110,7 @@ export class PieChartComponent extends BaseChartClass implements OnInit {
         if (!this.chartConfig.plotOptions.series.dataLabels) {
             this.chartConfig.plotOptions.series.dataLabels = {};
         }
-        (this.chartConfig.plotOptions.pie.dataLabels as SeriesPieDataLabelsOptionsObject).enabled = this.widget.showValues;
+        (this.chartConfig.plotOptions.pie.dataLabels as SeriesPieDataLabelsOptionsObject).enabled = this.isValuesVisible();
         // (this.chartConfig.plotOptions.pie.dataLabels as SeriesPieDataLabelsOptionsObject).enabled = this.widget.isLegend;
         // this.chartConfig.plotOptions.series.dataLabels.enabled = this.widget.isLegend;
 
@@ -93,6 +119,10 @@ export class PieChartComponent extends BaseChartClass implements OnInit {
             // delete this.chartConfig.plotOptions.pie.dataLabels.formatter;
         }
         this.updateChart(true, true);
+    }
+
+    isValuesVisible(): boolean {
+        return this.widget.showValues || this.widget['btn.ShowAnnotations'];
     }
 
     // toggleLegend(state: boolean) {
@@ -105,14 +135,9 @@ export class PieChartComponent extends BaseChartClass implements OnInit {
     // }
 
     onHeaderButton(bt: IButtonToggle) {
-        if (bt.name === 'showValues') {
-            (this.chartConfig.plotOptions.pie.dataLabels as SeriesPieDataLabelsOptionsObject).enabled = this.widget.showValues;
-            // if (!this.widget.showValues) {
-            //     delete this.chartConfig.options.plotOptions.series.dataLabels.formatter;
-            //     delete this.chartConfig.options.plotOptions.pie.dataLabels.formatter;
-            // }
-            this.updateChart();
-            return;
+        if (bt.name === 'ShowValues' || bt.name === 'btn.ShowAnnotations' || bt.name === 'btn.ShowPercents') {
+            (this.chartConfig.plotOptions.pie.dataLabels as SeriesPieDataLabelsOptionsObject).enabled = this.isValuesVisible();
+            this.updateChart(true);
         }
         super.onHeaderButton(bt);
     }
