@@ -1,3 +1,6 @@
+#### 3.1.18
+* increased performance of charts with big data sets
+
 #### 3.1.17
 * fixed issue with MultiPolygon in GeoJSON support (polygons with holes)
  

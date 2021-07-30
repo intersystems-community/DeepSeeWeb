@@ -1,9 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {BaseChartClass} from './base-chart.class';
 
 @Component({
-  selector: 'dsw-column-chart',
-  template: ''
+    selector: 'dsw-column-chart',
+    template: ''
 })
 export class ColumnChartComponent extends BaseChartClass implements OnInit {
 
@@ -16,5 +16,4 @@ export class ColumnChartComponent extends BaseChartClass implements OnInit {
           this.enableStacking();
       }
   }
-
 }

@@ -301,7 +301,7 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
         let i;
         this.hideLoading();
         // Clean up previous data
-        while (this.chart.series.length > 0) {
+        while (this.chart?.series?.length > 0) {
             this.chart.series[0].remove();
         }
 
@@ -399,6 +399,7 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
                 this.firstRun = false;
                 this.onResize();
             }
+            // this.createChart();
         }
     }
 
@@ -471,6 +472,7 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
         }
         const cols = this.tc.hcColors || Highcharts.getOptions().colors;
         data.color = cols[(c.series.length % cols.length) || 0];
+        // data.color = cols[(this.chartConfig.series.length % cols.length) || 0];
 
         // Check chart type
         const curIdx = (conf || this.chartConfig).series.length;
@@ -507,7 +509,8 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
             }*/
         }
         data.showInLegend = true;
-        c.addSeries(data);
+        // this.chartConfig.series.push(data);
+        c.addSeries(data, false, false);
     }
 
     /**
@@ -767,8 +770,8 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
              }
          }*/
         // this.chart.update(this.chartConfig);
-        this.updateChart();
-        this.chart.redraw(true);
+        this.updateChart(true);
+        // this.chart.redraw(true);
     }
 
     getFormat(data) {
