@@ -1,3 +1,6 @@
+#### 3.1.17
+* fixed issue with MultiPolygon in GeoJSON support (polygons with holes)
+ 
 #### 3.1.16
 * added "View As" options: "Stacked bar chart", "Stacked column chart" (#179)
 * fixed formatting for charts (#185)

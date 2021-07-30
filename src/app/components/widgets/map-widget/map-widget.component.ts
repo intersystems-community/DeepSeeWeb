@@ -234,7 +234,7 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
         //     }
         // }
         /// url = 'uspolygons.js';
-        // this.ds.getFile('/assets/UAMap.geojson')
+        // this.ds.getFile('/assets/UARegions.geojson')
         this.ds.getFile(url)
             .then(data => this.onPolyFileLoaded(data))
             .finally(() => this.hideLoading());
@@ -498,73 +498,81 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
             }
 
             // parts = this.polyData[pkey].split(';');
-            const polys = [];
+            let polys = [];
             count++;
 
 
-            for (k = 0; k < parts.length; k++) {
-                let poly = [];
-                if (!parts[k]) {
-                    continue;
-                }
-                let coords = parts[k];
-                if (typeof coords === 'string') {
-                    coords = coords.split(' ');
-                }
+            if (this.isGeoJSON) {
+               const res = this.convertCoordinatesOfGEOJson(parts, min, max);
+               polys = res.poly;
+               min = res.min;
+               max = res.max;
+            } else {
 
-                let polyCoords = [];
-                for (i in coords) {
-                    if (!coords[i]) {
+                for (k = 0; k < parts.length; k++) {
+                    let poly = [];
+                    if (!parts[k]) {
                         continue;
                     }
-                    let c = coords[i];
-                    if (typeof c === 'string') {
-                        c = c.split(',');
-                    }
-                    if (c.length < 2) {
-                        continue;
-                    }
-                    lon = parseFloat(c[0]);
-                    lat = parseFloat(c[1]);
-
-                    if (isNaN(lon) || isNaN(lat)) {
-                        console.warn('Wrong poly coordinates: ', coords[i]);
-                        continue;
+                    let coords = parts[k];
+                    if (typeof coords === 'string') {
+                        coords = coords.split(' ');
                     }
 
-                    let point = new Point([lon, lat]);
-                    point.transform('EPSG:4326', 'EPSG:3857');
+                    let polyCoords = [];
+                    for (i in coords) {
+                        if (!coords[i]) {
+                            continue;
+                        }
+                        let c = coords[i];
+                        if (typeof c === 'string') {
+                            c = c.split(',');
+                        }
+                        if (c.length < 2) {
+                            continue;
+                        }
+                        lon = parseFloat(c[0]);
+                        lat = parseFloat(c[1]);
 
-                    let ll = lon;
-                    if (ll < 0) {
-                        ll += 360;
+                        if (isNaN(lon) || isNaN(lat)) {
+                            console.warn('Wrong poly coordinates: ', coords[i]);
+                            continue;
+                        }
+
+                        let point = new Point([lon, lat]);
+                        point.transform('EPSG:4326', 'EPSG:3857');
+
+                        let ll = lon;
+                        if (ll < 0) {
+                            ll += 360;
+                        }
+                        if (parseFloat(ll) < min[0]) {
+                            min[0] = parseFloat(ll);
+                        }
+                        if (parseFloat(lat) < min[1]) {
+                            min[1] = parseFloat(lat);
+                        }
+                        if (parseFloat(ll) > max[0]) {
+                            max[0] = parseFloat(ll);
+                        }
+                        if (parseFloat(lat) > max[1]) {
+                            max[1] = parseFloat(lat);
+                        }
+                        polyCoords.push(point.getCoordinates());
                     }
-                    if (parseFloat(ll) < min[0]) {
-                        min[0] = parseFloat(ll);
+
+                    poly.push(polyCoords);
+
+                    if (poly.length > 300) {
+                        let tmp = [];
+                        for (i = 0; i < poly.length; i += 2) {
+                            tmp.push(poly[i]);
+                        }
+                        poly = tmp;
                     }
-                    if (parseFloat(lat) < min[1]) {
-                        min[1] = parseFloat(lat);
-                    }
-                    if (parseFloat(ll) > max[0]) {
-                        max[0] = parseFloat(ll);
-                    }
-                    if (parseFloat(lat) > max[1]) {
-                        max[1] = parseFloat(lat);
-                    }
-                    polyCoords.push(point.getCoordinates());
+
+                    polys.push(polyCoords);
                 }
-
-                poly.push(polyCoords);
-
-                if (poly.length > 300) {
-                    let tmp = [];
-                    for (i = 0; i < poly.length; i += 2) {
-                        tmp.push(poly[i]);
-                    }
-                    poly = tmp;
-                }
-
-                polys.push(polyCoords);
             }
 
             // Find poly title
@@ -580,10 +588,17 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
                     }
                 }
             }
-            //poly = poly.reverse();
+
+            let polyType: any = Polygon;
+            if (this.isGeoJSON) {
+                // TOSO: support different types of polygons
+                switch (parts.type.toLowerCase()) {
+                }
+                polyType = MultiPolygon;
+            }
             let feature = new Feature({
-                geometry: new Polygon(polys),
-                //geometry: new MultiPolygon(polys.sort((a1, a2) => a1.length < a2.length ? 1: -1)),
+                //geometry: new Polygon(polys),
+                geometry: new polyType(polys),
                 key,
                 title: polyTitle,
                 dataIdx: t * l,
@@ -1021,11 +1036,47 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
             if (!feature) {
                 return;
             }
-            return feature.geometry.coordinates.flat();
+            return feature.geometry;
         } else {
             if (this.polyData[pkey]) {
                 return this.polyData[pkey].split(';');
             }
         }
+    }
+
+    private convertCoordinatesOfGEOJson(geometry: any, min: number[], max: number[]) {
+        const temp = JSON.parse(JSON.stringify(geometry.coordinates));
+        for (let a1 = 0; a1 < temp.length; a1++) {
+            for (let a2 = 0; a2 < temp[a1].length; a2++) {
+                for (let a3 = 0; a3 < temp[a1][a2].length; a3++) {
+                    const lon = temp[a1][a2][a3][0];
+                    const lat = temp[a1][a2][a3][1];
+
+                    const point = new Point([lon, lat]);
+                    point.transform('EPSG:4326', 'EPSG:3857');
+
+                    temp[a1][a2][a3][0] = point.getCoordinates()[0] as any;
+                    temp[a1][a2][a3][1] = point.getCoordinates()[1] as any;
+
+                    let ll = lon;
+                    if (ll < 0) {
+                        ll += 360;
+                    }
+                    if (parseFloat(ll) < min[0]) {
+                        min[0] = parseFloat(ll);
+                    }
+                    if (parseFloat(lat) < min[1]) {
+                        min[1] = parseFloat(lat);
+                    }
+                    if (parseFloat(ll) > max[0]) {
+                        max[0] = parseFloat(ll);
+                    }
+                    if (parseFloat(lat) > max[1]) {
+                        max[1] = parseFloat(lat);
+                    }
+                }
+            }
+        }
+        return {poly: temp, min, max};
     }
 }
