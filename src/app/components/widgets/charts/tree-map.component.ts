@@ -120,9 +120,9 @@ export class TreeMapComponent extends BaseChartClass implements OnInit {
                 dataLabels: {
                     enabled: true
                 }
-            });
+            }, undefined, undefined, true);
         }
-        // this.updateChart();
+        //this.updateChart(true);
     }
 
     setType(type) {

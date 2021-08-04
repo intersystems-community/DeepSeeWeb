@@ -444,7 +444,7 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
      * Adds series to chart
      * @param {object} data Series data
      */
-    addSeries(data, chart?: Highcharts.Chart, conf?: Highcharts.Options) {
+    addSeries(data, chart?: Highcharts.Chart, conf?: Highcharts.Options, redraw = false) {
         const c = chart || this.chart;
         if (data && data.data && data.data.length !== 0) {
             let isEmpty = true;
@@ -510,7 +510,7 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
         }
         data.showInLegend = true;
         // this.chartConfig.series.push(data);
-        c.addSeries(data, false, false);
+        c.addSeries(data, redraw, false);
     }
 
     /**
