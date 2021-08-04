@@ -1,3 +1,6 @@
+#### 3.1.19
+* fixed issue with tree chart rendering
+
 #### 3.1.18
 * increased performance of charts with big data sets
 
