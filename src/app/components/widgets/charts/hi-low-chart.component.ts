@@ -90,6 +90,6 @@ export class HiLowChartComponent extends BaseChartClass implements OnInit {
 
             this.addSeries({data: tempData, caption1: cap1, caption2: cap2, format1: fmt1, format2: fmt2});
         }
-        this.updateChart();
+        this.updateChart(true);
     }
 }

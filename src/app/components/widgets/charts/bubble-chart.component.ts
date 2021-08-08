@@ -199,7 +199,7 @@ export class BubbleChartComponent extends BaseChartClass implements OnInit {
                 });
             }
         }
-        this.updateChart();
+        this.updateChart(true);
     }
 
 }

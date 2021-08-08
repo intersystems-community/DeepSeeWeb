@@ -72,6 +72,6 @@ export class XyChartComponent extends BaseChartClass implements OnInit {
 
             (this.chartConfig.xAxis as XAxisOptions).tickInterval = Math.round((tempData[tempData.length - 1][0] - tempData[0][0]) / 10);
         }
-        this.updateChart();
+        this.updateChart(true);
     }
 }

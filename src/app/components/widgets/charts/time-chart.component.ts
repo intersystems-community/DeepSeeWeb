@@ -148,7 +148,7 @@ export class TimeChartComponent extends BaseChartClass implements OnInit {
 
         this.initFormatForSeries(data);
 
-        this.updateChart();
+        this.updateChart(true);
     }
 
 

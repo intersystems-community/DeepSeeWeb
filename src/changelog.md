@@ -1,3 +1,6 @@
+#### 3.1.20
+* fixed issue with pie, bullseye, time, xy, hi/low, bubble charts rendering
+  
 #### 3.1.19
 * fixed issue with tree chart rendering
 

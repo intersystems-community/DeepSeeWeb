@@ -58,7 +58,7 @@ export class BullseyeChartComponent extends BaseChartClass implements OnInit {
                 borderWidth: 2
             });
         }
-        this.updateChart();
+        this.updateChart(true);
     }
 
 }
