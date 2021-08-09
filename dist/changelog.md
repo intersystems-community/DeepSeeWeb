@@ -1,3 +1,6 @@
+#### 3.1.21
+* fixed issue with widget sharing (#193)
+
 #### 3.1.20
 * fixed issue with pie, bullseye, time, xy, hi/low, bubble charts rendering
   
