@@ -404,7 +404,7 @@ export class DashboardScreenComponent implements OnInit, OnDestroy, AfterViewIni
         this.dbs.setWidgets(this.widgetInfo);
         for (i = 0; i < result.widgets.length; i++) {
             result.widgets[i].dashboard = path;
-            if (this.sharedWidget && i !== this.sharedWidget) {
+            if (this.sharedWidget && i !== parseInt(this.sharedWidget, 10)) {
                 continue;
             }
             // Create item for model
@@ -484,7 +484,7 @@ export class DashboardScreenComponent implements OnInit, OnDestroy, AfterViewIni
         this.dbs.setWidgets(this.widgetInfo);
 
         // Update title
-        this.ms.onSetTitle.emit(this.dbs.getWidgets()[this.page].title);
+        this.ms.onSetTitle.emit(this.dbs.getWidgets()[this.page]?.title);
 
         if (this.isMobile) {
             this.isLoaded = true;
