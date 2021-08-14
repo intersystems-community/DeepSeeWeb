@@ -955,6 +955,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         if (this.pivotData && this.pivotData.rowAxisOptions && this.pivotData.rowAxisOptions.drilldownSpec) {
             customDrills = this.pivotData.rowAxisOptions.drilldownSpec.split('^');
         }
+
         for (i = 0; i < drills.length; i++) {
             if (drills[i].path) {
                 mdx += ' %FILTER ' + drills[i].path;
@@ -981,7 +982,12 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
             if (idx === -1) {
                 mdx = mdx.replace(' ON 1 FROM', ' .children ON 1 FROM');
             } else {
-                mdx = mdx.replace('.Members ON 1 FROM', '.' + path.split('.').pop() + '.children ON 1 FROM');
+                const from = mdx.indexOf('[');
+                const str = '.Members ON 1 FROM';
+                const to = mdx.indexOf(str);
+                mdx = mdx.substr(0, from) + path + '.children ON 1 FROM' + mdx.substr(to + str.length);
+                // mdx = mdx.replace('.Members ON 1 FROM', '.' + path.split('.').pop() + '.children ON 1 FROM');
+                // mdx = mdx.replace('.Members ON 1 FROM', '.&[' + path.split('&[').pop() + '.children ON 1 FROM');
             }
             return mdx;
         }
