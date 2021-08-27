@@ -1,3 +1,11 @@
+#### 3.1.23
+* added support for MDX order in drilldown (#205)
+* added support for MDX order in lightpivottable (#205)
+* added auto-drill for charts & treemap if there is only one item present as mdx result (#203)
+* fixed issue with colorProperty, now read from dataProperties (#202)
+* fixed issue with choose data source control default source display (#206) 
+* fixed issue "no back button after drill" on some widgets
+
 #### 3.1.22
 * fixed issue with drilldown MDX generation
 
