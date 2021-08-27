@@ -5,6 +5,4147 @@
  ** @license Apache 2.0
  ** @see https://github.com/ZitRos/LightPivotTable
  **/
-LightPivotTable=function(){var DataController=function(e,t){if(t&&"function"!=typeof t)throw new Error("dataChangeTrigger parameter must be a function");this._dataStack=[],this.controller=e,this.pushData(),this.dataChangeTrigger=t,this.SUMMARY_SHOWN=!1};DataController.prototype.isValidData=function(e){return e.dimensions instanceof Array&&e.dimensions[0]instanceof Array&&!e.dimensions[0].length&&(e.dimensions[0]=[{}]),e.dimensions instanceof Array&&e.dimensions[0]instanceof Array&&e.dataArray instanceof Array&&"object"==typeof e.info&&e.info.cubeName},DataController.prototype.pushData=function(){var e;this._dataStack.push(e={data:null,SUMMARY_SHOWN:this.SUMMARY_SHOWN,SORT_STATE:{column:null,order:-1}}),this.SORT_STATE=e.SORT_STATE},DataController.prototype.popData=function(){if(!(this._dataStack.length<2)){var e=this._dataStack[this._dataStack.length-2];this._dataStack.pop(),this.SUMMARY_SHOWN=e.SUMMARY_SHOWN,this.SORT_STATE=e.SORT_STATE}},DataController.prototype.getData=function(){return this._dataStack[this._dataStack.length-1].data||{}},DataController.prototype.setData=function(e){return this.isValidData(e)?(this._dataStack[this._dataStack.length-1].data=e,this.setLeftHeaderColumnsNumber(e),this.pivotDataProcess(e),this.resetDimensionProps(),this.resetConditionalFormatting(),this.resetRawData(),this.modifyRawData(e),this.postDataProcessing(e),"drillthrough"===e.info.mdxType&&this.setDrillThroughHandler(this.controller.pivotView.listingClickHandler.bind(this.controller.pivotView)),this._trigger(),e):void console.error("Invalid data to set.",e)},DataController.prototype.pivotDataProcess=function(e){var t=this.controller.getPivotProperty(["rowTotals"]);"boolean"==typeof t&&(this.controller.CONFIG.showSummary=t)},DataController.prototype.setDrillThroughHandler=function(e){this._dataStack[this._dataStack.length-1].data.info.drillThroughHandler=e},DataController.prototype.resetDimensionProps=function(){var e,t,r;if(!(e=this._dataStack[this._dataStack.length-1].data))return void console.error("Unable to get dimension props for given data set.");t=[],r=[];var o=function(e){var t,r={};for(t in e)r[t]=e[t];return r},n=function(e,t,r){var a,i,l;if(t.children&&t.children.length>0)for(l in t.children)i=o(r),a=t.children[l],a.format&&(i.format=a.format),a.style&&(i.style=(i.style||"")+a.style),a.summary&&(i.summary=a.summary),a.total&&(i.summary=(a.total||"").toLowerCase().replace(/:.*/,"")),a.type&&(i.type=a.type),n(e,a,i);else e.push(o(r))};n(t,{children:e.dimensions[0]},{}),n(r,{children:e.dimensions[1]},{}),e.columnProps=t,e.rowProps=r},DataController.prototype.getTypeByValue=function(e){return isNaN(e)?(e+"").match(/[0-9]{2}\.[0-9]{2}\.[0-9]{2,4}/)?{type:"date",comparator:function(e){var t=e.split(".");return new Date(t[2],t[1],t[0])}}:Date.parse(e)?{type:"date",comparator:function(e){return new Date(e)}}:{type:"string"}:{type:"number"}},DataController.prototype.postDataProcessing=function(e){var t,r;if(e&&e.rawData&&e.rawData[e.info.topHeaderRowsNumber])for(e.columnProps||(e.columnProps=[]),r=e.info.leftHeaderColumnsNumber;t=e.rawData[e.info.topHeaderRowsNumber][r];r++)e.columnProps[r]||(e.columnProps[r]={}),e.columnProps[r].$FORMAT=this.getTypeByValue(t.value)},DataController.prototype.resetConditionalFormatting=function(){var e,t,r,o,n,a,i,l,s={};if(!(e=this._dataStack[this._dataStack.length-1].data))return void console.error("Unable to get conditional formatting for given data set.");if(!this.controller.CONFIG.pivotProperties)return void(e.conditionalFormatting=s);(t=this.controller.CONFIG.pivotProperties.colorScale)&&(t.indexOf("custom:")>-1?(n=t.split(":")[1].split(","),o={r:parseInt(n[0]),g:parseInt(n[1]),b:parseInt(n[2])},n=t.split(":")[2].split(","),r={r:parseInt(n[0]),g:parseInt(n[1]),b:parseInt(n[2])}):(n=t.split("-to-"),r=this.controller.pivotView.colorNameToRGB(n[0]),o=this.controller.pivotView.colorNameToRGB(n[1])),s.colorScale={from:o,to:r,min:a=Math.min.apply(Math,e.dataArray||[]),max:i=Math.max.apply(Math,e.dataArray||[]),diff:i-a,invert:(o.r+o.b+o.g)/3<128}),l=this.controller.CONFIG.pivotProperties.formatRules||[],l.length&&"undefined"==typeof this.controller.CONFIG.conditionalFormattingOn&&(this.controller.CONFIG.conditionalFormattingOn=!0);for(var c in l)s[l[c].range]||(s[l[c].range]=[]),s[l[c].range].push(l[c]);e.conditionalFormatting=s},DataController.prototype.TOTAL_FUNCTIONS={isNumber:function(e){return""!=e&&isFinite(e)},totalSUM:function(e,t,r,o,n,a){for(var i=0,l=t;l<r;l++){var s="undefined"==typeof a?l:a,c="undefined"==typeof o?l:o;this.isNumber(e[s][c].value)&&(i+=parseFloat(e[s][c].value)||0)}return i},totalAVG:function(e,t,r,o,n,a){for(var i=0,l=t;l<r;l++){var s="undefined"==typeof a?l:a,c="undefined"==typeof o?l:o;if(!this.isNumber(e[s][c].value)){i=0;break}i+=parseFloat(e[s][c].value)||0}return i/(r-t)||""},totalCOUNT:function(e,t,r,o,n,a){for(var i=0,l=t;l<r;l++){var s="undefined"==typeof a?l:a,c="undefined"==typeof o?l:o;e[s][c].value&&i++}return i},totalMIN:function(e,t,r,o,n,a){for(var i=1/0,l=t;l<r;l++){var s="undefined"==typeof a?l:a,c="undefined"==typeof o?l:o;this.isNumber(e[s][c].value)&&e[s][c].value<i&&(i=e[s][c].value)}return i},totalMAX:function(e,t,r,o,n,a){for(var i=-(1/0),l=t;l<r;l++){var s="undefined"==typeof a?l:a,c="undefined"==typeof o?l:o;this.isNumber(e[s][c].value)&&e[s][c].value>i&&(i=e[s][c].value)}return i},totalPERCENTAGE:function(e,t,r,o,n,a){var i,l,s=[];for(i=n;i<typeof o==="undefined"?e.length:e[0].length;i++)s.push(this.totalSUM(e,t,r,"undefined"==typeof o?o:i,n,"undefined"==typeof a?a:i));return l=s.reduce(function(e,t){return e+t}),(s[("undefined"==typeof a?o:a)-n]/l*100||0).toFixed(2)+"%"},totalNONE:function(){return""}},DataController.prototype.setLeftHeaderColumnsNumber=function(e){function t(e,r){if(!(e.children instanceof Array))return r;for(var o=r+1,n=0;n<e.children.length;n++)r=Math.max(t(e.children[n],o),r);return r}e.info.leftHeaderColumnsNumber=t({children:e.dimensions[1]||[]},0)},DataController.prototype.resetRawData=function(){var e,t,r,o,n,a="font-weight: bold;text-align: right;",i=this;if(!(e=this._dataStack[this._dataStack.length-1].data))return console.error("Unable to create raw data for given data set."),null;var l=[],s=[],c=2,u=[],h=i.controller.CONFIG.pivotProperties&&2===i.controller.CONFIG.pivotProperties.hideMeasures,p=function(e){return Object.keys(e[0]).map(function(t){return e.map(function(e){return e[t]})})},d=function(e,t,r){g(l,t,r,!0);var o,n=0;for(o in l)l[o].length>n&&(n=l[o].length);for(o in l)for(var a=l[o].length;a<n;a++)l[o].push(l[o][l[o].length-1]);l=p(l)},f=function(e,t){i.controller.CONFIG.pivotProperties&&(i.controller.CONFIG.pivotProperties.columnHeaderStyle&&t?e.style=i.controller.CONFIG.pivotProperties.columnHeaderStyle:i.controller.CONFIG.pivotProperties.rowHeaderStyle&&!t&&(e.style=i.controller.CONFIG.pivotProperties.rowHeaderStyle))},m=function(e,t){function r(e,t){if(e.children){var o=0;for(var n in e.children)o=Math.max(o,r(e.children[n],t+1));return o}return"msr"===e.type&&h?t-1:t}return"undefined"==typeof t&&(t=0),e.reduce(function(e,t){return Math.max(e,r(t,1))},t)},g=function(e,t,r,o,n,a){var i,l,s;r||(r=[]);for(var u in t)i=c,!(n<a)||t[u].children&&t[u].children.length||(t[u].children=[{}],s=!0),t[u].children&&t[u].children.length?(s?s=!1:c++,l={group:i,source:t[u],isCaption:!0,value:t[u].caption||""},f(l,o),g(e,t[u].children,r.concat(l),o,n?n+1:n,a)):(l={group:c,source:t[u],isCaption:!0,value:t[u].caption||""},f(l,o),e.push("msr"===t[u].type&&h?r:r.concat(l)),c++)},v=function(t){if(!i.controller.CONFIG.pivotProperties)return t;var r,o,n,a=t[0].length,l=i.controller.getPivotProperty(["columnLevels"]),s=i.controller.getPivotProperty(["rowLevels"]),c={},u={},h=function(e,t){if("undefined"!=typeof t)for(var r in t.childLevels)t.childLevels[r]&&t.childLevels[r].spec&&(e[(t.childLevels[r].spec||"").replace(/[^.]*$/,"")]={style:t.childLevels[r].levelStyle||"",headStyle:t.childLevels[r].levelHeaderStyle||""}),h(t.childLevels[r])};for(n in l)h(c,{childLevels:[l[n]]}),h(u,{childLevels:[s[n]]});for(o=0;o<t.length;o++)for(r=0;r<a;r++){if(!t[o][r].isCaption){a=r;break}if(t[o][r].source&&t[o][r].source.path){var p=e.info.topHeaderRowsNumber>o?c:u;for(n in p)if(t[o][r].source.path.indexOf(n)>=0){t[o][r].isCaption?p[n].headStyle&&(t[o][r].style=(t[o][r].style||"")+p[n].headStyle||""):p[n].style&&(t[o][r].style=(t[o][r].style||"")+p[n].style||"");break}}}return t};e.dimensions[0].length&&d(l,e.dimensions[0]),e.dimensions[1].length&&g(s,e.dimensions[1],void 0,void 0,1,m(e.dimensions[1])),s[0]&&(n=(s[0][s[0].length-1]||{source:{}}).source.dimension);var C=(l[0]||[]).length,y=s.length||e.info.rowCount||0,N=l.length||e.info.colCount||0,S=(s[0]||[]).length,w=!!this.controller.CONFIG.attachTotals;for(r=0;r<N+y;r++)for(u[r]||(u[r]=[]),o=0;o<S+C;o++)o<S?r<N?(u[r][o]={group:1,isCaption:!0,value:this.controller.getPivotProperty(["showRowCaption"])===!1?"":this.controller.CONFIG.caption||n||(e.info||{}).cubeName||""},f(u[r][o],!1)):u[r][o]=s[r-N][o]:r<N?u[r][o]=l[r][o-S]:u[r][o]={value:e.dataArray[C*(r-N)+o-S]};for(e.info.topHeaderRowsNumber=N,e.info.SUMMARY_SHOWN=!1,e.info.leftHeaderColumnsNumber=S,this.SUMMARY_SHOWN=!1,this._dataStack[this._dataStack.length-1].SUMMARY_SHOWN=!1,O=0;O<e.info.leftHeaderColumnsNumber;O++)e.columnProps.unshift({});for(O=0;O<e.info.topHeaderRowsNumber;O++)e.rowProps.unshift({});var b=function(t,r){var o=i.controller.getPivotProperty(["rowTotalAgg"])||"sum",n=i.controller.getPivotProperty(["columnTotalAgg"])||"sum",a=r?"rowProps":"columnProps";if(!e[a][t]&&!(r?n:o))return i.TOTAL_FUNCTIONS.totalSUM;switch((e[a][t]||{}).summary||o){case"count":return i.TOTAL_FUNCTIONS.totalSUM;case"avg":return i.TOTAL_FUNCTIONS.totalAVG;case"min":return i.TOTAL_FUNCTIONS.totalMIN;case"max":return i.TOTAL_FUNCTIONS.totalMAX;case"pct":return i.TOTAL_FUNCTIONS.totalPERCENTAGE;case"none":return i.TOTAL_FUNCTIONS.totalNONE;default:return i.TOTAL_FUNCTIONS.totalSUM}};if(this.controller.CONFIG.showSummary&&u.length-e.info.topHeaderRowsNumber>1&&(u[u.length-1][0]||{}).isCaption){e.info.SUMMARY_SHOWN=!0,this.SUMMARY_SHOWN=!0,this._dataStack[this._dataStack.length-1].SUMMARY_SHOWN=!0,t=[],o=u.length-2;for(var O in u[o])u[o][O].isCaption?(t[O]={group:c,isCaption:!0,source:{},noDrillDown:!0,value:pivotLocale.get(0)},f(t[O],!1)):t[O]={value:b(parseInt(O)).call(this.TOTAL_FUNCTIONS,u,N,u.length,O,e.info.leftHeaderColumnsNumber),style:a};c++,w?(u.splice(e.info.topHeaderRowsNumber,0,t),e.info.topHeaderRowsNumber++):u.push(t)}if(this.controller.getPivotProperty(["columnTotals"])&&u.length-e.info.topHeaderRowsNumber>1&&e.info.leftHeaderColumnsNumber>0){var E,D=++c;for(E=0;E<e.info.topHeaderRowsNumber;E++)u[E].push({group:D,isCaption:!0,value:pivotLocale.get(0)});for(E=e.info.topHeaderRowsNumber;E<u.length;E++)u[E].push({isCaption:!0,value:b(E,!0).call(this.TOTAL_FUNCTIONS,u,e.info.leftHeaderColumnsNumber,u[E].length,void 0,e.info.leftHeaderColumnsNumber,E),style:a})}return u=v(u),e.rawData=e._rawDataOrigin=u,e.rawData},DataController.prototype._trigger=function(){this.dataChangeTrigger&&this.dataChangeTrigger()},DataController.prototype.sortByColumn=function(e){var t,r=this._dataStack[this._dataStack.length-1].data,o=this.SUMMARY_SHOWN&&this.controller.CONFIG.attachTotals?1:0;this.SORT_STATE.column!==e&&(i=this.SORT_STATE.order=0);var n=r._rawDataOrigin.slice(r.info.topHeaderRowsNumber,r._rawDataOrigin.length-(this.SUMMARY_SHOWN&&!o?1:0)),a=r.info.leftHeaderColumnsNumber+e,i=this.SORT_STATE.order===-1?1:1===this.SORT_STATE.order?0:-1;this.SORT_STATE.order=i,this.SORT_STATE.column=e;for(var l in r.rawData[r.info.topHeaderRowsNumber-o-1])r.rawData[r.info.topHeaderRowsNumber-o-1][l].className&&delete r.rawData[r.info.topHeaderRowsNumber-o-1][l].className;return 0===i?(r.rawData=r._rawDataOrigin,this.modifyRawData(r),void this._trigger()):(i=-i,"function"==typeof(t=((r.columnProps[e]||{}).$FORMAT||{}).comparator)?n.sort(function(e,r){return t(r[a].value)>t(e[a].value)?i:t(r[a].value)<t(e[a].value)?-i:0}):n.sort(function(e,t){return t[a].value>e[a].value?i:t[a].value<e[a].value?-i:0}),r.rawData=r._rawDataOrigin.slice(0,r.info.topHeaderRowsNumber).concat(n).concat(this.SUMMARY_SHOWN&&!o?[r._rawDataOrigin[r._rawDataOrigin.length-1]]:[]),r.rawData[r.info.topHeaderRowsNumber-o-1][r.info.leftHeaderColumnsNumber+e].className=0===i?"":1===i?"lpt-sortDesc":"lpt-sortAsc",this.modifyRawData(r),void this._trigger())},DataController.prototype.filterByValue=function(e,t){var r=this._dataStack[this._dataStack.length-1].data,o=this.SUMMARY_SHOWN&&this.controller.CONFIG.attachTotals?1:0,n=r._rawDataOrigin.slice(r.info.topHeaderRowsNumber,r._rawDataOrigin.length-(this.SUMMARY_SHOWN&&!o?1:0)),a=null;try{a=new RegExp(e,"i")}catch(i){try{a=new RegExp(e.replace(/([()[{*+.$^\\|?])/g,"\\$1"),"i")}catch(i){return}}n=n.filter(function(e){return(e[t].value||"").toString().match(a)}),r.rawData=r._rawDataOrigin.slice(0,r.info.topHeaderRowsNumber).concat(n).concat(this.SUMMARY_SHOWN&&!o?[r._rawDataOrigin[r._rawDataOrigin.length-1]]:[]),this.modifyRawData(r),this._trigger()},DataController.prototype.modifyRawData=function(e){var t=-1;this.controller.CONFIG.showRowNumbers&&!e.info.leftHeaderColumnsNumber&&(e.rawData[0]&&e.rawData[0][0].special?e.rawData.forEach(function(e){e[0].value=0===++t?"#":t,e[0].isCaption=0===t}):(e.rawData.forEach(function(e){e.unshift({value:0===++t?"#":t,isCaption:0===t,special:!0,noClick:!0})}),e.columnProps instanceof Array&&e.columnProps.unshift({}),e.info.colCount++));var r=e.info.topHeaderRowsNumber-1;for(t=e.info.leftHeaderColumnsNumber;t<e.rawData[r].length;t++)e.rawData[r][t].style="min-width:"+(this.controller.getPivotProperty(["cellWidth"])||100)+"px;"+(e.rawData[r][t].style?e.rawData[r][t].style:"")};var DataSource=function(e,t,r,o){this.SOURCE_URL=e.MDX2JSONSource||location.host+":"+location.port+"/"+(location.pathname.split("/")||[])[1],this.NAMESPACE=e.namespace,this.USERNAME=e.username,this.PASSWORD=e.password,this.LPT=r,this.GLOBAL_CONFIG=t,this.SEND_COOKIES=e.sendCookies||!1,this.DRILL_LEVEL="number"!=typeof o?1:o,this.BASIC_MDX=e.basicMDX,this.DATA_SOURCE_PIVOT=e.pivot||"",this.FILTERS=[]};DataSource.prototype._post=function(url,data,callback){var xhr=new XMLHttpRequest,self=this;xhr.open("POST",url),this.SEND_COOKIES&&(xhr.withCredentials=!0),xhr.onreadystatechange=function(){var handler;4===xhr.readyState&&(handler=self.LPT.CONFIG.triggers.responseHandler,"function"==typeof handler&&handler.call(self.LPT,{url:url,status:xhr.status,xhr:xhr})),4===xhr.readyState&&200===xhr.status?callback(function(){try{return JSON.parse(xhr.responseText)||{}}catch(e){try{var temp=null;return eval("temp="+xhr.responseText),temp}catch(e){return{error:"<h1>Unable to parse server response</h1><p>"+xhr.responseText+"</p>"}}}}()):4===xhr.readyState&&200!==xhr.status&&callback({error:xhr.responseText||pivotLocale.get(3)+"<br/>"+xhr.status+": "+xhr.statusText})},this.USERNAME&&this.PASSWORD&&xhr.setRequestHeader("Authorization","Basic "+btoa(this.USERNAME+":"+this.PASSWORD)),xhr.send(JSON.stringify(data))},DataSource.prototype._convert=function(e){var t;if("object"!=typeof e||e.error)return{error:e.error||!0};try{return t={dimensions:[e.Cols[0].tuples,e.Cols[1].tuples],dataArray:e.Data,info:e.Info}}catch(r){return console.error("Error while parsing data:",r),{error:e.error||!0}}},DataSource.prototype.setFilter=function(e){this.FILTERS.push(e)},DataSource.prototype.clearFilters=function(){this.FILTERS=[]},DataSource.prototype.getCurrentData=function(e){for(var t=this,r=this._convert,o=this.BASIC_MDX,n=new MDXParser,a=n.mdxType(o),i={state:0,data:{},pivotData:{}},l=0;l<this.FILTERS.length;l++)o=n.applyFilter(o,this.FILTERS[l]);"number"==typeof this.GLOBAL_CONFIG.rowCount&&(o=n.applyRowCount(o,this.GLOBAL_CONFIG.rowCount));var s=function(){var e=i.pivotData;t.GLOBAL_CONFIG.pivotProperties=i.pivotData,e.rowAxisOptions&&(e.rowAxisOptions.drilldownSpec&&(t.GLOBAL_CONFIG.DrillDownExpression=t.GLOBAL_CONFIG.DrillDownExpression||e.rowAxisOptions.drilldownSpec.split("^")),(e.rowAxisOptions.levelFormat||e.columnAxisOptions&&e.columnAxisOptions.levelFormat)&&(t.GLOBAL_CONFIG.formatNumbers=t.GLOBAL_CONFIG.formatNumbers||e.columnAxisOptions.levelFormat||e.rowAxisOptions.levelFormat))},c=function(){var n=i.data;if("drillthrough"===a)e(function(e){var t,o,n,i=e.children||[],l=[];if(!i.length)return{error:pivotLocale.get(4)};for(o in i[0])l.push({caption:o});t={Cols:[{tuples:l},{tuples:[]}],Data:[],Info:{colCount:8,cubeClass:"No cube class",cubeName:"No cube name",leftHeaderColumnsNumber:0,rowCount:i.length,topHeaderRowsNumber:l.length,mdxType:a}};for(o in i)for(n in i[o])t.Data.push(i[o][n]);return r(t)}(n));else if("mdx"===a){if(!(n&&n.Data&&n.Data.length&&n.Cols&&(n.Data.length||((n.Cols[0]||{}).tuples||[]).length||((n.Cols[1]||{}).tuples||[]).length)))return e({error:pivotLocale.get(4)});e(t._convert(n))}else e({error:"Unrecognised MDX type: "+o||!0})},u=function(){t.LPT.CONFIG.logs&&console.log("LPT MDX request:",o);var e=function(e){t.LPT.pivotView.removeMessage(),i.data=e,i.state++,c()};return 0===t.DRILL_LEVEL&&t.LPT.CONFIG.initialData?void e(t.LPT.CONFIG.initialData):void t._post(t.SOURCE_URL+"/"+("drillthrough"===a?"MDXDrillthrough":"MDX")+(t.NAMESPACE?"?Namespace="+t.NAMESPACE:""),{MDX:o},e)};t.LPT.pivotView.displayLoading(),this.DATA_SOURCE_PIVOT?this._post(this.SOURCE_URL+"/DataSource"+(t.NAMESPACE?"?Namespace="+t.NAMESPACE:""),{DataSource:this.DATA_SOURCE_PIVOT},function(e){i.pivotData=e,i.state++,s(),u()}):(t.GLOBAL_CONFIG.pivotProperties={},u())};var ExcelExport=function(){};ExcelExport.prototype.exportTableHTML=function(){var e="data:application/vnd.ms-excel;base64,",t='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body><table>{table}</table></body></html>',r=function(e){return window.btoa(unescape(encodeURIComponent(e)))},o=function(e,t){return e.replace(/{(\w+)}/g,function(e,r){return t[r]})};return function(n,a){var i={worksheet:a||"Worksheet",table:n};console.log(e+r(o(t,i))),window.location.href=e+r(o(t,i))}}(),ExcelExport.prototype.exportXLS=function(){var e=document.getElementsByClassName("lpt")[0],t=e.getElementsByClassName("lpt-tableBlock")[0].getElementsByTagName("table")[0].innerHTML,r=e.getElementsByClassName("lpt-topHeader")[0].getElementsByTagName("table")[0].innerHTML.replace(/<tr>/,"<tr><th colspan='2'></th>"),o=e.getElementsByClassName("lpt-leftHeader")[0].getElementsByTagName("thead")[0].innerHTML,n=o.match("<tr>(.*)</tr>")[1].split("</tr><tr>"),a=0;t=t.replace(/<tr>/g,function(){return"<tr>"+n[a++]}),console.log(r+t),this.exportTableHTML(r+t,"test")};var LightPivotTable=function(e){var t=this;"object"!=typeof e&&(e={}),this.normalizeConfiguration(e),this._dataSourcesStack=[],this.DRILL_LEVEL=-1,this.CONFIG=e,this.VERSION="".concat("1.8.14")||"[NotBuilt]",this.CONTROLS={},this.mdxParser=new MDXParser,this.pivotView=new PivotView(this,e.container),this.dataSource=this.pushDataSource(e.dataSource),this.dataController=new DataController(this,function(){t.dataIsChanged.call(t)}),this.init()};LightPivotTable.prototype.refresh=function(){var e,t=this;if(!this.dataSource.BASIC_MDX)return void console.log("Unable to refresh: no basic MDX set.");if(this.clearFilters(),this.CONFIG.defaultFilterSpecs instanceof Array)for(e in this.CONFIG.defaultFilterSpecs)this.setFilter(this.CONFIG.defaultFilterSpecs[e]);this.dataSource.getCurrentData(function(e){t.dataController.isValidData(e)?t.dataController.setData(e):t.pivotView.displayMessage(e.error||pivotLocale.get(2))})},LightPivotTable.prototype.changeBasicMDX=function(e){for(var t=this._dataSourcesStack.length-1;t>0;t--)this.popDataSource(),this.pivotView.popTable(),this.dataController.popData();this.CONFIG.dataSource.basicMDX=e,this.dataSource.BASIC_MDX=e,this.refresh()},LightPivotTable.prototype.setRowCount=function(e){this.CONFIG.rowCount=e},LightPivotTable.prototype.getActualMDX=function(){var e=this.dataSource.BASIC_MDX,t=new MDXParser,r=this.dataSource.FILTERS;for(var o in r)e=t.applyFilter(e,r[o]);return"number"==typeof this.CONFIG.rowCount&&(e=t.applyRowCount(e,this.CONFIG.rowCount)),e},LightPivotTable.prototype.isListing=function(){return 0===(this.dataController.getData().info||{}).leftHeaderColumnsNumber},LightPivotTable.prototype.getSelectedRows=function(){var e,t=[],r=this.pivotView.selectedRows;for(e in r)r[e]&&t.push(+e);return t},LightPivotTable.prototype.getRowsValues=function(e){if("undefined"==typeof e)return[];if(e instanceof Array||(e=[e]),0===e.length)return[];for(var t=this.dataController.getData(),r=[],o=0;o<e.length;o++)r.push(t.rawData[e[o]-1+(t.info.topHeaderRowsNumber||1)]);return r},LightPivotTable.prototype.getModel=function(){return this.dataController.getData()},LightPivotTable.prototype.updateSizes=function(){this.pivotView.updateSizes()},LightPivotTable.prototype.setFilter=function(e){this.dataSource.setFilter(e)},LightPivotTable.prototype.clearFilters=function(){this.dataSource.clearFilters()},LightPivotTable.prototype.pushDataSource=function(e){var t;return this.DRILL_LEVEL++,this._dataSourcesStack.push(t=new DataSource(e||{},this.CONFIG,this,this.DRILL_LEVEL)),this.dataSource=t,t},LightPivotTable.prototype.popDataSource=function(e){this._dataSourcesStack.length<2||(this.DRILL_LEVEL--,this._dataSourcesStack.pop(),e||this.dataController.popData(),this.dataSource=this._dataSourcesStack[this._dataSourcesStack.length-1])},LightPivotTable.prototype.dataIsChanged=function(){this.pivotView.dataChanged(this.dataController.getData())},LightPivotTable.prototype.tryDrillDown=function(e){var t,r=this,o={};for(var n in r.CONFIG.dataSource)o[n]=r.CONFIG.dataSource[n];!this.CONFIG.DrillDownExpression||this.CONFIG.DrillDownExpression instanceof Array||(this.CONFIG.DrillDownExpression=[this.CONFIG.DrillDownExpression]),(this.CONFIG.DrillDownExpression||[])[this.DRILL_LEVEL]?o.basicMDX=this.mdxParser.drillDown(this.dataSource.BASIC_MDX,e,this.CONFIG.DrillDownExpression[this.DRILL_LEVEL])||this.dataSource.BASIC_MDX:o.basicMDX=this.mdxParser.drillDown(this.dataSource.BASIC_MDX,e)||this.dataSource.BASIC_MDX,t=this.dataSource,this.pushDataSource(o),this.dataSource.FILTERS=t.FILTERS,this.dataSource.getCurrentData(function(e){r.dataController.isValidData(e)&&e.dataArray.length>0&&e.dimensions[1]&&e.dimensions[1][0]&&(e.dimensions[1][0].caption||e.dimensions[1][0].dimension||e.dimensions[1][0].path)?(r.pivotView.pushTable(),r.dataController.pushData(),r.dataController.setData(e),"function"==typeof r.CONFIG.triggers.drillDown&&r.CONFIG.triggers.drillDown.call(r,{level:r.DRILL_LEVEL,mdx:o.basicMDX,path:e.dimensions[1][0].path||""})):r.popDataSource(!0)})},LightPivotTable.prototype.tryDrillThrough=function(e){var t,r=this,o={};for(var n in r.CONFIG.dataSource)o[n]=r.CONFIG.dataSource[n];o.basicMDX=this.mdxParser.drillThrough(this.dataSource.BASIC_MDX,e)||this.dataSource.basicMDX,t=this.dataSource,this.pushDataSource(o),this.dataSource.FILTERS=t.FILTERS,this.dataSource.getCurrentData(function(e){r.dataController.isValidData(e)&&e.dataArray.length>0?(r.pivotView.pushTable({disableConditionalFormatting:!0}),r.dataController.pushData(),r.dataController.setData(e),"function"==typeof r.CONFIG.triggers.drillThrough&&r.CONFIG.triggers.drillThrough.call(r,{level:r.DRILL_LEVEL,mdx:o.basicMDX})):r.popDataSource(!0)})},LightPivotTable.prototype.getPivotProperty=function(e){if(this.CONFIG.pivotProperties){e instanceof Array||(e=[]);var t=this.CONFIG.pivotProperties;for(e=e.reverse();e.length&&"undefined"!=typeof t;)t=t[e.pop()];return t}},LightPivotTable.prototype.attachTrigger=function(e,t){return"function"!=typeof t?void console.warn("LPT.addTrigger: pass the trigger as a second argument."):void(this.CONFIG.triggers[e]=t)},LightPivotTable.prototype.normalizeConfiguration=function(e){"undefined"==typeof e.columnResizing&&(e.columnResizing=!0),"undefined"==typeof e.pagination&&(e.pagination=200),"undefined"==typeof e.enableSearch&&(e.enableSearch=!0),"undefined"==typeof e.stretchColumns&&(e.stretchColumns=!0),"undefined"==typeof e.enableListingSelect&&(e.enableListingSelect=!0),"undefined"==typeof e.showListingRowsNumber&&(e.showListingRowsNumber=!0),e.triggers||(e.triggers={}),e.dataSource||(e.dataSource={})},LightPivotTable.prototype.init=function(){var e=this;this.CONTROLS.drillThrough=function(){e.pivotView._drillThroughClickHandler.call(e.pivotView)},this.CONTROLS.customDrillThrough=function(t){return t instanceof Array?void e.tryDrillThrough.call(e,t):void console.error('Parameter "filters" must be array of strings.')},this.CONTROLS.back=function(){e.pivotView._backClickHandler.call(e.pivotView)},this.CONFIG.locale&&pivotLocale.setLocale(this.CONFIG.locale),
-this.refresh()};var MDXParser=function(){};MDXParser.prototype._warnMDX=function(e,t){console.warn("MDX is not parsed:\n\n%s\n\n"+(t?"("+t+")":""),e)},MDXParser.prototype.makeSetExpressionFromFilter=function(e){return e.match(/^\([^\),]*,[^\)]*\)$/)?"NONEMPTYCROSSJOIN"+e.slice(0,e.length-1)+".children)":e+".children"},MDXParser.prototype.prependNonEmpty=function(e){return e.match(/^\s*non\s+empty/i)?e:"NON EMPTY "+e},MDXParser.prototype.applyRowCount=function(e,t){return e.replace(/\s*on\s*0\s*,\s*(?:non\s*empty\s*)?(.*)\s*on\s*1/i,function(e,r){return"undefined"!=typeof t?" ON 0, NON EMPTY HEAD("+r+", "+t+") ON 1":e})},MDXParser.prototype.drillDown=function(e,t,r){if(!t)return/]\s+ON\s+1/i.test(e)?e=e.replace(/]\s+ON\s+1/i,"].children ON 1"):(this._warnMDX(e,"no filter specified"),"");var o=e.split(/(select\s*)(.*?)(\s*from)/gi);if(o.length<4)return this._warnMDX(e),"";var n=o[o.length-3],a=n.split(/(\s*ON\s*[01]\s*,?\s*)/i);if(a.length<2)return this._warnMDX(e,"DrillDown is impossible"),"";var i=-1;if(a.map(function(e,t){return e.match(/\s*ON\s*[01]\s*,?\s*/i)&&(i=t-1),e}),i===-1)return this._warnMDX(e,"DrillDown is impossible"),"";a[i]=this.prependNonEmpty(r||this.makeSetExpressionFromFilter(t));for(var l in a)1===a[l].length&&a[l](parseInt(l),1);return o[o.length-3]=a.join(""),this.applyFilter(o.join(""),t)},MDXParser.prototype.drillThrough=function(e,t){var r=e.slice(e.lastIndexOf("FROM ")),o="DRILLTHROUGH SELECT "+r;for(var n in t)o=this.applyFilter(o,t[n]);return o},MDXParser.prototype.mdxType=function(e){var t=e.toLowerCase(),r=t.indexOf("drillthrough"),o=t.indexOf("select");return r>-1?"drillthrough":o>-1?"mdx":"unknown"},MDXParser.prototype.applyFilter=function(e,t){return e+(t?" %FILTER "+t:"")};var numeral=function(){function e(e){this._value=e}function t(e,t,r,o){var n,a,i=Math.pow(10,t);return a=(r(e*i)/i).toFixed(t),o&&(n=new RegExp("0{1,"+o+"}$"),a=a.replace(n,"")),a}function r(e,t,r){var o;return o=t.indexOf("$")>-1?n(e,t,r):t.indexOf("%")>-1?a(e,t,r):t.indexOf(":")>-1?i(e,t):s(e._value,t,r)}function o(e,t){var r,o,n,a,i,s=t,c=["KB","MB","GB","TB","PB","EB","ZB","YB"],u=!1;if(t.indexOf(":")>-1)e._value=l(t);else if(t===g)e._value=0;else{for("."!==f[m].delimiters.decimal&&(t=t.replace(/\./g,"").replace(f[m].delimiters.decimal,".")),r=new RegExp("[^a-zA-Z]"+f[m].abbreviations.thousand+"(?:\\)|(\\"+f[m].currency.symbol+")?(?:\\))?)?$"),o=new RegExp("[^a-zA-Z]"+f[m].abbreviations.million+"(?:\\)|(\\"+f[m].currency.symbol+")?(?:\\))?)?$"),n=new RegExp("[^a-zA-Z]"+f[m].abbreviations.billion+"(?:\\)|(\\"+f[m].currency.symbol+")?(?:\\))?)?$"),a=new RegExp("[^a-zA-Z]"+f[m].abbreviations.trillion+"(?:\\)|(\\"+f[m].currency.symbol+")?(?:\\))?)?$"),i=0;i<=c.length&&!(u=t.indexOf(c[i])>-1&&Math.pow(1024,i+1));i++);e._value=(u?u:1)*(s.match(r)?Math.pow(10,3):1)*(s.match(o)?Math.pow(10,6):1)*(s.match(n)?Math.pow(10,9):1)*(s.match(a)?Math.pow(10,12):1)*(t.indexOf("%")>-1?.01:1)*((t.split("-").length+Math.min(t.split("(").length-1,t.split(")").length-1))%2?1:-1)*Number(t.replace(/[^0-9\.]+/g,"")),e._value=u?Math.ceil(e._value):e._value}return e._value}function n(e,t,r){var o,n,a=t.indexOf("$"),i=t.indexOf("("),l=t.indexOf("-"),c="";return t.indexOf(" $")>-1?(c=" ",t=t.replace(" $","")):t.indexOf("$ ")>-1?(c=" ",t=t.replace("$ ","")):t=t.replace("$",""),n=s(e._value,t,r),a<=1?n.indexOf("(")>-1||n.indexOf("-")>-1?(n=n.split(""),o=1,(a<i||a<l)&&(o=0),n.splice(o,0,f[m].currency.symbol+c),n=n.join("")):n=f[m].currency.symbol+c+n:n.indexOf(")")>-1?(n=n.split(""),n.splice(-1,0,c+f[m].currency.symbol),n=n.join("")):n=n+c+f[m].currency.symbol,n}function a(e,t,r){var o,n="",a=100*e._value;return t.indexOf(" %")>-1?(n=" ",t=t.replace(" %","")):t=t.replace("%",""),o=s(a,t,r),o.indexOf(")")>-1?(o=o.split(""),o.splice(-1,0,n+"%"),o=o.join("")):o=o+n+"%",o}function i(e){var t=Math.floor(e._value/60/60),r=Math.floor((e._value-60*t*60)/60),o=Math.round(e._value-60*t*60-60*r);return t+":"+(r<10?"0"+r:r)+":"+(o<10?"0"+o:o)}function l(e){var t=e.split(":"),r=0;return 3===t.length?(r+=60*Number(t[0])*60,r+=60*Number(t[1]),r+=Number(t[2])):2===t.length&&(r+=60*Number(t[0]),r+=Number(t[1])),Number(r)}function s(e,r,o){var n,a,i,l,s,c,u=!1,h=!1,p=!1,d="",v=!1,C=!1,w=!1,b=!1,O=!1,E="",D="",T=Math.abs(e),L=["B","KB","MB","GB","TB","PB","EB","ZB","YB"],_="",I=!1;if(0===e&&null!==g)return g;if(r.indexOf("(")>-1?(u=!0,r=r.slice(1,-1)):r.indexOf("+")>-1&&(h=!0,r=r.replace(/\+/g,"")),r.indexOf("a")>-1&&(v=r.indexOf("aK")>=0,C=r.indexOf("aM")>=0,w=r.indexOf("aB")>=0,b=r.indexOf("aT")>=0,O=v||C||w||b,r.indexOf(" a")>-1?(d=" ",r=r.replace(" a","")):r=r.replace("a",""),T>=Math.pow(10,12)&&!O||b?(d+=f[m].abbreviations.trillion,e/=Math.pow(10,12)):T<Math.pow(10,12)&&T>=Math.pow(10,9)&&!O||w?(d+=f[m].abbreviations.billion,e/=Math.pow(10,9)):T<Math.pow(10,9)&&T>=Math.pow(10,6)&&!O||C?(d+=f[m].abbreviations.million,e/=Math.pow(10,6)):(T<Math.pow(10,6)&&T>=Math.pow(10,3)&&!O||v)&&(d+=f[m].abbreviations.thousand,e/=Math.pow(10,3))),r.indexOf("b")>-1)for(r.indexOf(" b")>-1?(E=" ",r=r.replace(" b","")):r=r.replace("b",""),i=0;i<=L.length;i++)if(n=Math.pow(1024,i),a=Math.pow(1024,i+1),e>=n&&e<a){E+=L[i],n>0&&(e/=n);break}return r.indexOf("o")>-1&&(r.indexOf(" o")>-1?(D=" ",r=r.replace(" o","")):r=r.replace("o",""),D+=f[m].ordinal(e)),r.indexOf("[.]")>-1&&(p=!0,r=r.replace("[.]",".")),l=e.toString().split(".")[0],s=r.split(".")[1],c=r.indexOf(","),s?(s.indexOf("[")>-1?(s=s.replace("]",""),s=s.split("["),_=t(e,s[0].length+s[1].length,o,s[1].length)):_=t(e,s.length,o),l=_.split(".")[0],_=_.split(".")[1].length?(N||f[m].delimiters.decimal)+_.split(".")[1]:"",p&&0===Number(_.slice(1))&&(_="")):l=t(e,null,o),l.indexOf("-")>-1&&(l=l.slice(1),I=!0),c>-1&&(l=l.toString().replace(S,"$1"+(y||f[m].delimiters.thousands))),0===r.indexOf(".")&&(l=""),(u&&I?"(":"")+(!u&&I?"-":"")+(!I&&h?"+":"")+l+_+(D?D:"")+(d?d:"")+(E?E:"")+(u&&I?")":"")}function c(e,t){f[e]=t}function u(e){var t=e.toString().split(".");return t.length<2?1:Math.pow(10,t[1].length)}function h(){var e=Array.prototype.slice.call(arguments);return e.reduce(function(e,t){var r=u(e),o=u(t);return r>o?r:o},-(1/0))}var p,d="1.5.3",f={},m="en",g=null,v="0,0",C=3,y=",",N=".",S=new RegExp("(\\d)(?=(\\d{"+C+"})+(?!\\d))","g");p=function(t){return p.isNumeral(t)?t=t.value():0===t||"undefined"==typeof t?t=0:Number(t)||(t=p.fn.unformat(t)),new e(Number(t))},p.version=d,p.isNumeral=function(t){return t instanceof e},p.language=function(e,t){if(!e)return m;if(e&&!t){if(!f[e])throw new Error("Unknown language : "+e);m=e}return!t&&f[e]||c(e,t),p},p.languageData=function(e){if(!e)return f[m];if(!f[e])throw new Error("Unknown language : "+e);return f[e]},p.language("en",{delimiters:{thousands:",",decimal:"."},abbreviations:{thousand:"k",million:"m",billion:"b",trillion:"t"},ordinal:function(e){var t=e%10;return 1===~~(e%100/10)?"th":1===t?"st":2===t?"nd":3===t?"rd":"th"},currency:{symbol:"$"}}),p.zeroFormat=function(e){g="string"==typeof e?e:null},p.defaultFormat=function(e){v="string"==typeof e?e:"0.0"},"function"!=typeof Array.prototype.reduce&&(Array.prototype.reduce=function(e,t){"use strict";if(null===this||"undefined"==typeof this)throw new TypeError("Array.prototype.reduce called on null or undefined");if("function"!=typeof e)throw new TypeError(e+" is not a function");var r,o,n=this.length>>>0,a=!1;for(1<arguments.length&&(o=t,a=!0),r=0;n>r;++r)this.hasOwnProperty(r)&&(a?o=e(o,this[r],r,this):(o=this[r],a=!0));if(!a)throw new TypeError("Reduce of empty array with no initial value");return o}),p.setup=function(e,t,r){e!==N&&(N=e),t!==y&&(y=t),r!==C&&(C=r,S=new RegExp("(\\d)(?=(\\d{"+C+"})+(?!\\d))","g"))},p.fn=e.prototype={clone:function(){return p(this)},format:function(e,t){return r(this,e?e:v,void 0!==t?t:Math.round)},unformat:function(e){return"[object Number]"===Object.prototype.toString.call(e)?e:o(this,e?e:v)},value:function(){return this._value},valueOf:function(){return this._value},set:function(e){return this._value=Number(e),this},add:function(e){function t(e,t,o,n){return e+r*t}var r=h.call(null,this._value,e);return this._value=[this._value,e].reduce(t,0)/r,this},subtract:function(e){function t(e,t,o,n){return e-r*t}var r=h.call(null,this._value,e);return this._value=[e].reduce(t,this._value*r)/r,this},multiply:function(e){function t(e,t,r,o){var n=h(e,t);return e*n*(t*n)/(n*n)}return this._value=[this._value,e].reduce(t,1),this},divide:function(e){function t(e,t,r,o){var n=h(e,t);return e*n/(t*n)}return this._value=[this._value,e].reduce(t),this},difference:function(e){return Math.abs(p(this._value).subtract(e).value())}},this.numeral=p},PivotLocale=function(e){this.LOCALE="",this.DEFAULT_LOCALE="en",this.setLocale(e||(navigator.language||"").substr(0,2)||(navigator.browserLanguage||this.DEFAULT_LOCALE).substring(0,2))};PivotLocale.prototype.LOCALES=[{ru:"\u0412\u0441\u0435\u0433\u043e",en:"Total",de:"Summe",cs:"Celkem"},{ru:"\u041d\u0435\u0432\u043e\u0437\u043c\u043e\u0436\u043d\u043e \u043e\u0442\u043e\u0431\u0440\u0430\u0437\u0438\u0442\u044c \u0434\u0430\u043d\u043d\u044b\u0435",en:"Unable to render data",de:"Daten k\xf6nnen nicht rendern",cs:"Nebylo mo\u017en\xe9 zobrazit data"},{ru:"\u041d\u0435\u043f\u0440\u0430\u0432\u0438\u043b\u044c\u043d\u044b\u0435 \u0434\u0430\u043d\u043d\u044b\u0435 \u0434\u043b\u044f \u043e\u0442\u043e\u0431\u0440\u0430\u0436\u0435\u043d\u0438\u044f.",en:"Invalid data to display.",de:"Nicht korrekt Informationen angezeigt werden soll.",cs:"Nevhodn\xe1 data k zobrazen\xed"},{ru:"\u0412\u043e\u0437\u043d\u0438\u043a\u043b\u0430 \u043e\u0448\u0438\u0431\u043a\u0430 \u043f\u0440\u0438 \u043f\u043e\u043b\u0443\u0447\u0435\u043d\u0438\u0438 \u0434\u0430\u043d\u043d\u044b\u0445 \u0441 \u0441\u0435\u0440\u0432\u0435\u0440\u0430.",en:"Error while trying to retrieve data from server.",de:"Beim Abrufen der Daten vom Server ist ein Fehler aufgetreten.",cs:"Chyba p\u0159i pokusu o z\xedsk\xe1n\xed dat ze serveru"},{ru:"\u041d\u0435\u0442 \u0434\u0430\u043d\u043d\u044b\u0445 \u0434\u043b\u044f \u043e\u0442\u043e\u0431\u0440\u0430\u0436\u0435\u043d\u0438\u044f.",en:"No data to display.",de:"Keine Daten zum anzeigen.",cs:"\u017d\xe1dn\xe1 data k zobrazen\xed"}],PivotLocale.prototype.setLocale=function(e){var t,r=[];if(e=e.toLowerCase(),this.LOCALES[0].hasOwnProperty(e))this.LOCALE=e;else{for(t in this.LOCALES[0])r.push(t);console.warn("LightPivot: locale "+e+" is not supported. Currently localized: "+r.join(", ")+"."),this.LOCALE="en"}},PivotLocale.prototype.get=function(e){return(this.LOCALES[e]||{})[this.LOCALE]||"{not localized: "+e+"}"};var pivotLocale=new PivotLocale,PivotView=function(e,t){if(!(t instanceof HTMLElement))throw new Error('Please, provide HTMLElement instance "container" into pivot table configuration.');this.tablesStack=[],this.selectedRows={},numeral.call(this),this.elements={container:t,base:document.createElement("div"),tableContainer:void 0,messageElement:void 0,searchSelect:void 0,searchInput:void 0},this.pagination=null,this.savedScroll={x:0,y:0},this.FIXED_COLUMN_SIZES=[],this.PAGINATION_BLOCK_HEIGHT=20,this.ANIMATION_TIMEOUT=500,this.SEARCH_ENABLED=!1,this.SEARCHBOX_LEFT_MARGIN=191,this.savedSearch={restore:!1,value:"",columnIndex:0},this.controller=e,this.SCROLLBAR_WIDTH=function(){var e=document.createElement("div");e.style.visibility="hidden",e.style.width="100px",e.style.msOverflowStyle="scrollbar",document.body.appendChild(e);var t=e.offsetWidth;e.style.overflow="scroll";var r=document.createElement("div");r.style.width="100%",e.appendChild(r);var o=r.offsetWidth;return e.parentNode.removeChild(e),t-o}(),this.init()};return PivotView.prototype.init=function(){var e=this,t=this.elements;t.base.className="lpt",t.base.setAttribute("LPTVersion",this.controller.VERSION),t.container.appendChild(t.base),this.pushTable(),this.displayLoading(),window.addEventListener("resize",function(){e.updateSizes.call(e)}),this._=function(){e.displayMessage('<a href="https://github.com/ZitRos/LightPivotTable">LIGHT PIVOT TABLE v'+e.controller.VERSION+'</a><br/>by <a href="https://plus.google.com/+NikitaSavchenko">Nikita Savchenko</a><br/>for dear users of products of <a href="http://www.intersystems.com/">InterSystems Corporation</a><br/>Hope you enjoy it!',!0)}},PivotView.prototype.getCellElement=function(e,t,r){var o,n,a,i,l=this.tablesStack[this.tablesStack.length-1].element,s=function(e,t,r){var o,n,a,i,l,s,c,u=[];for(c=0;c<e.rows.length;c++)for(o=e.rows[c],s=0;s<o.cells.length;s++){for(n=o.cells[s],a=s;u[c]&&u[c][a];++a);for(i=a;i<a+n.colSpan;++i)for(l=c;l<c+n.rowSpan;++l)u[l]||(u[l]=[]),u[l][i]=!0;if(a<=t&&t<a+n.colSpan&&c<=r&&r<c+n.rowSpan)return n}return null};if(r){if(o=l.getElementsByClassName("lpt-topHeader")[0],!o)return null;if(o=o.getElementsByTagName("table")[0],!o)return null;if(n=0,[].slice.call(o.rows).forEach(function(e){n+=e.rowSpan||1}),i=l.getElementsByClassName("lpt-leftHeader")[0],!o)return null;if(i=i.getElementsByTagName("table")[0],!o)return null;if(a=0,(this.getCurrentTableData().element||{})._listing||[].slice.call((i.rows[0]||{cells:[]}).cells).forEach(function(e){a+=e.colSpan||1}),e<a&&t<n)return l.getElementsByClassName("lpt-headerValue")[0]||null;if(e>=a&&t<n)return(s(o,e-a,t)||{childNodes:[null]}).childNodes[0];if(e<a&&t>=n)return(s(i,e,t-n)||{childNodes:[null]}).childNodes[0];e-=a,t-=n}return(o=l.getElementsByClassName("lpt-tableBlock")[0])?(o=o.getElementsByTagName("table")[0],o?((o.rows[t]||{cells:[]}).cells[e]||{childNodes:[null]}).childNodes[0]:null):null},PivotView.prototype.getTableSize=function(e){var t,r=0,o=0,n=this.tablesStack[this.tablesStack.length-1].element;return(t=n.getElementsByClassName("lpt-tableBlock")[0])&&(t=t.getElementsByTagName("table")[0])?([].slice.call(t.rows).forEach(function(e){o+=e.rowSpan||1}),[].slice.call((t.rows[0]||{cells:[]}).cells).forEach(function(e){r+=e.colSpan||1}),e?(t=n.getElementsByClassName("lpt-topHeader")[0])&&(t=t.getElementsByTagName("table")[0])?([].slice.call(t.rows).forEach(function(e){o+=e.rowSpan||1}),(t=n.getElementsByClassName("lpt-leftHeader")[0])&&(t=t.getElementsByTagName("table")[0])?((this.getCurrentTableData().element||{})._listing||[].slice.call((t.rows[0]||{cells:[]}).cells).forEach(function(e){r+=e.colSpan||1}),{width:r,height:o}):0):0:{width:r,height:o}):0},PivotView.prototype.displayLoading=function(){this.displayMessage(this.controller.CONFIG.loadingMessageHTML||'<div class="lpt-spinner"><div></div><div></div><div></div><div></div><div></div></div>')},PivotView.prototype.updateSizes=function(){for(var e in this.tablesStack)this.recalculateSizes(this.tablesStack[e].element)},PivotView.prototype._updateTablesPosition=function(e){for(var t=0;t<this.tablesStack.length;t++)this.tablesStack[t].element.style.left=100*(1+(e||0)+t-this.tablesStack.length)+"%"},PivotView.prototype.getCurrentTableData=function(){return this.tablesStack[this.tablesStack.length-1]},PivotView.prototype.pushTable=function(e){var t,r=this,o=document.createElement("div");o.className="tableContainer",this.tablesStack.length&&(this.tablesStack[this.tablesStack.length-1].FIXED_COLUMN_SIZES=this.FIXED_COLUMN_SIZES,this.tablesStack[this.tablesStack.length-1].savedSearch=this.savedSearch,this.tablesStack[this.tablesStack.length-1].selectedRows=this.selectedRows,this.savedSearch={restore:!1,value:"",columnIndex:0},o.style.left="100%"),this.tablesStack.push({element:o,opts:e||{},pagination:t={on:!1,rows:1/0,page:0,pages:0}}),this.FIXED_COLUMN_SIZES=[],this.selectedRows={},this.elements.base.appendChild(o),this.elements.tableContainer=o,this.pagination=t,setTimeout(function(){r._updateTablesPosition()},30)},PivotView.prototype.popTable=function(){var e;if(!(this.tablesStack.length<2)){this.FIXED_COLUMN_SIZES=[],this._updateTablesPosition(1);var t=this.tablesStack.pop();this.pagination=(e=this.tablesStack[this.tablesStack.length-1]).pagination,e.FIXED_COLUMN_SIZES&&(this.FIXED_COLUMN_SIZES=e.FIXED_COLUMN_SIZES),e.savedSearch&&(this.savedSearch=e.savedSearch),e.selectedRows&&(this.selectedRows=e.selectedRows),setTimeout(function(){t.element.parentNode.removeChild(t.element)},this.ANIMATION_TIMEOUT),this.elements.tableContainer=this.tablesStack[this.tablesStack.length-1].element}},PivotView.prototype.saveScrollPosition=function(){var e;this.elements.tableContainer&&(e=this.elements.tableContainer.getElementsByClassName("lpt-tableBlock"))&&(this.savedScroll.x=e[0].scrollLeft,this.savedScroll.y=e[0].scrollTop)},PivotView.prototype.restoreScrollPosition=function(){var e;this.elements.tableContainer&&(e=this.elements.tableContainer.getElementsByClassName("lpt-tableBlock"))&&(e[0].scrollLeft=this.savedScroll.x,e[0].scrollTop=this.savedScroll.y)},PivotView.prototype.dataChanged=function(e){var t=e.rawData.length-e.info.topHeaderRowsNumber;this.controller.CONFIG.pagination&&(this.pagination.on=!0),this.pagination.rows=this.controller.CONFIG.pagination||1/0,this.selectedRows={},this.pagination.page=0,this.pagination.pages=Math.ceil(t/this.pagination.rows),this.pagination.pages<2&&(this.pagination.on=!1),this.renderRawData(e)},PivotView.prototype._columnClickHandler=function(e){this.saveScrollPosition(),this.controller.dataController.sortByColumn(e),this.restoreScrollPosition()},PivotView.prototype._rowClickHandler=function(e,t){var r=!0;if("function"==typeof this.controller.CONFIG.triggers.rowClick){var o=this.controller.getRowsValues([e])[0].slice(this.controller.dataController.getData().info.leftHeaderColumnsNumber);r=this.controller.CONFIG.triggers.rowClick(e,o)}r!==!1&&this.controller.tryDrillDown(t.source.path)},PivotView.prototype._pageSwitcherHandler=function(e){this.pagination.page=e,this.saveScrollPosition(),this.renderRawData(this.controller.dataController.getData()),this.restoreScrollPosition()},PivotView.prototype._backClickHandler=function(e){e&&(e.cancelBubble=!0,e.stopPropagation()),this.removeMessage(),this.popTable(),this.controller.popDataSource(),"function"==typeof this.controller.CONFIG.triggers.back&&this.controller.CONFIG.triggers.back.call(this.controller,{level:this.controller.DRILL_LEVEL})},PivotView.prototype._drillThroughClickHandler=function(e){this.controller.tryDrillThrough(),e&&(e.cancelBubble=!0,e.stopPropagation())},PivotView.prototype._getSelectedText=function(){var e="";return"undefined"!=typeof window.getSelection?e=window.getSelection().toString():"undefined"!=typeof document.selection&&"Text"==document.selection.type&&(e=document.selection.createRange().text),e},PivotView.prototype._cellClickHandler=function(e,t,r,o,n){var a,i,l,s=this.controller.dataController.getData(),c=[],u=!0,h=this.controller.CONFIG.showSummary&&this.controller.CONFIG.attachTotals?1:0;if(!this._getSelectedText()&&("function"!=typeof this.controller.CONFIG.triggers.cellSelected||(l=this.controller.CONFIG.triggers.cellSelected.call(this.controller,{x:t-s.info.leftHeaderColumnsNumber,y:r-s.info.topHeaderRowsNumber,leftHeaderColumnsNumber:s.info.leftHeaderColumnsNumber,topHeaderRowsNumber:s.info.topHeaderRowsNumber}),l!==!1))){try{a=s.rawData[r][s.info.leftHeaderColumnsNumber-1].source.path,i=s.rawData[s.info.topHeaderRowsNumber-1-h][t].source.path}catch(p){this.controller.CONFIG.logs&&console.warn("Unable to get filters for cell (%d, %d)",t,r)}a&&c.push(a),i&&c.push(i),this.controller.CONFIG.drillDownTarget?window.location=location.origin+location.pathname+"?DASHBOARD="+encodeURIComponent(this.controller.CONFIG.drillDownTarget)+"&SETTINGS=FILTER:"+encodeURIComponent(c.join("~"))+";":("function"==typeof this.controller.CONFIG.triggers.cellDrillThrough&&(u=this.controller.CONFIG.triggers.cellDrillThrough({event:o,filters:c,cellData:e,x:t,y:r},s)),"function"==typeof n&&(u=!(!1===n({event:o,filters:c,cellData:e,x:t,y:r},s)||u===!1)),u!==!1&&this.controller.tryDrillThrough(c))}},PivotView.prototype.copyToClipboard=function(e){var t=document.createElement("input");document.body.appendChild(t),t.setAttribute("value",e),document.body.appendChild(t),t.select();var r=!1;try{r=document.execCommand("copy")}catch(o){console.log("Copy error: "+o)}return document.body.removeChild(t),r},PivotView.prototype.listingClickHandler=function(e,t){if(0!==t.info.leftHeaderColumnsNumber)return void console.warn("Listing handler called not for a listing!");var r=this.controller.CONFIG.triggerEvent||"click",o=this,n=function(e){return document.createElement(e)},a=n("div"),i=t.rawData[0].map(function(e){return e.value+(e.source&&e.source.title?"("+e.source.title+")":"")}),l=t.rawData[e.y].map(function(e){return e.value});a.className="lpt-hoverMessage",a.style.fontSize="12pt",a.style.opacity=0;for(var s,c,u,h,p,d=0;d<i.length;d++)s=n("div"),p=n("span"),c=n("div"),u=n("hr"),h=n("div"),h.className="lpt-icon-copy",h.title="Copy",h.style.marginRight="6px",p.className="lpt-messageHead",p.textContent=i[d],c.className="lpt-messageBody",s.style.marginBottom=".3em",""!==l[d]?c.textContent=l[d]:c.innerHTML="&nbsp;",s.appendChild(h),s.appendChild(p),a.appendChild(s),a.appendChild(c),a.appendChild(u),h.addEventListener(r,function(e){return function(t){o.copyToClipboard(e)===!1&&alert("Your browser does not support dynamic content copying."),t.preventDefault(),t.cancelBubble=!0,t.preventBubble=!0}}(l[d]));return this.elements.base.appendChild(a),setTimeout(function(){a&&(a.style.opacity=1)},1),a.addEventListener(this.controller.CONFIG.triggerEvent||"click",function(){o._getSelectedText()||o.removeMessage()}),!1},PivotView.prototype.displayMessage=function(e,t){this.removeMessage();var r=this,o=document.createElement("div"),n=document.createElement("div"),a=document.createElement("div");o.className="central lpt-hoverMessage",o.style.opacity=0,a.innerHTML=e,n.appendChild(a),o.appendChild(n),this.elements.base.appendChild(o),setTimeout(function(){o&&(o.style.opacity=1)},1),t&&o.addEventListener(this.controller.CONFIG.triggerEvent||"click",function(){r.removeMessage()})},PivotView.prototype.removeMessage=function(){var e,t;if((e=this.elements.base.getElementsByClassName("lpt-hoverMessage")).length)for(t in e)e[t].parentNode&&e[t].parentNode.removeChild(e[t])},PivotView.prototype._matchCondition=function(e,t,r){var o=parseFloat(e);switch(t){case"=":return o==r;case"<>":return o!=r;case">":return o>r;case">=":return o>=r;case"<":return o<r;case"<=":return o<=r;case"IN":return r.toString().indexOf(o)!==-1;case"BETWEEN":return o>=r.split(",")[0]&&o<=r.split(",")[1];case"IS NULL":return!o;default:return console.error('Formatting error: unknown format operator "'+t+'"'),!1}},PivotView.prototype.applyConditionalFormatting=function(e,t,r,o){var n,a,i,l,s,c,u=e[""]||[];u=u.concat(e[t]||[]),2===(s=t.split(",")).length&&(u=u.concat(e[s[0]]||[],e[s[0]+","]||[],e[","+s[1]]||[]));for(n in u)if(i=u[n],this._matchCondition(r,i.operator,i.value)){if(i.style&&o.setAttribute("style",(o.getAttribute("style")||"")+i.style),i.icon){for(o.textContent="",l='<div style="overflow: hidden; height: 16px;">',c=parseInt(i.iconCount)||1,a=0;a<c;a++)l+='<img alt="*" style="padding-right:2px; height: 100%;" src="'+i.icon+'"/>';o.innerHTML=l+"</div>"}i.text&&(o.textContent=i.text)}},PivotView.prototype.colorNameToRGB=function(e){var t=function(e,t,r){return{r:e,g:t,b:r}};switch(e){case"red":return t(255,0,0);case"green":return t(0,255,0);case"blue":return t(0,0,255);case"purple":return t(102,0,153);case"salmon":return t(255,140,105);case"white":return t(255,255,255);case"black":return t(0,0,0);case"gray":return t(128,128,128);default:return t(255,255,255)}},PivotView.prototype.selectRow=function(e,t){if(e?this.selectedRows[t]=1:delete this.selectedRows[t],"function"==typeof this.controller.CONFIG.triggers.rowSelect){var r=this.controller.getSelectedRows();this.controller.CONFIG.triggers.rowSelect(r,this.controller.getRowsValues(r))}},PivotView.prototype.recalculateSizes=function(e){var t=e.parentNode,r=22;try{var o=this,n=this.controller.CONFIG.triggerEvent||"click",a=e.getElementsByClassName("lpt-headerValue")[0];if(!a)return;var i=e.getElementsByClassName("lpt-header")[0],l=e.getElementsByClassName("lpt-topHeader")[0],s=e.getElementsByTagName("table")[0],c=s.offsetWidth,u=l.getElementsByTagName("thead")[0],h=e.getElementsByClassName("lpt-leftHeader")[0],p=h.getElementsByTagName("thead")[0],d=e.getElementsByClassName("lpt-tableBlock")[0],f=d.getElementsByTagName("table")[0],m=d.getElementsByTagName("tbody")[0],g=e.getElementsByClassName("lpt-searchInput")[0],v=g?e.offsetWidth-this.SEARCHBOX_LEFT_MARGIN:0,C=d.getElementsByTagName("tr")[0],y=e.getElementsByClassName("lpt-pageSwitcher")[0];u.childNodes[0]&&u.childNodes[0].lastChild._extraCell&&u.childNodes[0].removeChild(u.childNodes[0].lastChild),p.lastChild&&p.lastChild._extraTr&&p.removeChild(p.lastChild);var N=(y?this.PAGINATION_BLOCK_HEIGHT:0)+(this.SEARCH_ENABLED?this.PAGINATION_BLOCK_HEIGHT:0),S=Math.max(h.offsetWidth,i.offsetWidth),w=l.offsetHeight;l.style.marginLeft=S+"px";var b=e.offsetHeight,O=b-w-N,E=i.offsetWidth,D=0===p.offsetHeight,T=Math.max(p.offsetHeight,m.offsetHeight)>O&&this.SCROLLBAR_WIDTH>0,L=u.offsetWidth>l.offsetWidth-(T?this.SCROLLBAR_WIDTH:0);
-!T&&L&&(T=Math.max(p.offsetHeight,m.offsetHeight)>O-this.SCROLLBAR_WIDTH&&this.SCROLLBAR_WIDTH>0);var _,I,x,R=T&&!D,M=[],F=[],A=[],P=!1,H=function(){(o.controller.CONFIG.stretchColumns||!T||L)&&(P=!0,I=document.createElement("th"),I.className="lpt-extraCell",I.style.minWidth=o.SCROLLBAR_WIDTH+"px",I.style.width=o.SCROLLBAR_WIDTH+"px",I.rowSpan=u.childNodes.length,I._extraCell=!0,u.childNodes[0].appendChild(I))};if(T&&u.childNodes[0]&&H(),e._primaryColumns)for(x in e._primaryColumns)M.push(e._primaryColumns[x].offsetWidth);else console.warn("No _primaryColumns property in container, cell sizes won't be fixed.");if(e._primaryRows&&e._primaryCells){for(x in e._primaryRows)F.push(e._primaryRows[x].offsetHeight);for(x in e._primaryCells)A.push(e._primaryCells[x].offsetHeight)}else console.warn("No _primaryRows property in container, cell sizes won't be fixed.");var k=[].slice.call(h.getElementsByTagName("th")).map(function(e){return{el:e.getElementsByTagName("div")[0],height:e.getElementsByTagName("div")[0].offsetHeight}});if(e.parentNode.removeChild(e),l.style.marginLeft=S+"px",d.style.marginLeft=S+"px",h.style.height=b-w-N+"px",h.style.width=S+"px",E>S&&(h.style.width=E+"px"),d.style.height=b-w-N+"px",i.style.height=w+"px",i.style.width=S+"px",this.controller.CONFIG.stretchColumns||(s.style.width="auto",f.style.width=L?"100%":c+"px"),R&&(I=document.createElement("tr"),I.appendChild(_=document.createElement("th")),p.appendChild(I),_.__i=0,_.addEventListener(n,function(){_.__i++,_.style.background="#"+Math.max(18-3*_.__i,0).toString(16)+"FF7D7",_.__i>5&&o._()}),I._extraTr=!0,_.colSpan=p.childNodes.length,_.style.height=(this.SCROLLBAR_WIDTH?this.SCROLLBAR_WIDTH+1:0)+"px"),g&&(g.style.width=v+"px"),C)for(x in C.childNodes)"TD"===C.childNodes[x].tagName&&(C.childNodes[x].style.width=M[x]+"px");e._primaryRows.forEach(function(t,o){e._primaryCells[o].style.height=e._primaryRows[o].style.height=Math.max(F[o]||F[o-1]||r,A[o]||A[o-1]||r)+"px"}),k.forEach(function(e){e.el.style.height=parseInt(e.height)+"px"}),t.appendChild(e),Math.max(p.offsetHeight,m.offsetHeight)>O&&this.SCROLLBAR_WIDTH>0&&!P&&H()}catch(G){console.error("Error when fixing sizes.","ERROR:",G)}},PivotView.prototype.getUnixDateFromCacheFormat=function(e){function t(e,t){var r=new Date(e);return r.setDate(e.getDate()+t),r}function r(e){var t=["jan","feb","mar","apr","may","jun","jul","aug","sep","oct","nov","dec"],r=Date.parse(e);if(!isNaN(r))return r;if(2==e.split("-").length){var o=e.split("-"),n=t.indexOf(o[0].toLowerCase());if(n!=-1)return Date.parse((n+1).toString()+"/01/"+o[1])}else if(2==e.split(" ").length){var a=e.split(" ")[1].split(":").length;if(0===a&&(e+=":00"),r=Date.parse(e.replace(/-/g,"/")),!isNaN(r))return r}return 0}if(""===e&&void 0===e||null===e)return null;var o=e.toString();if(4==o.length)return r(e);if(o.indexOf("-")!=-1)return r(e);if(o.indexOf(" ")!=-1)return r(e);if(6==o.length){var n=o.substr(0,4),a=o.substr(4,2);return Date.parse(new Date(parseInt(n),parseInt(a)-1,1))}if(5!=o.length||isNaN(parseInt(o)))return r(e);var i=new Date(1840,11,31),l=o.toString().split(","),s=parseInt(l[0]),c=null;return l.length>1&&(c=parseInt(l[1])),i=t(i,parseInt(s)),c&&i.setSeconds(c),Date.parse(i)},PivotView.prototype.renderRawData=function(e){if(!e.rawData||!e.rawData[0]||!e.rawData[0][0])return void this.displayMessage("<h1>"+pivotLocale.get(1)+"</h1><p>"+JSON.stringify(e)+"</p>");var t,r,o,n,a,i,l,s,c,u=this,h=e.rawData,p=e.info,d=e.columnProps,f=e.rowProps,m=e.conditionalFormatting?e.conditionalFormatting.colorScale:void 0,g=this.controller.CONFIG.triggerEvent||"click",v=p.SUMMARY_SHOWN&&this.controller.CONFIG.attachTotals?1:0,C=!!this.controller.CONFIG.columnResizing,y=0===p.leftHeaderColumnsNumber,N=y&&this.controller.CONFIG.enableSearch,S=this.controller.CONFIG.enableListingSelect,w=!!this.controller.CONFIG.columnResizeAnimation,b=this.elements.tableContainer,O=document.createElement("div"),E=document.createElement("div"),D=document.createElement("div"),T=document.createElement("div"),L=document.createElement("div"),_=document.createElement("div"),I=document.createElement("div"),x=document.createElement("table"),R=document.createElement("thead"),M=document.createElement("table"),F=document.createElement("thead"),A=document.createElement("table"),P=document.createElement("tbody"),H=this.pagination.on||y&&this.controller.CONFIG.showListingRowsNumber,k=H?document.createElement("div"):null,G=H?[]:null,B=k?document.createElement("div"):null,V=N?document.createElement("div"):null,U=N?document.createElement("span"):null,W=N?document.createElement("select"):null,X=N?document.createElement("span"):null,z=N?document.createElement("input"):null,Y=N?function(){for(var e=[],t=p.leftHeaderColumnsNumber,r=p.topHeaderRowsNumber-1-v,o=t;o<h[r].length;o++)e.push({value:h[r][o].value,source:h[r][o].source,columnIndex:o});return e}():null,$={},Z=null,j=[],K=[],J=[];this.SEARCH_ENABLED=N,this.numeral.setup(p.decimalSeparator||".",p.numericGroupSeparator||",",p.numericGroupSize||3);var q=function(e,t,r){if("string"==typeof e)("%"!==e[e.length-1]||isNaN(parseFloat(e)))&&(t.parentNode.className+=" formatLeft"),t.innerHTML=(e||"").replace(/(https?|ftp):\/\/[^\s]+/gi,function(e){return"<a href='"+e+"' target='"+(u.controller.CONFIG.linksTarget||"_blank")+"' onclick='var e=event||window.event;e.stopPropagation();e.cancelBubble=true;'>"+e+"</a>"});else if(y)t.textContent=e;else if("%date%"===r){var o=new Date(u.getUnixDateFromCacheFormat(e));if(isNaN(o.getTime()))return void(t.textContent=e);t.textContent=o.getHours()+o.getMinutes()+o.getSeconds()===0?o.toLocaleDateString():o.toLocaleString()}else r?t.textContent=e?u.numeral(e).format(r):e:e?t.textContent=u.numeral(e).format(e%1===0?"#,###":"#,###.##"):t.textContent=e},Q=function(e,t){var r;e.createTextRange?(r=e.createTextRange(),r.move("character",t),r.select()):e.setSelectionRange(t,t)},ee=function(e,t){var r=0,o=0,n=function(t){t.cancelBubble=!0,t.preventDefault(),e.style.width=e.style.minWidth=r-o+t.pageX+"px",w&&(u.saveScrollPosition(),u.recalculateSizes(b),u.restoreScrollPosition())},a=function(i){i.cancelBubble=!0,i.preventDefault(),e.style.width=e.style.minWidth=(u.FIXED_COLUMN_SIZES[t]=r-o+i.pageX)+"px",u.saveScrollPosition(),u.recalculateSizes(b),u.restoreScrollPosition(),document.removeEventListener("mousemove",n),document.removeEventListener("mouseup",a)};e.addEventListener("mousedown",function(t){(t.target||t.srcElement)===e&&(t.cancelBubble=!0,t.preventDefault(),r=e.offsetWidth,o=t.pageX,document.addEventListener("mousemove",n),document.addEventListener("mouseup",a))})};for(this.removeMessage();b.firstChild;)b.removeChild(b.firstChild);var te=function(e,t,n,a,i){function l(e){for(var t=e.checked;e=e.parentNode;)if("TR"===e.tagName){e.classList[t?"add":"remove"]("lpt-selectedRow"),u.elements.tableContainer.querySelector(".lpt-tableBlock table").rows[e.rowIndex].classList[t?"add":"remove"]("lpt-selectedRow");break}}var s,c,m,y,N,w,b=i===F;if(e===t&&S)for(o=n;o<a;o++)m=document.createElement("tr"),y=document.createElement("td"),w=document.createElement("input"),w.setAttribute("type","checkbox"),w.checked=!!u.selectedRows[o],w.checked&&function(e){setTimeout(function(){l(e)},1)}(w),y.setAttribute("style","padding: 0 !important;"),w.addEventListener("click",function(e){return function(t){var r=t.srcElement||t.target;t.preventDefault(),t.cancelBubble=!0,setTimeout(function(){r.checked=!r.checked,u.selectRow.call(u,r.checked,e),l(r)},1)}}(o)),y.appendChild(w),m.appendChild(y),K.push(y),i.appendChild(m);else for(o=n;o<a;o++){for(r=e;r<t;r++)c=!0,(s=$.hasOwnProperty(h[o][r].group))&&(r>0&&h[o][r-1].group===h[o][r].group&&(c=!1,$[h[o][r].group].element.colSpan=r-$[h[o][r].group].x+1),o>0&&h[o-1][r].group===h[o][r].group&&(c=!1,$[h[o][r].group].element.rowSpan=o-$[h[o][r].group].y+1),y=$[h[o][r].group].element),s&&!c||(m||(m=document.createElement("tr")),m.appendChild(y=document.createElement(h[o][r].isCaption?"th":"td")),h[o][r].source&&h[o][r].source.title&&y.setAttribute("title",h[o][r].source.title),N=document.createElement("div"),h[o][r].value?N.textContent=h[o][r].value:N.innerHTML="&nbsp;",y.appendChild(N),h[o][r].style&&y.setAttribute("style",h[o][r].style),0===p.leftHeaderColumnsNumber&&u.controller.CONFIG.listingColumnMinWidth&&(y.style.minWidth=u.controller.CONFIG.listingColumnMinWidth+"px"),p.leftHeaderColumnsNumber>0&&u.controller.CONFIG.maxHeaderWidth&&(y.style.maxWidth=u.controller.CONFIG.maxHeaderWidth+"px",y.style.whiteSpace="normal",y.style.wordWrap="normal"),h[o][r].className&&(y.className=h[o][r].className),h[o][r].group&&($[h[o][r].group]={x:r,y:o,element:y}),h[o][r].isCaption||q(h[o][r].value,y,f[o].format||d[r].format)),b&&r===t-1&&(K.push(y),y.addEventListener(g,function(e,t){return function(){u._rowClickHandler.call(u,e,t)}}(o,h[o][r]))),b||o!==a-1-v||y._hasSortingListener||(y._hasSortingListener=!1,h[o][r].noClick||y.addEventListener(g,function(e){return function(){u._columnClickHandler.call(u,e)}}(r-p.leftHeaderColumnsNumber)),y.className=(y.className||"")+" lpt-clickable"),b||o!==a-1||(u.FIXED_COLUMN_SIZES[r]&&(y.style.minWidth=y.style.width=u.FIXED_COLUMN_SIZES[r]+"px"),C&&(ee(y,r),y.className+=" lpt-resizableColumn"),j.push(y));m&&i.appendChild(m),m=null}};for(L.textContent=p.leftHeaderColumnsNumber?h[0][0].value:"",h[0][0].style&&!y&&L.setAttribute("style",h[0][0].style),this.tablesStack.length>1&&!this.controller.CONFIG.hideButtons&&(L.className+="back ",L.addEventListener(g,function(e){u._backClickHandler.call(u,e)})),p.leftHeaderColumnsNumber>0&&u.controller.CONFIG.maxHeaderWidth&&(D.style.maxWidth=u.controller.CONFIG.maxHeaderWidth*p.leftHeaderColumnsNumber+"px",D.style.whiteSpace="normal",D.style.wordWrap="normal"),(this.controller.CONFIG.hideButtons||this.tablesStack.length<2)&&0===p.leftHeaderColumnsNumber&&(L.style.display="none"),te(p.leftHeaderColumnsNumber,h[0].length,0,p.topHeaderRowsNumber,R),te(0,p.leftHeaderColumnsNumber,l=p.topHeaderRowsNumber+(this.pagination.page*this.pagination.rows||0),s=this.pagination.on?Math.min(l+this.pagination.rows,h.length):h.length,F),o=l;o<s;o++){for(Z=document.createElement("tr"),r=p.leftHeaderColumnsNumber;r<h[0].length;r++)i=this.controller.getPivotProperty(["cellStyle"])||"",Z.appendChild(n=document.createElement("td")),n.appendChild(c=document.createElement("div")),r===p.leftHeaderColumnsNumber&&J.push(n),q(h[o][r].value,c,d[r]&&d[r].format||f[o]&&f[o].format),!m||p.SUMMARY_SHOWN&&h.length-1===o||(a=(parseFloat(h[o][r].value)-m.min)/m.diff,i+="background:rgb("+ +Math.round((m.to.r-m.from.r)*a+m.from.r)+","+Math.round((m.to.g-m.from.g)*a+m.from.g)+","+Math.round((m.to.b-m.from.b)*a+m.from.b)+");"+(m.invert?"color: white;":"")),(d[r].style||f[o]&&f[o].style)&&(i+=(f[o]&&f[o].style||"")+(f[o]&&f[o].style?" ":"")+(d[r].style||"")),h[o][r].style&&(i+=h[o][r].style),!this.controller.CONFIG.conditionalFormattingOn||p.SUMMARY_SHOWN&&h.length-1===o||this.getCurrentTableData().opts.disableConditionalFormatting||this.applyConditionalFormatting(e.conditionalFormatting,o-p.topHeaderRowsNumber+1+","+(r-p.leftHeaderColumnsNumber+1),h[o][r].value,n),i&&n.setAttribute("style",(n.getAttribute("style")||"")+i),n.addEventListener(g,function(e,t,r){return function(o){u._cellClickHandler.call(u,r,e,t,o,p.drillThroughHandler)}}(r,o,h[o][r]));P.appendChild(Z)}if(I.addEventListener("scroll",function(){return I._ISE?void(I._ISE=!1):(T.scrollLeft=I.scrollLeft,_.scrollTop=I.scrollTop,T._ISE=!0,void(_._ISE=!0))}),_.className="lpt-leftHeader",T.className="lpt-topHeader",this.controller.CONFIG.enableHeadersScrolling&&(_.className=_.className+" lpt-scrollable-y",T.className=T.className+" lpt-scrollable-x",_.addEventListener("scroll",function(){return _._ISE?void(_._ISE=!1):(I.scrollTop=_.scrollTop,void(I._ISE=!0))}),T.addEventListener("scroll",function(){return T._ISE?void(T._ISE=!1):(I.scrollLeft=T.scrollLeft,void(I._ISE=!0))})),I.className="lpt-tableBlock",D.className="lpt-header",O.className="lpt-topSection",E.className="lpt-bottomSection",L.className+="lpt-headerValue",A.appendChild(P),I.appendChild(A),M.appendChild(F),_.appendChild(M),x.appendChild(R),T.appendChild(x),D.appendChild(L),O.appendChild(D),O.appendChild(T),E.appendChild(_),E.appendChild(I),b.appendChild(O),b.appendChild(E),this.controller.CONFIG.stretchColumns||(x.style.width="auto"),k){k.className="lpt-pageSwitcher",G=function(e,t){for(var r=0,o=[e];e>1;)e=Math.max(1,e-(r||1)),o.unshift(e),r=r*r+1;for(r=0,e=o[o.length-1];e<t;)e=Math.min(t,e+(r||1)),o.push(e),r=r*r+1;return o}(this.pagination.page+1,this.pagination.pages),this.controller.CONFIG.showListingRowsNumber&&(n=document.createElement("div"),Z=document.createElement("span"),Z.className="lpt-icon-rows",n.className="lpt-bottomInfo",n.appendChild(Z),Z=document.createElement("span"),Z.textContent=e.rawData.length-(e.info.topHeaderRowsNumber||0)-(e.info.SUMMARY_SHOWN?1:0),n.appendChild(Z),B.appendChild(n));for(t in G)t=parseInt(t),n=document.createElement("span"),G[t]===this.pagination.page+1&&(n.className="lpt-active"),n.textContent=G[t],function(e){n.addEventListener(g,function(){u._pageSwitcherHandler.call(u,e-1)})}(G[t]),B.appendChild(n),G[t+1]&&G[t]+1!==G[t+1]&&(n=document.createElement("span"),n.className="lpt-pageSpacer",B.appendChild(n));k.appendChild(B),b.appendChild(k)}if(N){U.className="lpt-searchIcon",X.className="lpt-searchSelectOuter",V.className="lpt-searchBlock",z.className="lpt-searchInput",W.className="lpt-searchSelect";for(t in Y)n=document.createElement("option"),n.setAttribute("value",Y[t].columnIndex.toString()),n.textContent=Y[t].value,W.appendChild(n);z.addEventListener("input",function(){var e=parseInt(W.options[W.selectedIndex].value),t=z.value;u.saveScrollPosition(),u.savedSearch.value=t,u.savedSearch.columnIndex=e,u.savedSearch.restore=!0,u.controller.dataController.filterByValue(t,e),u.restoreScrollPosition()}),V.appendChild(U),X.appendChild(W),V.appendChild(X),V.appendChild(z),b.insertBefore(V,O),this.elements.searchInput=z,this.elements.searchSelect=W,this.savedSearch.restore&&(this.elements.searchInput.value=this.savedSearch.value,this.elements.searchSelect.value=this.savedSearch.columnIndex)}else this.elements.searchInput=void 0,this.elements.searchSelect=void 0;b._primaryColumns=j,b._primaryRows=K,b._primaryCells=J,b._listing=y,this.recalculateSizes(b),this.savedSearch.restore&&(this.elements.searchInput.focus(),Q(this.elements.searchInput,this.savedSearch.value.length)),"function"==typeof this.controller.CONFIG.triggers.contentRendered&&this.controller.CONFIG.triggers.contentRendered(this.controller)},LightPivotTable}();
+LightPivotTable = (function(){/**
+ * @param {LightPivotTable} controller
+ * @param {function} dataChangeTrigger
+ * @constructor
+ */
+var DataController = function (controller, dataChangeTrigger) {
+
+    if (dataChangeTrigger && typeof dataChangeTrigger !== "function") {
+        throw new Error("dataChangeTrigger parameter must be a function");
+    }
+
+    this._dataStack = [];
+
+    this.controller = controller;
+
+    this.pushData();
+    this.dataChangeTrigger = dataChangeTrigger;
+
+    this.SUMMARY_SHOWN = false;
+
+};
+
+/**
+ * Performs check if data is valid.
+ *
+ * @param {{ dimensions: Object[], dataArray: Array, info: Object }} data
+ * @returns boolean
+ */
+DataController.prototype.isValidData = function (data) {
+
+    // add null column to display measures
+    if (
+        data.dimensions instanceof Array
+        && data.dimensions[0] instanceof Array
+        && !data.dimensions[0].length
+    )
+        data.dimensions[0] = [{}];
+
+    return data.dimensions instanceof Array
+        && data.dimensions[0] instanceof Array
+        //&& data.dimensions[0].length > 0
+        //&& data.dimensions[1].length > 0
+        //&& data.dimensions[0][0].hasOwnProperty("caption")
+        //&& data.dimensions[1][0].hasOwnProperty("caption")
+        && data.dataArray instanceof Array
+        && typeof data["info"] === "object"
+        && data["info"]["cubeName"];
+
+};
+
+DataController.prototype.pushData = function () {
+
+    var d;
+
+    this._dataStack.push(d = {
+        data: null,
+        SUMMARY_SHOWN: this.SUMMARY_SHOWN,
+        SORT_STATE: {
+            column: null,
+            order: -1
+        }
+    });
+
+    //this.data = d.data;
+    this.SORT_STATE = d.SORT_STATE;
+
+};
+
+DataController.prototype.popData = function () {
+
+    if (this._dataStack.length < 2) return;
+
+    var d = this._dataStack[this._dataStack.length - 2];
+
+    this._dataStack.pop();
+
+    //this.data = d.data;
+    this.SUMMARY_SHOWN = d.SUMMARY_SHOWN;
+    this.SORT_STATE = d.SORT_STATE;
+
+};
+
+DataController.prototype.getData = function () {
+
+    return this._dataStack[this._dataStack.length - 1].data || {};
+
+};
+
+DataController.prototype.setData = function (data) {
+
+    if (!this.isValidData(data)) {
+        console.error("Invalid data to set.", data);
+        return;
+    }
+
+    this._dataStack[this._dataStack.length - 1].data = data;
+    this.setLeftHeaderColumnsNumber(data); // required in resetDimensionProps()
+    this.pivotDataProcess(data);
+    this.resetDimensionProps();
+    this.resetConditionalFormatting();
+    this.resetRawData();
+    this.modifyRawData(data);
+    this.postDataProcessing(data);
+
+    if (data.info.mdxType === "drillthrough") {
+        this.setDrillThroughHandler(
+            this.controller.pivotView.listingClickHandler.bind(this.controller.pivotView)
+        );
+    }
+    // console.log(data);
+    this._trigger();
+    return data;
+
+};
+
+/**
+ * Function that process pivot data.
+ * @param [data]
+ */
+DataController.prototype.pivotDataProcess = function ( data ) {
+
+    var totals = this.controller.getPivotProperty(["rowTotals"]);
+
+    if (typeof totals === "boolean") {
+        this.controller.CONFIG["showSummary"] = totals;
+    }
+
+};
+
+/**
+ * Handle drillThrough on current level.
+ * If handler returns boolean false, drillThrough won't be performed.
+ *
+ * @param {function} handler
+ */
+DataController.prototype.setDrillThroughHandler = function (handler) {
+    this._dataStack[this._dataStack.length - 1].data.info.drillThroughHandler = handler;
+};
+
+/**
+ * Sets properties of rows/columns.
+ */
+DataController.prototype.resetDimensionProps = function () {
+
+    var data, columnProps, rowProps;
+
+    if (!(data = this._dataStack[this._dataStack.length - 1].data)) {
+        console.error("Unable to get dimension props for given data set.");
+        return;
+    }
+
+    columnProps = []; // fill left headers as empty
+    rowProps = []; // fill left headers as empty
+
+    var cloneObj = function (obj) {
+        var i, newObj = {};
+        for (i in obj) newObj[i] = obj[i];
+        return newObj;
+    };
+
+    var parse = function (dimProps, obj, props) {
+        var tObj, clonedProps, i;
+        if (obj["children"] && obj["children"].length > 0) {
+            for (i in obj.children) {
+                clonedProps = cloneObj(props);
+                tObj = obj.children[i];
+                if (tObj["format"]) clonedProps["format"] = tObj["format"];
+                if (tObj["style"]) clonedProps["style"] =
+                    (clonedProps["style"] || "") + tObj["style"];
+                if (tObj["summary"]) clonedProps["summary"] = tObj["summary"];
+                // somehow "summary" were changed to "total" - reapplying
+                if (tObj["total"]) clonedProps["summary"]
+                    = (tObj["total"] || "").toLowerCase().replace(/:.*/, ""); // what is "max:Days"?
+                if (tObj["type"]) clonedProps["type"] = tObj["type"];
+                parse(dimProps, tObj, clonedProps);
+            }
+        } else {
+            dimProps.push(cloneObj(props));
+        }
+    };
+
+    parse(columnProps, { children: data.dimensions[0] }, {});
+    parse(rowProps, { children: data.dimensions[1] }, {});
+
+    data.columnProps = columnProps;
+    data.rowProps = rowProps;
+
+};
+
+/**
+ * Try to recognise type by given value.
+ * @param {*} value
+ */
+DataController.prototype.getTypeByValue = function (value) {
+
+    if (!isNaN(value)) {
+        return { type: "number" };
+    } else if ((value + "").match(/[0-9]{2}\.[0-9]{2}\.[0-9]{2,4}/)) { // local date (unique case for RU)
+        return {
+            type: "date",
+            comparator: function (value) {
+                var arr = value.split(".");
+                return new Date(arr[2], arr[1], arr[0]); // day
+            }
+        };
+    } else if (Date.parse(value)) { // standard date recognized by JS
+        return {
+            type: "date",
+            comparator: function (value) {
+                return new Date(value);
+            }
+        }
+    } else {
+        return { type: "string" };
+    }
+
+};
+
+DataController.prototype.postDataProcessing = function (data) {
+
+    var cell, col;
+
+    if (!data || !data.rawData || !data.rawData[data.info.topHeaderRowsNumber]) return;
+    if (!data.columnProps) data.columnProps = [];
+
+    // Inserts pseudo-type to cell. If data.columnProps[col]["$FORMAT"].comparator is a function, then this function
+    // will be used to sort value of columns. @see DataController.sortByColumn.
+    for (col = data.info.leftHeaderColumnsNumber; cell = data.rawData[data.info.topHeaderRowsNumber][col]; col++) {
+        if (!data.columnProps[col]) data.columnProps[col] = {};
+        data.columnProps[col]["$FORMAT"] = this.getTypeByValue(cell.value);
+    }
+
+};
+
+DataController.prototype.resetConditionalFormatting = function () {
+
+    var data, cs, c1, c2, arr, min, max,
+        cfArr = {/* "[y],[x]|<null>": Array[{style:"", operator: "", ...}] */},
+        ocfArr;
+
+    if (!(data = this._dataStack[this._dataStack.length - 1].data)) {
+        console.error("Unable to get conditional formatting for given data set.");
+        return;
+    }
+    if (!(this.controller.CONFIG.pivotProperties)) {
+        data.conditionalFormatting = cfArr;
+        return;
+    }
+
+    if (cs = this.controller.CONFIG.pivotProperties["colorScale"]) {
+        if (cs.indexOf("custom:") > -1) {
+            arr = cs.split(":")[1].split(",");
+            c2 = { r: parseInt(arr[0]), g: parseInt(arr[1]), b: parseInt(arr[2]) };
+            arr = cs.split(":")[2].split(",");
+            c1 = { r: parseInt(arr[0]), g: parseInt(arr[1]), b: parseInt(arr[2]) };
+        } else {
+            arr = cs.split("-to-");
+            c1 = this.controller.pivotView.colorNameToRGB(arr[0]);
+            c2 = this.controller.pivotView.colorNameToRGB(arr[1]);
+        }
+        cfArr["colorScale"] = {
+            from: c2,
+            to: c1,
+            min: min = Math.min.apply(Math, (data.dataArray || [])),
+            max: max = Math.max.apply(Math, (data.dataArray || [])),
+            diff: max - min,
+            invert: (c2.r + c2.b + c2.g) / 3 < 128
+        };
+    }
+
+    ocfArr = this.controller.CONFIG.pivotProperties["formatRules"] || [];
+    if (ocfArr.length && typeof this.controller.CONFIG.conditionalFormattingOn === "undefined") {
+        this.controller.CONFIG.conditionalFormattingOn = true;
+    }
+    for (var i in ocfArr) {
+        // Warn: range ",2-3" is valid for standard pivot as ",2".
+        // LPT will parse ",2-3" range as invalid.
+        if (!cfArr[ocfArr[i]["range"]]) cfArr[ocfArr[i]["range"]] = [];
+        cfArr[ocfArr[i]["range"]].push(ocfArr[i]);
+    }
+    data.conditionalFormatting = cfArr;
+
+};
+
+/**
+ * Total functions definition. When adding new total function, also check getTotalFunction.
+ * "this" in context of functions equals to TOTAL_FUNCTIONS object.
+ *
+ * @see getTotalFunction
+ */
+DataController.prototype.TOTAL_FUNCTIONS = {
+
+    isNumber: function (a) {
+        if (a == "") return false;
+        return isFinite(a);
+    },
+
+    totalSUM: function (array, iStart, iEnd, column, xStart, row) {
+        var sum = 0;
+        for (var i = iStart; i < iEnd; i++) {
+            var r = typeof row === "undefined" ? i : row,
+                c = typeof column === "undefined" ? i : column;
+            if (this.isNumber(array[r][c]["value"])) {
+                sum += parseFloat(array[r][c]["value"]) || 0;
+            }
+        }
+        return sum;
+    },
+
+    totalAVG: function (array, iStart, iEnd, column, xStart, row) {
+        var sum = 0;
+        for (var i = iStart; i < iEnd; i++) {
+            var r = typeof row === "undefined" ? i : row,
+                c = typeof column === "undefined" ? i : column;
+            if (!this.isNumber(array[r][c]["value"])) {
+                sum = 0;
+                break;
+            }
+            sum += parseFloat(array[r][c]["value"]) || 0;
+        }
+        return sum/(iEnd - iStart) || "";
+    },
+
+    totalCOUNT: function (array, iStart, iEnd, column, xStart, row) {
+        var count = 0;
+        for (var i = iStart; i < iEnd; i++) {
+            var r = typeof row === "undefined" ? i : row,
+                c = typeof column === "undefined" ? i : column;
+            if (array[r][c]["value"]) {
+                count++;
+            }
+        }
+        return count;
+    },
+
+    totalMIN: function (array, iStart, iEnd, column, xStart, row) {
+        var min = Infinity;
+        for (var i = iStart; i < iEnd; i++) {
+            var r = typeof row === "undefined" ? i : row,
+                c = typeof column === "undefined" ? i : column;
+            if (this.isNumber(array[r][c]["value"]) && array[r][c]["value"] < min) {
+                min = array[r][c]["value"];
+            }
+        }
+        return min;
+    },
+
+    totalMAX: function (array, iStart, iEnd, column, xStart, row) {
+        var max = -Infinity;
+        for (var i = iStart; i < iEnd; i++) {
+            var r = typeof row === "undefined" ? i : row,
+                c = typeof column === "undefined" ? i : column;
+            if (this.isNumber(array[r][c]["value"]) && array[r][c]["value"] > max) {
+                max = array[r][c]["value"];
+            }
+        }
+        return max;
+    },
+
+    totalPERCENTAGE: function (array, iStart, iEnd, column, xStart, row) {
+        var averages = [], x, summ;
+        for (x = xStart; x < typeof column === "undefined" ? array.length : array[0].length; x++) {
+            averages.push(this.totalSUM(array, iStart, iEnd,
+                typeof column === "undefined" ? column : x, xStart,
+                typeof row === "undefined" ? row : x));
+        }
+        summ = averages.reduce(function(a, b) { return a + b; });
+        return (averages[(typeof row === "undefined" ? column : row) - xStart]
+            / summ * 100 || 0).toFixed(2) + "%";
+    },
+
+    totalNONE: function () {
+        return "";
+    }
+
+};
+
+DataController.prototype.setLeftHeaderColumnsNumber = function (data) {
+
+    function getLev (o, lev) {
+        if (!(o.children instanceof Array)) return lev;
+        var nextLev = lev + 1;
+        for (var i = 0; i < o.children.length; i++) {
+            lev = Math.max(getLev(o.children[i], nextLev), lev);
+        }
+        return lev;
+    }
+
+    data.info.leftHeaderColumnsNumber = getLev({ children: data.dimensions[1] || [] }, 0);
+
+};
+
+/**
+ * Renders table data (pseudo-table object) from data retrieved from MDX2JSON source.
+ *
+ * @returns {Object}
+ */
+DataController.prototype.resetRawData = function () {
+
+    var TOTALS_STYLE = "font-weight: bold;text-align: right;";
+
+    var data, summary, y, x,
+        dimCaption,
+        _ = this;
+
+    if (!(data = this._dataStack[this._dataStack.length - 1].data)) {
+        console.error("Unable to create raw data for given data set.");
+        return null;
+    }
+
+    var rd0 = [], rd1 = [], groupNum = 2, rawData = [];
+    var MEASURES_HIDDEN = _.controller.CONFIG["pivotProperties"]
+        && _.controller.CONFIG["pivotProperties"]["hideMeasures"] === 2;
+
+    var transpose = function (a) {
+        return Object.keys(a[0]).map(function (c) {
+            return a.map(function (r) {
+                return r[c];
+            });
+        });
+    };
+
+    var dim0raw = function (a, c, arr) {
+
+        dim1raw(rd0, c, arr, true);
+
+        var i, maxLen = 0;
+        for (i in rd0) { if (rd0[i].length > maxLen) maxLen = rd0[i].length; }
+        for (i in rd0) { for (var u = rd0[i].length; u < maxLen; u++) {
+            rd0[i].push(rd0[i][rd0[i].length - 1]);
+        }}
+
+        rd0 = transpose(rd0);
+
+    };
+
+    var applyHeaderStyle = function (cellObject, isHorizontal) {
+        if (!_.controller.CONFIG["pivotProperties"]) return;
+        if (_.controller.CONFIG["pivotProperties"]["columnHeaderStyle"] && isHorizontal) {
+            cellObject.style = _.controller.CONFIG["pivotProperties"]["columnHeaderStyle"];
+        } else if (_.controller.CONFIG["pivotProperties"]["rowHeaderStyle"] && !isHorizontal) {
+            cellObject.style = _.controller.CONFIG["pivotProperties"]["rowHeaderStyle"];
+        }
+    };
+
+    var getMaxLevel = function (children, level) {
+
+        if (typeof level === "undefined")
+            level = 0;
+
+        function maxLevel (node, level) {
+            if (node.children) {
+	            var max = 0;
+	            for (var i in node.children) {
+	                max = Math.max(max, maxLevel(node.children[i], level + 1));
+                }
+                return max;
+            } else {
+	            if (node["type"] === "msr" && MEASURES_HIDDEN)
+	                return level - 1;
+	            return level;
+            }
+        }
+
+        return children.reduce(
+            function (acc, node) { return Math.max(acc, maxLevel(node, 1)) },
+            level
+        );
+
+    };
+
+    var dim1raw = function (a, c, arr, hor, level, maxLevel) {
+
+        var cnum, obj, sameGroup;
+
+        if (!arr) {
+            arr = [];
+        }
+
+        for (var i in c) {
+            cnum = groupNum;
+            if (level < maxLevel && !(c[i].children && c[i].children.length)) { // maxLevel is not reached, but no child
+                c[i].children = [{}];
+                sameGroup = true; // let the child cells join parent cell
+            }
+            if (c[i].children && c[i].children.length) {
+                if (!sameGroup) groupNum++; else sameGroup = false;
+                obj = {
+                    group: cnum,
+                    source: c[i],
+                    isCaption: true,
+                    value: c[i].caption || ""
+                };
+                applyHeaderStyle(obj, hor);
+                dim1raw(a, c[i].children, arr.concat(obj), hor, level? level + 1 : level, maxLevel);
+            } else {
+                obj = {
+                    group: groupNum,
+                    source: c[i],
+                    isCaption: true,
+                    value: c[i].caption || ""
+                };
+                applyHeaderStyle(obj, hor);
+                a.push(c[i]["type"] === "msr" && MEASURES_HIDDEN ? arr : arr.concat(obj));
+                groupNum++;
+            }
+        }
+
+    };
+
+    var parseColumnFormatting = function (rawData) {
+        if (!_.controller.CONFIG["pivotProperties"]) return rawData;
+        var x, y, i, xEnd = rawData[0].length,
+            colLevels = _.controller.getPivotProperty(["columnLevels"]),
+            rowLevels = _.controller.getPivotProperty(["rowLevels"]),
+            formatColumn = {
+                // "<spec>": { style: "<style>" }
+            },
+            formatRow = {
+                // "<spec>": { style: "<style>" } // unused
+            };
+        var fillLevels = function (temp, obj) {
+            if (typeof obj === "undefined") return;
+            for (var i in obj["childLevels"]) {
+                if (obj["childLevels"][i] && obj["childLevels"][i]["spec"]) {
+                    temp[(obj["childLevels"][i]["spec"] || "").replace(/[^.]*$/, "")] = {
+                        style: obj["childLevels"][i]["levelStyle"] || "",
+                        headStyle: obj["childLevels"][i]["levelHeaderStyle"] || ""
+                    };
+                }
+                fillLevels(obj["childLevels"][i]);
+            }
+        };
+        for (i in colLevels) {
+            fillLevels(formatColumn, { childLevels: [colLevels[i]] });
+            fillLevels(formatRow, { childLevels: [rowLevels[i]] });
+        }
+        for (y = 0; y < rawData.length; y++) {
+            for (x = 0; x < xEnd; x++) {
+                if (!rawData[y][x].isCaption) {
+                    xEnd = x;
+                    break;
+                }
+                if (rawData[y][x].source && rawData[y][x].source["path"]) {
+                    var formatCR = data.info.topHeaderRowsNumber > y ? formatColumn : formatRow;
+                    for (i in formatCR) {
+                        if (rawData[y][x].source["path"].indexOf(i) >= 0) {
+                            // var yy;
+                            // for (yy = y; yy < rawData.length; yy++) {
+                                if (!rawData[y][x].isCaption) {
+                                    if (formatCR[i].style) rawData[y][x].style = (rawData[y][x].style || "")
+                                        + formatCR[i].style || "";
+                                } else {
+                                    if (formatCR[i].headStyle) rawData[y][x].style = (rawData[y][x].style || "")
+                                        + formatCR[i].headStyle || "";
+                                }
+                            // }
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        return rawData;
+    };
+
+    if (data.dimensions[0].length) {
+        dim0raw(rd0, data.dimensions[0]);
+    }
+    if (data.dimensions[1].length) {
+        dim1raw(rd1, data.dimensions[1], undefined, undefined, 1, getMaxLevel(data.dimensions[1]));
+    }
+    if (rd1[0]) dimCaption = (rd1[0][rd1[0].length - 1] || { source: {} }).source["dimension"];
+
+    var xw = (rd0[0] || []).length,
+        yh = rd1.length || data.info.rowCount || 0,
+        xh = rd0.length || data.info.colCount || 0,
+        yw = (rd1[0] || []).length,
+        attachTotals = !!this.controller.CONFIG["attachTotals"];
+
+    // render columns, rows and data
+    for (y = 0; y < xh + yh; y++) {
+        if (!rawData[y]) rawData[y] = [];
+        for (x = 0; x < yw + xw; x++) {
+            if (x < yw) {
+                if (y < xh) {
+                    rawData[y][x] = {
+                        group: 1,
+                        isCaption: true,
+                        value: this.controller.getPivotProperty(["showRowCaption"]) === false ? "" :
+                            this.controller.CONFIG["caption"]
+                            || dimCaption
+                            || (data["info"] || {})["cubeName"]
+                            || ""
+                    };
+                    applyHeaderStyle(rawData[y][x], false);
+                } else {
+                    rawData[y][x] = rd1[y-xh][x];
+                }
+            } else {
+                if (y < xh) {
+                    rawData[y][x] = rd0[y][x-yw];
+                } else {
+                    rawData[y][x] = {
+                        value: data.dataArray[(xw)*(y - xh) + x - yw]
+                    };
+                }
+            }
+        }
+    }
+
+    data.info.topHeaderRowsNumber = xh;
+    data.info.SUMMARY_SHOWN = false;
+    data.info.leftHeaderColumnsNumber = yw;
+    this.SUMMARY_SHOWN = false;
+    this._dataStack[this._dataStack.length - 1].SUMMARY_SHOWN = false;
+
+    for (i = 0; i < data.info.leftHeaderColumnsNumber; i++) { data.columnProps.unshift({}); }
+    for (i = 0; i < data.info.topHeaderRowsNumber; i++) { data.rowProps.unshift({}); }
+
+    /**
+     * @param {number} columnIndex
+     * @param {boolean=false} byColumns
+     * @returns {Function}
+     */
+    var getTotalFunction = function (columnIndex, byColumns) {
+        var pivotDefault = _.controller.getPivotProperty(["rowTotalAgg"]) || "sum",
+            pivotDefaultCol = _.controller.getPivotProperty(["columnTotalAgg"]) || "sum",
+            props = byColumns ? "rowProps" : "columnProps";
+        if (!data[props][columnIndex] && !(byColumns ? pivotDefaultCol : pivotDefault))
+            return _.TOTAL_FUNCTIONS.totalSUM;
+        switch ((data[props][columnIndex] || {}).summary || pivotDefault) {
+            case "count": return _.TOTAL_FUNCTIONS.totalSUM; // _.TOTAL_FUNCTIONS.totalCOUNT; https://github.com/intersystems-ru/LightPivotTable/issues/4
+            case "avg": return _.TOTAL_FUNCTIONS.totalAVG;
+            case "min": return _.TOTAL_FUNCTIONS.totalMIN;
+            case "max": return _.TOTAL_FUNCTIONS.totalMAX;
+            case "pct": return _.TOTAL_FUNCTIONS.totalPERCENTAGE;
+            case "none": return _.TOTAL_FUNCTIONS.totalNONE;
+            default: return _.TOTAL_FUNCTIONS.totalSUM;
+        }
+    };
+
+    if (this.controller.CONFIG["showSummary"] && rawData.length - data.info.topHeaderRowsNumber > 1
+        && (rawData[rawData.length - 1][0] || {})["isCaption"]) {
+        data.info.SUMMARY_SHOWN = true;
+        this.SUMMARY_SHOWN = true;
+        this._dataStack[this._dataStack.length - 1].SUMMARY_SHOWN = true;
+        summary = [];
+        x = rawData.length - 2;
+        for (var i in rawData[x]) {
+            if (rawData[x][i].isCaption) {
+                summary[i] = {
+                    group: groupNum,
+                    isCaption: true,
+                    source: {},
+                    noDrillDown: true,
+                    value: pivotLocale.get(0)
+                };
+                applyHeaderStyle(summary[i], false);
+            } else {
+                summary[i] = {
+                    value: getTotalFunction(parseInt(i)).call(
+                        this.TOTAL_FUNCTIONS,
+                        rawData, xh, rawData.length, i, data.info.leftHeaderColumnsNumber
+                    ),
+                    style: TOTALS_STYLE
+                }
+            }
+        }
+        groupNum++;
+        if (attachTotals) {
+            rawData.splice(data.info.topHeaderRowsNumber, 0, summary);
+            data.info.topHeaderRowsNumber++;
+        } else {
+            rawData.push(summary);
+        }
+    }
+
+    if (this.controller.getPivotProperty(["columnTotals"])
+        && rawData.length - data.info.topHeaderRowsNumber > 1
+        && data.info.leftHeaderColumnsNumber > 0) {
+        var group = ++groupNum,
+            row;
+        for (row = 0; row < data.info.topHeaderRowsNumber; row++) {
+            rawData[row].push({
+                group: group,
+                isCaption: true,
+                value: pivotLocale.get(0)
+            });
+        }
+        for (row = data.info.topHeaderRowsNumber; row < rawData.length; row++) {
+            rawData[row].push({
+                isCaption: true,
+                value: getTotalFunction(row, true).call(
+                    this.TOTAL_FUNCTIONS,
+                    rawData, data.info.leftHeaderColumnsNumber, rawData[row].length, undefined,
+                    data.info.leftHeaderColumnsNumber, row
+                ),
+                style: TOTALS_STYLE
+            });
+        }
+    }
+
+    rawData = parseColumnFormatting(rawData);
+
+    data.rawData = data._rawDataOrigin = rawData;
+
+    return data.rawData;
+
+};
+
+/**
+ * Trigger the dataChangeTrigger.
+ *
+ * @private
+ */
+DataController.prototype._trigger = function () {
+
+    if (this.dataChangeTrigger) this.dataChangeTrigger();
+
+};
+
+/**
+ * Sort raw data by column.
+ *
+ * @param columnIndex
+ */
+DataController.prototype.sortByColumn = function (columnIndex) {
+
+    var data = this._dataStack[this._dataStack.length - 1].data,
+        totalsAttached = this.SUMMARY_SHOWN && this.controller.CONFIG["attachTotals"] ? 1 : 0,
+        comparator;
+
+    if (this.SORT_STATE.column !== columnIndex) {
+        order = this.SORT_STATE.order = 0;
+    }
+
+    var newRawData = data._rawDataOrigin.slice(
+            data.info.topHeaderRowsNumber,
+            data._rawDataOrigin.length - (this.SUMMARY_SHOWN && !totalsAttached ? 1 : 0)
+        ),
+        xIndex = data.info.leftHeaderColumnsNumber + columnIndex,
+        order = this.SORT_STATE.order === -1 ? 1 : this.SORT_STATE.order === 1 ? 0 : -1;
+
+    this.SORT_STATE.order = order;
+    this.SORT_STATE.column = columnIndex;
+
+    for (var i in data.rawData[data.info.topHeaderRowsNumber - totalsAttached - 1]) {
+        if (data.rawData[data.info.topHeaderRowsNumber - totalsAttached - 1][i].className) {
+            delete data.rawData[data.info.topHeaderRowsNumber - totalsAttached - 1][i].className;
+        }
+    }
+
+    if (order === 0) {
+        data.rawData = data._rawDataOrigin;
+        this.modifyRawData(data);
+        this._trigger();
+        return;
+    }
+
+    order = -order;
+
+    if (typeof (comparator = ((data.columnProps[columnIndex] || {})["$FORMAT"] || {}).comparator) === "function") {
+        newRawData.sort(function (a, b) { // sort using comparator function
+            if (comparator(b[xIndex].value) > comparator(a[xIndex].value)) return order;
+            if (comparator(b[xIndex].value) < comparator(a[xIndex].value)) return -order;
+            return 0;
+        });
+    } else { // simple sort
+        newRawData.sort(function (a, b) {
+            if (b[xIndex].value > a[xIndex].value) return order;
+            if (b[xIndex].value < a[xIndex].value) return -order;
+            return 0;
+        });
+    }
+
+    data.rawData = data._rawDataOrigin.slice(0, data.info.topHeaderRowsNumber)
+        .concat(newRawData)
+        .concat(this.SUMMARY_SHOWN && !totalsAttached
+            ? [data._rawDataOrigin[data._rawDataOrigin.length - 1]]
+            : []
+        );
+    data.rawData[data.info.topHeaderRowsNumber - totalsAttached - 1]
+        [data.info.leftHeaderColumnsNumber + columnIndex]
+        .className = order === 0 ? "" : order === 1 ? "lpt-sortDesc" : "lpt-sortAsc";
+
+    this.modifyRawData(data);
+
+    this._trigger();
+
+};
+
+/**
+ * Filter raw data by part of value.
+ *
+ * @param {string} valuePart
+ * @param {number} columnIndex
+ */
+DataController.prototype.filterByValue = function (valuePart, columnIndex) {
+
+    var data = this._dataStack[this._dataStack.length - 1].data,
+        totalsAttached = this.SUMMARY_SHOWN && this.controller.CONFIG["attachTotals"] ? 1 : 0,
+        newRawData = data._rawDataOrigin.slice(
+            data.info.topHeaderRowsNumber,
+            data._rawDataOrigin.length - (this.SUMMARY_SHOWN && !totalsAttached ? 1 : 0)
+        ),
+        re = null;
+
+    try {
+        re = new RegExp(valuePart, "i");
+    } catch (e) {
+        try {
+            re = new RegExp(valuePart.replace(/([()[{*+.$^\\|?])/g, "\\$1"), "i");
+        } catch (e) {
+            return;
+        }
+    }
+
+    newRawData = newRawData.filter(function (row) {
+        return (row[columnIndex].value || "").toString().match(re);
+    });
+
+    data.rawData = data._rawDataOrigin.slice(0, data.info.topHeaderRowsNumber)
+        .concat(newRawData)
+        .concat(this.SUMMARY_SHOWN && !totalsAttached
+            ? [data._rawDataOrigin[data._rawDataOrigin.length - 1]]
+            : []
+    );
+
+    this.modifyRawData(data);
+
+    this._trigger();
+
+};
+
+/**
+ * Modifies data if such settings are present.
+ */
+DataController.prototype.modifyRawData = function (data) {
+
+    // modify data.rawData and original properties (such as width and height) if needed.
+
+    var i = -1;
+
+    if (this.controller.CONFIG.showRowNumbers && !data.info.leftHeaderColumnsNumber) { // listing
+        if (data.rawData[0] && data.rawData[0][0].special) { // just update indices
+            data.rawData.forEach(function (row) {
+                row[0].value = ++i === 0 ? "#" : i;
+                row[0].isCaption = i === 0;
+            });
+        } else { // re-create indexes
+            data.rawData.forEach(function (row) {
+                row.unshift({
+                    value: ++i === 0 ? "#" : i,
+                    isCaption: i === 0,
+                    special: true,
+                    noClick: true
+                });
+            });
+            if (data.columnProps instanceof Array) {
+                data.columnProps.unshift({});
+            }
+            data.info.colCount++;
+        }
+    }
+
+    var y = data.info.topHeaderRowsNumber - 1;
+    for (i = data.info.leftHeaderColumnsNumber; i < data.rawData[y].length; i++) {
+        data.rawData[y][i].style = "min-width:"
+            + (this.controller.getPivotProperty(["cellWidth"]) || 100) + "px;"
+            + (data.rawData[y][i].style ? data.rawData[y][i].style : "");
+    }
+
+};
+/**
+ * Data source.
+ *
+ * Must implement methods.
+ *
+ * @param {Object} config
+ * @param {Object} globalConfig
+ * @param {LightPivotTable} lpt
+ * @param {number=1} [drillLevel]
+ * @constructor
+ */
+var DataSource = function (config, globalConfig, lpt, drillLevel) {
+
+    this.SOURCE_URL = config.MDX2JSONSource ||
+        location.host + ":" + location.port + "/" + (location.pathname.split("/") || [])[1];
+    this.NAMESPACE = config["namespace"];
+    this.USERNAME = config["username"];
+    this.PASSWORD = config["password"];
+    this.LPT = lpt;
+    this.GLOBAL_CONFIG = globalConfig;
+    this.SEND_COOKIES = config["sendCookies"] || false;
+    this.DRILL_LEVEL = typeof drillLevel !== "number" ? 1 : drillLevel;
+
+    this.BASIC_MDX = config.basicMDX;
+    /**
+     * Name of data source pivot.
+     *
+     * @type {string}
+     */
+    this.DATA_SOURCE_PIVOT = config["pivot"] || "";
+
+    this.FILTERS = [];
+
+};
+
+/**
+ * @param {string} url
+ * @param {object} data
+ * @param {function} callback
+ * @private
+ */
+DataSource.prototype._post = function (url, data, callback) {
+    var xhr = new XMLHttpRequest(),
+        self = this;
+    xhr.open("POST", url);
+    if (this.SEND_COOKIES) xhr.withCredentials = true;
+    xhr.onreadystatechange = function () {
+        var handler;
+        if (xhr.readyState === 4) {
+            handler = self.LPT.CONFIG.triggers["responseHandler"];
+            if (typeof handler === "function") {
+                handler.call(self.LPT, {
+                    url: url,
+                    status: xhr.status,
+                    xhr: xhr
+                });
+            }
+        }
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            callback((function () {
+                try {
+                    return JSON.parse(xhr.responseText) || {}
+                } catch (e) {
+                    try {
+                        var temp = null;
+                        eval("temp=" + xhr.responseText);
+                        return temp;
+                    } catch (e) {
+                        return {
+                            error: "<h1>Unable to parse server response</h1><p>" + xhr.responseText
+                            + "</p>"
+                        };
+                    }
+                }
+            })());
+        } else if (xhr.readyState === 4 && xhr.status !== 200) {
+            callback({
+                error: xhr.responseText || pivotLocale.get(3) + "<br/>" +
+                       xhr.status + ": " + xhr.statusText
+            });
+        }
+    };
+    if (this.USERNAME && this.PASSWORD) {
+        xhr.setRequestHeader("Authorization", "Basic " + btoa(this.USERNAME + ":" + this.PASSWORD));
+    }
+    xhr.send(JSON.stringify(data));
+};
+
+/**
+ * Converts data from MDX2JSON source to LightPivotTable representation.
+ *
+ * @param {object} data
+ * @private
+ */
+DataSource.prototype._convert = function (data) {
+
+    var o;
+
+    if (typeof data !== "object" || data.error) return { error: data.error || true };
+
+    try {
+        o = {
+            dimensions: [
+                data["Cols"][0]["tuples"],
+                data["Cols"][1]["tuples"]
+            ],
+            dataArray: data["Data"],
+            info: data["Info"]
+        };
+        return o;
+    } catch (e) {
+        console.error("Error while parsing data:", e);
+        return { error: data.error || true };
+    }
+
+};
+
+/**
+ * @param {string} spec - an MDX specification of the filter.
+ */
+DataSource.prototype.setFilter = function (spec) {
+
+    this.FILTERS.push(spec);
+
+};
+
+DataSource.prototype.clearFilters = function () {
+
+    this.FILTERS = [];
+
+};
+
+/**
+ * @param {function} callback
+ */
+DataSource.prototype.getCurrentData = function (callback) {
+
+    var _ = this,
+        __ = this._convert,
+        mdx = this.BASIC_MDX,
+        mdxParser = new MDXParser(),
+        mdxType = mdxParser.mdxType(mdx),
+        ready = {
+            state: 0,
+            data: {},
+            pivotData: {}
+        };
+
+    for (var i = 0; i < this.FILTERS.length; i++) {
+        mdx = mdxParser.applyFilter(mdx, this.FILTERS[i]);
+    }
+
+    if (typeof this.GLOBAL_CONFIG.rowCount === "number") {
+        mdx = mdxParser.applyRowCount(mdx, this.GLOBAL_CONFIG.rowCount);
+    }
+
+    var setupPivotOptions = function () {
+
+        var data = ready.pivotData;
+
+        _.GLOBAL_CONFIG["pivotProperties"] = ready.pivotData;
+
+        if (data["rowAxisOptions"]) {
+            if (data["rowAxisOptions"]["drilldownSpec"]) {
+                _.GLOBAL_CONFIG["DrillDownExpression"] =
+                    _.GLOBAL_CONFIG["DrillDownExpression"]
+                    || data["rowAxisOptions"]["drilldownSpec"].split("^");
+            }
+            if (data["rowAxisOptions"]["levelFormat"]
+                || data["columnAxisOptions"]
+                && data["columnAxisOptions"]["levelFormat"]) {
+                _.GLOBAL_CONFIG["formatNumbers"] =
+                    _.GLOBAL_CONFIG["formatNumbers"]
+                    || data["columnAxisOptions"]["levelFormat"]
+                    || data["rowAxisOptions"]["levelFormat"];
+            }
+        }
+
+    };
+
+    var handleDataReady = function () {
+
+        var data = ready.data;
+
+        //console.log("Retrieved data:", ready);
+
+        if (mdxType === "drillthrough") {
+            callback((function (data) {
+
+                var arr = data["children"] || [],
+                    headers = [],
+                    obj, i, u;
+
+                if (!arr.length) return {
+                    error: pivotLocale.get(4)
+                };
+
+                for (i in arr[0]) {
+                    headers.push({ caption: i });
+                }
+
+                obj = {
+                    Cols: [ { tuples: headers }, { tuples: [] } ],
+                    Data: [],
+                    Info: {
+                        colCount: 8,
+                        cubeClass: "No cube class",
+                        cubeName: "No cube name",
+                        leftHeaderColumnsNumber: 0,
+                        rowCount: arr.length,
+                        topHeaderRowsNumber: headers.length,
+                        mdxType: mdxType
+                    }
+                };
+
+                for (i in arr) {
+                    for (u in arr[i]) {
+                        obj.Data.push(arr[i][u]);
+                    }
+                }
+
+                return __(obj);
+
+            })(data));
+        } else if (mdxType === "mdx") {
+            if (
+                !data || !data.Data || !data.Data.length || !data.Cols
+                || (!data.Data.length && !((data.Cols[0]||{}).tuples||[]).length)
+                && !((data.Cols[1]||{}).tuples||[]).length
+            ) {
+                return callback({
+                    error: pivotLocale.get(4)
+                });
+            }
+            callback(_._convert(data));
+        } else {
+            callback({ error: "Unrecognised MDX type: " + mdx || true });
+        }
+
+    };
+
+    var requestData = function () {
+
+        if (_.LPT.CONFIG["logs"]) console.log("LPT MDX request:", mdx);
+
+        var setData = function (data) {
+            _.LPT.pivotView.removeMessage();
+            ready.data = data;
+            ready.state++;
+            handleDataReady();
+        };
+
+        // fill initial data first time and exit
+        if (_.DRILL_LEVEL === 0 && _.LPT.CONFIG["initialData"]) {
+            setData(_.LPT.CONFIG["initialData"]);
+            return;
+        }
+
+        _._post(
+            _.SOURCE_URL + "/" +
+            (mdxType === "drillthrough" ? "MDXDrillthrough" : "MDX")
+            + (_.NAMESPACE ? "?Namespace=" + _.NAMESPACE : ""
+        ), {
+            MDX: mdx
+        }, setData);
+
+    };
+
+    _.LPT.pivotView.displayLoading();
+
+    if (this.DATA_SOURCE_PIVOT) {
+        this._post(this.SOURCE_URL + "/DataSource"
+                       + (_.NAMESPACE ? "?Namespace=" + _.NAMESPACE : ""), {
+            DataSource: this.DATA_SOURCE_PIVOT
+        }, function (data) {
+            ready.pivotData = data;
+            ready.state++;
+            setupPivotOptions();
+            requestData();
+        });
+    } else {
+        _.GLOBAL_CONFIG["pivotProperties"] = {};
+        requestData();
+    }
+
+};
+
+var ExcelExport = function () {
+
+
+
+};
+
+ExcelExport.prototype.exportTableHTML = (function () {
+    var uri = 'data:application/vnd.ms-excel;base64,'
+        , template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body><table>{table}</table></body></html>'
+        , base64 = function (s) { return window.btoa(unescape(encodeURIComponent(s))) }
+        , format = function (s, c) { return s.replace(/{(\w+)}/g, function (m, p) { return c[p]; }) };
+    return function (tableHTML, name) {
+        var ctx = { worksheet: name || 'Worksheet', table: tableHTML };
+        console.log(uri + base64(format(template, ctx)));
+        window.location.href = uri + base64(format(template, ctx))
+    }
+})();
+
+ExcelExport.prototype.exportXLS = function () {
+
+    var lpt = document.getElementsByClassName("lpt")[0],
+        bodyHTML  = lpt.getElementsByClassName("lpt-tableBlock")[0]
+            .getElementsByTagName("table")[0].innerHTML,
+        topHTML = lpt.getElementsByClassName("lpt-topHeader")[0]
+            .getElementsByTagName("table")[0].innerHTML.replace(/<tr>/, "<tr><th colspan='2'></th>"),
+        leftHTML = lpt.getElementsByClassName("lpt-leftHeader")[0]
+            .getElementsByTagName("thead")[0].innerHTML,
+        trs = leftHTML.match("<tr>(.*)</tr>")[1].split("</tr><tr>"),
+        i = 0;
+
+    bodyHTML = bodyHTML.replace(/<tr>/g, function () {
+        return "<tr>" + trs[i++];
+    });
+
+    console.log(topHTML + bodyHTML);
+
+    this.exportTableHTML(topHTML + bodyHTML, "test");
+
+};
+/**
+ * Light pivot table global object.
+ *
+ * @param {object} configuration
+ * @constructor
+ */
+var LightPivotTable = function (configuration) {
+
+    var _ = this;
+
+    if (typeof configuration !== "object") configuration = {};
+    this.normalizeConfiguration(configuration);
+
+    this._dataSourcesStack = [];
+
+    this.DRILL_LEVEL = -1;
+    this.CONFIG = configuration;
+    this.VERSION = "".concat("1.8.14") || "[NotBuilt]";
+
+    /**
+     * @see this.init
+     * @type {object}
+     */
+    this.CONTROLS = {};
+
+    this.mdxParser = new MDXParser();
+
+    /**
+     * @type {PivotView}
+     */
+    this.pivotView = new PivotView(this, configuration.container);
+    this.dataSource = this.pushDataSource(configuration.dataSource);
+
+    /**
+     * @type {DataController}
+     */
+    this.dataController = new DataController(this, function () {
+        _.dataIsChanged.call(_);
+    });
+
+    this.init();
+
+};
+
+/**
+ * Load data again from actual data source and refresh table.
+ */
+LightPivotTable.prototype.refresh = function () {
+
+    var _  = this,
+        i;
+
+    if (!this.dataSource.BASIC_MDX) {
+        console.log("Unable to refresh: no basic MDX set.");
+        return;
+    }
+
+    this.clearFilters();
+    if (this.CONFIG["defaultFilterSpecs"] instanceof Array) {
+        for (i in this.CONFIG["defaultFilterSpecs"]) {
+            this.setFilter(this.CONFIG["defaultFilterSpecs"][i]);
+        }
+    }
+
+    this.dataSource.getCurrentData(function (data) {
+        if (_.dataController.isValidData(data)) {
+            _.dataController.setData(data);
+        } else {
+            _.pivotView.displayMessage(data.error || pivotLocale.get(2));
+        }
+    });
+
+};
+
+/**
+ * @param {string} mdx - New mdx.
+ */
+LightPivotTable.prototype.changeBasicMDX = function (mdx) {
+
+    // return LPT to the first level
+    for (var i = this._dataSourcesStack.length - 1; i > 0; i--) {
+        this.popDataSource();
+        this.pivotView.popTable();
+        this.dataController.popData();
+    }
+    // change MDX
+    this.CONFIG.dataSource.basicMDX = mdx;
+    this.dataSource.BASIC_MDX = mdx;
+    // do refresh
+    this.refresh();
+
+};
+
+LightPivotTable.prototype.setRowCount = function (n) {
+
+    this.CONFIG.rowCount = n;
+
+};
+
+/**
+ * Returns current mdx including filters.
+ * @returns {string}
+ * @deprecated
+ */
+LightPivotTable.prototype.getActualMDX = function () {
+
+    var mdx = this.dataSource.BASIC_MDX,
+        mdxParser = new MDXParser(),
+        filters = this.dataSource.FILTERS;
+
+    for (var i in filters) {
+        mdx = mdxParser.applyFilter(mdx, filters[i]);
+    }
+
+    if (typeof this.CONFIG.rowCount === "number") {
+        mdx = mdxParser.applyRowCount(mdx, this.CONFIG.rowCount);
+    }
+
+    return mdx;
+
+};
+
+/**
+ * Returns if current display is listing.
+ */
+LightPivotTable.prototype.isListing = function () {
+
+    return (this.dataController.getData().info || {}).leftHeaderColumnsNumber === 0;
+
+};
+
+/**
+ * Return array with selected rows indexes.
+ */
+LightPivotTable.prototype.getSelectedRows = function () {
+
+    var arr = [], rows = this.pivotView.selectedRows, i;
+
+    for (i in rows) {
+        if (rows[i]) arr.push(+i);
+    }
+
+    return arr;
+
+};
+
+/**
+ * Return array of passed rows values.
+ * @param {Number[]} rows - Rows indices in the table. Index 1 points to the first row with data.
+ * @returns {*[]}
+ */
+LightPivotTable.prototype.getRowsValues = function (rows) {
+    if (typeof rows === "undefined")
+        return [];
+    if (!(rows instanceof Array))
+        rows = [rows];
+    if (rows.length === 0)
+        return [];
+    var d = this.dataController.getData(),
+        arr = [];
+    for (var i = 0; i < rows.length; i++) {
+        arr.push(d.rawData[rows[i] - 1 + (d.info.topHeaderRowsNumber || 1)]);
+    }
+    return arr;
+};
+
+/**
+ * Returns currently rendered model.
+ */
+LightPivotTable.prototype.getModel = function () {
+    return this.dataController.getData();
+};
+
+/**
+ * Performs resizing.
+ */
+LightPivotTable.prototype.updateSizes = function () {
+
+    this.pivotView.updateSizes();
+
+};
+
+/**
+ * Ability to set filter. Manual refresh is required.
+ * Example: spec = "[DateOfSale].[Actual].[YearSold].&[2009]"; *.refresh();
+ *
+ * @param {string} spec - an MDX specification of the filter.
+ */
+LightPivotTable.prototype.setFilter = function (spec) {
+
+    this.dataSource.setFilter(spec);
+
+};
+
+/**
+ * Clear all filters that was set before.
+ */
+LightPivotTable.prototype.clearFilters = function () {
+
+    this.dataSource.clearFilters();
+
+};
+
+/**
+ * @param {object} config - part of dataSource configuration. Usually a part of config given to LPT.
+ * @returns {DataSource}
+ */
+LightPivotTable.prototype.pushDataSource = function (config) {
+
+    var newDataSource;
+
+    this.DRILL_LEVEL++;
+    this._dataSourcesStack.push(
+        newDataSource = new DataSource(config || {}, this.CONFIG, this, this.DRILL_LEVEL)
+    );
+    this.dataSource = newDataSource;
+
+    return newDataSource;
+
+};
+
+/**
+ * @param {boolean} [popData = true] - Also pop data in dataSource.
+ */
+LightPivotTable.prototype.popDataSource = function (popData) {
+
+    if (this._dataSourcesStack.length < 2) return;
+
+    this.DRILL_LEVEL--;
+    this._dataSourcesStack.pop();
+    if (!popData) this.dataController.popData();
+
+    this.dataSource = this._dataSourcesStack[this._dataSourcesStack.length - 1];
+
+};
+
+/**
+ * Data change handler.
+ */
+LightPivotTable.prototype.dataIsChanged = function () {
+
+    this.pivotView.dataChanged(this.dataController.getData());
+
+};
+
+/**
+ * Try to DrillDown with given filter.
+ *
+ * @param {string} filter
+ */
+LightPivotTable.prototype.tryDrillDown = function (filter) {
+
+    var _ = this,
+        oldDataSource,
+        ds = {};
+
+    // clone dataSource config object
+    for (var i in _.CONFIG.dataSource) { ds[i] = _.CONFIG.dataSource[i]; }
+
+    if (this.CONFIG.DrillDownExpression && !(this.CONFIG.DrillDownExpression instanceof Array)) {
+        this.CONFIG.DrillDownExpression = [this.CONFIG.DrillDownExpression];
+    }
+
+    if ((this.CONFIG.DrillDownExpression || [])[this.DRILL_LEVEL]) {
+        ds.basicMDX = this.mdxParser.drillDown(
+            this.dataSource.BASIC_MDX, filter, this.CONFIG.DrillDownExpression[this.DRILL_LEVEL]
+        ) || this.dataSource.BASIC_MDX;
+    } else {
+        ds.basicMDX = this.mdxParser.drillDown(this.dataSource.BASIC_MDX, filter) || this.dataSource.BASIC_MDX;
+    }
+
+    oldDataSource = this.dataSource;
+
+    this.pushDataSource(ds);
+
+    this.dataSource.FILTERS = oldDataSource.FILTERS;
+
+    this.dataSource.getCurrentData(function (data) {
+        if (_.dataController.isValidData(data)
+            && data.dataArray.length > 0
+            && data.dimensions[1]
+            && data.dimensions[1][0]
+            && (data.dimensions[1][0]["caption"]
+                || data.dimensions[1][0]["dimension"]
+                || data.dimensions[1][0]["path"])) {
+            _.pivotView.pushTable();
+            _.dataController.pushData();
+            _.dataController.setData(data);
+            if (typeof _.CONFIG.triggers["drillDown"] === "function") {
+                _.CONFIG.triggers["drillDown"].call(_, {
+                    level: _.DRILL_LEVEL,
+                    mdx: ds.basicMDX,
+                    path: data.dimensions[1][0]["path"] || ""
+                });
+            }
+        } else {
+            _.popDataSource(true);
+        }
+    });
+
+};
+
+/**
+ * Try to DrillThrough with given filters.
+ *
+ * @param {string[]} [filters]
+ */
+LightPivotTable.prototype.tryDrillThrough = function (filters) {
+
+    var _ = this,
+        oldDataSource,
+        ds = {};
+
+    // clone dataSource config object
+    for (var i in _.CONFIG.dataSource) { ds[i] = _.CONFIG.dataSource[i]; }
+
+    ds.basicMDX = this.mdxParser.drillThrough(this.dataSource.BASIC_MDX, filters)
+        || this.dataSource.basicMDX;
+
+    oldDataSource = this.dataSource;
+    this.pushDataSource(ds);
+    this.dataSource.FILTERS = oldDataSource.FILTERS;
+
+    this.dataSource.getCurrentData(function (data) {
+        if (_.dataController.isValidData(data) && data.dataArray.length > 0) {
+            _.pivotView.pushTable({
+                disableConditionalFormatting: true
+            });
+            _.dataController.pushData();
+            _.dataController.setData(data);
+            if (typeof _.CONFIG.triggers["drillThrough"] === "function") {
+                _.CONFIG.triggers["drillThrough"].call(_, {
+                    level: _.DRILL_LEVEL,
+                    mdx: ds.basicMDX
+                });
+            }
+        } else {
+            _.popDataSource(true);
+        }
+    });
+
+};
+
+/**
+ * Crash-safe function to get properties of pivot.
+ *
+ * @param {string[]} path
+ * @returns {*|undefined}
+ */
+LightPivotTable.prototype.getPivotProperty = function (path) {
+    if (!this.CONFIG["pivotProperties"]) return undefined;
+    if (!(path instanceof Array)) path = [];
+    var obj = this.CONFIG["pivotProperties"]; path = path.reverse();
+    while (path.length
+           && typeof obj !== "undefined") {
+        obj = obj[path.pop()];
+    }
+    return obj;
+};
+
+/**
+ * Attaches the trigger during the runtime.
+ * @param {string} triggerName
+ * @param {function} trigger
+ */
+LightPivotTable.prototype.attachTrigger = function (triggerName, trigger) {
+    if (typeof trigger !== "function") {
+        console.warn("LPT.addTrigger: pass the trigger as a second argument.");
+        return;
+    }
+    this.CONFIG.triggers[triggerName] = trigger;
+};
+
+/**
+ * Fill up to normal config structure to avoid additional checks and issues.
+ *
+ * @param config
+ */
+LightPivotTable.prototype.normalizeConfiguration = function (config) {
+    if (typeof config["columnResizing"] === "undefined") config.columnResizing = true;
+    if (typeof config["pagination"] === "undefined") config.pagination = 200;
+    if (typeof config["enableSearch"] === "undefined") config.enableSearch = true;
+    if (typeof config["stretchColumns"] === "undefined") config.stretchColumns = true;
+    if (typeof config["enableListingSelect"] === "undefined") config.enableListingSelect = true;
+    if (typeof config["showListingRowsNumber"] === "undefined")
+        config.showListingRowsNumber = true;
+    if (!config["triggers"]) config.triggers = {};
+    if (!config["dataSource"]) config.dataSource = {};
+};
+
+LightPivotTable.prototype.init = function () {
+
+    var _ = this;
+
+    this.CONTROLS.drillThrough = function () {
+        _.pivotView._drillThroughClickHandler.call(_.pivotView);
+    };
+
+    this.CONTROLS.customDrillThrough = function (filters) {
+        if (!(filters instanceof Array)) {
+            console.error("Parameter \"filters\" must be array of strings.");
+            return;
+        }
+        _.tryDrillThrough.call(_, filters);
+    };
+
+    this.CONTROLS.back = function () {
+        _.pivotView._backClickHandler.call(_.pivotView);
+    };
+
+    if (this.CONFIG["locale"]) { pivotLocale.setLocale(this.CONFIG["locale"]); }
+
+    this.refresh();
+
+};
+/**
+ * MDX parser.
+ *
+ * @author ZitRo
+ * @constructor
+ */
+var MDXParser = function () {};
+
+/**
+ * Debug method.
+ *
+ * @param {string} mdx
+ * @param {string} [message]
+ * @private
+ */
+MDXParser.prototype._warnMDX = function (mdx, message) {
+    console.warn("MDX is not parsed:\n\n%s\n\n" + (message ? "(" + message + ")" : ""), mdx);
+};
+
+/**
+ * Converts filter to setExpression that can be inserted to MDX.
+ *
+ * @param filterSpec
+ */
+MDXParser.prototype.makeSetExpressionFromFilter = function (filterSpec) {
+    if (filterSpec.match(/^\([^\),]*,[^\)]*\)$/)) {
+        return "NONEMPTYCROSSJOIN" + filterSpec.slice(0, filterSpec.length - 1) + ".children)";
+    } else {
+        return filterSpec + ".children";
+    }
+};
+
+/**
+ * If expression has no "NON EMPTY" it will be prepended.
+ * @param expression
+ */
+MDXParser.prototype.prependNonEmpty = function (expression) {
+    return expression.match(/^\s*non\s+empty/i) ? expression : "NON EMPTY " + expression;
+};
+
+/**
+ * Applies Row Count to mdx.
+ * Source: SELECT [Test].Members ON 0, NON EMPTY      [Test2].Members     ON 1 FROM [Tests] %FILTER
+ * Out:    SELECT [Test].Members ON 0, NON EMPTY HEAD([Test2].Members, N) ON 1 FROM [Tests] %FILTER
+ * @param {string} expression - MDX expression.
+ * @param {number} n - Number of rows to return.
+ * @returns {string}
+ */
+MDXParser.prototype.applyRowCount = function (expression, n) {
+    return expression.replace(/\s*on\s*0\s*,\s*(?:non\s*empty\s*)?(.*)\s*on\s*1/i, function (a,b) {
+        return typeof n !== "undefined" ? " ON 0, NON EMPTY HEAD(" + b + ", " + n + ") ON 1" : a;
+    });
+};
+
+/**
+ * Performs DrillDown on MDX query.
+ * @param {string} mdx
+ * @param {string} filter
+ * @param {string} [expression] - if is set, "* ON 1" will be replaced with "{value} ON 1"
+ * @returns {string} - new query.
+ */
+MDXParser.prototype.drillDown = function (mdx, filter, expression) {
+
+    if (!filter) {
+        if (/]\s+ON\s+1/i.test(mdx)) {
+            return mdx = mdx.replace(/]\s+ON\s+1/i, "].children ON 1");
+        } else {
+            this._warnMDX(mdx, "no filter specified");
+            return "";
+        }
+    }
+
+    var parts = mdx.split(/(select\s*)(.*?)(\s*from)/ig); // split by SELECT queries
+
+    if (parts.length < 4) {
+        this._warnMDX(mdx);
+        return ""; // no select query matched
+    }
+
+    var selectBody = parts[parts.length - 3],
+        dimensions = selectBody.split(/(\s*ON\s*[01]\s*,?\s*)/i);
+
+    if (dimensions.length < 2) {
+        this._warnMDX(mdx, "DrillDown is impossible");
+        this._warnMDX(mdx, "DrillDown is impossible");
+        return ""; // no dimensions matched
+    }
+
+    var index = -1;
+    dimensions.map(function(e,i){if(e.match(/\s*ON\s*[01]\s*,?\s*/i)) index=i-1; return e;});
+
+    if (index === -1) {
+        this._warnMDX(mdx, "DrillDown is impossible");
+        return ""; // DrillDown is impossible (no "1" dimension)
+    }
+
+    let order = '';
+    const orderMatch = dimensions[index].match(/ORDER\((.*?)\,/);
+
+    if (orderMatch && orderMatch[0]) {
+        order = orderMatch[0];
+    }
+
+    if (order) {
+        dimensions[index] = (expression || dimensions[index]).replace(order, 'ORDER(' + this.makeSetExpressionFromFilter(filter) + ',');
+    } else {
+        dimensions[index] =
+            this.prependNonEmpty(expression || this.makeSetExpressionFromFilter(filter));
+    }
+    for (var i in dimensions) {
+        if (dimensions[i].length === 1) { // "0" || "1"
+            dimensions[i](parseInt(i), 1);
+        }
+    }
+    parts[parts.length - 3] = dimensions.join("");
+
+    return this.applyFilter(parts.join(""), filter);
+
+};
+
+/**
+ * @param {string} basicMDX
+ * @param {string[]} [filters]
+ */
+MDXParser.prototype.drillThrough = function (basicMDX, filters) {
+
+    var cubeAndFilters = basicMDX.slice(basicMDX.lastIndexOf("FROM ")),
+        query = "DRILLTHROUGH SELECT " + cubeAndFilters;
+
+    for (var i in filters) {
+        query = this.applyFilter(query, filters[i]);
+    }
+
+    return query;
+
+};
+
+/**
+ * Returns type of MDX.
+ *
+ * @param {string} mdx
+ */
+MDXParser.prototype.mdxType = function (mdx) {
+
+    var m = mdx.toLowerCase(),
+        dt = m.indexOf("drillthrough"),
+        dd = m.indexOf("select");
+
+    if (dt > -1) {
+        return "drillthrough";
+    } else if (dd > -1) {
+        return "mdx";
+    } else {
+        return "unknown";
+    }
+
+};
+
+/**
+ * @param {string} basicMDX
+ * @param {string} filterSpec
+ */
+MDXParser.prototype.applyFilter = function (basicMDX, filterSpec) {
+
+    return basicMDX + (filterSpec ? " %FILTER " + filterSpec : "");
+
+};
+/*!
+ * numeral.js
+ * version : 1.5.3
+ * author : Adam Draper
+ * license : MIT
+ * http://adamwdraper.github.com/Numeral-js/
+ */
+
+var numeral = function () {
+
+    /************************************
+     Constants
+     ************************************/
+
+    var numeral,
+        VERSION = '1.5.3',
+    // internal storage for language config files
+        languages = {},
+        currentLanguage = 'en',
+        zeroFormat = null,
+        defaultFormat = '0,0';
+
+    var NUMBER_GROUP_LENGTH = 3,
+        NUMBER_GROUP_SEPARATOR = ",",
+        DECIMAL_SEPARATOR = ".",
+        NUM_REGEX = new RegExp("(\\d)(?=(\\d{" + NUMBER_GROUP_LENGTH + "})+(?!\\d))", "g");
+
+    /************************************
+     Constructors
+     ************************************/
+
+
+    // Numeral prototype object
+    function Numeral (number) {
+        this._value = number;
+    }
+
+    /**
+     * Implementation of toFixed() that treats floats more like decimals
+     *
+     * Fixes binary rounding issues (eg. (0.615).toFixed(2) === '0.61') that present
+     * problems for accounting- and finance-related software.
+     */
+    function toFixed (value, precision, roundingFunction, optionals) {
+        var power = Math.pow(10, precision),
+            optionalsRegExp,
+            output;
+
+        //roundingFunction = (roundingFunction !== undefined ? roundingFunction : Math.round);
+        // Multiply up by precision, round accurately, then divide and use native toFixed():
+        output = (roundingFunction(value * power) / power).toFixed(precision);
+
+        if (optionals) {
+            optionalsRegExp = new RegExp('0{1,' + optionals + '}$');
+            output = output.replace(optionalsRegExp, '');
+        }
+
+        return output;
+    }
+
+    /************************************
+     Formatting
+     ************************************/
+
+    // determine what type of formatting we need to do
+    function formatNumeral (n, format, roundingFunction) {
+        var output;
+
+        // figure out what kind of format we are dealing with
+        if (format.indexOf('$') > -1) { // currency!!!!!
+            output = formatCurrency(n, format, roundingFunction);
+        } else if (format.indexOf('%') > -1) { // percentage
+            output = formatPercentage(n, format, roundingFunction);
+        } else if (format.indexOf(':') > -1) { // time
+            output = formatTime(n, format);
+        } else { // plain ol' numbers or bytes
+            output = formatNumber(n._value, format, roundingFunction);
+        }
+
+        // return string
+        return output;
+    }
+
+    // revert to number
+    function unformatNumeral (n, string) {
+        var stringOriginal = string,
+            thousandRegExp,
+            millionRegExp,
+            billionRegExp,
+            trillionRegExp,
+            suffixes = ['KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'],
+            bytesMultiplier = false,
+            power;
+
+        if (string.indexOf(':') > -1) {
+            n._value = unformatTime(string);
+        } else {
+            if (string === zeroFormat) {
+                n._value = 0;
+            } else {
+                if (languages[currentLanguage].delimiters.decimal !== '.') {
+                    string = string.replace(/\./g,'').replace(languages[currentLanguage].delimiters.decimal, '.');
+                }
+
+                // see if abbreviations are there so that we can multiply to the correct number
+                thousandRegExp = new RegExp('[^a-zA-Z]' + languages[currentLanguage].abbreviations.thousand + '(?:\\)|(\\' + languages[currentLanguage].currency.symbol + ')?(?:\\))?)?$');
+                millionRegExp = new RegExp('[^a-zA-Z]' + languages[currentLanguage].abbreviations.million + '(?:\\)|(\\' + languages[currentLanguage].currency.symbol + ')?(?:\\))?)?$');
+                billionRegExp = new RegExp('[^a-zA-Z]' + languages[currentLanguage].abbreviations.billion + '(?:\\)|(\\' + languages[currentLanguage].currency.symbol + ')?(?:\\))?)?$');
+                trillionRegExp = new RegExp('[^a-zA-Z]' + languages[currentLanguage].abbreviations.trillion + '(?:\\)|(\\' + languages[currentLanguage].currency.symbol + ')?(?:\\))?)?$');
+
+                // see if bytes are there so that we can multiply to the correct number
+                for (power = 0; power <= suffixes.length; power++) {
+                    bytesMultiplier = (string.indexOf(suffixes[power]) > -1) ? Math.pow(1024, power + 1) : false;
+
+                    if (bytesMultiplier) {
+                        break;
+                    }
+                }
+
+                // do some math to create our number
+                n._value = ((bytesMultiplier) ? bytesMultiplier : 1) * ((stringOriginal.match(thousandRegExp)) ? Math.pow(10, 3) : 1) * ((stringOriginal.match(millionRegExp)) ? Math.pow(10, 6) : 1) * ((stringOriginal.match(billionRegExp)) ? Math.pow(10, 9) : 1) * ((stringOriginal.match(trillionRegExp)) ? Math.pow(10, 12) : 1) * ((string.indexOf('%') > -1) ? 0.01 : 1) * (((string.split('-').length + Math.min(string.split('(').length-1, string.split(')').length-1)) % 2)? 1: -1) * Number(string.replace(/[^0-9\.]+/g, ''));
+
+                // round if we are talking about bytes
+                n._value = (bytesMultiplier) ? Math.ceil(n._value) : n._value;
+            }
+        }
+        return n._value;
+    }
+
+    function formatCurrency (n, format, roundingFunction) {
+        var symbolIndex = format.indexOf('$'),
+            openParenIndex = format.indexOf('('),
+            minusSignIndex = format.indexOf('-'),
+            space = '',
+            spliceIndex,
+            output;
+
+        // check for space before or after currency
+        if (format.indexOf(' $') > -1) {
+            space = ' ';
+            format = format.replace(' $', '');
+        } else if (format.indexOf('$ ') > -1) {
+            space = ' ';
+            format = format.replace('$ ', '');
+        } else {
+            format = format.replace('$', '');
+        }
+
+        // format the number
+        output = formatNumber(n._value, format, roundingFunction);
+
+        // position the symbol
+        if (symbolIndex <= 1) {
+            if (output.indexOf('(') > -1 || output.indexOf('-') > -1) {
+                output = output.split('');
+                spliceIndex = 1;
+                if (symbolIndex < openParenIndex || symbolIndex < minusSignIndex){
+                    // the symbol appears before the "(" or "-"
+                    spliceIndex = 0;
+                }
+                output.splice(spliceIndex, 0, languages[currentLanguage].currency.symbol + space);
+                output = output.join('');
+            } else {
+                output = languages[currentLanguage].currency.symbol + space + output;
+            }
+        } else {
+            if (output.indexOf(')') > -1) {
+                output = output.split('');
+                output.splice(-1, 0, space + languages[currentLanguage].currency.symbol);
+                output = output.join('');
+            } else {
+                output = output + space + languages[currentLanguage].currency.symbol;
+            }
+        }
+
+        return output;
+    }
+
+    function formatPercentage (n, format, roundingFunction) {
+        var space = '',
+            output,
+            value = n._value * 100;
+
+        // check for space before %
+        if (format.indexOf(' %') > -1) {
+            space = ' ';
+            format = format.replace(' %', '');
+        } else {
+            format = format.replace('%', '');
+        }
+
+        output = formatNumber(value, format, roundingFunction);
+
+        if (output.indexOf(')') > -1 ) {
+            output = output.split('');
+            output.splice(-1, 0, space + '%');
+            output = output.join('');
+        } else {
+            output = output + space + '%';
+        }
+
+        return output;
+    }
+
+    function formatTime (n) {
+        var hours = Math.floor(n._value/60/60),
+            minutes = Math.floor((n._value - (hours * 60 * 60))/60),
+            seconds = Math.round(n._value - (hours * 60 * 60) - (minutes * 60));
+        return hours + ':' + ((minutes < 10) ? '0' + minutes : minutes) + ':' + ((seconds < 10) ? '0' + seconds : seconds);
+    }
+
+    function unformatTime (string) {
+        var timeArray = string.split(':'),
+            seconds = 0;
+        // turn hours and minutes into seconds and add them all up
+        if (timeArray.length === 3) {
+            // hours
+            seconds = seconds + (Number(timeArray[0]) * 60 * 60);
+            // minutes
+            seconds = seconds + (Number(timeArray[1]) * 60);
+            // seconds
+            seconds = seconds + Number(timeArray[2]);
+        } else if (timeArray.length === 2) {
+            // minutes
+            seconds = seconds + (Number(timeArray[0]) * 60);
+            // seconds
+            seconds = seconds + Number(timeArray[1]);
+        }
+        return Number(seconds);
+    }
+
+    function formatNumber (value, format, roundingFunction) {
+        var negP = false,
+            signed = false,
+            optDec = false,
+            abbr = '',
+            abbrK = false, // force abbreviation to thousands
+            abbrM = false, // force abbreviation to millions
+            abbrB = false, // force abbreviation to billions
+            abbrT = false, // force abbreviation to trillions
+            abbrForce = false, // force abbreviation
+            bytes = '',
+            ord = '',
+            abs = Math.abs(value),
+            suffixes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'],
+            min,
+            max,
+            power,
+            w,
+            precision,
+            thousands,
+            d = '',
+            neg = false;
+
+        // check if number is zero and a custom zero format has been set
+        if (value === 0 && zeroFormat !== null) {
+            return zeroFormat;
+        } else {
+            // see if we should use parentheses for negative number or if we should prefix with a sign
+            // if both are present we default to parentheses
+            if (format.indexOf('(') > -1) {
+                negP = true;
+                format = format.slice(1, -1);
+            } else if (format.indexOf('+') > -1) {
+                signed = true;
+                format = format.replace(/\+/g, '');
+            }
+
+            // see if abbreviation is wanted
+            if (format.indexOf('a') > -1) {
+                // check if abbreviation is specified
+                abbrK = format.indexOf('aK') >= 0;
+                abbrM = format.indexOf('aM') >= 0;
+                abbrB = format.indexOf('aB') >= 0;
+                abbrT = format.indexOf('aT') >= 0;
+                abbrForce = abbrK || abbrM || abbrB || abbrT;
+
+                // check for space before abbreviation
+                if (format.indexOf(' a') > -1) {
+                    abbr = ' ';
+                    format = format.replace(' a', '');
+                } else {
+                    format = format.replace('a', '');
+                }
+
+                if (abs >= Math.pow(10, 12) && !abbrForce || abbrT) {
+                    // trillion
+                    abbr = abbr + languages[currentLanguage].abbreviations.trillion;
+                    value = value / Math.pow(10, 12);
+                } else if (abs < Math.pow(10, 12) && abs >= Math.pow(10, 9) && !abbrForce || abbrB) {
+                    // billion
+                    abbr = abbr + languages[currentLanguage].abbreviations.billion;
+                    value = value / Math.pow(10, 9);
+                } else if (abs < Math.pow(10, 9) && abs >= Math.pow(10, 6) && !abbrForce || abbrM) {
+                    // million
+                    abbr = abbr + languages[currentLanguage].abbreviations.million;
+                    value = value / Math.pow(10, 6);
+                } else if (abs < Math.pow(10, 6) && abs >= Math.pow(10, 3) && !abbrForce || abbrK) {
+                    // thousand
+                    abbr = abbr + languages[currentLanguage].abbreviations.thousand;
+                    value = value / Math.pow(10, 3);
+                }
+            }
+
+            // see if we are formatting bytes
+            if (format.indexOf('b') > -1) {
+                // check for space before
+                if (format.indexOf(' b') > -1) {
+                    bytes = ' ';
+                    format = format.replace(' b', '');
+                } else {
+                    format = format.replace('b', '');
+                }
+
+                for (power = 0; power <= suffixes.length; power++) {
+                    min = Math.pow(1024, power);
+                    max = Math.pow(1024, power+1);
+
+                    if (value >= min && value < max) {
+                        bytes = bytes + suffixes[power];
+                        if (min > 0) {
+                            value = value / min;
+                        }
+                        break;
+                    }
+                }
+            }
+
+            // see if ordinal is wanted
+            if (format.indexOf('o') > -1) {
+                // check for space before
+                if (format.indexOf(' o') > -1) {
+                    ord = ' ';
+                    format = format.replace(' o', '');
+                } else {
+                    format = format.replace('o', '');
+                }
+
+                ord = ord + languages[currentLanguage].ordinal(value);
+            }
+
+            if (format.indexOf('[.]') > -1) {
+                optDec = true;
+                format = format.replace('[.]', '.');
+            }
+
+            w = value.toString().split('.')[0];
+            precision = format.split('.')[1];
+            thousands = format.indexOf(',');
+
+            if (precision) {
+                if (precision.indexOf('[') > -1) {
+                    precision = precision.replace(']', '');
+                    precision = precision.split('[');
+                    d = toFixed(value, (precision[0].length + precision[1].length), roundingFunction, precision[1].length);
+                } else {
+                    d = toFixed(value, precision.length, roundingFunction);
+                }
+
+                w = d.split('.')[0];
+
+                if (d.split('.')[1].length) {
+                    d = (DECIMAL_SEPARATOR || languages[currentLanguage].delimiters.decimal) + d.split('.')[1];
+                } else {
+                    d = '';
+                }
+
+                if (optDec && Number(d.slice(1)) === 0) {
+                    d = '';
+                }
+            } else {
+                w = toFixed(value, null, roundingFunction);
+            }
+
+            // format number
+            if (w.indexOf('-') > -1) {
+                w = w.slice(1);
+                neg = true;
+            }
+
+            if (thousands > -1) {
+                w = w.toString().replace(NUM_REGEX, '$1'
+                    + (NUMBER_GROUP_SEPARATOR || languages[currentLanguage].delimiters.thousands));
+            }
+
+            if (format.indexOf('.') === 0) {
+                w = '';
+            }
+
+            return ((negP && neg) ? '(' : '') + ((!negP && neg) ? '-' : '') + ((!neg && signed) ? '+' : '') + w + d + ((ord) ? ord : '') + ((abbr) ? abbr : '') + ((bytes) ? bytes : '') + ((negP && neg) ? ')' : '');
+        }
+    }
+
+    /************************************
+     Top Level Functions
+     ************************************/
+
+    numeral = function (input) {
+        if (numeral.isNumeral(input)) {
+            input = input.value();
+        } else if (input === 0 || typeof input === 'undefined') {
+            input = 0;
+        } else if (!Number(input)) {
+            input = numeral.fn.unformat(input);
+        }
+
+        return new Numeral(Number(input));
+    };
+
+    // version number
+    numeral.version = VERSION;
+
+    // compare numeral object
+    numeral.isNumeral = function (obj) {
+        return obj instanceof Numeral;
+    };
+
+    // This function will load languages and then set the global language.  If
+    // no arguments are passed in, it will simply return the current global
+    // language key.
+    numeral.language = function (key, values) {
+        if (!key) {
+            return currentLanguage;
+        }
+
+        if (key && !values) {
+            if(!languages[key]) {
+                throw new Error('Unknown language : ' + key);
+            }
+            currentLanguage = key;
+        }
+
+        if (values || !languages[key]) {
+            loadLanguage(key, values);
+        }
+
+        return numeral;
+    };
+
+    // This function provides access to the loaded language data.  If
+    // no arguments are passed in, it will simply return the current
+    // global language object.
+    numeral.languageData = function (key) {
+        if (!key) {
+            return languages[currentLanguage];
+        }
+
+        if (!languages[key]) {
+            throw new Error('Unknown language : ' + key);
+        }
+
+        return languages[key];
+    };
+
+    numeral.language('en', {
+        delimiters: {
+            thousands: ',',
+            decimal: '.'
+        },
+        abbreviations: {
+            thousand: 'k',
+            million: 'm',
+            billion: 'b',
+            trillion: 't'
+        },
+        ordinal: function (number) {
+            var b = number % 10;
+            return (~~ (number % 100 / 10) === 1) ? 'th' :
+                (b === 1) ? 'st' :
+                    (b === 2) ? 'nd' :
+                        (b === 3) ? 'rd' : 'th';
+        },
+        currency: {
+            symbol: '$'
+        }
+    });
+
+    numeral.zeroFormat = function (format) {
+        zeroFormat = typeof(format) === 'string' ? format : null;
+    };
+
+    numeral.defaultFormat = function (format) {
+        defaultFormat = typeof(format) === 'string' ? format : '0.0';
+    };
+
+    /************************************
+     Helpers
+     ************************************/
+
+    function loadLanguage(key, values) {
+        languages[key] = values;
+    }
+
+    /************************************
+     Floating-point helpers
+     ************************************/
+
+    // The floating-point helper functions and implementation
+    // borrows heavily from sinful.js: http://guipn.github.io/sinful.js/
+
+    /**
+     * Array.prototype.reduce for browsers that don't support it
+     * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/Reduce#Compatibility
+     */
+    if ('function' !== typeof Array.prototype.reduce) {
+        Array.prototype.reduce = function (callback, opt_initialValue) {
+            'use strict';
+
+            if (null === this || 'undefined' === typeof this) {
+                // At the moment all modern browsers, that support strict mode, have
+                // native implementation of Array.prototype.reduce. For instance, IE8
+                // does not support strict mode, so this check is actually useless.
+                throw new TypeError('Array.prototype.reduce called on null or undefined');
+            }
+
+            if ('function' !== typeof callback) {
+                throw new TypeError(callback + ' is not a function');
+            }
+
+            var index,
+                value,
+                length = this.length >>> 0,
+                isValueSet = false;
+
+            if (1 < arguments.length) {
+                value = opt_initialValue;
+                isValueSet = true;
+            }
+
+            for (index = 0; length > index; ++index) {
+                if (this.hasOwnProperty(index)) {
+                    if (isValueSet) {
+                        value = callback(value, this[index], index, this);
+                    } else {
+                        value = this[index];
+                        isValueSet = true;
+                    }
+                }
+            }
+
+            if (!isValueSet) {
+                throw new TypeError('Reduce of empty array with no initial value');
+            }
+
+            return value;
+        };
+    }
+
+
+    /**
+     * Computes the multiplier necessary to make x >= 1,
+     * effectively eliminating miscalculations caused by
+     * finite precision.
+     */
+    function multiplier(x) {
+        var parts = x.toString().split('.');
+        if (parts.length < 2) {
+            return 1;
+        }
+        return Math.pow(10, parts[1].length);
+    }
+
+    /**
+     * Given a variable number of arguments, returns the maximum
+     * multiplier that must be used to normalize an operation involving
+     * all of them.
+     */
+    function correctionFactor() {
+        var args = Array.prototype.slice.call(arguments);
+        return args.reduce(function (prev, next) {
+            var mp = multiplier(prev),
+                mn = multiplier(next);
+            return mp > mn ? mp : mn;
+        }, -Infinity);
+    }
+
+
+    /************************************
+     Numeral Prototype
+     ************************************/
+
+    numeral.setup = function (decimalSeparator, numberGroupSeparator, numberGroupLength) {
+        if (decimalSeparator !== DECIMAL_SEPARATOR) DECIMAL_SEPARATOR = decimalSeparator;
+        if (numberGroupSeparator !== NUMBER_GROUP_SEPARATOR)
+            NUMBER_GROUP_SEPARATOR = numberGroupSeparator;
+        if (numberGroupLength !== NUMBER_GROUP_LENGTH) {
+            NUMBER_GROUP_LENGTH = numberGroupLength;
+            NUM_REGEX = new RegExp("(\\d)(?=(\\d{" + NUMBER_GROUP_LENGTH + "})+(?!\\d))", "g");
+        }
+    };
+
+    numeral.fn = Numeral.prototype = {
+
+        clone : function () {
+            return numeral(this);
+        },
+
+        format : function (inputString, roundingFunction) {
+            return formatNumeral(this,
+                inputString ? inputString : defaultFormat,
+                (roundingFunction !== undefined) ? roundingFunction : Math.round
+            );
+        },
+
+        unformat : function (inputString) {
+            if (Object.prototype.toString.call(inputString) === '[object Number]') {
+                return inputString;
+            }
+            return unformatNumeral(this, inputString ? inputString : defaultFormat);
+        },
+
+        value : function () {
+            return this._value;
+        },
+
+        valueOf : function () {
+            return this._value;
+        },
+
+        set : function (value) {
+            this._value = Number(value);
+            return this;
+        },
+
+        add : function (value) {
+            var corrFactor = correctionFactor.call(null, this._value, value);
+            function cback(accum, curr, currI, O) {
+                return accum + corrFactor * curr;
+            }
+            this._value = [this._value, value].reduce(cback, 0) / corrFactor;
+            return this;
+        },
+
+        subtract : function (value) {
+            var corrFactor = correctionFactor.call(null, this._value, value);
+            function cback(accum, curr, currI, O) {
+                return accum - corrFactor * curr;
+            }
+            this._value = [value].reduce(cback, this._value * corrFactor) / corrFactor;
+            return this;
+        },
+
+        multiply : function (value) {
+            function cback(accum, curr, currI, O) {
+                var corrFactor = correctionFactor(accum, curr);
+                return (accum * corrFactor) * (curr * corrFactor) /
+                    (corrFactor * corrFactor);
+            }
+            this._value = [this._value, value].reduce(cback, 1);
+            return this;
+        },
+
+        divide : function (value) {
+            function cback(accum, curr, currI, O) {
+                var corrFactor = correctionFactor(accum, curr);
+                return (accum * corrFactor) / (curr * corrFactor);
+            }
+            this._value = [this._value, value].reduce(cback);
+            return this;
+        },
+
+        difference : function (value) {
+            return Math.abs(numeral(this._value).subtract(value).value());
+        }
+
+    };
+
+    this.numeral = numeral;
+
+};
+
+/**
+ * Light pivot localization.
+ *
+ * @scope {pivotLocale} - Sets the pivotLocale scope variable.
+ * @param {string} [locale] - Two-letter language code.
+ * @constructor
+ */
+var PivotLocale = function (locale) {
+
+    this.LOCALE = "";
+    this.DEFAULT_LOCALE = "en";
+
+    this.setLocale(locale
+                   || (navigator.language || "").substr(0, 2)
+                   || (navigator["browserLanguage"]
+                   || this.DEFAULT_LOCALE).substring(0, 2));
+
+};
+
+/**
+ * Editable locales.
+ *
+ * @type {{ru: string, en: string, de: string}[]}
+ */
+PivotLocale.prototype.LOCALES = [
+ {
+     "ru": "Всего",
+     "en": "Total",
+     "de": "Summe",
+     "cs": "Celkem"
+ },
+ { // 1
+     "ru": "Невозможно отобразить данные",
+     "en": "Unable to render data",
+     "de": "Daten können nicht rendern",
+     "cs": "Nebylo možné zobrazit data"
+ },
+ { // 2
+     "ru": "Неправильные данные для отображения.",
+     "en": "Invalid data to display.",
+     "de": "Nicht korrekt Informationen angezeigt werden soll.",
+     "cs": "Nevhodná data k zobrazení"
+ },
+ { // 3
+     "ru": "Возникла ошибка при получении данных с сервера.",
+     "en": "Error while trying to retrieve data from server.",
+     "de": "Beim Abrufen der Daten vom Server ist ein Fehler aufgetreten.",
+     "cs": "Chyba při pokusu o získání dat ze serveru"
+ },
+ { // 4
+     "ru": "Нет данных для отображения.",
+     "en": "No data to display.",
+     "de": "Keine Daten zum anzeigen.",
+     "cs": "Žádná data k zobrazení"
+ }
+];
+
+/**
+ * @param {string} locale - Two-letter code locale.
+ */
+PivotLocale.prototype.setLocale = function (locale) {
+
+    var i, locales = [];
+
+    locale = locale.toLowerCase();
+
+    if (this.LOCALES[0].hasOwnProperty(locale)) {
+        this.LOCALE = locale;
+    } else {
+        for (i in this.LOCALES[0]) { locales.push(i); }
+        console.warn(
+            "LightPivot: locale " + locale + " is not supported. Currently localized: "
+            + locales.join(", ") + "."
+        );
+        this.LOCALE = "en";
+    }
+
+};
+
+/**
+ * Get the localized phrase.
+ *
+ * @param {number} index - Index of phrase.
+ * @returns {string} - Localized string.
+ */
+PivotLocale.prototype.get = function (index) {
+
+    return (this.LOCALES[index] || {})[this.LOCALE] || ("{not localized: " + index + "}");
+
+};
+
+var pivotLocale = new PivotLocale();
+
+/**
+ * @param {LightPivotTable} controller
+ * @param container
+ * @constructor
+ */
+var PivotView = function (controller, container) {
+
+    if (!(container instanceof HTMLElement)) throw new Error("Please, provide HTMLElement " +
+        "instance \"container\" into pivot table configuration.");
+
+    this.tablesStack = [];
+    this.selectedRows = {}; // rowNumber: 1
+
+    numeral.call(this);
+
+    this.elements = {
+        container: container,
+        base: document.createElement("div"),
+        tableContainer: undefined,
+        messageElement: undefined,
+        searchSelect: undefined,
+        searchInput: undefined
+    };
+
+    /**
+     * Pagination object.
+     * @see pushTable
+     * @type {{on: boolean, page: number, pages: number, rows: number}}
+     */
+    this.pagination = null;
+
+    /**
+     * Saved scroll positions.
+     * @type {{x: number, y: number}}
+     */
+    this.savedScroll = {
+        x: 0,
+        y: 0
+    };
+
+    /**
+     * @type {number[]}
+     */
+    this.FIXED_COLUMN_SIZES = [];
+
+    this.PAGINATION_BLOCK_HEIGHT = 20;
+    this.ANIMATION_TIMEOUT = 500;
+
+    this.SEARCH_ENABLED = false;
+    this.SEARCHBOX_LEFT_MARGIN = 191;
+    this.savedSearch = {
+        restore: false,
+        value: "",
+        columnIndex: 0
+    };
+
+    /**
+     * @type {LightPivotTable}
+     */
+    this.controller = controller;
+
+    this.SCROLLBAR_WIDTH = (function () {
+        var outer = document.createElement("div");
+        outer.style.visibility = "hidden";
+        outer.style.width = "100px";
+        outer.style.msOverflowStyle = "scrollbar";
+
+        document.body.appendChild(outer);
+
+        var widthNoScroll = outer.offsetWidth;
+        outer.style.overflow = "scroll";
+
+        var inner = document.createElement("div");
+        inner.style.width = "100%";
+        outer.appendChild(inner);
+
+        var widthWithScroll = inner.offsetWidth;
+
+        outer.parentNode.removeChild(outer);
+
+        return widthNoScroll - widthWithScroll;
+    })();
+
+    this.init();
+
+};
+
+PivotView.prototype.init = function () {
+
+    var _ = this,
+        els = this.elements;
+
+    els.base.className = "lpt";
+    els.base.setAttribute("LPTVersion", this.controller.VERSION);
+    els.container.appendChild(els.base);
+
+    this.pushTable();
+
+    this.displayLoading();
+
+    window.addEventListener("resize", function () {
+        _.updateSizes.call(_);
+    });
+
+    // easter time!
+    this._ = function () {
+        _.displayMessage("<a href=\"https://github.com/ZitRos/LightPivotTable\">LIGHT PIVOT TABLE" +
+        " v" + _.controller.VERSION +
+        "</a><br/>by <a href=\"https://plus.google.com/+NikitaSavchenko\">Nikita Savchenko</a>" +
+        "<br/>for dear users of products of <a href=\"http://www.intersystems.com/\">InterSystems" +
+        " Corporation</a><br/>Hope you enjoy it!", true);
+    };
+
+};
+
+/**
+ * Return cell element which contains table data.
+ * @param {number} x
+ * @param {number} y
+ * @param {boolean} [considerHeaders] - With this flag origin will be set to actual table look
+ *                                      origin. If false, only table body's first cell will become
+ *                                      as origin.
+ * @return {HTMLElement}
+ */
+PivotView.prototype.getCellElement = function (x, y, considerHeaders) {
+
+    var element = this.tablesStack[this.tablesStack.length - 1].element,
+        table, hh, hw, table2;
+
+    var getTableCell = function (table, x, y) {
+        var m = [], row, cell, xx, tx, ty, xxx, yyy;
+        for(yyy = 0; yyy < table.rows.length; yyy++) {
+            row = table.rows[yyy];
+            for(xxx = 0; xxx < row.cells.length; xxx++) {
+                cell = row.cells[xxx];
+                xx = xxx;
+                for(; m[yyy] && m[yyy][xx]; ++xx) {}
+                for(tx = xx; tx < xx + cell.colSpan; ++tx) {
+                    for(ty = yyy; ty < yyy + cell.rowSpan; ++ty) {
+                        if (!m[ty])
+                            m[ty] = [];
+                        m[ty][tx] = true;
+                    }
+                }
+                if (xx <= x && x < xx + cell.colSpan && yyy <= y && y < yyy + cell.rowSpan)
+                    return cell;
+            }
+        }
+        return null;
+    };
+
+    if (considerHeaders) {
+        table = element.getElementsByClassName("lpt-topHeader")[0]; if (!table) return null;
+        table = table.getElementsByTagName("table")[0]; if (!table) return null;
+        hh = 0; [].slice.call(table.rows).forEach(function (e) {
+            hh += e.rowSpan || 1;
+        });
+        table2 = element.getElementsByClassName("lpt-leftHeader")[0]; if (!table) return null;
+        table2 = table2.getElementsByTagName("table")[0]; if (!table) return null;
+        hw = 0; if (!(this.getCurrentTableData().element || {})["_listing"]) {
+            [].slice.call((table2.rows[0] || { cells: [] }).cells).forEach(function (e) {
+                hw += e.colSpan || 1;
+            });
+        }
+        if (x < hw && y < hh)
+            return element.getElementsByClassName("lpt-headerValue")[0] || null;
+        if (x >= hw && y < hh)
+            return (getTableCell(table, x - hw, y) || { childNodes: [null] }).childNodes[0];
+        if (x < hw && y >= hh)
+            return (getTableCell(table2, x, y - hh) || { childNodes: [null] }).childNodes[0];
+        x -= hw; y -= hh;
+    }
+
+    table = element.getElementsByClassName("lpt-tableBlock")[0]; if (!table) return null;
+    table = table.getElementsByTagName("table")[0]; if (!table) return null;
+    return ((table.rows[y] || { cells: [] }).cells[x] || { childNodes: [null] }).childNodes[0];
+
+};
+
+/**
+ * @see getCellElement
+ * @param {boolean} [considerHeaders]
+ */
+PivotView.prototype.getTableSize = function (considerHeaders) {
+
+    var table, hw = 0, hh = 0, element = this.tablesStack[this.tablesStack.length - 1].element;
+
+    table = element.getElementsByClassName("lpt-tableBlock")[0]; if (!table) return 0;
+    table = table.getElementsByTagName("table")[0]; if (!table) return 0;
+    [].slice.call(table.rows).forEach(function (e) {
+        hh += e.rowSpan || 1;
+    });
+    [].slice.call((table.rows[0] || { cells: [] }).cells).forEach(function (e) {
+        hw += e.colSpan || 1;
+    });
+
+    if (!considerHeaders) return { width: hw, height: hh };
+
+    table = element.getElementsByClassName("lpt-topHeader")[0]; if (!table) return 0;
+    table = table.getElementsByTagName("table")[0]; if (!table) return 0;
+    [].slice.call(table.rows).forEach(function (e) {
+        hh += e.rowSpan || 1;
+    });
+    table = element.getElementsByClassName("lpt-leftHeader")[0]; if (!table) return 0;
+    table = table.getElementsByTagName("table")[0]; if (!table) return 0;
+    if (!(this.getCurrentTableData().element || {})["_listing"]) {
+        [].slice.call((table.rows[0] || { cells: [] }).cells).forEach(function (e) {
+            hw += e.colSpan || 1;
+        });
+    }
+
+    return { width: hw, height: hh };
+
+};
+
+PivotView.prototype.displayLoading = function () {
+
+    this.displayMessage(
+        this.controller.CONFIG["loadingMessageHTML"]
+        || "<div class=\"lpt-spinner\">" +
+        "<div></div><div></div><div></div><div></div><div></div>" +
+        "</div>"
+    );
+
+};
+
+PivotView.prototype.updateSizes = function () {
+
+    for (var i in this.tablesStack) {
+        this.recalculateSizes(this.tablesStack[i].element);
+    }
+
+};
+
+PivotView.prototype._updateTablesPosition = function (seek) {
+
+    for (var i = 0; i < this.tablesStack.length; i++) {
+        this.tablesStack[i].element.style.left =
+            (1 + (seek || 0) + i - this.tablesStack.length)*100 + "%";
+    }
+
+};
+
+PivotView.prototype.getCurrentTableData = function () {
+    return this.tablesStack[this.tablesStack.length - 1];
+};
+
+PivotView.prototype.pushTable = function (opts) {
+
+    var _ = this,
+        pg,
+        tableElement = document.createElement("div");
+
+    tableElement.className = "tableContainer";
+    if (this.tablesStack.length) {
+        this.tablesStack[this.tablesStack.length - 1].FIXED_COLUMN_SIZES = this.FIXED_COLUMN_SIZES;
+        this.tablesStack[this.tablesStack.length - 1].savedSearch = this.savedSearch;
+        this.tablesStack[this.tablesStack.length - 1].selectedRows = this.selectedRows;
+        this.savedSearch = { restore: false, value: "", columnIndex: 0 };
+        tableElement.style.left = "100%";
+    }
+
+    this.tablesStack.push({
+        element: tableElement,
+        opts: opts || {},
+        pagination: pg = { // defaults copied to pushTable
+            on: false,
+            rows: Infinity, // rows by page including (headers + summary + rows from config)
+            page: 0, // current page,
+            pages: 0 // available pages
+        }
+    });
+
+    this.FIXED_COLUMN_SIZES = [];
+    this.selectedRows = {};
+    this.elements.base.appendChild(tableElement);
+    this.elements.tableContainer = tableElement;
+    this.pagination = pg;
+
+    setTimeout(function () {
+        _._updateTablesPosition();
+    }, 30);
+
+};
+
+PivotView.prototype.popTable = function () {
+
+    var currentTable;
+
+    if (this.tablesStack.length < 2) return;
+
+    this.FIXED_COLUMN_SIZES = [];
+    this._updateTablesPosition(1);
+    var garbage = this.tablesStack.pop();
+
+    this.pagination = (currentTable = this.tablesStack[this.tablesStack.length - 1]).pagination;
+    if (currentTable.FIXED_COLUMN_SIZES) this.FIXED_COLUMN_SIZES = currentTable.FIXED_COLUMN_SIZES;
+    if (currentTable.savedSearch) this.savedSearch = currentTable.savedSearch;
+    if (currentTable.selectedRows) this.selectedRows = currentTable.selectedRows;
+
+    setTimeout(function () {
+        garbage.element.parentNode.removeChild(garbage.element);
+    }, this.ANIMATION_TIMEOUT);
+    this.elements.tableContainer = this.tablesStack[this.tablesStack.length - 1].element;
+
+};
+
+PivotView.prototype.saveScrollPosition = function () {
+
+    var els;
+
+    if (
+        this.elements.tableContainer
+        && (els = this.elements.tableContainer.getElementsByClassName("lpt-tableBlock"))
+    ) {
+        this.savedScroll.x = els[0].scrollLeft;
+        this.savedScroll.y = els[0].scrollTop;
+    }
+
+};
+
+PivotView.prototype.restoreScrollPosition = function () {
+
+    var els;
+
+    if (
+        this.elements.tableContainer
+        && (els = this.elements.tableContainer.getElementsByClassName("lpt-tableBlock"))
+    ) {
+        els[0].scrollLeft = this.savedScroll.x;
+        els[0].scrollTop = this.savedScroll.y;
+    }
+
+};
+
+/**
+ * Data change handler.
+ *
+ * @param data
+ */
+PivotView.prototype.dataChanged = function (data) {
+
+    var dataRows =
+            data.rawData.length - data.info.topHeaderRowsNumber;// - (data.info.SUMMARY_SHOWN ? 1 : 0);
+
+    if (this.controller.CONFIG.pagination) this.pagination.on = true;
+    this.pagination.rows = this.controller.CONFIG.pagination || Infinity;
+    this.selectedRows = {};
+    this.pagination.page = 0;
+    this.pagination.pages = Math.ceil(dataRows / this.pagination.rows);
+    if (this.pagination.pages < 2) this.pagination.on = false;
+
+    this.renderRawData(data);
+
+};
+
+PivotView.prototype._columnClickHandler = function (columnIndex) {
+
+    this.saveScrollPosition();
+    this.controller.dataController.sortByColumn(columnIndex);
+    this.restoreScrollPosition();
+
+};
+
+PivotView.prototype._rowClickHandler = function (rowIndex, cellData) {
+
+    var res = true;
+    if (typeof this.controller.CONFIG.triggers["rowClick"] === "function") {
+        var d = this.controller.getRowsValues([rowIndex])[0].slice(
+            this.controller.dataController.getData().info.leftHeaderColumnsNumber
+        );
+        res = this.controller.CONFIG.triggers["rowClick"](rowIndex, d);
+    }
+    if (res !== false)
+        this.controller.tryDrillDown(cellData.source.path);
+
+};
+
+PivotView.prototype._pageSwitcherHandler = function (pageIndex) {
+
+    this.pagination.page = pageIndex;
+    this.saveScrollPosition();
+    this.renderRawData(this.controller.dataController.getData());
+    this.restoreScrollPosition();
+
+};
+
+PivotView.prototype._backClickHandler = function (event) {
+
+    if (event) {
+        event.cancelBubble = true;
+        event.stopPropagation();
+    }
+
+    this.removeMessage();
+    this.popTable();
+    this.controller.popDataSource();
+
+    if (typeof this.controller.CONFIG.triggers["back"] === "function") {
+        this.controller.CONFIG.triggers["back"].call(this.controller, {
+            level: this.controller.DRILL_LEVEL
+        });
+    }
+
+};
+
+PivotView.prototype._drillThroughClickHandler = function (event) {
+
+    this.controller.tryDrillThrough();
+
+    if (event) {
+        event.cancelBubble = true;
+        event.stopPropagation();
+    }
+
+};
+
+/**
+ * Get selected text if selection was made.
+ * @returns {string}
+ * @private
+ */
+PivotView.prototype._getSelectedText = function () {
+
+    var text = "";
+
+    if (typeof window.getSelection != "undefined") {
+        text = window.getSelection().toString();
+    } else if (typeof document.selection != "undefined" && document.selection.type == "Text") {
+        text = document.selection.createRange().text;
+    }
+
+    return text;
+
+};
+
+/**
+ * @param {object} cell
+ * @param {number} x
+ * @param {number} y
+ * @param {event} event
+ * @param {function} [drillThroughHandler]
+ */
+PivotView.prototype._cellClickHandler = function (cell, x, y, event, drillThroughHandler) {
+
+    var data = this.controller.dataController.getData(),
+        f = [], f1, f2, callbackRes = true, result,
+        ATTACH_TOTALS = this.controller.CONFIG["showSummary"]
+            && this.controller.CONFIG["attachTotals"] ? 1 : 0;
+
+    if (this._getSelectedText()) return; // exit if text in cell was selected
+
+    if (typeof this.controller.CONFIG.triggers["cellSelected"] === "function") {
+        result = this.controller.CONFIG.triggers["cellSelected"].call(this.controller, {
+            x: x - data.info.leftHeaderColumnsNumber,
+            y: y - data.info.topHeaderRowsNumber,
+            leftHeaderColumnsNumber: data.info.leftHeaderColumnsNumber,
+            topHeaderRowsNumber: data.info.topHeaderRowsNumber
+        });
+        if (result === false) return;
+    }
+
+    try {
+        f1 = data.rawData[y][data.info.leftHeaderColumnsNumber - 1].source.path;
+        f2 = data.rawData[data.info.topHeaderRowsNumber - 1 - ATTACH_TOTALS][x].source.path;
+    } catch (e) {
+        if (this.controller.CONFIG["logs"]) {
+            console.warn("Unable to get filters for cell (%d, %d)", x, y);
+        }
+    }
+
+    if (f1) f.push(f1);
+    if (f2) f.push(f2);
+
+    if (this.controller.CONFIG["drillDownTarget"]) {
+        window.location = location.origin + location.pathname + "?DASHBOARD="
+        + encodeURIComponent(this.controller.CONFIG["drillDownTarget"]) + "&SETTINGS=FILTER:"
+        + encodeURIComponent(f.join("~")) + ";";
+    } else {
+        if (typeof this.controller.CONFIG.triggers["cellDrillThrough"] === "function") {
+            callbackRes = this.controller.CONFIG.triggers["cellDrillThrough"]({
+                event: event,
+                filters: f,
+                cellData: cell,
+                x: x,
+                y: y
+            }, data);
+        }
+        if (typeof drillThroughHandler === "function") {
+            callbackRes = !(!(false !== drillThroughHandler({
+                event: event,
+                filters: f,
+                cellData: cell,
+                x: x,
+                y: y
+            }, data)) || !(callbackRes !== false));
+        }
+        if (callbackRes !== false) this.controller.tryDrillThrough(f);
+    }
+
+};
+
+PivotView.prototype.copyToClipboard = function (text) {
+
+    var $temp = document.createElement("input");
+    document.body.appendChild($temp);
+
+    $temp.setAttribute("value", text);
+    document.body.appendChild($temp);
+    $temp.select();
+
+    var result = false;
+    try {
+        result = document.execCommand("copy");
+    } catch (err) {
+        console.log("Copy error: " + err);
+    }
+
+    document.body.removeChild($temp);
+    return result;
+
+};
+
+PivotView.prototype.listingClickHandler = function (params, data) {
+
+    if (data.info.leftHeaderColumnsNumber !== 0) {
+        console.warn("Listing handler called not for a listing!");
+        return;
+    }
+
+    var CLICK_EVENT = this.controller.CONFIG["triggerEvent"] || "click",
+        self = this,
+        el = function (e) { return document.createElement(e); },
+        d1 = el("div"),
+        headers = data.rawData[0].map(function (v) {
+            return v.value + (v.source && v.source.title ? "(" + v.source.title + ")" : "");
+        }),
+        values = data.rawData[params.y].map(function (v) { return v.value; });
+
+    d1.className = "lpt-hoverMessage";
+    d1.style.fontSize = "12pt";
+    d1.style.opacity = 0;
+
+    var h, val, hr, c, sp;
+    for (var i = 0; i < headers.length; i++) {
+        h = el("div"); sp = el("span"); val = el("div"); hr = el("hr"); c = el("div");
+        c.className = "lpt-icon-copy";
+        c.title = "Copy";
+        c.style.marginRight = "6px";
+        sp.className = "lpt-messageHead";
+        sp.textContent = headers[i];
+        val.className = "lpt-messageBody";
+        h.style.marginBottom = ".3em";
+
+        if (values[i] !== "")
+            val.textContent = values[i];
+        else
+            val.innerHTML = "&nbsp;";
+
+        h.appendChild(c);
+        h.appendChild(sp);
+        d1.appendChild(h);
+        d1.appendChild(val);
+        d1.appendChild(hr);
+        c.addEventListener(CLICK_EVENT, (function (value) { return function (e) {
+            if (self.copyToClipboard(value) === false) {
+                alert("Your browser does not support dynamic content copying.");
+            }
+            e.preventDefault();
+            e.cancelBubble = true;
+            e.preventBubble = true;
+        }})(values[i]));
+    }
+
+    this.elements.base.appendChild(d1);
+
+    setTimeout(function () {
+        if (d1) d1.style.opacity = 1;
+    }, 1);
+    d1.addEventListener(this.controller.CONFIG["triggerEvent"] || "click", function () {
+        if (self._getSelectedText()) return;
+        self.removeMessage();
+    });
+
+    return false;
+
+};
+
+/**
+ * Display hovering message.
+ *
+ * @param {string} text
+ * @param {boolean} [removeByClick] - Define whether user be able to remove message by clicking on
+ *                                    it.
+ */
+PivotView.prototype.displayMessage = function (text, removeByClick) {
+
+    this.removeMessage();
+
+    var _ = this,
+        d1 = document.createElement("div"),
+        d2 = document.createElement("div"),
+        d3 = document.createElement("div");
+
+    d1.className = "central lpt-hoverMessage";
+    d1.style.opacity = 0;
+    d3.innerHTML = text;
+    d2.appendChild(d3);
+    d1.appendChild(d2);
+    this.elements.base.appendChild(d1);
+    setTimeout(function () {
+        if (d1) d1.style.opacity = 1;
+    }, 1);
+    if (removeByClick) {
+        d1.addEventListener(this.controller.CONFIG["triggerEvent"] || "click", function () {
+            _.removeMessage();
+        });
+    }
+
+};
+
+PivotView.prototype.removeMessage = function () {
+
+    var els, i;
+
+    if ((els = this.elements.base.getElementsByClassName("lpt-hoverMessage")).length) {
+        for (i in els) {
+            if (els[i].parentNode) els[i].parentNode.removeChild(els[i]);
+        }
+    }
+
+};
+
+/**
+ * @param {*} value
+ * @param {string} operator
+ * @param {*} value2 - fixed value
+ * @private
+ * @return {boolean}
+ */
+PivotView.prototype._matchCondition = function (value, operator, value2) {
+
+    var value1 = parseFloat(value);
+    switch (operator) {
+        case "=": return value1 == value2;
+        case "<>": return value1 != value2;
+        case ">": return value1 > value2;
+        case ">=": return value1 >= value2;
+        case "<": return value1 < value2;
+        case "<=": return value1 <= value2;
+        case "IN": return value2.toString().indexOf(value1) !== -1; // how does it normally work?
+        case "BETWEEN": return value1 >= value2.split(",")[0] && value1 <= value2.split(",")[1];
+        case "IS NULL": return !value1;
+        default: {
+            console.error("Formatting error: unknown format operator \"" + operator + "\"");
+            return false;
+        }
+    }
+
+};
+
+/**
+ * Applies conditional formatting for element.
+ *
+ * @param {object} rules - Special object that contain formatting rules.
+ * @param {string} key - Position y,x separated by comma or empty string for global.
+ * @param {*} value - Original value to format (comparator).
+ * @param {HTMLElement} element - element to format.
+ */
+PivotView.prototype.applyConditionalFormatting = function (rules, key, value, element) {
+
+    var actualRules = rules[""] || [],
+        p, i, rule, html, xs, num;
+    actualRules = actualRules.concat(rules[key] || []);
+    if ((xs = key.split(",")).length === 2) {
+        actualRules = actualRules.concat(rules[xs[0]] || [], rules[xs[0] + ","] || [],
+            rules["," + xs[1]] || []);
+    }
+
+    for (p in actualRules) {
+
+        rule = actualRules[p];
+        if (!this._matchCondition(value, rule["operator"], rule["value"])) continue;
+
+        // apply formatting
+        if (rule["style"])
+            element.setAttribute("style", (element.getAttribute("style") || "") + rule["style"]);
+        if (rule["icon"]) {
+            element.textContent = ""; html = "<div style=\"overflow: hidden; height: 16px;\">";
+            num = parseInt(rule["iconCount"]) || 1;
+            for (i = 0; i < num; i++) {
+                html += "<img alt=\"*\" style=\"padding-right:2px; height: 100%;\" " +
+                "src=\"" + rule["icon"] + "\"/>";
+            }
+            // LPT won't change default format (f.e. text-align) for content.
+            // element.className = (element.className || "") + " formatLeft";
+            element.innerHTML = html + "</div>";
+        }
+        if (rule["text"]) element.textContent = rule["text"];
+
+    }
+
+};
+
+/**
+ * DeepSee-defined colors.
+ *
+ * @param {string} name - name of color. F.e. "red".
+ * @returns {{ r: number, g: number, b: number }}
+ */
+PivotView.prototype.colorNameToRGB = function (name) {
+    var c = function (r, g, b) { return { r: r, g: g, b: b } };
+    switch (name) {
+        case "red": return c(255, 0, 0);
+        case "green": return c(0, 255, 0);
+        case "blue": return c(0, 0, 255);
+        case "purple": return c(102, 0, 153);
+        case "salmon": return c(255, 140, 105);
+        case "white": return c(255, 255, 255);
+        case "black": return c(0, 0, 0);
+        case "gray": return c(128, 128, 128);
+        default: return c(255, 255, 255);
+    }
+};
+
+/**
+ * @param {boolean} select - select or not.
+ * @param {number} rowNumber - row number start from 0.
+ */
+PivotView.prototype.selectRow = function (select, rowNumber) {
+
+    if (select)
+        this.selectedRows[rowNumber] = 1;
+    else
+        delete this.selectedRows[rowNumber];
+
+    if (typeof this.controller.CONFIG.triggers["rowSelect"] === "function") {
+        var rows = this.controller.getSelectedRows();
+        this.controller.CONFIG.triggers["rowSelect"](
+            rows,
+            this.controller.getRowsValues(rows)
+        );
+    }
+
+};
+
+/**
+ * Size updater for LPT.
+ * Do not affect scroll positions in this function.
+ *
+ * @param container
+ */
+PivotView.prototype.recalculateSizes = function (container) {
+
+    var containerParent = container.parentNode,
+        DEFAULT_CELL_HEIGHT = 22;
+
+    try {
+
+        var _ = this,
+            CLICK_EVENT = this.controller.CONFIG["triggerEvent"] || "click",
+            header = container.getElementsByClassName("lpt-headerValue")[0];
+
+        if (!header) { return; } // pivot not ready - nothing to fix
+
+        var headerContainer = container.getElementsByClassName("lpt-header")[0],
+            topHeader = container.getElementsByClassName("lpt-topHeader")[0],
+            topHeaderTable = container.getElementsByTagName("table")[0],
+            topHeaderTableWidth = topHeaderTable.offsetWidth,
+            tTableHead = topHeader.getElementsByTagName("thead")[0],
+            leftHeader = container.getElementsByClassName("lpt-leftHeader")[0],
+            lTableHead = leftHeader.getElementsByTagName("thead")[0],
+            tableBlock = container.getElementsByClassName("lpt-tableBlock")[0],
+            mainContentTable = tableBlock.getElementsByTagName("table")[0],
+            pTableHead = tableBlock.getElementsByTagName("tbody")[0],
+            searchInput = container.getElementsByClassName("lpt-searchInput")[0],
+            searchInputSize = searchInput ? container.offsetWidth - this.SEARCHBOX_LEFT_MARGIN : 0,
+            tableTr = tableBlock.getElementsByTagName("tr")[0],
+            pageSwitcher = container.getElementsByClassName("lpt-pageSwitcher")[0];
+
+        if (tTableHead.childNodes[0] && tTableHead.childNodes[0].lastChild["_extraCell"]) {
+            tTableHead.childNodes[0].removeChild(tTableHead.childNodes[0].lastChild);
+        }
+        if (lTableHead.lastChild && lTableHead.lastChild["_extraTr"]) {
+            lTableHead.removeChild(lTableHead.lastChild);
+        }
+
+        var pagedHeight = (pageSwitcher ? this.PAGINATION_BLOCK_HEIGHT : 0)
+                + (this.SEARCH_ENABLED ? this.PAGINATION_BLOCK_HEIGHT : 0),
+            headerW = Math.max(leftHeader.offsetWidth, headerContainer.offsetWidth),
+            headerH = topHeader.offsetHeight;
+
+        topHeader.style.marginLeft = headerW + "px";
+
+        var containerHeight = container.offsetHeight,
+            bodyHeight = containerHeight - headerH - pagedHeight,
+            mainHeaderWidth = headerContainer.offsetWidth,
+            IS_LISTING = lTableHead.offsetHeight === 0,
+            hasVerticalScrollBar =
+                Math.max(lTableHead.offsetHeight, pTableHead.offsetHeight) > bodyHeight
+                && this.SCROLLBAR_WIDTH > 0,
+            hasHorizontalScrollBar =
+                tTableHead.offsetWidth >
+                    topHeader.offsetWidth - (hasVerticalScrollBar ? this.SCROLLBAR_WIDTH : 0);
+
+        // horizontal scroll bar may change vertical scroll bar, so we need recalculate
+        if (!hasVerticalScrollBar && hasHorizontalScrollBar) {
+            hasVerticalScrollBar =
+                Math.max(lTableHead.offsetHeight, pTableHead.offsetHeight) > bodyHeight - this.SCROLLBAR_WIDTH
+                && this.SCROLLBAR_WIDTH > 0;
+        }
+
+        var addEggs = hasVerticalScrollBar && !IS_LISTING,
+            cell, tr, cellWidths = [], rowHeadersHeights = [], rowDataHeights = [], i,
+            headerCellApplied = false;
+
+        var applyExtraTopHeadCell = function () {
+            if (!_.controller.CONFIG.stretchColumns &&
+                hasVerticalScrollBar && !hasHorizontalScrollBar) return;
+            headerCellApplied = true;
+            tr = document.createElement("th");
+            tr.className = "lpt-extraCell";
+            tr.style.minWidth = _.SCROLLBAR_WIDTH + "px";
+            tr.style.width = _.SCROLLBAR_WIDTH + "px";
+            tr.rowSpan = tTableHead.childNodes.length;
+            tr["_extraCell"] = true;
+            tTableHead.childNodes[0].appendChild(tr);
+        };
+
+        //return;
+        //console.log(lTableHead.offsetHeight, pTableHead.offsetHeight, bodyHeight, this.SCROLLBAR_WIDTH);
+        if (hasVerticalScrollBar && tTableHead.childNodes[0]) {
+            applyExtraTopHeadCell();
+        }
+
+        if (container["_primaryColumns"]) {
+            for (i in container["_primaryColumns"]) {
+                cellWidths.push(container["_primaryColumns"][i].offsetWidth);
+            }
+        } else {
+            console.warn("No _primaryColumns property in container, cell sizes won't be fixed.");
+        }
+        if (container["_primaryRows"] && container["_primaryCells"]) {
+            for (i in container["_primaryRows"]) {
+                rowHeadersHeights.push(container["_primaryRows"][i].offsetHeight);
+            }
+            for (i in container["_primaryCells"]) {
+                rowDataHeights.push(container["_primaryCells"][i].offsetHeight);
+            }
+        } else {
+            console.warn("No _primaryRows property in container, cell sizes won't be fixed.");
+        }
+
+        /**
+         * #keepSizes
+         * This fixes FF/IE strange issue that assigns, for example, "12.05" instead of "12" to
+         * the cell height and, as a result, row headers and rows are inconsistent.
+         * @type {Array}
+         */
+        var keepSizes = [].slice.call(leftHeader.getElementsByTagName("th")).map(function (e) {
+            return {
+                el: e.getElementsByTagName("div")[0],
+                height: e.getElementsByTagName("div")[0].offsetHeight
+            };
+        });
+
+        container.parentNode.removeChild(container); // detach
+
+        topHeader.style.marginLeft = headerW + "px";
+        tableBlock.style.marginLeft = headerW + "px";
+        leftHeader.style.height = containerHeight - headerH - pagedHeight + "px";
+        leftHeader.style.width = headerW + "px";
+        if (mainHeaderWidth > headerW) leftHeader.style.width = mainHeaderWidth + "px";
+        tableBlock.style.height = containerHeight - headerH - pagedHeight + "px";
+        headerContainer.style.height = headerH + "px";
+        headerContainer.style.width = headerW + "px";
+        if (!this.controller.CONFIG.stretchColumns) {
+            topHeaderTable.style.width = "auto";
+            mainContentTable.style.width =
+                hasHorizontalScrollBar ? "100%" : topHeaderTableWidth + "px";
+        }
+
+        // @TEST beta.13
+        //for (i in container["_primaryRows"]) {
+        //    container["_primaryRows"][i].style.height = columnHeights[i] + "px";
+        //}
+        //for (i in container["_primaryColumns"]) {
+        //    container["_primaryColumns"][i].style.width = cellWidths[i] + "px";
+        //}
+
+        //console.log(cellWidths);
+        //containerParent.appendChild(container); // attach
+        //return;
+
+        if (addEggs) { // horScroll?
+            tr = document.createElement("tr");
+            tr.appendChild(cell = document.createElement("th"));
+            lTableHead.appendChild(tr);
+            cell["__i"] = 0;
+            cell.addEventListener(CLICK_EVENT, function() {
+                cell["__i"]++;
+                cell.style.background = "#"+(Math.max(18-cell["__i"]*3,0)).toString(16)+"FF7D7";
+                if (cell["__i"] > 5) _["_"]();
+            });
+            tr["_extraTr"] = true;
+            cell.colSpan = lTableHead.childNodes.length;
+            cell.style.height = (this.SCROLLBAR_WIDTH ? this.SCROLLBAR_WIDTH + 1 : 0) + "px";
+        }
+
+        if (searchInput) {
+            searchInput.style.width = searchInputSize + "px";
+        }
+
+        //if (hasVerticalScrollBar) {
+        //    leftHeader.className = leftHeader.className.replace(/\sbordered/, "") + " bordered";
+        //}
+
+        if (tableTr) for (i in tableTr.childNodes) {
+            if (tableTr.childNodes[i].tagName !== "TD") continue;
+            tableTr.childNodes[i].style.width = cellWidths[i] + "px";
+        }
+        //for (i in pTableHead.childNodes) {
+        //    if (pTableHead.childNodes[i].tagName !== "TR") continue;
+        //    if (pTableHead.childNodes[i].firstChild) {
+        //        pTableHead.childNodes[i].firstChild.style.height =
+        //            Math.max(
+        //                (rowHeadersHeights[i] || rowHeadersHeights[i - 1] || DEFAULT_CELL_HEIGHT),
+        //                (rowDataHeights[i] || rowDataHeights[i - 1] || DEFAULT_CELL_HEIGHT)
+        //            ) + "px";
+        //
+        //    }
+        //}
+        container["_primaryRows"].forEach(function (val, i) {
+            container["_primaryCells"][i].style.height =
+                container["_primaryRows"][i].style.height = Math.max(
+                        rowHeadersHeights[i] || rowHeadersHeights[i - 1] || DEFAULT_CELL_HEIGHT,
+                        rowDataHeights[i] || rowDataHeights[i - 1] || DEFAULT_CELL_HEIGHT
+                    ) + "px";
+        });
+
+        // #keepSizes
+        keepSizes.forEach(function (o) {
+            o.el.style.height = parseInt(o.height) + "px";
+        });
+
+        containerParent.appendChild(container); // attach
+
+        /*
+        * View in (listing) may have another size after attaching just because of applying
+        * DEFAULT_CELL_HEIGHT to all of the rows. So if it is listing, we will check if
+        * extra cell was actually added and if we need to add it now.
+        **/
+        if (/*IS_LISTING &&*/ Math.max(lTableHead.offsetHeight, pTableHead.offsetHeight) > bodyHeight
+                && this.SCROLLBAR_WIDTH > 0 && !headerCellApplied) {
+            applyExtraTopHeadCell();
+        }
+
+        // TEMPFIX: column sizes
+        //var gg = 0;
+        //if (tableTr && container["_primaryColumns"])
+        //    for (i in tableTr.childNodes) {
+        //        if (tableTr.childNodes[i].tagName !== "TD") continue;
+        //        container["_primaryColumns"][gg++].style.width = tableTr.childNodes[i].offsetWidth + "px";
+        //    }
+
+    } catch (e) {
+        console.error("Error when fixing sizes.", "ERROR:", e);
+    }
+
+};
+
+/**
+ * Converts retrieved from mdx2json date to JS date format.
+ * @param {string} s Date as string
+ * @returns {number} Date as number
+ * @author Anton Gnibeda (https://github.com/gnibeda)
+ */
+PivotView.prototype.getUnixDateFromCacheFormat = function (s) {
+    function addDays(date, days) {
+        var result = new Date(date);
+        result.setDate(date.getDate() + days);
+        return result;
+    }
+    function getDate(str) {
+        var months = [
+            "jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"
+        ];
+
+        var d = Date.parse(str);
+        if (!isNaN(d)) return d;
+        if (str.split("-").length == 2) {
+            var parts = str.split("-");
+            var idx = months.indexOf(parts[0].toLowerCase());
+            if (idx != -1) {
+                return Date.parse((idx+1).toString() + "/01/" + parts[1]);
+            }
+        } else
+        if (str.split(" ").length == 2) {
+            //like 2015-01-07 05
+            var timeParts = str.split(" ")[1].split(":").length;
+            if (timeParts === 0) str += ":00";
+            d = Date.parse(str.replace(/-/g, "/"));
+            if (!isNaN(d)) return d;
+        }
+        return 0;
+    }
+    if (s === "" && s === undefined || s === null) return null;
+    var str = s.toString();
+    if (str.length == 4) return getDate(s);
+    if (str.indexOf("-") != -1) return getDate(s);
+    if (str.indexOf(" ") != -1) return getDate(s);
+    if (str.length == 6) {
+        var y = str.substr(0, 4);
+        var m = str.substr(4, 2);
+        return Date.parse(new Date(parseInt(y), parseInt(m)-1, 1));
+    }
+    if (str.length == 5 && !isNaN(parseInt(str))) {
+        var base = new Date(1840, 11, 31);
+        var p = str.toString().split(",");
+        var d = parseInt(p[0]);
+        var t = null;
+        if (p.length > 1) t = parseInt(p[1]);
+        base = addDays(base, parseInt(d));
+        if (t) base.setSeconds(t);
+        return Date.parse(base);
+    } else return getDate(s);
+};
+
+/**
+ * Raw data - plain 2-dimensional array of data to render.
+ *
+ * group - makes able to group cells together. Cells with same group number will be gathered.
+ * source - data source object with it's properties.
+ * value - value of cell (will be stringified).
+ *
+ * @param {{ group: number, source: Object, value: *, isCaption: boolean }[][]} data
+ */
+PivotView.prototype.renderRawData = function (data) {
+
+    if (!data["rawData"] || !data["rawData"][0] || !data["rawData"][0][0]) {
+        this.displayMessage("<h1>" + pivotLocale.get(1) + "</h1><p>" + JSON.stringify(data) + "</p>");
+        return;
+    }
+
+    var _ = this,
+        rawData = data["rawData"],
+        info = data["info"],
+        columnProps = data["columnProps"],
+        rowProps = data["rowProps"],
+        colorScale =
+            data["conditionalFormatting"] ? data["conditionalFormatting"]["colorScale"] : undefined,
+
+        CLICK_EVENT = this.controller.CONFIG["triggerEvent"] || "click",
+        ATTACH_TOTALS = info.SUMMARY_SHOWN && this.controller.CONFIG["attachTotals"] ? 1 : 0,
+        COLUMN_RESIZE_ON = !!this.controller.CONFIG.columnResizing,
+        LISTING = info.leftHeaderColumnsNumber === 0,
+        SEARCH_ENABLED = LISTING && this.controller.CONFIG["enableSearch"],
+        LISTING_SELECT_ENABLED = this.controller.CONFIG["enableListingSelect"],
+        RESIZE_ANIMATION = !!this.controller.CONFIG["columnResizeAnimation"],
+
+        container = this.elements.tableContainer,
+        pivotTopSection = document.createElement("div"),
+        pivotBottomSection = document.createElement("div"),
+        pivotHeader = document.createElement("div"),
+        topHeader = document.createElement("div"),
+        header = document.createElement("div"),
+        leftHeader = document.createElement("div"),
+        tableBlock = document.createElement("div"),
+        THTable = document.createElement("table"),
+        THTHead = document.createElement("thead"),
+        LHTable = document.createElement("table"),
+        LHTHead = document.createElement("thead"),
+        mainTable = document.createElement("table"),
+        mainTBody = document.createElement("tbody"),
+
+        showBottomBar = this.pagination.on
+            || (LISTING && this.controller.CONFIG["showListingRowsNumber"]),
+        pageSwitcher = showBottomBar ? document.createElement("div") : null,
+        pageNumbers = showBottomBar ? [] : null,
+        pageSwitcherContainer = pageSwitcher ? document.createElement("div") : null,
+
+        searchBlock = SEARCH_ENABLED ? document.createElement("div") : null,
+        searchIcon = SEARCH_ENABLED ? document.createElement("span") : null,
+        searchSelect = SEARCH_ENABLED ? document.createElement("select") : null,
+        searchSelectOuter = SEARCH_ENABLED ? document.createElement("span") : null,
+        searchInput = SEARCH_ENABLED ? document.createElement("input") : null,
+        searchFields = SEARCH_ENABLED ? (function () {
+            var arr = [],
+                x = info.leftHeaderColumnsNumber,
+                y = info.topHeaderRowsNumber - 1 - ATTACH_TOTALS;
+            for (var i = x; i < rawData[y].length; i++) {
+                arr.push({
+                    value: rawData[y][i].value,
+                    source: rawData[y][i].source,
+                    columnIndex: i
+                });
+            }
+            return arr;
+        })() : null,
+
+        renderedGroups = {}, // keys of rendered groups; key = group, value = { x, y, element }
+        i, x, y, tr = null, th, td, primaryColumns = [], primaryRows = [], primaryCells = [],
+        ratio, cellStyle, tempI, tempJ, div;
+
+    this.SEARCH_ENABLED = SEARCH_ENABLED;
+
+    this.numeral.setup(
+        info["decimalSeparator"] || ".",
+        info["numericGroupSeparator"] || ",",
+        info["numericGroupSize"] || 3
+    );
+
+    var formatContent = function (value, element, format) {
+        if (typeof(value) === 'string') {
+            if (!(value[value.length - 1] === "%" && !isNaN(parseFloat(value)))) // string as %
+                element.parentNode.className += " formatLeft";
+            element.innerHTML = (value || "").replace(/(https?|ftp):\/\/[^\s]+/ig, function linkReplace (p) {
+                return "<a href='" + p
+                    + "' target='" + (_.controller.CONFIG["linksTarget"] || "_blank")
+                    + "' onclick='var e=event||window.event;e.stopPropagation();e.cancelBubble=true;'>"
+                    + p + "</a>";
+            });
+        } else if (!LISTING) { // number
+            if (format === "%date%") { // Caché internal date
+                var d = new Date(_.getUnixDateFromCacheFormat(value));
+                if (isNaN(d.getTime())) { element.textContent = value; return; }
+                element.textContent = d.getHours() + d.getMinutes() + d.getSeconds() === 0
+                        ? d.toLocaleDateString() : d.toLocaleString();
+            } else if (format) { // set format
+                element.textContent = value ? _.numeral(value).format(format) : value;
+            } else if (value) {
+                element.textContent = _.numeral(value).format(
+                    value % 1 === 0 ? "#,###" : "#,###.##"
+                );
+            } else {
+                element.textContent = value;
+            }
+        } else {
+            element.textContent = value;
+        }
+    };
+
+    var setCaretPosition = function (elem, caretPos) {
+        var range;
+        if (elem.createTextRange) {
+            range = elem.createTextRange();
+            range.move("character", caretPos);
+            range.select();
+        } else {
+            elem.setSelectionRange(caretPos, caretPos);
+        }
+    };
+
+    var bindResize = function (element, column) {
+
+        var baseWidth = 0,
+            baseX = 0;
+
+        var moveListener = function (e) {
+            e.cancelBubble = true;
+            e.preventDefault();
+            element.style.width = element.style.minWidth =
+                baseWidth - baseX + e.pageX + "px";
+            if (RESIZE_ANIMATION) {
+                _.saveScrollPosition();
+                _.recalculateSizes(container);
+                _.restoreScrollPosition();
+            }
+        };
+
+        var upListener = function (e) {
+            e.cancelBubble = true;
+            e.preventDefault();
+            element.style.width = element.style.minWidth =
+                (_.FIXED_COLUMN_SIZES[column] = baseWidth - baseX + e.pageX) + "px";
+            _.saveScrollPosition();
+            _.recalculateSizes(container);
+            _.restoreScrollPosition();
+            document.removeEventListener("mousemove", moveListener);
+            document.removeEventListener("mouseup", upListener);
+        };
+
+        element.addEventListener("mousedown", function (e) {
+            if ((e.target || e.srcElement) !== element) return;
+            e.cancelBubble = true;
+            e.preventDefault();
+            baseWidth = element.offsetWidth;
+            baseX = e.pageX;
+            document.addEventListener("mousemove", moveListener);
+            document.addEventListener("mouseup", upListener);
+        });
+
+    };
+
+    // clean previous content
+    this.removeMessage();
+    while (container.firstChild) { container.removeChild(container.firstChild); }
+
+    var renderHeader = function (xFrom, xTo, yFrom, yTo, targetElement) {
+
+        var vertical = targetElement === LHTHead,
+            rendered, separatelyGrouped, tr, th, div, checkbox;
+
+        function applySelect (element) { // checkbox element
+            var checked = element.checked;
+            while (element = element.parentNode) {
+                if (element.tagName === "TR") {
+                    element.classList[checked ? "add" : "remove"]("lpt-selectedRow");
+                    _.elements.tableContainer.querySelector(".lpt-tableBlock table")
+                        .rows[element.rowIndex]
+                        .classList[checked ? "add" : "remove"]("lpt-selectedRow");
+                    break;
+                }
+            }
+        }
+
+        if (xFrom === xTo && LISTING_SELECT_ENABLED) { // listing
+            for (y = yFrom; y < yTo; y++) {
+                tr = document.createElement("tr");
+                th = document.createElement("td");
+                checkbox = document.createElement("input");
+                checkbox.setAttribute("type", "checkbox");
+                checkbox.checked = !!_.selectedRows[y];
+                if (checkbox.checked) (function (checkbox) {
+                    setTimeout(function () { // highlight the rows after html generated
+                        applySelect(checkbox);
+                    }, 1);
+                })(checkbox);
+                th.setAttribute("style", "padding: 0 !important;");
+                checkbox.addEventListener("click", (function (y) { return function (e) {
+                    var element = e.srcElement || e.target;
+                    e.preventDefault();
+                    e.cancelBubble = true;
+                    setTimeout(function () { // bad, but the only working workaround for ISC DeepSee
+                        element.checked = !element.checked;
+                        _.selectRow.call(_, element.checked, y);
+                        applySelect(element);
+                    }, 1);
+                }})(y));
+                th.appendChild(checkbox);
+                tr.appendChild(th);
+                primaryRows.push(th);
+                targetElement.appendChild(tr);
+            }
+            return;
+        }
+
+        for (y = yFrom; y < yTo; y++) {
+            for (x = xFrom; x < xTo; x++) {
+
+                separatelyGrouped = true;
+
+                // setup th
+                if (rendered = renderedGroups.hasOwnProperty(rawData[y][x].group)) {
+                    if (x > 0 && rawData[y][x - 1].group === rawData[y][x].group) {
+                        separatelyGrouped = false;
+                        renderedGroups[rawData[y][x].group].element.colSpan =
+                            x - renderedGroups[rawData[y][x].group].x + 1;
+                    }
+                    if (y > 0 && rawData[y - 1][x].group === rawData[y][x].group) {
+                        separatelyGrouped = false;
+                        renderedGroups[rawData[y][x].group].element.rowSpan =
+                            y - renderedGroups[rawData[y][x].group].y + 1;
+                    }
+                    th = renderedGroups[rawData[y][x].group].element;
+                }
+
+                if (!rendered || separatelyGrouped) { // create element
+                    if (!tr) tr = document.createElement("tr");
+                    tr.appendChild(
+                        th = document.createElement(rawData[y][x].isCaption ? "th" : "td")
+                    );
+                    if (rawData[y][x].source && rawData[y][x].source.title) {
+                        th.setAttribute("title", rawData[y][x].source.title);
+                    }
+                    div = document.createElement("div");
+                    if (rawData[y][x].value) {
+                        div.textContent = rawData[y][x].value;
+                    } else div.innerHTML = "&nbsp;";
+                    th.appendChild(div);
+                    if (rawData[y][x].style) th.setAttribute("style", rawData[y][x].style);
+                    if (info.leftHeaderColumnsNumber === 0
+                        && _.controller.CONFIG["listingColumnMinWidth"]) { // if listing
+                        th.style.minWidth = _.controller.CONFIG["listingColumnMinWidth"] + "px";
+                    }
+                    if (info.leftHeaderColumnsNumber > 0
+                        && _.controller.CONFIG["maxHeaderWidth"]) {
+                        th.style.maxWidth = _.controller.CONFIG["maxHeaderWidth"] + "px";
+                        th.style.whiteSpace = "normal";
+                        th.style.wordWrap = "normal";
+                    }
+                    if (rawData[y][x].className) th.className = rawData[y][x].className;
+                    if (rawData[y][x].group) renderedGroups[rawData[y][x].group] = {
+                        x: x,
+                        y: y,
+                        element: th
+                    };
+                    if (!rawData[y][x].isCaption) formatContent(
+                        rawData[y][x].value,
+                        th,
+                        rowProps[y].format || columnProps[x].format
+                    );
+                }
+
+                // add listeners
+                if (vertical && x === xTo - 1) {
+                    primaryRows.push(th);
+                    th.addEventListener(CLICK_EVENT, (function (index, data) {
+                        return function () {
+                            _._rowClickHandler.call(_, index, data);
+                        };
+                    })(y, rawData[y][x]));
+                }
+                if (!vertical && y === yTo - 1 - ATTACH_TOTALS && !th["_hasSortingListener"]) {
+                    th["_hasSortingListener"] = false; // why false?
+                    //console.log("Click bind to", th);
+                    if (!rawData[y][x].noClick) th.addEventListener(CLICK_EVENT, (function (i) {
+                        return function () {
+                            //if (th._CANCEL_CLICK_EVENT) return;
+                            _._columnClickHandler.call(_, i);
+                        };
+                    })(x - info.leftHeaderColumnsNumber));
+                    th.className = (th.className || "") + " lpt-clickable";
+                }
+                if (!vertical && y === yTo - 1) {
+                    if (_.FIXED_COLUMN_SIZES[x]) {
+                        th.style.minWidth = th.style.width = _.FIXED_COLUMN_SIZES[x] + "px";
+                    }
+                    if (COLUMN_RESIZE_ON) {
+                        bindResize(th, x);
+                        th.className += " lpt-resizableColumn";
+                    }
+                    primaryColumns.push(th);
+                }
+
+            }
+            if (tr) targetElement.appendChild(tr);
+            tr = null;
+        }
+    };
+
+    // top left header setup
+    header.textContent = info.leftHeaderColumnsNumber ? rawData[0][0].value : "";
+    if (rawData[0][0].style && !LISTING) header.setAttribute("style", rawData[0][0].style);
+    if (this.tablesStack.length > 1 && !this.controller.CONFIG["hideButtons"]) {
+        header.className += "back ";
+        header.addEventListener(CLICK_EVENT, function (e) {
+            _._backClickHandler.call(_, e);
+        });
+    }
+    if (info.leftHeaderColumnsNumber > 0 && _.controller.CONFIG["maxHeaderWidth"]) {
+        pivotHeader.style.maxWidth =
+            _.controller.CONFIG["maxHeaderWidth"] * info.leftHeaderColumnsNumber + "px";
+        pivotHeader.style.whiteSpace = "normal";
+        pivotHeader.style.wordWrap = "normal";
+    }
+    if ( // hide unnecessary column
+        (this.controller.CONFIG["hideButtons"] || this.tablesStack.length < 2)
+        && info.leftHeaderColumnsNumber === 0
+    ) {
+        header.style.display = "none";
+    }
+
+    // render topHeader
+    renderHeader(
+        info.leftHeaderColumnsNumber,
+        rawData[0].length,
+        0,
+        info.topHeaderRowsNumber,
+        THTHead
+    );
+
+    // render leftHeader
+    renderHeader(
+        0,
+        info.leftHeaderColumnsNumber,
+        tempI = info.topHeaderRowsNumber + (this.pagination.page*this.pagination.rows || 0),
+        tempJ = this.pagination.on
+            ? Math.min(tempI + this.pagination.rows, rawData.length)
+            : rawData.length,
+        LHTHead
+    );
+
+    // render table
+    for (y = tempI; y < tempJ; y++) {
+        tr = document.createElement("tr");
+        for (x = info.leftHeaderColumnsNumber; x < rawData[0].length; x++) {
+
+            cellStyle = this.controller.getPivotProperty(["cellStyle"]) || "";
+            tr.appendChild(td = document.createElement("td"));
+            td.appendChild(div = document.createElement("div"));
+            if (x === info.leftHeaderColumnsNumber) primaryCells.push(td);
+            formatContent(
+                rawData[y][x].value,
+                div,
+                (rowProps[y] && rowProps[y].format) || columnProps[x].format
+            );
+            if (
+                colorScale
+                && !(info.SUMMARY_SHOWN && rawData.length - 1 === y) // exclude totals formatting
+            ) {
+                ratio = (parseFloat(rawData[y][x].value) - colorScale.min) / colorScale.diff;
+                cellStyle += "background:rgb(" +
+                + Math.round((colorScale.to.r - colorScale.from.r)*ratio + colorScale.from.r)
+                + "," + Math.round((colorScale.to.g - colorScale.from.g)*ratio + colorScale.from.g)
+                + "," + Math.round((colorScale.to.b - colorScale.from.b)*ratio + colorScale.from.b)
+                + ");" + (colorScale.invert ? "color: white;" : "");
+            }
+            if (columnProps[x].style || (rowProps[y] && rowProps[y].style)) {
+                cellStyle += ((rowProps[y] && rowProps[y].style) || "") +
+                    ((rowProps[y] && rowProps[y].style) ? " " : "") + (columnProps[x].style || "");
+            }
+            if (rawData[y][x].style) {
+                cellStyle += rawData[y][x].style;
+            }
+            if (
+                this.controller.CONFIG.conditionalFormattingOn // totals formatting present
+                && !(info.SUMMARY_SHOWN && rawData.length - 1 === y) // exclude totals formatting
+                && !this.getCurrentTableData().opts.disableConditionalFormatting
+            ) {
+                this.applyConditionalFormatting(
+                    data["conditionalFormatting"],
+                    (y - info.topHeaderRowsNumber + 1) + "," + (x - info.leftHeaderColumnsNumber + 1),
+                    rawData[y][x].value,
+                    td
+                );
+            }
+
+            // apply style
+            if (cellStyle) td.setAttribute("style", (td.getAttribute("style") || "") + cellStyle);
+            // add handlers
+            td.addEventListener(CLICK_EVENT, (function (x, y, cell) {
+                return function (event) {
+                    _._cellClickHandler.call(_, cell, x, y, event, info.drillThroughHandler);
+                };
+            })(x, y, rawData[y][x]));
+
+        }
+        mainTBody.appendChild(tr);
+    }
+
+    tableBlock.addEventListener("scroll", function () {
+        if (tableBlock._ISE) { tableBlock._ISE = false; return; }
+        topHeader.scrollLeft = tableBlock.scrollLeft;
+        leftHeader.scrollTop = tableBlock.scrollTop;
+        topHeader._ISE = true; leftHeader._ISE = true; // ignore scroll event
+    });
+
+    leftHeader.className = "lpt-leftHeader";
+    topHeader.className = "lpt-topHeader";
+    if (this.controller.CONFIG["enableHeadersScrolling"]) {
+        leftHeader.className = leftHeader.className + " lpt-scrollable-y";
+        topHeader.className = topHeader.className + " lpt-scrollable-x";
+        leftHeader.addEventListener("scroll", function () {
+            if (leftHeader._ISE) { leftHeader._ISE = false; return; }
+            tableBlock.scrollTop = leftHeader.scrollTop;
+            tableBlock._ISE = true;
+        });
+        topHeader.addEventListener("scroll", function () {
+            if (topHeader._ISE) { topHeader._ISE = false; return; }
+            tableBlock.scrollLeft = topHeader.scrollLeft;
+            tableBlock._ISE = true;
+        });
+    }
+    tableBlock.className = "lpt-tableBlock";
+    pivotHeader.className = "lpt-header";
+    pivotTopSection.className = "lpt-topSection";
+    pivotBottomSection.className = "lpt-bottomSection";
+    header.className += "lpt-headerValue";
+    mainTable.appendChild(mainTBody);
+    tableBlock.appendChild(mainTable);
+    LHTable.appendChild(LHTHead);
+    leftHeader.appendChild(LHTable);
+    THTable.appendChild(THTHead);
+    topHeader.appendChild(THTable);
+    pivotHeader.appendChild(header);
+    pivotTopSection.appendChild(pivotHeader);
+    pivotTopSection.appendChild(topHeader);
+    pivotBottomSection.appendChild(leftHeader);
+    pivotBottomSection.appendChild(tableBlock);
+    container.appendChild(pivotTopSection);
+    container.appendChild(pivotBottomSection);
+    if (!this.controller.CONFIG.stretchColumns) {
+        THTable.style.width = "auto"; // required for correct 1st resizing
+    }
+
+    if (pageSwitcher) {
+        pageSwitcher.className = "lpt-pageSwitcher";
+        pageNumbers = (function getPageNumbersArray (currentPage, pages) { // minPage = 1
+
+            var step = 0,
+                pagesArr = [currentPage];
+            while (currentPage > 1) {
+                currentPage = Math.max(1, currentPage - (step || 1));
+                pagesArr.unshift(currentPage);
+                step = step*step + 1;
+            }
+            step = 0;
+            currentPage = pagesArr[pagesArr.length - 1];
+            while (currentPage < pages) {
+                currentPage = Math.min(pages, currentPage + (step || 1));
+                pagesArr.push(currentPage);
+                step = step*step + 1;
+            }
+            return pagesArr;
+
+        })(this.pagination.page + 1, this.pagination.pages);
+        if (this.controller.CONFIG.showListingRowsNumber) {
+            td = document.createElement("div");
+            tr = document.createElement("span");
+            tr.className = "lpt-icon-rows";
+            td.className = "lpt-bottomInfo";
+            td.appendChild(tr);
+            tr = document.createElement("span");
+            tr.textContent = data["rawData"].length - (data["info"].topHeaderRowsNumber || 0)
+                - (data["info"].SUMMARY_SHOWN ? 1 : 0);
+            td.appendChild(tr);
+            pageSwitcherContainer.appendChild(td);
+        }
+        for (i in pageNumbers) {
+            i = parseInt(i);
+            td = document.createElement("span");
+            if (pageNumbers[i] === this.pagination.page + 1) { td.className = "lpt-active"; }
+            td.textContent = pageNumbers[i];
+            (function (page) {td.addEventListener(CLICK_EVENT, function () { // add handler
+                _._pageSwitcherHandler.call(_, page - 1);
+            })})(pageNumbers[i]);
+            pageSwitcherContainer.appendChild(td);
+            if (pageNumbers[i + 1] && pageNumbers[i] + 1 !== pageNumbers[i + 1]) {
+                td = document.createElement("span");
+                td.className = "lpt-pageSpacer";
+                pageSwitcherContainer.appendChild(td);
+            }
+        }
+        pageSwitcher.appendChild(pageSwitcherContainer);
+        container.appendChild(pageSwitcher);
+    }
+
+    if (SEARCH_ENABLED) {
+        searchIcon.className = "lpt-searchIcon";
+        searchSelectOuter.className = "lpt-searchSelectOuter";
+        searchBlock.className = "lpt-searchBlock";
+        searchInput.className = "lpt-searchInput";
+        searchSelect.className = "lpt-searchSelect";
+        //if (pageSwitcher) {
+        //    pageSwitcher.style.borderBottom = "none";
+        //    pageSwitcher.style.bottom = "20px";
+        //}
+        for (i in searchFields) {
+            td = document.createElement("option");
+            td.setAttribute("value", searchFields[i].columnIndex.toString());
+            td.textContent = searchFields[i].value;
+            searchSelect.appendChild(td);
+        }
+        searchInput.addEventListener("input", function () {
+            var colIndex = parseInt(searchSelect.options[searchSelect.selectedIndex].value),
+                value = searchInput.value;
+            _.saveScrollPosition();
+            _.savedSearch.value = value;
+            _.savedSearch.columnIndex = colIndex;
+            _.savedSearch.restore = true;
+            _.controller.dataController.filterByValue(value, colIndex);
+            _.restoreScrollPosition();
+        });
+        searchBlock.appendChild(searchIcon);
+        searchSelectOuter.appendChild(searchSelect);
+        searchBlock.appendChild(searchSelectOuter);
+        searchBlock.appendChild(searchInput);
+        container.insertBefore(searchBlock, pivotTopSection);
+        this.elements.searchInput = searchInput;
+        this.elements.searchSelect = searchSelect;
+        if (this.savedSearch.restore) {
+            this.elements.searchInput.value = this.savedSearch.value;
+            this.elements.searchSelect.value = this.savedSearch.columnIndex;
+        }
+    } else {
+        this.elements.searchInput = undefined;
+        this.elements.searchSelect = undefined;
+    }
+
+    container["_primaryColumns"] = primaryColumns;
+    container["_primaryRows"] = primaryRows;
+    container["_primaryCells"] = primaryCells;
+    container["_listing"] = LISTING;
+
+    this.recalculateSizes(container);
+
+    if (this.savedSearch.restore) {
+        this.elements.searchInput.focus();
+        setCaretPosition(this.elements.searchInput, this.savedSearch.value.length);
+    }
+
+    if (typeof this.controller.CONFIG.triggers.contentRendered === "function") {
+        this.controller.CONFIG.triggers.contentRendered(this.controller);
+    }
+
+};
+ return LightPivotTable;}());

@@ -667,6 +667,9 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
      */
     parseData(d) {
         const data = d;
+        if (this.checkForAutoDrill(d)) {
+            return;
+        }
         let i;
         const currentAxis = 0;
         // Add non exists axis as count

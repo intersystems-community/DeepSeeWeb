@@ -234,7 +234,7 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
         //     }
         // }
         /// url = 'uspolygons.js';
-        // this.ds.getFile('/assets/UARegions.geojson')
+        // this.ds.getFile('/assets/UAMap.geojson')
         this.ds.getFile(url)
             .then(data => this.onPolyFileLoaded(data))
             .finally(() => this.hideLoading());
@@ -423,10 +423,16 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
             coordsProperty = this.widget.properties.coordsProperty;
         }
         if (this.widget.dataProperties) {
-            const prop = this.widget.dataProperties.find(pr => pr.name === 'coordsProperty');
+            let prop = this.widget.dataProperties.find(pr => pr.name === 'coordsProperty');
             if (prop) {
                 coordsProperty = prop.dataValue;
             }
+
+            prop = this.widget.dataProperties.find(pr => pr.name === 'colorProperty');
+            if (prop) {
+                colorProperty = prop.dataValue;
+            }
+
         }
         if (!this.polyData || !this.map || !this.mapData) {
             return;

@@ -302,6 +302,8 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
     protected override: IWidgetOverride = null;
     protected baseType = '';
 
+    private oneItemDrillApplied = false;
+
     createWidgetComponent: (type?: string) => void;
     protected onInit = () => {
     }
@@ -555,8 +557,11 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
                         item.values.push(data[k]);
                     }
                     // Set selection to first item, if current item is wrong
-                    if (item.labels.indexOf(item.dsSelected) === -1) {
+                    const selIdx = item.values.findIndex(v => v.split('/').pop() === item.dsSelected);
+                    if (selIdx === -1) {
                         item.dsSelected = item.labels[0];
+                    } else {
+                        item.dsSelected = item.labels[selIdx];
                     }
                 }
             });
@@ -749,7 +754,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         }
     }
 
-    getDrillTitle(drill) {
+    getDrillTitle(drill?) {
         if (!drill) {
             return this.widget.baseTitle || '';
         }
@@ -906,15 +911,34 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
                     }
                     this.widget.backButton = this.drills.length !== 0;
                     this.widget.title = this.getDrillTitle(this.drills[this.drills.length - 1]);
-
+                    // this.wid
                     this.broadcastDependents(mdx);
                     this.retrieveData(data);
+                    this.parent?.header?.cd.detectChanges();
+                    // this.cd.detectChanges();
                 })
                 .finally(() => {
                     this.hideLoading();
                     res();
                 });
         });
+    }
+
+    /**
+     * Checks for automatic drill if there is only one item
+     * @param data
+     */
+    checkForAutoDrill(data): boolean {
+        if (data?.Cols[1]?.tuples?.length === 1) {
+            this.oneItemDrillApplied = true;
+            this.doDrill(data.Cols[1].tuples[0].path, data.Cols[1].tuples[0].caption)
+                .then(() => {
+                    this.widget.backButton = false;
+                    this.parent?.header?.cd.detectChanges();
+                });
+            return true;
+        }
+        return false;
     }
 
     showLoading() {
@@ -969,10 +993,20 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         // Remove all s
         // TODO: dont replace %Label
         const match = mdx.match(/ON 0,(.*)ON 1/);
+        let order = '';
         if (match && match.length === 2) {
             const str = match[1];
-            const isNonEmpty = str.indexOf('NON EMPTY') !== -1;
-            mdx = mdx.replace(str, (isNonEmpty ? 'NON EMPTY ' : ' ') + path + ' ');
+            const orderMatch = str.match(/ORDER\((.*?)\,/);
+
+            if (orderMatch && orderMatch[0]) {
+                order = orderMatch[0];
+            }
+            if (order) {
+                mdx = mdx.replace(order, 'ORDER(' + path + '.children,');
+            } else {
+                const isNonEmpty = str.indexOf('NON EMPTY') !== -1;
+                mdx = mdx.replace(str, (isNonEmpty ? 'NON EMPTY ' : ' ') + path + ' ');
+            }
         }
 
         if (((!customDrill && customDrills.length !== 0) || (customDrills.length === 0))
@@ -980,7 +1014,9 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
             && (!mdx.match(/\{.*\} ON 1/))) {
             const idx = mdx.indexOf('.Members ON 1 FROM');
             if (idx === -1) {
-                mdx = mdx.replace(' ON 1 FROM', ' .children ON 1 FROM');
+                if (!order) {
+                    mdx = mdx.replace(' ON 1 FROM', ' .children ON 1 FROM');
+                }
             } else {
                 const from = mdx.indexOf('[');
                 const str = '.Members ON 1 FROM';
@@ -1217,6 +1253,16 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
     public requestData() {
         if (!this.widget.isSupported) {
             return;
+        }
+
+        // Remove auto drill for one item
+        if (this.oneItemDrillApplied) {
+            this.drills = [];
+            this.oneItemDrillApplied = false;
+
+            this.widget.backButton = false;
+            this.widget.title = this.getDrillTitle();
+            this.parent?.header?.cd.detectChanges();
         }
 
         // this.widget.title = this.baseTitle;

@@ -86,6 +86,11 @@ export class TreeMapComponent extends BaseChartClass implements OnInit {
         if (data.Cols[0].tuples[0].children) {
             console.error('Data converter for this treemap chart not implemented!');
         } else {
+            // Make drilldown if there is only one item after filtering
+            if (this.checkForAutoDrill(data)) {
+                return;
+            }
+
             tempData = [];
             let total = 0;
             for (let i = 0; i < data.Data.length; i++) {
