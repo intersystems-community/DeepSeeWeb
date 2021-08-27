@@ -1,3 +1,6 @@
+#### 3.1.22
+* fixed issue with drilldown MDX generation
+
 #### 3.1.21
 * fixed issue with widget sharing (#193)
 
