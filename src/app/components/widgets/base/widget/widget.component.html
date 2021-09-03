@@ -2,7 +2,7 @@
 <dsw-widget-header
     #header
     [typeDesc]="typeDesc"
-    [hidden]="widget?.tile"
+    [hidden]="widget?.tile || !isHeader"
     (onButtonClick)="onHeaderButton($event)"
     (onBack)="onHeaderButtonBack()"
     (onResetClickFilter)="onResetClickFilter()"
@@ -10,7 +10,7 @@
 
 <!-- Filters -->
 <dsw-widget-filter
-    [hidden]="widget?.tile"
+    [hidden]="widget?.tile || !isHeader"
     [widget]="widget"
     [filters]="model.filters"
     (onVariable)="onFilterVariable($event)"

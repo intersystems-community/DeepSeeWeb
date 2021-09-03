@@ -1,7 +1,7 @@
 <dsw-sidebar-actions (cancel)="onCancel()" (apply)="onApply()" >Chart colors</dsw-sidebar-actions>
 <div class="container">
     <label>{{'seriesColor' | i18n}}</label>
-    <span *ngFor="let c of model.themeColors.hcColors; let idx = index; trackBy: byIndex" [hidden]="appearance?.showSeries[idx] === false">
+    <span *ngFor="let c of model.themeColors.hcColors; let idx = index; trackBy: byIndex" [hidden]="appearance?.showSeries && appearance?.showSeries[idx] === false">
     <input
         class="color-rect"
         [(colorPicker)]="model.themeColors.hcColors[idx]" [style.background]="model.themeColors.hcColors[idx]"

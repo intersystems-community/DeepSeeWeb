@@ -172,6 +172,7 @@ export interface IWidgetInfo {
 
     // For empty widget filters size
     viewSize: number;
+    shared?: boolean;
 }
 
 @Directive()
@@ -256,7 +257,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
     // Loading spinner, do now use directly
     // use showLoading(), hideLoading() instead
     public isSpinner = true;
-    protected drills = [];
+    drills = [];
     protected drillFilter = '';
     protected drillFilterDrills = [];
     protected pivotVariables = null;
@@ -280,7 +281,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
     public chart: Highcharts.Chart;
     protected customColSpec = '';
     protected customRowSpec = '';
-    protected customDataSource = '';
+    customDataSource = '';
     protected pivotData = null;
     protected linkedMdx = '';
     protected liveUpdateInterval = null;
@@ -405,7 +406,15 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         // }
 
         if (this.isLinked()) {
-            this.subLinkedMdx = this.bs.subscribe('setLinkedMDX:' + this.widget.name, (mdx: string) => this.onSetLinkedMdx(null, mdx));
+            if (this.widget.shared || this.widget.inline) {
+                const widgets = this.dbs.getAllWidgets();
+                const link = widgets.find(w => w.name === this.widget.Link);
+                if (link) {
+                    this.linkedMdx = link.mdx;
+                }
+            } else {
+                this.subLinkedMdx = this.bs.subscribe('setLinkedMDX:' + this.widget.name, (mdx: string) => this.onSetLinkedMdx(null, mdx));
+            }
         }
         if (this.hasDependents()) {
             this.subRefreshDepenend = this.bs.subscribe('widget:' + this.widget.name + ':refreshDependents', (v) => this.onRefreshDependents());
@@ -914,6 +923,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
                     // this.wid
                     this.broadcastDependents(mdx);
                     this.retrieveData(data);
+                    this.updateLocationDrillParameters();
                     this.parent?.header?.cd.detectChanges();
                     // this.cd.detectChanges();
                 })
@@ -1373,12 +1383,36 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
     }
 
     replaceMDXVariables(mdx) {
-        if (!this.vs.items.length || mdx.indexOf('$') === -1) {
+        if (mdx.indexOf('$') === -1) {
+            return mdx;
+        }
+        const vars = this.vs.items;
+
+        // Get variables from url parameters for shared widgets
+        if (this.widget.shared) {
+            const urlVars = this.route.snapshot.queryParamMap.get('variables');
+            if (urlVars) {
+                const uv = urlVars.split('~');
+                uv.forEach(v => {
+                    const parts = v.split('.');
+                    const name = parts[0];
+                    const value = parts[1];
+                    const idx = vars.findIndex(va => va.targetProperty === '$variable.' + name);
+                    if (idx !== -1) {
+                        vars[idx].value = value;
+                    } else {
+                        vars.push({targetProperty: '$variable.' + name, value});
+                    }
+                });
+            }
+        }
+
+        if (!vars.length) {
             return mdx;
         }
 
-        for (let i = 0; i < this.vs.items.length; i++) {
-            const v = this.vs.items[i];
+        for (let i = 0; i < vars.length; i++) {
+            const v = vars[i];
             if (v.value === '') {
                 continue;
             }
@@ -1448,6 +1482,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         let str;
 
         // If widget is linked, use linkedMDX
+        // if (this.isLinked() && !this.widget.shared && !this.widget.inline) {
         if (this.isLinked()) {
             str = this.replaceMDXVariables(this.linkedMdx || this.widget.linkedMdx || '');
             str = this.checkColSpec(str);
@@ -1613,6 +1648,47 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
                 .replace(/\./g, this.dataInfo.decimalSeparator);
         }
         return res;
+    }
+
+    /**
+     * Updates "drilldown" parameter in URL for shared widget after drilldown.drillup
+     */
+    private updateLocationDrillParameters() {
+        if (!this.widget?.shared) {
+            return;
+        }
+
+        const hash = location.hash;
+        const drills = this.getDrillsAsParameter();
+
+        this.ds.router.navigate(
+            [],
+            {
+                relativeTo: this.route,
+                queryParams: { drilldown: drills },
+                queryParamsHandling: 'merge'
+            });
+    }
+
+   /* replaceUrlParam(url: string, paramName: string, paramValue: string)
+    {
+        if (paramValue === null) {
+            paramValue = '';
+        }
+        const pattern = new RegExp('\\b(' + paramName + '=).*?(&|#|$)');
+        if (url.search(pattern) >= 0) {
+            return url.replace(pattern, '$1' + paramValue + '$2');
+        }
+        url = url.replace(/[?#]$/, '');
+        return url + (url.indexOf('?') > 0 ? '&' : '?') + paramName + '=' + paramValue;
+    }*/
+
+    getDrillsAsParameter(): string {
+        const drills = this.drills;
+        if (drills?.length) {
+            return encodeURIComponent(drills.map(d => d.path).join('~'));
+        }
+        return '';
     }
 }
 

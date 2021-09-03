@@ -25,6 +25,7 @@ import {Subscription} from 'rxjs';
 import {ModalService} from '../../../../services/modal.service';
 import {TextAreaComponent} from '../../../ui/text-area/text-area.component';
 import {BaseChartClass} from '../../charts/base-chart.class';
+import {ActivatedRoute} from '@angular/router';
 
 @Component({
     selector: 'dsw-widget',
@@ -50,6 +51,7 @@ export class WidgetComponent implements OnInit, OnDestroy, AfterViewInit {
     public component: BaseWidget;
     hasDatasourceChoser = false;
     hasActions = false;
+    isHeader = true;
 
     private subFilter: Subscription;
     private subUpdateFilterText: Subscription;
@@ -69,8 +71,9 @@ export class WidgetComponent implements OnInit, OnDestroy, AfterViewInit {
                 private bs: BroadcastService,
                 private ms: ModalService,
                 public cd: ChangeDetectorRef,
+                private route: ActivatedRoute,
                 private cfr: ComponentFactoryResolver) {
-
+        this.isHeader = this.route.snapshot.queryParamMap.get('noheader') !== '1';
     }
 
     ngAfterViewInit() {
@@ -91,6 +94,26 @@ export class WidgetComponent implements OnInit, OnDestroy, AfterViewInit {
     ngOnInit() {
         // super.ngOnInit();
         this.createWidgetComponent();
+
+        // Get datasource from params for shared widget
+        if (this.widget.shared) {
+            const ds = this.route.snapshot.queryParamMap.get('datasource');
+            if (ds) {
+                // this.widget.dataSource = ds;
+                this.component.customDataSource = ds;
+            }
+        }
+
+        // Set dills for shared widget
+        const drills = this.route.snapshot.queryParamMap.get('drilldown');
+        if (drills) {
+            this.component.drills = decodeURIComponent(drills).split('~').map(d => {
+                return {path: d, name: d};
+            });
+            this.widget.backButton = !!this.component.drills.length;
+            this.widget.title = this.component.getDrillTitle(this.component.drills[this.component.drills.length - 1]);
+            this.header.cd.detectChanges();
+        }
 
         this.model.filters = this.fs.getWidgetModelFilters(this.widget.name);
         this.updateFiltersText();
@@ -298,12 +321,12 @@ export class WidgetComponent implements OnInit, OnDestroy, AfterViewInit {
             url += '&widget=' + this.widget.idx;
         }
 
-        // TODO: check ehat is _elem ?
         let w, h;
         // if (this._elem && this._elem[0] && this._elem[0].offsetParent) {
         //     w = this._elem[0].offsetParent.offsetWidth;
         //     h = this._elem[0].offsetParent.offsetHeight;
         // }
+        // TODO: set height here
         if (h) {
             url += '&height=' + h;
         }
@@ -320,6 +343,12 @@ export class WidgetComponent implements OnInit, OnDestroy, AfterViewInit {
             if (hidden.length) {
                 url += '&hiddenSeries=' + hidden.map(s => s.i).join(',');
             }
+        }
+
+        // Append drills
+        const drills = this.component.getDrillsAsParameter();
+        if (drills) {
+            url += '&drilldown=' + drills;
         }
 
         let html = '<iframe style="border: none" src="' + url + '" ';
@@ -353,6 +382,7 @@ export class WidgetComponent implements OnInit, OnDestroy, AfterViewInit {
     applyFilter(flt: any) {
         this.updateFiltersText();
         this.requestData();
+        //this.updateFiltersParameterInURL();
     }
 
     /**

@@ -6,6 +6,7 @@ import {DataService} from './data.service';
 import {I18nService} from './i18n.service';
 import {NamespaceService} from './namespace.service';
 import {BroadcastService} from './broadcast.service';
+import {DashboardService} from './dashboard.service';
 
 @Injectable({
     providedIn: 'root'
@@ -24,6 +25,7 @@ export class FilterService {
                 private ds: DataService,
                 private ns: NamespaceService,
                 private bs: BroadcastService,
+                private dbs: DashboardService,
                 private i18n: I18nService) {
     }
 
@@ -118,9 +120,12 @@ export class FilterService {
      * @param {string} [widgetName] Name of widget
      * @returns {string}
      */
-    getFiltersUrlString(widgetName?: string) {
+    getFiltersUrlString(widgetName?: string, ignoreTargetAll = false) {
         const f = [];
-        const widgetFilters = widgetName ? this.getAffectsFilters(widgetName) : this.items;
+        let widgetFilters = widgetName ? this.getAffectsFilters(widgetName) : this.items;
+        if (ignoreTargetAll && widgetFilters) {
+            widgetFilters  = widgetFilters.filter(f => f.target !== '*');
+        }
         for (let i = 0; i < widgetFilters.length; i++) {
             const flt = widgetFilters[i];
             if (!flt.value && !flt.isInterval) {
@@ -171,7 +176,7 @@ export class FilterService {
         flt.forEach(f => {
             const urlFilters = filters.split('~');
             for (let i = 0; i < urlFilters.length; i++) {
-                const s = urlFilters[i];
+                const s = decodeURIComponent(urlFilters[i]);
                 // Check filter path
                 if (s.indexOf('{') !== -1) {
                     // Many values
@@ -276,7 +281,7 @@ export class FilterService {
      * @returns {Array.<object>} Filter list
      */
     getAffectsFilters(widgetName: string) {
-        return this.items.filter(e => (e.target === '*' || e.targetArray.indexOf(widgetName) !== -1));
+        return this.items.filter(e => (e.target === '*' || e.target === widgetName || e.targetArray.indexOf(widgetName) !== -1));
     }
 
     /**
@@ -401,6 +406,22 @@ export class FilterService {
         }
         this.filtersChanged = true;
         this.saveFilters();
+        this.updateFiltersParameterInURL();
+    }
+
+    private updateFiltersParameterInURL() {
+        if (!this.us.isEmbedded()) {
+            return;
+        }
+        const idx = this.route.snapshot.queryParamMap.get('widget');
+        const name = this.dbs.getAllWidgets()[parseInt(idx, 10)]?.name;
+        this.ds.router.navigate(
+            [],
+            {
+                relativeTo: this.route,
+                queryParams: { FILTERS: 'TARGET:*;FILTER:' + this.getFiltersUrlString(name, true) },
+                queryParamsHandling: 'merge'
+            });
     }
 
     /**

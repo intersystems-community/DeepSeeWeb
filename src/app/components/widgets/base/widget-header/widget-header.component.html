@@ -118,7 +118,7 @@
 
 <!-- Fullscreen button -->
 <button (click)="onClick('expand')" class="only-desktop" [class.active]="widget?.isExpanded"
-        [title]="'fullscreen' | i18n" [hidden]="isEmptyWidget() || !widget?.isSupported">
+        [title]="'fullscreen' | i18n" [hidden]="isEmptyWidget() || !widget?.isSupported" *ngIf="!widget?.shared">
     <img src="assets/img/icons/fullscreen.svg">
 </button>
 

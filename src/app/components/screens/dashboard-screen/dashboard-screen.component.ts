@@ -402,6 +402,7 @@ export class DashboardScreenComponent implements OnInit, OnDestroy, AfterViewIni
         }
         this.widgetInfo = [];
         this.dbs.setWidgets(this.widgetInfo);
+        this.dbs.setAllWidgets(result.widgets);
         for (i = 0; i < result.widgets.length; i++) {
             result.widgets[i].dashboard = path;
             if (this.sharedWidget && i !== parseInt(this.sharedWidget, 10)) {
@@ -455,6 +456,7 @@ export class DashboardScreenComponent implements OnInit, OnDestroy, AfterViewIni
                 item.cols = 1;
                 item.rows = 1;
                 item.menuDisabled = true;
+                item.shared = true;
             }
 
             // Create item for description

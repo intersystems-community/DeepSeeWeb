@@ -37,6 +37,9 @@ import GeoJSON from 'ol/format/GeoJSON';
             padding: 2px 3px;
         }
         .map-popup {
+            transform: translateY(-100%) translateX(-50%);
+            z-index: 1;
+            position: absolute;
             background-color: var(--cl-widget-filter-bg);
             margin-bottom: 0px;
             border-color: rgb(176, 176, 176);
@@ -46,7 +49,6 @@ import GeoJSON from 'ol/format/GeoJSON';
             box-shadow: 1px 1px 9px 0px rgba(50, 50, 50, 0.5);
             /*background-color: var(--cl-widget-bg);*/
             color: var(--cl-widget-header-txt);
-            position: relative;
         }
         .map-popup:after {
             content: " ";
@@ -69,7 +71,7 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
     private markers = null;
     private polys = null;
     private iconStyle = null;
-    private popup = null;
+    // private popup = null;
     private isRGBColor = false;
     private _selectedFeature = null;
     private featureOverlay = null;
@@ -194,6 +196,7 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
      */
     doDrillUp() {
         this.hideTooltip();
+        this.hidePopup();
         void this.doDrill();
     }
 
@@ -234,7 +237,7 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
         //     }
         // }
         /// url = 'uspolygons.js';
-        // this.ds.getFile('/assets/UAMap.geojson')
+        //this.ds.getFile('/assets/UAMap.geojson')
         this.ds.getFile(url)
             .then(data => this.onPolyFileLoaded(data))
             .finally(() => this.hideLoading());
@@ -845,13 +848,13 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
 
 
         // Create popup
-        this.popup = new Overlay({
+        /*this.popup = new Overlay({
             element: this.popupElement,
             positioning: 'bottom-center',
             offset: [0, -40],
             stopEvent: false
         } as any); // TODO: remove any
-        this.map.addOverlay(this.popup);
+        this.map.addOverlay(this.popup);*/
 
         this.map.on('click', (e) => this.onMapClick(e));
         this.map.on('pointermove', (e) => this.onPointerMove(e));
@@ -969,8 +972,16 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
             if (this.widget.properties && this.widget.properties.markerPopupContentProperty) {
                 contentProp = this.widget.properties.markerPopupContentProperty;
             }
+            if (this.widget.dataProperties) {
+                const prop = this.widget.dataProperties.find(pr => pr.name === 'popupProperty');
+                if (prop) {
+                    contentProp = prop.dataValue;
+                }
+            }
             if (contentProp) {
-                content = this.getDataByColumnName(this.mapData, contentProp, dataIdx);
+                content = '<b>' + (feature.get('name') || feature.values_.title) + '</b><br/>';
+                content += contentProp + ': ';
+                content += this.getDataByColumnName(this.mapData, contentProp, dataIdx);
             } else {
                 content = this.mapData.Cols[1].tuples[Math.floor(dataIdx / this.mapData.Cols[0].tuples.length)].caption ||
                     this.mapData.Cols[1].tuples[Math.floor(dataIdx / this.mapData.Cols[0].tuples.length)].desc || '';
@@ -999,7 +1010,7 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
 
             this.model.tooltip.content = content;
 
-            let coord;
+            /*let coord;
             if (feature.getGeometry().getType().toLowerCase() === "polygon") {
                 evt.pixel[1] += 30;
                 coord = this.map.getCoordinateFromPixel(evt.pixel);
@@ -1009,8 +1020,11 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
                 let geometry = feature.getGeometry();
                 coord = geometry.getCoordinates();
                 coord[0] += Math.floor((this.map.getCoordinateFromPixel(evt.pixel)[0] / 40075016.68) + 0.5) * 20037508.34 * 2;
-            }
-            this.popup.setPosition(coord);
+            }*/
+
+            this.popupElement.style.left = evt.pixel[0] + 'px';
+            this.popupElement.style.top = (evt.pixel[1] - 10) + 'px';
+            // this.popup.setPosition(coord);
 
             //this.doDrillFilter(feature.get("path"));
 

@@ -23,13 +23,23 @@ import {Subscription} from 'rxjs';
 // Initialize exporting module.
 Exporting(Highcharts);
 import HC_stock from 'highcharts/modules/stock';
-import {ChartConfigComponent, IThemeColors} from '../../ui/chart-config/chart-config.component';
+import {ChartConfigComponent, IChartConfigAppearance, IThemeColors} from '../../ui/chart-config/chart-config.component';
 import {CURRENT_NAMESPACE} from '../../../services/namespace.service';
 
 HC_stock(Highcharts);
 
 export const DEF_ROW_COUNT = 20;
 const DEF_COL_COUNT = 20;
+
+export const CHART_COLOR_CONFIG_APPEARANCES: {[type: string]: IChartConfigAppearance} = {
+    treemap: {
+        showLines: false,
+        showText: false
+    },
+    pie: {
+        showLines: false
+    }
+};
 
 @Directive()
 export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit {
@@ -491,22 +501,24 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
 
         // Set axis for combo chart
         if (this.widget.type.toLowerCase() === 'combochart') {
-            const o = this.widget.overrides.find(ov => ov._type.toLowerCase() === 'combochart');
-            let sy: number[] = [];
-            if (o && o.seriesYAxes) {
-                sy = o.seriesYAxes.split(',').map(el => parseInt(el, 10));
+            const o = this.widget.overrides?.find(ov => ov._type.toLowerCase() === 'combochart');
+            if (o) {
+                let sy: number[] = [];
+                if (o && o.seriesYAxes) {
+                    sy = o.seriesYAxes.split(',').map(el => parseInt(el, 10));
+                }
+                let st: string[] = [];
+                if (o.seriesTypes) {
+                    st = o.seriesTypes.split(',');
+                }
+                const idx = this.chart.series.length;
+                data.type = st[idx] || (idx === 0 ? 'bar' : 'line');
+                data.yAxis = sy[idx] || 0;
+                /*const series = this.chartConfig.series;
+                for (let k = 0; k < series.length; k++) {
+                    series[k].yAxis = sy[k] || 0;
+                }*/
             }
-            let st: string[] = [];
-            if (o.seriesTypes) {
-                st = o.seriesTypes.split(',');
-            }
-            const idx = this.chart.series.length;
-            data.type = st[idx] || (idx === 0 ? 'bar' : 'line');
-            data.yAxis = sy[idx] || 0;
-            /*const series = this.chartConfig.series;
-            for (let k = 0; k < series.length; k++) {
-                series[k].yAxis = sy[k] || 0;
-            }*/
         }
         data.showInLegend = true;
         // this.chartConfig.series.push(data);
@@ -864,10 +876,12 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
                     borderColor: this.tc.hcBorderColor || undefined
                 },
                 pie: {
-                    borderColor: this.tc.hcBorderColor || undefined
+                    borderColor: this.tc.hcBorderColor || undefined,
+                    colors: this.tc.hcColors || undefined
                 },
                 treemap: {
-                    borderColor: this.tc.hcBorderColor || undefined
+                    borderColor: this.tc.hcBorderColor || undefined,
+                    colors: this.tc.hcColors || undefined
                 },
                 series: {
                     opacity: this.tc.hcOpacity,
@@ -1099,10 +1113,14 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
         }
         // ngDialog.open({template: 'src/views/settings.html', data: {isWidgetSettings: true,  });
         // }
+
+        const appearance = CHART_COLOR_CONFIG_APPEARANCES[this.chart?.options?.chart?.type];
+
         this.sbs.sidebarToggle.next({
             component: ChartConfigComponent,
             inputs: {
                 widgetSettings: widgetsSettings[name],
+                appearance,
                 onSave: save,
                 onUpdate: tc => this.updateColors(tc),
                 chart: this.chart
@@ -1117,44 +1135,55 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
      */
     updateColors(themeColors: IThemeColors) {
         this.zone.runOutsideAngular(() => {
-
+            const type = this.chart?.options?.chart?.type;
             // Series fill color
             if (themeColors.hcColors) {
-                for (let i = 0; i < this.chart.series.length; i++) {
-                    const series = this.chart.series[i];
-                    const color = themeColors.hcColors[i % themeColors.hcColors.length];
-
-                    // For charts with lines
-                    const el = series.graph?.element;
-                    if (el) {
-                        el.setAttribute('stroke', color);
+                if (type === 'treemap' || type === 'pie') {
+                    this.chartConfig.plotOptions[type].colors = themeColors.hcColors;
+                    this.chart.options.plotOptions[type].colors = themeColors.hcColors;
+                    for (let i = 0; i < this.chart.series[0]?.points.length; i++) {
+                        const point = this.chart.series[0].points[i];
+                        const color = themeColors.hcColors[point.colorIndex % themeColors.hcColors.length];
+                        point.color = color;
+                        point['graphic'].element.setAttribute('fill', color);
                     }
+                } else {
+                    for (let i = 0; i < this.chart.series.length; i++) {
+                        const series = this.chart.series[i];
+                        const color = themeColors.hcColors[i % themeColors.hcColors.length];
 
-                    series.data.forEach((d: any) => {
-                        d.color = color;
-                        const el = d.graphic?.element;
+                        // For charts with lines
+                        const el = series.graph?.element;
                         if (el) {
-                            el.setAttribute('fill', color);
                             el.setAttribute('stroke', color);
                         }
-                    });
-                    const l = (this.chart.legend.allItems[i] as any);
-                    if (l && l.legendSymbol) {
-                        [l.legendSymbol.element, l.legendLine.element].forEach(el => {
+
+                        series.data.forEach((d: any) => {
+                            d.color = color;
+                            const el = d.graphic?.element;
                             if (el) {
                                 el.setAttribute('fill', color);
                                 el.setAttribute('stroke', color);
                             }
                         });
-                    }
+                        const l = (this.chart.legend.allItems[i] as any);
+                        if (l && l.legendSymbol) {
+                            [l.legendSymbol.element, l.legendLine.element].forEach(el => {
+                                if (el) {
+                                    el.setAttribute('fill', color);
+                                    el.setAttribute('stroke', color);
+                                }
+                            });
+                        }
 
-                    this.chart.series[i].options.color = color;
-                    // this.chart.series[i].update(this.chart.series[i].options, false);
+                        this.chart.series[i].options.color = color;
+                        // this.chart.series[i].update(this.chart.series[i].options, false);
+                    }
                 }
             }
 
             // Series border color
-            if (themeColors.hcBorderColor) {
+            if (themeColors.hcBorderColor && CHART_COLOR_CONFIG_APPEARANCES[type]?.showBorder !== false) {
                 for (let i = 0; i < this.chart.series.length; i++) {
                     const series = this.chart.series[i];
                     series.data.forEach((d: any) => {
@@ -1167,7 +1196,7 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
             }
 
             // Backgorund color
-            if (themeColors.hcBackground) {
+            if (themeColors.hcBackground && CHART_COLOR_CONFIG_APPEARANCES[type]?.showBackground !== false) {
                 const bg = (this.chart as any).chartBackground.element;
                 bg.setAttribute('fill', themeColors.hcBackground);
                 bg.setAttribute('stroke', themeColors.hcBackground);
@@ -1175,7 +1204,7 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
             }
 
             // Axis line color
-            if (themeColors.hcLineColor) {
+            if (themeColors.hcLineColor && CHART_COLOR_CONFIG_APPEARANCES[type]?.showLines !== false) {
                 const col = themeColors.hcLineColor;
                 this.chart.yAxis.forEach((a: any) => {
                     this.chart.yAxis[0].options.minorGridLineColor = col;
@@ -1194,9 +1223,12 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
 
             // Text color
             const col = themeColors.hcTextColor;
-            if (col) {
+            if (col && CHART_COLOR_CONFIG_APPEARANCES[type]?.showText !== false) {
                 // Set axis labels color
                 const processAxis = (a: any) => {
+                    if (!a.labelGroup) {
+                        return;
+                    }
                     a.labelGroup.element.setAttribute('fill', col);
                     for (let i = 0; i < a.labelGroup.element.children.length; i++) {
                         const child = a.labelGroup.element.children[i];
@@ -1213,6 +1245,9 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
                 this.chart.legend.allItems.forEach((l: any) => {
                     /* l.color = col; */
                     l.options.color = col;
+                    if (!l.legendItem) {
+                        return;
+                    }
                     l.legendItem.element.setAttribute('color', col);
                     l.legendItem.element.setAttribute('fill', col);
                     l.legendItem.element.style.fill = col;

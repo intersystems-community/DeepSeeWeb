@@ -1,3 +1,20 @@
+#### 3.1.24
+* added support for sharing linked widgets (#214)
+* fixed map popup positioning issue (#213)
+* fixed map popup drill up issue (#213)
+* fullscreen button hidden on shared widgets (#211)
+* added "noheader" URL parameter for shared widgets, eg. "&noheader=1" (#211)
+* added "datasource" URL parameter for shared widgets, parameter value should be escaped. eg. "&datasource=map%2Frayon_5weights.pivot" (#210)
+* added "drilldown" URL parameter for shared widgets, containing all paths separated by "~" character, parameter value should be escaped (#208)
+* added "variables" URL parameter for shared widgets, eg. "&variables=selectedPeriod.105~testVariable.100" (#212)
+* now "drilldown" url parameter changed while drilling on shared widget (#209)
+* now "FILTERS" url parameter changed while filtering on shared widget (#209)
+* fixed coloring of treemap and pie charts (#198)
+* fixed linked widget in samples-bi. actual issue was: "no overrides for combo chart" (#196)
+* added support for sharing drill levels  sharing widget 
+* added data property "popupProperty" for map, to define which value show in popup
+* fixed issue with linked inline widgets(widgets on tiles) 
+
 #### 3.1.23
 * added support for MDX order in drilldown (#205)
 * added support for MDX order in lightpivottable (#205)

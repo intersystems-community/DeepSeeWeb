@@ -70,7 +70,7 @@ export class DataService {
     public username = '';
 
     constructor(private route: ActivatedRoute,
-                private router: Router,
+                public router: Router,
                 private http: HttpClient,
                 private es: ErrorService) {
     }

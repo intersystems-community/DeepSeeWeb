@@ -6,6 +6,7 @@ import {IWidgetInfo} from '../components/widgets/base-widget.class';
 })
 export class DashboardService {
     private widgets: IWidgetInfo[] = [];
+    private allWidgets: IWidgetInfo[] = [];
 
     constructor() {
     }
@@ -16,5 +17,13 @@ export class DashboardService {
 
     getWidgets(): IWidgetInfo[] {
         return this.widgets;
+    }
+
+    setAllWidgets(widgets: IWidgetInfo[]) {
+        this.allWidgets = widgets;
+    }
+
+    getAllWidgets(): IWidgetInfo[] {
+        return this.allWidgets;
     }
 }
