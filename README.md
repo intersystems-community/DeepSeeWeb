@@ -124,6 +124,23 @@ So this should fix it:
 ```
 set ^%SYS("CSP","DefaultFileCharset")="utf-8"
 ```
+
+# Embedding widgets
+
+Widgets can be embedded in other pages. Easiest way to embed a widget is to navigate to the widget, set it into a desired state, press RMB to open context menu and press `Share` button. It would show a url for embedding. 
+
+Embedded URL is generated as follows. Start with a dashboard URL and add required `widget` parameter. Optionally add other URL parameters. All parameter values MUST be URL escaped. Available parameters are: 
+
+| Name       | Value                                                  | Value, escaped                                                                                                                                                                                                    | Description                                                                                        |
+| ---------- | ------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| widget     | 1                                                      | 1                                                                                                                                                                                                                 | Which widget from the dashboard to show (in order of widget definition).                           |
+| FILTERS    | `TARGET:*;FILTER:[period].[H1].[period].&[10\]`        | `TARGET:*;FILTER:%5Bperiod%5D.%5BH1%5D.%5Bperiod%5D.%26%5B104%5D`                                                                                                                                                 | Filters to use. Follows InterSystems BI [FILTERS url parameter](https://docs.intersystems.com/irislatest/csp/docbook/DocBook.UI.Page.cls?KEY=D2IMP_ch_dashboards#D2IMP_dashboard_url_parameters). |
+| variables  | `variable1.value1`<br>`variable1.value1~variable2.XYZ` | `variable1.value1`<br>`variable1.value1~variable2.XYZ`                                                                                                                                                            | Provide pivot variable values. Variables are separated by `~`. Variable and value are separated by `.`. |
+| drilldown  | `level1`<br>`level1~level2`<br>`[regionD].[H1].[regionL].&[23]~[regionD].[H1].[rayonL].&[56043]` | `level1`<br>`level1~level2`<br>`%5BregionD%5D.%5BH1%5D.%5BregionL%5D.%26%5B23%5D~%5BregionD%5D.%5BH1%5D.%5BrayonL%5D.%26%5B56043%5D` | Drilldown on a widget. Drilldown levels are separated by `~`.                                                                         |
+| noheader   | `1 `                                                   | `1`                                                                                                                                                                                                               | Do not display header information. Defaults to `0`.                                                |
+| datasource | `map/weights.pivot`                                    | `map%2Fweights.pivot`                                                                                                                                                                                             | What datasource to use for widget.                                                                 |
+
+
 # Creating custom widgets
 DeepSeeWeb allows modification of exist widgets and custom widget registration as well.
 For base widget class methods and properties description please read [Addons](Addons.md).
@@ -140,3 +157,5 @@ According to [Highcharts license](https://shop.highsoft.com/highcharts/#non-com)
 
 # Article and discussion around DeepSee Web
 Here is the [article on InterSystems Developer Community](https://community.intersystems.com/post/deepsee-web-intersystems-analytics-visualization-angularjs-part-1) describing DSW features and capabilites.
+
+
