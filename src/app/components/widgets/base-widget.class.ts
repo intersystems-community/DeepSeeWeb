@@ -27,6 +27,22 @@ import {WidgetComponent} from './base/widget/widget.component';
 import {DashboardService} from '../../services/dashboard.service';
 import * as numeral from 'numeral';
 
+export interface IWidgetDrill {
+    name: string;
+    path: string;
+}
+
+export interface IWidgetEvent {
+    index: number;
+    windget: IWidgetInfo;
+    drills?: IWidgetDrill[];
+    filters?: string;
+}
+
+export interface IDSW {
+    onFilter: (e: IWidgetEvent) => void;
+    onDrill: (e: IWidgetEvent) => void;
+}
 
 export type OBoolean = 'true' | 'false';
 export type OAxisType = 'percent' | '';
@@ -1668,6 +1684,14 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
                 queryParams: { drilldown: drills },
                 queryParamsHandling: 'merge'
             });
+
+        if ((window.parent as any).dsw?.onDrill) {
+            (window.parent as any).dsw.onDrill({
+                index: parseInt(this.route.snapshot.queryParamMap.get('widget'), 10),
+                widget: this.widget,
+                drills: this.drills
+            });
+        }
     }
 
    /* replaceUrlParam(url: string, paramName: string, paramValue: string)

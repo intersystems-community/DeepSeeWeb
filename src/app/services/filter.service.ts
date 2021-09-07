@@ -414,14 +414,24 @@ export class FilterService {
             return;
         }
         const idx = this.route.snapshot.queryParamMap.get('widget');
-        const name = this.dbs.getAllWidgets()[parseInt(idx, 10)]?.name;
+        const widget = this.dbs.getAllWidgets()[parseInt(idx, 10)];
+        const name = widget?.name;
+        const filters = 'TARGET:*;FILTER:' + this.getFiltersUrlString(name, true);
         this.ds.router.navigate(
             [],
             {
                 relativeTo: this.route,
-                queryParams: { FILTERS: 'TARGET:*;FILTER:' + this.getFiltersUrlString(name, true) },
+                queryParams: { FILTERS: filters},
                 queryParamsHandling: 'merge'
             });
+
+        if ((window.parent as any).dsw?.onFilter) {
+            (window.parent as any).dsw.onFilter({
+                index: parseInt(this.route.snapshot.queryParamMap.get('widget'), 10),
+                widget,
+                filters
+            });
+        }
     }
 
     /**
