@@ -1,3 +1,32 @@
+#### 3.1.26
+* added event passing to parent window via `dsw` object for shared widgets.
+Now shared widgets can pass drill and filter events to parent window
+```typescript
+// Define dsw object in window using this interface:
+export interface IDSW {
+    onFilter: (e: IWidgetEvent) => void;
+    onDrill: (e: IWidgetEvent) => void;
+}
+// Widget event
+export interface IWidgetEvent {
+    index: number;
+    windget: IWidgetInfo;
+    drills?: IWidgetDrill[];
+    filters?: string;
+}
+// Example:
+window.dsw = {
+    onDrill: (data) => {
+         // handle drill event here
+    }, 
+    onFilter: (data) => {
+         // handle filter event here
+    }
+}
+```
+
+
+
 #### 3.1.24
 * added support for sharing linked widgets (#214)
 * fixed map popup positioning issue (#213)
