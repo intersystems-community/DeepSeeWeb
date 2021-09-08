@@ -172,7 +172,7 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
         if (this.hintTimeout) clearTimeout(this.hintTimeout);
         this.hintTimeout = setTimeout(() => {
             let el = this.tooltip.nativeElement as HTMLElement;
-            el.innerText = txt;
+            el.innerHTML = txt;
             el.style.left = x.toString() + 'px';
             el.style.top = y.toString() + 'px';
             el.style.display = 'block';
@@ -877,9 +877,17 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
             let dataIdx = feature.get('dataIdx');
             let title;
             let titleProp = 'TooltipValue';
-            if (this.widget.properties && this.widget.properties.markerTitleProperty) {
+            /*if (this.widget.properties && this.widget.properties.markerTitleProperty) {
                 titleProp = this.widget.properties.markerTitleProperty;
+            }*/
+
+            if (this.widget.dataProperties) {
+                let prop = this.widget.dataProperties.find(pr => pr.name === 'tooltipProperty');
+                if (prop) {
+                    titleProp = prop.dataValue;
+                }
             }
+
             title = this.getDataByColumnName(this.mapData, titleProp || 'Name', dataIdx);
             if (!title && this.widget.properties.polygonTitleProperty && feature.get('title')) {
                 title = feature.get('title');

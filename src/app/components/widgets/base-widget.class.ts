@@ -27,21 +27,26 @@ import {WidgetComponent} from './base/widget/widget.component';
 import {DashboardService} from '../../services/dashboard.service';
 import * as numeral from 'numeral';
 
+export type WidgetEventType = 'drill' | 'filter' | 'datasource';
+
 export interface IWidgetDrill {
     name: string;
     path: string;
 }
 
 export interface IWidgetEvent {
+    type: WidgetEventType;
     index: number;
-    windget: IWidgetInfo;
+    widget: IWidgetInfo;
     drills?: IWidgetDrill[];
     filters?: string;
+    datasource?: string;
 }
 
 export interface IDSW {
     onFilter: (e: IWidgetEvent) => void;
     onDrill: (e: IWidgetEvent) => void;
+    onDataSource: (e: IWidgetEvent) => void;
 }
 
 export type OBoolean = 'true' | 'false';
@@ -581,8 +586,13 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
                         item.labels.push(k);
                         item.values.push(data[k]);
                     }
-                    // Set selection to first item, if current item is wrong
-                    const selIdx = item.values.findIndex(v => v.split('/').pop() === item.dsSelected);
+                    // Set selection to first item
+                    let selIdx = -1;
+                    if (this.customDataSource) {
+                        selIdx = item.values.findIndex(v => v === this.customDataSource);
+                    } else {
+                        selIdx = item.values.findIndex(v => v.split('/').pop() === item.dsSelected);
+                    }
                     if (selIdx === -1) {
                         item.dsSelected = item.labels[0];
                     } else {
@@ -1080,6 +1090,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
             this.customDataSource = '';
         }
         this.requestPivotData();
+        this.updateDatasourceParameterInURL();
     }
 
     onColSpecChanged(path) {
@@ -1685,12 +1696,22 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
                 queryParamsHandling: 'merge'
             });
 
-        if ((window.parent as any).dsw?.onDrill) {
-            (window.parent as any).dsw.onDrill({
-                index: parseInt(this.route.snapshot.queryParamMap.get('widget'), 10),
-                widget: this.widget,
-                drills: this.drills
-            });
+        const event = {
+            type: 'drill',
+            index: parseInt(this.route.snapshot.queryParamMap.get('widget'), 10),
+            widget: this.widget,
+            drills: this.drills
+        } as IWidgetEvent;
+
+        if (window.parent) {
+            window.parent.postMessage(event, '*');
+        }
+        try {
+            if ((window.parent as any).dsw?.onDrill) {
+                (window.parent as any).dsw.onDrill(event);
+            }
+        } catch (e) {
+            console.error(e);
         }
     }
 
@@ -1714,5 +1735,37 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         }
         return '';
     }
-}
 
+    private updateDatasourceParameterInURL() {
+        if (!this.widget?.shared) {
+            return;
+        }
+
+        this.ds.router.navigate(
+            [],
+            {
+                relativeTo: this.route,
+                queryParams: { datasource: this.customDataSource },
+                queryParamsHandling: 'merge'
+            });
+
+        const event = {
+            type: 'datasource',
+            index: parseInt(this.route.snapshot.queryParamMap.get('widget'), 10),
+            widget: this.widget,
+            datasource: this.customDataSource
+        } as IWidgetEvent;
+
+        if (window.parent) {
+            window.parent.postMessage(event, '*');
+        }
+        try {
+            if ((window.parent as any).dsw?.onDataSource) {
+                (window.parent as any).dsw.onDataSource(event);
+            }
+        }
+        catch (e) {
+            console.error(e);
+        }
+    }
+}

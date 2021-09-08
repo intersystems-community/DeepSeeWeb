@@ -7,6 +7,7 @@ import {I18nService} from './i18n.service';
 import {NamespaceService} from './namespace.service';
 import {BroadcastService} from './broadcast.service';
 import {DashboardService} from './dashboard.service';
+import {IWidgetEvent} from '../components/widgets/base-widget.class';
 
 @Injectable({
     providedIn: 'root'
@@ -425,12 +426,23 @@ export class FilterService {
                 queryParamsHandling: 'merge'
             });
 
-        if ((window.parent as any).dsw?.onFilter) {
-            (window.parent as any).dsw.onFilter({
-                index: parseInt(this.route.snapshot.queryParamMap.get('widget'), 10),
-                widget,
-                filters
-            });
+        const event = {
+            type: 'filter',
+            index: parseInt(this.route.snapshot.queryParamMap.get('widget'), 10),
+            widget,
+            filters
+        } as IWidgetEvent;
+
+        if (window.parent) {
+            window.parent.postMessage(event, '*');
+        }
+        try {
+            if ((window.parent as any).dsw?.onFilter) {
+                (window.parent as any).dsw.onFilter(event);
+            }
+        }
+        catch (e) {
+            console.error(e);
         }
     }
 
