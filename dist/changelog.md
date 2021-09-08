@@ -1,3 +1,37 @@
+#### 3.1.27
+* fixed issue with setting current value of choose data source control if running as shared widget 
+* now `datasource` url parameter changed while changing datasource on shared widget
+* added `tooltipProperty` data property for map widget to define custom tooltips
+* added support for html in map tooltips
+* added communication with parent window using `postMessage` to avoid cross-domain restrictions:
+```typescript
+// Extended interface for widget event
+export interface IWidgetEvent {
+    type: WidgetEventType;
+    index: number;
+    widget: IWidgetInfo;
+    drills?: IWidgetDrill[];
+    filters?: string;
+    datasource?: string;
+}
+
+// Example
+window.addEventListener('message', e => {
+    const event = e.data as IWidgetEvent;
+    switch (event.type) {
+        case 'drill':
+            // code ... 
+            break;
+        case 'filter': 
+            // code ... 
+            break;
+        case 'datasource': 
+            // code ... 
+            break;
+    }
+});
+``` 
+ 
 #### 3.1.26
 * added event passing to parent window via `dsw` object for shared widgets.
 Now shared widgets can pass drill and filter events to parent window
