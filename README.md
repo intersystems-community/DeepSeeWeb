@@ -201,6 +201,30 @@ window.addEventListener('message', e => {
 });
 ```
 
+# Map widget
+
+To create a map widget you'll need:
+
+1. Get a polygon file. [GeoJSON](https://en.wikipedia.org/wiki/GeoJSON) is supported, and there's also support for a [legacy js format](https://github.com/intersystems-community/dsw-map/tree/master/src/js).
+2. Save a polygon file into a root directory of a default web application of your namespace.
+3. Create a widget with type: `map` and name equal to the polygons file.
+4. Your GeoJSON contains an array of polygons, with some property being a unique identifier for a polygon. Create a `coordsProperty` dataproperty with the value being the name of this property in your widget.
+5. In the widget data source, you must create a column with the same name as `coordsProperty` value, with the values being unique polygon identifiers.
+6. Add other properties/data properties as needed.
+
+| Data Property              | Type         | Description                                                                                                | Value                  | Default                                                |
+| -------------------------- | ------------ | ---------------------------------------------------------------------------------------------------------- | ---------------------- | ------------------------------------------------------ |
+| tooltipProperty            | dataproperty | Define custom tooltip. Tooltip appears when user's cursor hovers over a polygon.                           | Datasource column name | Row name                                               |
+| popupProperty              | dataproperty | Define custom popup. Tooltip appears when user's cursor presses LMB on a polygon and there's no DRILLDOWN. | Datasource column name | Row name                                               |
+| coordsProperty             | dataproperty | Property present in both the datasource AND geojson containing polygon id for a tile                       | Datasource column name |
+| colorProperty              | dataproperty | Name of a numeric property, defining polygon color.                                                        | Datasource column name |
+| coordsJsFile               | property     | File with a JS or GeoJSON polygons. Requested from the root of a default web app for a namespace           | js or geojson path     | Widget name                                            |
+| colorFormula               | property     | Formula used to calculate polygon color.                                                                   |                        | hsl((255-x)/255 \* 120, 100%, 50%)<br>rgb(x, 255-x, 0) |
+| polygonTitleProperty       | property     | Define custom polygon title                                                                                | Datasource column name |
+| colorProperty              | property     | Deprecated by a dataproperty with a same name                                                              |                        |                                                        |
+| markerPopupContentProperty | property     | Deprecated by a popupProperty dataproperty                                                                 |                        |                                                        |
+| colorClientProperty        | property     | Deprecated by a colorProperty dataproperty                                                                 |                        |                                                        |
+
 
 # Creating custom widgets
 DeepSeeWeb allows modification of exist widgets and custom widget registration as well.
