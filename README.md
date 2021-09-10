@@ -140,6 +140,91 @@ Embedded URL is generated as follows. Start with a dashboard URL and add require
 | noheader   | `1 `                                                   | `1`                                                                                                                                                                                                               | Do not display header information. Defaults to `0`.                                                |
 | datasource | `map/weights.pivot`                                    | `map%2Fweights.pivot`                                                                                                                                                                                             | What datasource to use for widget.                                                                 |
 
+## Embedded widgets callbacks
+
+Embedded widgets interact with a parent in two ways:
+
+1. Communicate with parent window using event passing via `dsw` object for shared widgets:
+
+```typescript
+// Define dsw object in a parent window using this interface:
+export interface IDSW {
+    onFilter: (e: IWidgetEvent) => void;
+    onDrill: (e: IWidgetEvent) => void;
+}
+// Widget event
+export interface IWidgetEvent {
+    index: number;
+    widget: IWidgetInfo;
+    drills?: IWidgetDrill[];
+    filters?: string;
+}
+
+// Example:
+window.dsw = {
+    onDrill: (data) => {
+         // handle drill event here
+    }, 
+    onFilter: (data) => {
+         // handle filter event here
+    }
+}
+```
+
+2. Communicate with parent window using [postMessage](https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage) (supports CORS and crossdomain setup where DSW and parent app are on a separate servers/domains):
+
+```typescript
+// Extended interface for widget event
+export interface IWidgetEvent {
+    type: WidgetEventType;
+    index: number;
+    widget: IWidgetInfo;
+    drills?: IWidgetDrill[];
+    filters?: string;
+    datasource?: string;
+}
+
+// Example listener in parent
+window.addEventListener('message', e => {
+    const event = e.data as IWidgetEvent;
+    switch (event.type) {
+        case 'drill':
+            // code ... 
+            break;
+        case 'filter': 
+            // code ... 
+            break;
+        case 'datasource': 
+            // code ... 
+            break;
+    }
+});
+```
+
+# Map widget
+
+To create a map widget you'll need:
+
+1. Get a polygon file. [GeoJSON](https://en.wikipedia.org/wiki/GeoJSON) is supported, and there's also support for a [legacy js format](https://github.com/intersystems-community/dsw-map/tree/master/src/js).
+2. Save a polygon file into a root directory of a default web application of your namespace.
+3. Create a widget with type: `map` and name equal to the polygons file.
+4. Your GeoJSON contains an array of polygons, with some property being a unique identifier for a polygon. Create a `coordsProperty` dataproperty with the value being the name of this property in your widget.
+5. In the widget data source, you must create a column with the same name as `coordsProperty` value, with the values being unique polygon identifiers.
+6. Add other properties/data properties as needed.
+
+| Data Property              | Type         | Description                                                                                                | Value                  | Default                                                |
+| -------------------------- | ------------ | ---------------------------------------------------------------------------------------------------------- | ---------------------- | ------------------------------------------------------ |
+| tooltipProperty            | dataproperty | Define custom tooltip. Tooltip appears when user's cursor hovers over a polygon.                           | Datasource column name | Row name                                               |
+| popupProperty              | dataproperty | Define custom popup. Tooltip appears when user's cursor presses LMB on a polygon and there's no DRILLDOWN. | Datasource column name | Row name                                               |
+| coordsProperty             | dataproperty | Property present in both the datasource AND geojson containing polygon id for a tile                       | Datasource column name |
+| colorProperty              | dataproperty | Name of a numeric property, defining polygon color.                                                        | Datasource column name |
+| coordsJsFile               | property     | File with a JS or GeoJSON polygons. Requested from the root of a default web app for a namespace           | js or geojson path     | Widget name                                            |
+| colorFormula               | property     | Formula used to calculate polygon color.                                                                   |                        | hsl((255-x)/255 \* 120, 100%, 50%)<br>rgb(x, 255-x, 0) |
+| polygonTitleProperty       | property     | Define custom polygon title                                                                                | Datasource column name |
+| colorProperty              | property     | Deprecated by a dataproperty with a same name                                                              |                        |                                                        |
+| markerPopupContentProperty | property     | Deprecated by a popupProperty dataproperty                                                                 |                        |                                                        |
+| colorClientProperty        | property     | Deprecated by a colorProperty dataproperty                                                                 |                        |                                                        |
+
 
 # Creating custom widgets
 DeepSeeWeb allows modification of exist widgets and custom widget registration as well.
