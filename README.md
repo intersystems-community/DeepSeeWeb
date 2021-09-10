@@ -146,7 +146,7 @@ Embedded widgets interact with a parent in two ways:
 
 1. Communicate with parent window using event passing via `dsw` object for shared widgets:
 
-```js
+```typescript
 // Define dsw object in a parent window using this interface:
 export interface IDSW {
     onFilter: (e: IWidgetEvent) => void;
@@ -173,7 +173,7 @@ window.dsw = {
 
 2. Communicate with parent window using [postMessage](https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage) (supports CORS and crossdomain setup where DSW and parent app are on a separate servers/domains):
 
-```js
+```typescript
 // Extended interface for widget event
 export interface IWidgetEvent {
     type: WidgetEventType;
