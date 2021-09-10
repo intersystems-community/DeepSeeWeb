@@ -140,6 +140,67 @@ Embedded URL is generated as follows. Start with a dashboard URL and add require
 | noheader   | `1 `                                                   | `1`                                                                                                                                                                                                               | Do not display header information. Defaults to `0`.                                                |
 | datasource | `map/weights.pivot`                                    | `map%2Fweights.pivot`                                                                                                                                                                                             | What datasource to use for widget.                                                                 |
 
+## Embedded widgets callbacks
+
+Embedded widgets interact with a parent in two ways:
+
+1. Communicate with parent window using event passing via `dsw` object for shared widgets:
+
+```js
+// Define dsw object in a parent window using this interface:
+export interface IDSW {
+    onFilter: (e: IWidgetEvent) => void;
+    onDrill: (e: IWidgetEvent) => void;
+}
+// Widget event
+export interface IWidgetEvent {
+    index: number;
+    widget: IWidgetInfo;
+    drills?: IWidgetDrill[];
+    filters?: string;
+}
+
+// Example:
+window.dsw = {
+    onDrill: (data) => {
+         // handle drill event here
+    }, 
+    onFilter: (data) => {
+         // handle filter event here
+    }
+}
+```
+
+2. Communicate with parent window using [postMessage](https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage) (supports CORS and crossdomain setup where DSW and parent app are on a separate servers/domains):
+
+```js
+// Extended interface for widget event
+export interface IWidgetEvent {
+    type: WidgetEventType;
+    index: number;
+    widget: IWidgetInfo;
+    drills?: IWidgetDrill[];
+    filters?: string;
+    datasource?: string;
+}
+
+// Example listener in parent
+window.addEventListener('message', e => {
+    const event = e.data as IWidgetEvent;
+    switch (event.type) {
+        case 'drill':
+            // code ... 
+            break;
+        case 'filter': 
+            // code ... 
+            break;
+        case 'datasource': 
+            // code ... 
+            break;
+    }
+});
+```
+
 
 # Creating custom widgets
 DeepSeeWeb allows modification of exist widgets and custom widget registration as well.
