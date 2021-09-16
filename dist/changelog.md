@@ -1,3 +1,8 @@
+#### 3.1.28
+* fixed issue with double request of widgets with custom data source
+* for small shared widgets, mobile pager(from responsive design) now hidden
+* fixed issue with button icons on pie chart if DSW hosted not in root (#219) 
+
 #### 3.1.27
 * fixed issue with setting current value of choose data source control if running as shared widget 
 * now `datasource` url parameter changed while changing datasource on shared widget
