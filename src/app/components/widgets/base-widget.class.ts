@@ -446,7 +446,9 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         this.setupActions();
 
         this.requestPivotData();
-        this.requestData();
+        if (!this.customDataSource) {
+            this.requestData();
+        }
     }
 
     ngOnDestroy() {

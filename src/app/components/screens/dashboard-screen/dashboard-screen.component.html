@@ -26,7 +26,7 @@
 </div>
 
 <!-- Mobile pages -->
-<div class="pager" [hidden]="isMobileFilterVisible">
+<div class="pager" [hidden]="isMobileFilterVisible || us.isEmbedded()">
     <div>
         <span *ngFor="let w of dbs.getWidgets(); let idx = index" [class.active]="idx === page"></span>
     </div>

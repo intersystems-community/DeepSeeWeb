@@ -101,7 +101,7 @@ export class DashboardScreenComponent implements OnInit, OnDestroy, AfterViewIni
     constructor(private ds: DataService,
                 private vs: VariablesService,
                 private fs: FilterService,
-                private us: UtilService,
+                public us: UtilService,
                 private ss: StorageService,
                 private es: ErrorService,
                 private hs: HeaderService,
