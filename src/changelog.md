@@ -1,3 +1,12 @@
+#### 3.1.29
+* added support for value formatting for `tooltipProperty` (#222)
+* for map widget added ability to apply styles from parent window using `postMessage`:
+```typescrip
+  // hide map controls
+  iframe.postMessage({ type: 'map.applyStyle', selector: '.ol-control', style: 'display', value:'none' });
+```
+* added documentation about applying styles to shared map widget from parent window
+
 #### 3.1.28
 * fixed issue with double request of widgets with custom data source
 * for small shared widgets, mobile pager(from responsive design) now hidden

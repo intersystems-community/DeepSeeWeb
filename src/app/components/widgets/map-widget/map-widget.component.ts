@@ -87,6 +87,7 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
     private polyStyle;
     private polyData = null;
     private isGeoJSON = false;
+    private onMessage;
 
     ngOnInit() {
         super.ngOnInit();
@@ -104,6 +105,27 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
         this.widget.isMap = true;
 
         this.requestPolygons();
+
+        if (this.us.isEmbedded()) {
+            this.onMessage = e => {
+                const event = e.data;
+                switch (event.type) {
+                    case 'map.applyStyle':
+                        this.applyStyle(event);
+                        break;
+                }
+            };
+            window.addEventListener('message', this.onMessage);
+        }
+    }
+
+    applyStyle(e: any) {
+        const {selector, style, value} = e;
+        const el = this.map.getTargetElement();
+        const target = el.querySelectorAll<HTMLElement>(selector);
+        target.forEach(t => {
+            t.style[style] = value;
+        });
     }
 
     ngAfterViewInit() {
@@ -111,6 +133,9 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
     }
 
     ngOnDestroy() {
+        if (this.us.isEmbedded()) {
+            window.removeEventListener('message', this.onMessage);
+        }
         this.tooltip?.nativeElement?.remove();
         this.tooltip = null;
         super.ngOnDestroy();
@@ -586,9 +611,9 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
 
             // Find poly title
             let polyTitle = key;
-            if (this.widget.properties && this.widget.properties.polygonTitleProperty) {
+            if (this.widget.properties && this.widget.properties?.polygonTitleProperty) {
                 let it = this.mapData.Cols[0].tuples.filter((el) => {
-                    return el.caption === (this.widget.properties.polygonTitleProperty || 'Name');
+                    return el.caption === (this.widget.properties?.polygonTitleProperty || 'Name');
                 });
                 if (it.length !== 0) {
                     let tidx = this.mapData.Cols[0].tuples.indexOf(it[0]);
@@ -880,16 +905,17 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
             /*if (this.widget.properties && this.widget.properties.markerTitleProperty) {
                 titleProp = this.widget.properties.markerTitleProperty;
             }*/
-
+            let fmt = '';
             if (this.widget.dataProperties) {
-                let prop = this.widget.dataProperties.find(pr => pr.name === 'tooltipProperty');
+                const prop = this.widget.dataProperties.find(pr => pr.name === 'tooltipProperty');
                 if (prop) {
                     titleProp = prop.dataValue;
+                    fmt = prop.format;
                 }
             }
 
-            title = this.getDataByColumnName(this.mapData, titleProp || 'Name', dataIdx);
-            if (!title && this.widget.properties.polygonTitleProperty && feature.get('title')) {
+            title = this.getDataByColumnName(this.mapData, titleProp || 'Name', dataIdx, fmt);
+            if (!title && this.widget.properties?.polygonTitleProperty && feature.get('title')) {
                 title = feature.get('title');
             }
             if (!title) {

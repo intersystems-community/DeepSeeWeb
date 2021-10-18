@@ -637,7 +637,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         this.requestData();
     }
 
-    getDataByColumnName(data, columnName, dataIndex) {
+    getDataByColumnName(data, columnName, dataIndex, fmt = '') {
         if (!data || !data.Data || !data.Cols || !data.Cols[0] || !data.Cols[0].tuples) {
             return;
         }
@@ -646,7 +646,12 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
             return;
         }
         const idx = data.Cols[0].tuples.indexOf(col[0]);
-        return data.Data[dataIndex + idx];
+        let v = data.Data[dataIndex + idx];
+        if (fmt) {
+            v = this.formatNumber(v, fmt);
+        }
+
+        return v;
     }
 
     setupDrillFilter() {

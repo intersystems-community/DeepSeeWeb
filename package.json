@@ -1,10 +1,11 @@
 {
   "name": "deep-see-web",
-  "version": "3.1.28",
+  "version": "3.1.29",
   "scripts": {
     "ng": "ng",
     "start": "ng serve --proxy-config=proxy.conf.json --port 4007",
     "covid": "ng serve --proxy-config=proxy.conf.covid.json --port 4007",
+    "ua": "ng serve --proxy-config=proxy.conf.ua.json --port 4007",
     "local": "ng serve --proxy-config=proxy.conf.local.json --port 4007",
     "semen": "ng serve --proxy-config=proxy.conf.semen.json --port 4007",
     "analytics": "ng serve --proxy-config=proxy.conf.analytics.json --port 4007",

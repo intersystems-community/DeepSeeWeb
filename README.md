@@ -200,6 +200,11 @@ window.addEventListener('message', e => {
     }
 });
 ```
+3. Apply styles for map widget
+```typescript
+  // hide map controls, assuming widget in iframe element
+  iframe.postMessage({ type: 'map.applyStyle', selector: '.ol-control', style: 'display', value:'none' });
+```
 
 # Map widget
 
