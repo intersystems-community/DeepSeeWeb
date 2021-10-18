@@ -49,7 +49,7 @@ export interface IDSW {
 // Widget event
 export interface IWidgetEvent {
     index: number;
-    windget: IWidgetInfo;
+    widget: IWidgetInfo;
     drills?: IWidgetDrill[];
     filters?: string;
 }
