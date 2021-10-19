@@ -1,3 +1,6 @@
+#### 3.1.30
+* added support for value formatting for `popupProperty` 
+
 #### 3.1.29
 * added support for value formatting for `tooltipProperty` (#222)
 * for map widget added ability to apply styles from parent window using `postMessage`:
