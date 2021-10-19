@@ -1006,16 +1006,18 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
             if (this.widget.properties && this.widget.properties.markerPopupContentProperty) {
                 contentProp = this.widget.properties.markerPopupContentProperty;
             }
+            let fmt = '';
             if (this.widget.dataProperties) {
                 const prop = this.widget.dataProperties.find(pr => pr.name === 'popupProperty');
                 if (prop) {
                     contentProp = prop.dataValue;
+                    fmt = prop.format;
                 }
             }
             if (contentProp) {
                 content = '<b>' + (feature.get('name') || feature.values_.title) + '</b><br/>';
                 content += contentProp + ': ';
-                content += this.getDataByColumnName(this.mapData, contentProp, dataIdx);
+                content += this.getDataByColumnName(this.mapData, contentProp, dataIdx, fmt);
             } else {
                 content = this.mapData.Cols[1].tuples[Math.floor(dataIdx / this.mapData.Cols[0].tuples.length)].caption ||
                     this.mapData.Cols[1].tuples[Math.floor(dataIdx / this.mapData.Cols[0].tuples.length)].desc || '';
