@@ -1,5 +1,5 @@
 import {AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {BaseWidget} from '../base-widget.class';
+import {BaseWidget, IWidgetDataProperties} from '../base-widget.class';
 import {dsw} from '../../../../environments/dsw';
 import Map from 'ol/Map';
 import View, {FitOptions} from 'ol/View';
@@ -245,9 +245,7 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
         if (this.widget.name.indexOf('.') === -1) {
             fileName += '.js';
         }
-        if (this.widget.properties && this.widget.properties.coordsJsFile) {
-            fileName = this.widget.properties.coordsJsFile;
-        }
+        fileName = this.getDataPropValue('coordsJsFile') || fileName;
         const folder = this.ss.serverSettings.DefaultApp || '/csp';
         const url = folder + '/' + fileName;
 
@@ -348,9 +346,8 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
         let idx = this.mapData.Cols[1].tuples.indexOf(item);
         let l = this.mapData.Cols[0].tuples.length;
         let colorProp = 'ColorExplicitValue';
-        if (this.widget.properties && this.widget.properties.colorProperty !== undefined) {
-            colorProp = this.widget.properties.colorProperty;
-        }
+        colorProp = this.getDataPropValue('colorProperty') || colorProp;
+
         let color;
         if (isNaN(parseInt(colorProp, 10))) {
             color = this.mapData.Cols[0].tuples.filter((el) => {
@@ -359,11 +356,11 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
         } else {
             color = this.mapData.Cols[0].tuples.slice(colorProp, 1);
         }
-        if (color.length !== 0) {
-            color = color[0];
-            let colorIdx = this.mapData.Cols[0].tuples.indexOf(color);
-            let col = this.mapData.Data[idx * l + colorIdx];
-            if (col.indexOf('rgba') === -1) {
+        color = color[0];
+        const colorIdx = this.mapData.Cols[0].tuples.indexOf(color);
+        let col = this.mapData.Data[idx * l + colorIdx];
+        if (isNaN(parseFloat(col))) {
+            if (col.toString().indexOf('rgb') !== -1 && col.toString().indexOf('rgba') === -1) {
                 col = col.replace('rgb', 'rgba');
                 col = col.substr(0, col.length - 1) + ', 0)';
             }
@@ -371,20 +368,17 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
             parts[3] = '0.4)';
             return parts.join(',');
         } else {
-            let f = 'hsl((255-x)/255 * 120, 100%, 50%)';
+            let f = this.getDataPropValue('colorFormula') || 'hsl((255-x)/255 * 120, 100%, 50%)';
+            // let f = this.getDataPropValue('colorFormula') || 'hsl(193 + x/255 * 42, 100%, 50%)';
             if (this.isRGBColor) {
                 f = 'rgb(x, 255-x, 0)';
             }
-            //if (!this.widget.properties || !this.widget.properties.colorProperty) f = "hsl((255-x)/255 * 120, 100%, 50%)";
-            if (this.widget.properties && this.widget.properties.colorFormula) {
-                f = this.widget.properties.colorFormula;
-            }
-            let fidx = f.indexOf('(');
-            let firstPart = f.substring(0, fidx).toLowerCase();
+            const fidx = f.indexOf('(');
+            const firstPart = f.substring(0, fidx).toLowerCase();
             f = f.substring(fidx + 1, f.length - 1);
             parts = f.split(',');
-            let x = value || 0;
-            let tmp;
+            const x = value || 0;
+            var tmp;
             for (let i = 0; i < parts.length; i++) {
                 if (parts[i].indexOf('x') === -1) {
                     continue;
@@ -439,29 +433,26 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
         }
     }
 
+    getDataProp(name: string): IWidgetDataProperties|undefined {
+        if (!this.widget.dataProperties) {
+            return;
+        }
+        return this.widget.dataProperties.find(pr => pr.name === name);
+    }
+
+    getDataPropValue(name: string): string|undefined {
+        const prop = this.getDataProp(name);
+        if (prop) {
+            return prop.dataValue;
+        }
+    }
+
     buildPolygons() {
         let lon, lat, zoom, i, p, k, l, t, value, parts, idx, item;
         this.isRGBColor = false;
-        let colorProperty = 'ColorHSLValue';
-        if (this.widget.properties && this.widget.properties.colorClientProperty) {
-            colorProperty = this.widget.properties.colorClientProperty;
-        }
-        let coordsProperty = 'CoordKeyValue';
-        if (this.widget.properties && this.widget.properties.coordsProperty) {
-            coordsProperty = this.widget.properties.coordsProperty;
-        }
-        if (this.widget.dataProperties) {
-            let prop = this.widget.dataProperties.find(pr => pr.name === 'coordsProperty');
-            if (prop) {
-                coordsProperty = prop.dataValue;
-            }
+        let colorProperty = this.getDataPropValue('colorProperty') || 'ColorHSLValue';
+        const coordsProperty = this.getDataPropValue('coordsProperty') || 'CoordKeyValue';
 
-            prop = this.widget.dataProperties.find(pr => pr.name === 'colorProperty');
-            if (prop) {
-                colorProperty = prop.dataValue;
-            }
-
-        }
         if (!this.polyData || !this.map || !this.mapData) {
             return;
         }
@@ -611,14 +602,15 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
 
             // Find poly title
             let polyTitle = key;
-            if (this.widget.properties && this.widget.properties?.polygonTitleProperty) {
-                let it = this.mapData.Cols[0].tuples.filter((el) => {
-                    return el.caption === (this.widget.properties?.polygonTitleProperty || 'Name');
+            const titleProp = this.getDataPropValue('polygonTitleProperty');
+            if (titleProp) {
+                const it = this.mapData.Cols[0].tuples.filter((el) => {
+                    return el.caption === titleProp;
                 });
                 if (it.length !== 0) {
-                    let tidx = this.mapData.Cols[0].tuples.indexOf(it[0]);
-                    if (tidx !== -1) {
-                        polyTitle = this.mapData.Data[t * l + tidx];
+                    const tIdx = this.mapData.Cols[0].tuples.indexOf(it[0]);
+                    if (tIdx !== -1) {
+                        polyTitle = this.mapData.Data[t * l + tIdx];
                     }
                 }
             }
@@ -902,16 +894,11 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
             let dataIdx = feature.get('dataIdx');
             let title;
             let titleProp = 'TooltipValue';
-            /*if (this.widget.properties && this.widget.properties.markerTitleProperty) {
-                titleProp = this.widget.properties.markerTitleProperty;
-            }*/
             let fmt = '';
-            if (this.widget.dataProperties) {
-                const prop = this.widget.dataProperties.find(pr => pr.name === 'tooltipProperty');
-                if (prop) {
-                    titleProp = prop.dataValue;
-                    fmt = prop.format;
-                }
+            const prop = this.getDataProp('tooltipProperty');
+            if (prop) {
+                titleProp = prop.dataValue;
+                fmt = prop.format;
             }
 
             title = this.getDataByColumnName(this.mapData, titleProp || 'Name', dataIdx, fmt);
@@ -1003,16 +990,11 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
             let dataIdx = feature.get('dataIdx');
             let title, content;
             let contentProp = 'PopupValue';
-            if (this.widget.properties && this.widget.properties.markerPopupContentProperty) {
-                contentProp = this.widget.properties.markerPopupContentProperty;
-            }
             let fmt = '';
-            if (this.widget.dataProperties) {
-                const prop = this.widget.dataProperties.find(pr => pr.name === 'popupProperty');
-                if (prop) {
-                    contentProp = prop.dataValue;
-                    fmt = prop.format;
-                }
+            const prop = this.getDataProp('popupProperty');
+            if (prop) {
+                contentProp = prop.dataValue;
+                fmt = prop.format;
             }
             if (contentProp) {
                 content = '<b>' + (feature.get('name') || feature.values_.title) + '</b><br/>';

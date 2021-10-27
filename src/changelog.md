@@ -1,3 +1,11 @@
+#### 3.1.31
+* map widget settings changed from widget properties to data properties(because new mdx2json)
+* `colorFormula` now taken from data properties and can define formula in a css way to calculate color of polygon:
+  * default is `hsl((255-x)/255 * 120, 100%, 50%)`
+  * rgb color also can be used, because it is valid in css: `rgb(0, x, 0)`
+  * `x` - relative data value from 0(minimum value) to 255(maximum value)
+  * eg. for blue range of colors(on HUE it is 193-235), formula will be: `hsl(193 + x/255 * (235 - 193), 100%, 50%)`   
+
 #### 3.1.30
 * added support for value formatting for `popupProperty` 
 
