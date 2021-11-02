@@ -40,6 +40,16 @@ export class UtilService {
         return params.indexOf('embed=1') !== -1;
     }
 
+    isPreventContextMenu() {
+        const params = window.location.hash.replace('?', '').replace('#/', '').split('&');
+        for (let i = 0; i < params.length; i++) {
+            if (params[i].indexOf('disableContextMenu=') !== -1) {
+                return true;
+            }
+        }
+        return params.indexOf('disableContextMenu=1') !== -1;
+    }
+
     /**
      * Merger all object properties to another
      * @param {object} obj1 Object to merge properties in

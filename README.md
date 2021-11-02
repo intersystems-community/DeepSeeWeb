@@ -205,6 +205,8 @@ window.addEventListener('message', e => {
   // hide map controls, assuming widget in iframe element
   iframe.postMessage({ type: 'map.applyStyle', selector: '.ol-control', style: 'display', value:'none' });
 ```
+4. Disable context menu on widgets
+Use `disableContextMenu=1` data property to disable DSW context menu on any widget. Also, context menu can be disabled on shared widget by passing url parameter `disableContextMenu=1` 
 
 # Map widget
 

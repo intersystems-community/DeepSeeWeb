@@ -594,7 +594,8 @@ export class DashboardScreenComponent implements OnInit, OnDestroy, AfterViewIni
         if (noCtxProp) {
             noMenu = noCtxProp.dataValue === 1;
         }
-        if (item.type === dsw.const.emptyWidgetClass || noMenu) {
+
+        if (item.type === dsw.const.emptyWidgetClass || noMenu || this.us.isPreventContextMenu()) {
             return;
         }
 
