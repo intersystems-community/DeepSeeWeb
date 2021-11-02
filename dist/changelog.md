@@ -1,5 +1,8 @@
+#### 3.1.33
+* added url parameter for shared widgets `disableContextMenu`, when set to "1" disables context menu on shared widget
+
 #### 3.1.32
-* added data property `disableContextMenu`, when set to "1" disables context menu on shared widgets
+* added data property `disableContextMenu`, when set to "1" disables context menu on widget
 
 #### 3.1.31
 * map widget settings changed from widget properties to data properties(because new mdx2json)
