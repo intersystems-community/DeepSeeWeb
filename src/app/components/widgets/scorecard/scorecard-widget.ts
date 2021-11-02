@@ -145,7 +145,7 @@ export class ScorecardWidgetComponent extends BaseWidget implements OnInit, OnDe
             case 'value':
             case 'plotBox': {
                 const fmt = prop.format;
-                const isNumber = !isNaN(parseFloat(prop.dataValue));
+                const isNumber = !isNaN(parseFloat(prop.dataValue as string));
                 let v: string | number = prop.dataValue;
                 if (!isNumber) {
                     const colIdx = this.getColumnIndex(prop);

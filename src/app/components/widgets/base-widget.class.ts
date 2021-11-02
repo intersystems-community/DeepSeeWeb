@@ -92,7 +92,7 @@ export interface IWidgetDataProperties {
     // align: string;
     // baseValue: string
     name: string;
-    dataValue: string;
+    dataValue: string|number;
     display: WidgetColumnDisplayType;
     format: string;
     label: string;

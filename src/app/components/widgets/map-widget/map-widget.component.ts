@@ -443,7 +443,7 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
     getDataPropValue(name: string): string|undefined {
         const prop = this.getDataProp(name);
         if (prop) {
-            return prop.dataValue;
+            return prop.dataValue as string;
         }
     }
 
@@ -897,7 +897,7 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
             let fmt = '';
             const prop = this.getDataProp('tooltipProperty');
             if (prop) {
-                titleProp = prop.dataValue;
+                titleProp = prop.dataValue as string;
                 fmt = prop.format;
             }
 
@@ -993,7 +993,7 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
             let fmt = '';
             const prop = this.getDataProp('popupProperty');
             if (prop) {
-                contentProp = prop.dataValue;
+                contentProp = prop.dataValue as string;
                 fmt = prop.format;
             }
             if (contentProp) {

@@ -589,7 +589,12 @@ export class DashboardScreenComponent implements OnInit, OnDestroy, AfterViewIni
         const ctxEl = this.ctxMenu.nativeElement;
         this.r2.setStyle(ctxEl, 'visibility', 'hidden');
 
-        if (item.type === dsw.const.emptyWidgetClass) {
+        let noMenu = false;
+        const noCtxProp = item.dataProperties.find(p => p.name === 'disableContextMenu');
+        if (noCtxProp) {
+            noMenu = noCtxProp.dataValue === 1;
+        }
+        if (item.type === dsw.const.emptyWidgetClass || noMenu) {
             return;
         }
 
