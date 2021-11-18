@@ -1,3 +1,6 @@
+#### 3.1.34
+* added `tileUrl` data property for map widget to specify custom tiles, e.g. `https://tile-c.openstreetmap.fr/hot/{z}/{x}/{y}.png`
+
 #### 3.1.33
 * added url parameter for shared widgets `disableContextMenu`, when set to "1" disables context menu on shared widget
 
