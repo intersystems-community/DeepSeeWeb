@@ -144,12 +144,14 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
     createMap() {
         // setting up tile server if it was specified in app settings
         const appS = this.ss.getAppSettings();
-        let layersSource;
-        if (!appS.tileServer) {
-            layersSource = new OSM({ wrapX: true });
-        } else {
-            layersSource = new XYZ({ url: appS.tileServer });
-        }
+        // let layersSource;
+        // if (!appS.tileServer) {
+        let url;
+        url = this.getDataPropValue('tileUrl');
+        const layersSource = new OSM({ wrapX: true, url });
+        // } else {
+            // layersSource = new XYZ({ url: appS.tileServer });
+         // }
 
         const map = new Map({
             layers: [
