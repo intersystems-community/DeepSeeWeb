@@ -225,6 +225,7 @@ To create a map widget you'll need:
 | popupProperty              | dataproperty | Define custom popup. Tooltip appears when user's cursor presses LMB on a polygon and there's no DRILLDOWN. | Datasource column name | Row name                                               |
 | coordsProperty             | dataproperty | Property present in both the datasource AND geojson containing polygon id for a tile                       | Datasource column name |
 | colorProperty              | dataproperty | Name of a numeric property, defining polygon color.                                                        | Datasource column name |
+| tileUrl                    | dataproperty | Tile server URL                                                                                            |                        | https://tile-c.openstreetmap.fr/hot/{z}/{x}/{y}.png |
 | coordsJsFile               | property     | File with a JS or GeoJSON polygons. Requested from the root of a default web app for a namespace           | js or geojson path     | Widget name                                            |
 | colorFormula               | property     | Formula used to calculate polygon color.                                                                   |                        | hsl((255-x)/255 \* 120, 100%, 50%)<br>rgb(x, 255-x, 0) |
 | polygonTitleProperty       | property     | Define custom polygon title                                                                                | Datasource column name |
