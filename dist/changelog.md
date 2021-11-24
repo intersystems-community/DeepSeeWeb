@@ -1,14 +1,3 @@
-#### 3.1.35
-* added legend for tree map widget
-* fixed issue with `decimalSeparator`, `numericGroupSeparator`, `numericGroupSize` options for widgets (#228)
-* added `dataLabels` data property for map widget (#231). now values can be displayed directly on map.
-set `dataLabels=1` to show values. `dataLabels` can be set to JSON with options to customize labels,
-default values is `{ "size": 12, "font": "Calibri,Arial,sans-serif", "color": "#000", "stroke": "#FFF", "strokeWidth": 2 }`.
-options can be defined in any combinations, e.g. `{ "color": "#F00", "size": 18 }`
-* now shared widgets use name instead of index, e.g. `http://test.com/#/MAP/map/Map.dashboard?widget=UAMap.geojson` (#230)
-* added `percentageFormat` data property, to set format of percents for widgets that show percentage values, e.g. `#.##` (#229)
-* added `fixMinZoom` and `fixMaxZoom` data properties for map widget. To fix zoom out set `fixMinZoom=1`
-
 #### 3.1.34
 * added `tileUrl` data property for map widget to specify custom tiles, e.g. `https://tile-c.openstreetmap.fr/hot/{z}/{x}/{y}.png`
 
