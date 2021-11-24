@@ -104,7 +104,7 @@ export class BubbleChartComponent extends BaseChartClass implements OnInit {
         return seriesName_data;
     }
 
-    parseData(data) {
+    async parseData(data) {
 
         const uniqueSeries = this.getSeriesNames(data);
 

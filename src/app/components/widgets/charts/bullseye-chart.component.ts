@@ -43,7 +43,7 @@ export class BullseyeChartComponent extends BaseChartClass implements OnInit {
         this.us.mergeRecursive(this.chartConfig, ex);
     }
 
-    parseData(data) {
+    async parseData(data) {
         const values = [];
 
         this.clearSeries();

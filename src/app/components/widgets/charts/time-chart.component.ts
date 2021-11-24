@@ -77,7 +77,7 @@ export class TimeChartComponent extends BaseChartClass implements OnInit {
     }
 
 
-    parseData(data) {
+    async parseData(data) {
         if (data && data.Info) {
             this.dataInfo = data.Info;
         }

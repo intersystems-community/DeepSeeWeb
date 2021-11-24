@@ -22,7 +22,7 @@ export class XyChartComponent extends BaseChartClass implements OnInit {
         };
         const _this = this;
         this.chartConfig.tooltip = {
-            formatter: function() {
+            formatter() {
                 const opt =  this.series.userOptions as any;
                 const fmt1 = opt.format1;
                 const fmt2 = opt.format2;
@@ -42,9 +42,9 @@ export class XyChartComponent extends BaseChartClass implements OnInit {
         this.updateChart();
     }
 
-    parseData(data) {
-        let fmt1 = "";
-        let fmt2 = "";
+    async parseData(data) {
+        let fmt1 = '';
+        let fmt2 = '';
 
         if (data.Cols[0].tuples.length >= 1) {
             (this.chartConfig.xAxis as YAxisOptions).title.text = data.Cols[0].tuples[0].caption;
@@ -58,14 +58,14 @@ export class XyChartComponent extends BaseChartClass implements OnInit {
         const tempData = [];
 
         if (data.Cols[0].tuples[0].children) {
-            this.showError("Data converter for this xy chart not implemented!");
+            this.showError('Data converter for this xy chart not implemented!');
         } else {
             for (let i = 0; i < data.Cols[1].tuples.length; i++) {
                 tempData.push([parseFloat(data.Data[i * 2]), parseFloat(data.Data[i * 2 + 1])]);
             }
             this.addSeries({
                 data: tempData,
-                name: "",
+                name: '',
                 format1: fmt1,
                 fotmat2: fmt2
             });

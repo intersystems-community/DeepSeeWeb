@@ -428,7 +428,7 @@ export class FilterService {
 
         const event = {
             type: 'filter',
-            index: parseInt(this.route.snapshot.queryParamMap.get('widget'), 10),
+            index: this.route.snapshot.queryParamMap.get('widget'),
             widget,
             filters
         } as IWidgetEvent;

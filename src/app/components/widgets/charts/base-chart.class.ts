@@ -677,9 +677,9 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
      * Parse data and create chart series
      * @param {object} d Data
      */
-    parseData(d) {
+    async parseData(d) {
         const data = d;
-        if (this.checkForAutoDrill(d)) {
+        if (await this.checkForAutoDrill(d)) {
             return;
         }
         let i;

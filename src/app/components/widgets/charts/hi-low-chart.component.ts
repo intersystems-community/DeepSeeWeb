@@ -50,7 +50,7 @@ export class HiLowChartComponent extends BaseChartClass implements OnInit {
         this.us.mergeRecursive(this.chartConfig, ex);
     }
 
-    parseData(data) {
+    async parseData(data) {
         const xAxis = this.chartConfig.xAxis as Highcharts.XAxisOptions;
         xAxis.categories = [];
         for (let i = 0; i < data.Cols[1].tuples.length; i++) {

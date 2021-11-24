@@ -157,7 +157,7 @@ export class SpeedometerChartComponent extends BaseChartClass implements OnInit 
         }
     }
 
-    parseData(data) {
+    async parseData(data) {
         if (this.confs.length === 0) {
             for (let t = 0; t < data.Cols[0].tuples.length; t++) {
                 this.confs.push(this.us.mergeRecursive({}, this.chartConfig));

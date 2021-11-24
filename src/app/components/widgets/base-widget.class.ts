@@ -36,7 +36,7 @@ export interface IWidgetDrill {
 
 export interface IWidgetEvent {
     type: WidgetEventType;
-    index: number;
+    index: string;
     widget: IWidgetInfo;
     drills?: IWidgetDrill[];
     filters?: string;
@@ -899,11 +899,13 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
      * @param {} [noDrillCallback]  that called if no dill exists
      * @returns {IPromise<T>}
      */
-    doDrill(path?: string, name?: string, category?: string, noDrillCallback?: () => void) {
+    doDrill(path?: string, name?: string, category?: string, noDrillCallback?: () => void, preventDrillFilter = false, autoDrillSuccess?: () => void) {
         return new Promise((res: any, rej) => {
             this.clearError();
             // Apply drill filter if clickfilter is exists
-            this.doDrillFilter(path, this.drills);
+            if (!preventDrillFilter) {
+                this.doDrillFilter(path, this.drills);
+            }
 
             const old = this.drills.slice();
             if (path) {
@@ -942,7 +944,9 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
             this.showLoading();
             this.ds.execMDX(mdx)
                 .catch(() => {
-                    performNoDrillAction();
+                    if (!preventDrillFilter) {
+                        performNoDrillAction();
+                    }
                 })
                 .then((data) => {
                     if (!data) {
@@ -972,6 +976,9 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
                     this.retrieveData(data);
                     this.updateLocationDrillParameters();
                     this.parent?.header?.cd.detectChanges();
+                    if (autoDrillSuccess) {
+                        autoDrillSuccess();
+                    }
                     // this.cd.detectChanges();
                 })
                 .finally(() => {
@@ -985,17 +992,18 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
      * Checks for automatic drill if there is only one item
      * @param data
      */
-    checkForAutoDrill(data): boolean {
+    async checkForAutoDrill(data): Promise<boolean> {
+        let success = false;
         if (data?.Cols[1]?.tuples?.length === 1) {
             this.oneItemDrillApplied = true;
-            this.doDrill(data.Cols[1].tuples[0].path, data.Cols[1].tuples[0].caption)
-                .then(() => {
-                    this.widget.backButton = false;
-                    this.parent?.header?.cd.detectChanges();
-                });
-            return true;
+
+            await this.doDrill(data.Cols[1].tuples[0].path, data.Cols[1].tuples[0].caption, undefined, undefined, true, () => {
+                this.widget.backButton = false;
+                this.parent?.header?.cd.detectChanges();
+                success = true;
+            });
         }
-        return false;
+        return success;
     }
 
     showLoading() {
@@ -1682,6 +1690,9 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
             this.widget.pivotMdx = customMdx || this.getMDX();
             this.changeWidgetType('pivot');
         }
+        if (this.parent?.cd) {
+            this.parent.cd.detectChanges();
+        }
     }
 
     formatNumber(v, format) {
@@ -1726,7 +1737,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
 
         const event = {
             type: 'drill',
-            index: parseInt(this.route.snapshot.queryParamMap.get('widget'), 10),
+            index: this.route.snapshot.queryParamMap.get('widget'),
             widget: this.widget,
             drills: this.drills
         } as IWidgetEvent;
@@ -1779,7 +1790,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
 
         const event = {
             type: 'datasource',
-            index: parseInt(this.route.snapshot.queryParamMap.get('widget'), 10),
+            index: this.route.snapshot.queryParamMap.get('widget'),
             widget: this.widget,
             datasource: this.customDataSource
         } as IWidgetEvent;

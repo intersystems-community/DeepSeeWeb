@@ -86,7 +86,7 @@ export class TreeMapComponent extends BaseChartClass implements OnInit {
         }
     }*/
 
-    parseData(data) {
+    async parseData(data) {
         this.prevData = data;
         // this.chartConfig.series = [];
         let tempData = [];
@@ -96,7 +96,7 @@ export class TreeMapComponent extends BaseChartClass implements OnInit {
             console.error('Data converter for this treemap chart not implemented!');
         } else {
             // Make drilldown if there is only one item after filtering
-            if (this.checkForAutoDrill(data)) {
+            if (await this.checkForAutoDrill(data)) {
                 return;
             }
 
