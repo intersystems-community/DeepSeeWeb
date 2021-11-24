@@ -1,8 +1,3 @@
-#### 3.1.36
-* fixed issue with click filter and autodrill
-* fixed issue with auto drillthrough (empty widgets)
-* fixed issue with iframe communication with shared widgets. `index` now contains widget name, if widget shared by name
-
 #### 3.1.35
 * added legend for tree map widget
 * fixed issue with `decimalSeparator`, `numericGroupSeparator`, `numericGroupSize` options for widgets (#228)
