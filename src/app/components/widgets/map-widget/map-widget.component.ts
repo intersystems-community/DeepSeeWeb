@@ -629,6 +629,9 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
             });
 
             let text;
+            if (!isNaN(parseFloat(polyTitle))) {
+                polyTitle = this.formatNumber(polyTitle, '');
+            }
             if (dataLabels) {
                 const json = JSON.parse(dataLabels);
                 const size = json.size || 12;
@@ -642,7 +645,7 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
                     stroke: new Stroke({
                         color: stroke, width: strokeWidth
                     }),
-                    text: this.formatNumber(value, '')
+                    text: polyTitle + ''
                 });
             }
 

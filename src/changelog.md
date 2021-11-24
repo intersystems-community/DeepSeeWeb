@@ -2,6 +2,8 @@
 * fixed issue with click filter and autodrill
 * fixed issue with auto drillthrough (empty widgets)
 * fixed issue with iframe communication with shared widgets. `index` now contains widget name, if widget shared by name
+* fixed issue with `polygonTitleProperty`, now it displays correctly on polygons
+* added formatting for `polygonTitleProperty` if value is number
 
 #### 3.1.35
 * added legend for tree map widget
