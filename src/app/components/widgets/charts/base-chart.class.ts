@@ -860,7 +860,8 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
                     val = _this.formatNumber(val, fmt);
                     let a = (t.point.name || t.x || '') + '<br>' + (t.point.title ? (t.point.title + '<br>') : '') + t.series.name + ': <b>' + val + '</b><br>';
                     if (t.point.percentage) {
-                        a += parseFloat(t.point.percentage).toFixed(2).toString() + '%';
+                        a += _this.formatNumber(this.point.percentage, _this.getDataPropValue('percentageFormat') || '#.##') + '%';
+                        // a += parseFloat(t.point.percentage).toFixed(2).toString() + '%';
                     }
                     return a;
                 }

@@ -405,8 +405,15 @@ export class DashboardScreenComponent implements OnInit, OnDestroy, AfterViewIni
         this.dbs.setAllWidgets(result.widgets);
         for (i = 0; i < result.widgets.length; i++) {
             result.widgets[i].dashboard = path;
-            if (this.sharedWidget && i !== parseInt(this.sharedWidget, 10)) {
-                continue;
+            // Ignore all widgets but not shared
+            if (this.sharedWidget) {
+                const idx = parseInt(this.sharedWidget, 10);
+                if (!isNaN(idx) && idx !== i) {
+                    continue;
+                }
+                if (result.widgets[i].name !== this.sharedWidget) {
+                    continue;
+                }
             }
             // Create item for model
             let item: any = {

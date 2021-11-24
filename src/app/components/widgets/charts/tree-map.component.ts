@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {BaseChartClass} from './base-chart.class';
 import * as numeral from 'numeral';
 import {IButtonToggle} from '../../../services/widget.service';
+import {XAxisOptions} from "highcharts";
 
 @Component({
     selector: 'dsw-tree-map',
@@ -20,31 +21,38 @@ export class TreeMapComponent extends BaseChartClass implements OnInit {
         if (this.widget.overrides && this.widget.overrides[0] && this.widget.overrides[0].showPercentage === 0) { this.isPercent = false; }
 
         // Load isLegend option if exists
-        if (this.hasOption('isLegend')) {
+        /*if (this.hasOption('isLegend')) {
             this.isPercent = this.widget.isLegend;
-        }
+        }*/
         const _this = this;
         const ex = {
+            categories: ['fds'],
             legend: {
-                enabled: false
+                enabled: this.widget.isLegend
             },
             plotOptions: {
                 series: {
-                    animation: false
+                    animation: false,
+                    colorByPoint: true,
+                    legendType: 'point'
                 },
                 treemap: {
-                    colorByPoint: true,
+                    // colorByPoint: true,
                     dataLabels: {
                         enabled: true,
+                        // useHTML: true,
                         formatter() {
                             // Define custom label formatter
-                            if (_this.isPercent && _this.totalSum) {
-                                const percent = (this.point.value / _this.totalSum * 100).toFixed(2);
-                                return `${this.point.caption} - ${percent}%`;
+                            // if (_this.widget['btn.ShowPercents'] && _this.totalSum) {
+                            if ( _this.totalSum) {
+                                let percent = (this.point.value / _this.totalSum * 100);
+                                percent = _this.formatNumber(percent, _this.getDataPropValue('percentageFormat') || '#.##');
+                                return `${this.point.caption}<br>${percent}%`;
                             } else {
+                                // const v = _this.formatNumber(this.point.value, '');
+                                // return `${this.point.caption}<br>${v}`;
                                 return `${this.point.caption}`;
                             }
-
                         }
                     }
                 }
@@ -54,9 +62,10 @@ export class TreeMapComponent extends BaseChartClass implements OnInit {
                     const cap = this.series.userOptions.caption;
                     const fmt = this.series.userOptions.format;
                     let v = this.point.value;
-                    if (fmt) {
+                    v = _this.formatNumber(v, fmt);
+                    /*if (fmt) {
                         v = numeral(v).format(fmt);
-                    }
+                    }*/
                     return this.point.caption + '<br>' + cap + ': <b>' + v + '</b>';
                 }
             }
@@ -68,14 +77,14 @@ export class TreeMapComponent extends BaseChartClass implements OnInit {
     }
 
 
-    onHeaderButton(bt: IButtonToggle) {
+/*    onHeaderButton(bt: IButtonToggle) {
         if (bt.name === 'isLegend') {
             this.isPercent = bt.state;
             this.chart.redraw(false);
         } else {
             super.onHeaderButton(bt);
         }
-    }
+    }*/
 
     parseData(data) {
         this.prevData = data;
@@ -114,6 +123,10 @@ export class TreeMapComponent extends BaseChartClass implements OnInit {
                 fmt = data.Cols[0].tuples[0].format;
             }
             this.totalSum = data.Data.map(d => parseFloat(d) || 0).reduce((a, b) => a + b, 0);
+
+            const xAxis = this.chartConfig.xAxis as XAxisOptions;
+            xAxis.categories = ['fdsfds', 'fdsdfs'];
+
             this.addSeries({
                 // type: 'treemap',
                 data: tempData,

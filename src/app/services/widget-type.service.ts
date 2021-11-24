@@ -89,6 +89,12 @@ const TYPES = {
         type: 'chart',
         chart: 'treemap',
         allowShowAsPivot: true
+        /*headerButtons: [{
+            id: 'btn.ShowPercents',
+            text: 'Show percents',
+            tooltip: 'Show percents',
+            icon: 'assets/img/icons/percentage.svg'
+        }]*/
     },
     hilowchart: {
         class: HiLowChartComponent,

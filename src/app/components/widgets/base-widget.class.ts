@@ -482,6 +482,20 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         this.destroy();
     }
 
+    getDataProp(name: string): IWidgetDataProperties|undefined {
+        if (!this.widget.dataProperties) {
+            return;
+        }
+        return this.widget.dataProperties.find(pr => pr.name === name);
+    }
+
+    getDataPropValue(name: string): string|undefined {
+        const prop = this.getDataProp(name);
+        if (prop && prop.dataValue !== null && prop.dataValue !== undefined) {
+            return prop.dataValue.toString();
+        }
+    }
+
     private getOverride(): IWidgetOverride {
         let t = this.baseType;
         if (t === 'lineChartMarkers') {
@@ -1678,8 +1692,15 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
             res = v.toString();
         }
         if (this.dataInfo) {
-            res = res.replace(/,/g, this.dataInfo.numericGroupSeparator)
-                .replace(/\./g, this.dataInfo.decimalSeparator);
+            const sep = this.dataInfo.numericGroupSeparator;
+            const size = this.dataInfo.numericGroupSize || 3;
+            if (sep) {
+                const r = new RegExp(`\\B(?=(\\d{${size}})+(?!\\d))`, 'g');
+                res = res.replace(/,/g, this.dataInfo.numericGroupSeparator).replace(r, sep);
+            }
+            if (this.dataInfo.decimalSeparator) {
+                res = res.replace(/\./g, this.dataInfo.decimalSeparator);
+            }
         }
         return res;
     }

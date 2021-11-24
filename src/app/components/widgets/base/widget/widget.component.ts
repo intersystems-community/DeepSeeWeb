@@ -315,10 +315,11 @@ export class WidgetComponent implements OnInit, OnDestroy, AfterViewInit {
 
         let url = this.fs.getFiltersShareUrl();
         const part = url.split('#')[1];
+        const idx = (this.widget.name || this.widget.idx).toString();
         if (part && part.indexOf('?') === -1) {
-            url += '?widget=' + this.widget.idx;
+            url += '?widget=' + idx;
         } else {
-            url += '&widget=' + this.widget.idx;
+            url += '&widget=' + idx;
         }
 
         let w, h;

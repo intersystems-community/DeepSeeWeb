@@ -6,10 +6,10 @@ import View, {FitOptions} from 'ol/View';
 import {Tile, Vector} from 'ol/layer';
 import Overlay from 'ol/Overlay';
 import {OSM, XYZ, Vector as SourceVector} from 'ol/source';
-import Feature from 'ol/Feature';
+import Feature, {FeatureLike} from 'ol/Feature';
 import Collection from 'ol/Collection';
 import {defaults as control_defaults} from 'ol/control';
-import {Style, Fill, Stroke, Icon} from 'ol/style';
+import {Style, Fill, Stroke, Icon, Text} from 'ol/style';
 import {Point, Polygon, MultiPolygon} from 'ol/geom';
 import {transform} from 'ol/proj';
 import GeoJSON from 'ol/format/GeoJSON';
@@ -433,19 +433,12 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
                     nearest: true
                 });*/
         }
-    }
 
-    getDataProp(name: string): IWidgetDataProperties|undefined {
-        if (!this.widget.dataProperties) {
-            return;
+        if (this.getDataPropValue('fixMaxZoom') === '1') {
+            this.map.getView().setMaxZoom(this.map.getView().getZoom());
         }
-        return this.widget.dataProperties.find(pr => pr.name === name);
-    }
-
-    getDataPropValue(name: string): string|undefined {
-        const prop = this.getDataProp(name);
-        if (prop) {
-            return prop.dataValue as string;
+        if (this.getDataPropValue('fixMinZoom') === '1') {
+            this.map.getView().setMinZoom(this.map.getView().getZoom());
         }
     }
 
@@ -528,6 +521,7 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
             let polys = [];
             count++;
 
+            const dataLabels = this.getDataPropValue('dataLabels');
 
             if (this.isGeoJSON) {
                const res = this.convertCoordinatesOfGEOJson(parts, min, max);
@@ -634,6 +628,24 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
                 desc: this.mapData.Cols[1].tuples[t].title
             });
 
+            let text;
+            if (dataLabels) {
+                const json = JSON.parse(dataLabels);
+                const size = json.size || 12;
+                const font = json.font || 'Calibri,Arial,sans-serif';
+                const color = json.color || '#000';
+                const stroke = json.stroke || '#fff';
+                const strokeWidth = json.strokeWidth || 2;
+                text = new Text({
+                    font: `${size}px ${font}`,
+                    fill: new Fill({ color }),
+                    stroke: new Stroke({
+                        color: stroke, width: strokeWidth
+                    }),
+                    text: this.formatNumber(value, '')
+                });
+            }
+
             value = this.mapData.Data[t * l + colorPropertyIdx];
             feature.setStyle(new Style({
                 zIndex: 0,
@@ -643,7 +655,8 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
                 stroke: new Stroke({
                     color: 'rgba(0, 0, 0, 0.3)',
                     width: 1
-                })
+                }),
+                text
             } as any));
             //console.log(getFeatureColor(key, ((maxV - value) * 255) / (maxV - minV)));
             features.push(feature);
@@ -672,6 +685,10 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
         if (result.Error) {
             this.showError(result.Error);
             return;
+        }
+
+        if (result.Info) {
+            this.dataInfo = result.Info;
         }
 
         this.hideTooltip();
@@ -804,13 +821,28 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
         });
 
 
-        this.polyStyle = new Style({
+       /* this.polyStyle = new Style({
+            zIndex: 0,
+            stroke: new Stroke({
+                color: 'rgba(0, 0, 0, 0.5)',
+                width: 1
+            }),
+        });*/
+        const m = this.map;
+        const p = new Style({
             zIndex: 0,
             stroke: new Stroke({
                 color: 'rgba(0, 0, 0, 0.5)',
                 width: 1
             })
         });
+
+        this.polyStyle = p;
+            /*this.polyStyle = (f) => {
+            p.getText().setText(f.get('name'));
+            return p;
+        };*/
+
 
         this.hoverStyle = new Style({
             zIndex: 1,
