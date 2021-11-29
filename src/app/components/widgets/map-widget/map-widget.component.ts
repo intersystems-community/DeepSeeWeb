@@ -199,6 +199,13 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
         if (this.hintTimeout) clearTimeout(this.hintTimeout);
         this.hintTimeout = setTimeout(() => {
             let el = this.tooltip.nativeElement as HTMLElement;
+            const styles = this.getDataPropValue('tooltipStyles');
+            if (styles) {
+                const st = JSON.parse(styles);
+                for (const s in st) {
+                    el.style.setProperty(s, st[s]);
+                }
+            }
             el.innerHTML = txt;
             el.style.left = x.toString() + 'px';
             el.style.top = y.toString() + 'px';
@@ -207,6 +214,16 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
     }
 
     showPopup() {
+        let el =  this.popupElement as HTMLElement;
+        const styles = this.getDataPropValue('popupStyles');
+        if (styles) {
+            const st = JSON.parse(styles);
+            for (const s in st) {
+                el.style.setProperty(s, st[s]);
+            }
+        }
+
+
         this.popupElement.style.visibility = 'hidden';
         setTimeout(() => {
             this.popupElement.style.visibility = 'visible';
@@ -371,6 +388,9 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
             return parts.join(',');
         } else {
             let f = this.getDataPropValue('colorFormula') || 'hsl((255-x)/255 * 120, 100%, 50%)';
+            // f = 'hsl(190 + x/200 * 100, 10%, 40%)';
+
+
             // let f = this.getDataPropValue('colorFormula') || 'hsl(193 + x/255 * 42, 100%, 50%)';
             if (this.isRGBColor) {
                 f = 'rgb(x, 255-x, 0)';
@@ -397,7 +417,10 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
             }
 
             // return colorGradient(x/255, {red: 0, green: 255, blue: 0}, {red: 255, green: 255, blue: 0}, {red: 255, green: 0, blue: 0});
-            return firstPart + 'a(' + parts.join(',') + ', 0.65)';
+            if (firstPart.indexOf('a') === -1) {
+                return firstPart + 'a(' + parts.join(',') + ', 0.45)';
+            }
+            return firstPart + '(' + parts.join(',') + ')'; // + 'a(' + parts.join(',') + ', 0.45)';
             //console.log("hsla(" + parts.join(",") + ", 0.3)");
             //return "hsla(" + parts.join(",") + ", 0.5)";
         }
@@ -1034,7 +1057,7 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
                 fmt = prop.format;
             }
             if (contentProp) {
-                content = '<b>' + (feature.get('name') || feature.values_.title) + '</b><br/>';
+                content = '<b>' + (feature.get('key') || feature.values_.title) + '</b><br/>';
                 content += contentProp + ': ';
                 content += this.getDataByColumnName(this.mapData, contentProp, dataIdx, fmt);
             } else {

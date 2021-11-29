@@ -1,3 +1,9 @@
+#### 3.1.37
+* fixed issue with alpha value in color formula for map. now color formula supports hsla, rgba, etc.
+* fixed issue with polygon name in popup
+* added `tooltipStyles` data property. specify JSON with css properties to apply on a tooltip. e.g. `{ "padding": "10px", "font-size": "20px" }`
+* added `popupStyles` data property. specify JSON with css properties to apply on a popup. e.g. `{ "padding": "10px", "font-size": "20px" }`
+
 #### 3.1.36
 * fixed issue with click filter and autodrill
 * fixed issue with auto drillthrough (empty widgets)
