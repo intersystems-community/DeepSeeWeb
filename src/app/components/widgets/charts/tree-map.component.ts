@@ -88,6 +88,11 @@ export class TreeMapComponent extends BaseChartClass implements OnInit {
 
     async parseData(data) {
         this.prevData = data;
+
+        if (data && data.Info) {
+            this.dataInfo = data.Info;
+        }
+
         // this.chartConfig.series = [];
         let tempData = [];
         if (!data.Cols[0].tuples.length) { return; }
