@@ -1,6 +1,13 @@
 #### 3.1.38
 * fixed issue with treemap tooltip values formatter (#228)
 
+#### 3.1.39
+* added Embed mode support for dashboard (#234)
+* added `maxZoom` data property to specify maximum zoom level for map widget (#235) 
+
+#### 3.1.38
+* fixed issue with treemap tooltip values formatter (#228)
+
 #### 3.1.37
 * fixed issue with alpha value in color formula for map. now color formula supports hsla, rgba, etc.
 * fixed issue with polygon name in popup

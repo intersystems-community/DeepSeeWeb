@@ -463,6 +463,9 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
         if (this.getDataPropValue('fixMinZoom') === '1') {
             this.map.getView().setMinZoom(this.map.getView().getZoom());
         }
+        if (this.getDataPropValue('maxZoom')) {
+            this.map.getView().setMaxZoom(parseFloat(this.getDataPropValue('maxZoom')));
+        }
     }
 
     buildPolygons() {

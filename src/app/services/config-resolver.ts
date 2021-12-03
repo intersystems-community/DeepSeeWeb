@@ -22,6 +22,14 @@ export class ConfigResolver implements Resolve<any> {
                 private wt: WidgetTypeService) {
     }
 
+    checkEmbed(state: RouterStateSnapshot): boolean {
+        const embedUrl = this.st.serverSettings?.Embed;
+        if (embedUrl && state.url.split('?')[0] !== embedUrl) {
+            void this.router.navigateByUrl(embedUrl);
+            return true;
+        }
+    }
+
     resolve(
         route: ActivatedRouteSnapshot,
         state: RouterStateSnapshot
@@ -33,6 +41,11 @@ export class ConfigResolver implements Resolve<any> {
                     o.next(this.model);
                     o.complete();
                 };
+
+                if (this.checkEmbed(state)) {
+                    return;
+                }
+
                 if (!CURRENT_NAMESPACE) {
                     if (!ns) {
                         void this.router.navigateByUrl('/login');
@@ -53,6 +66,9 @@ export class ConfigResolver implements Resolve<any> {
 
                 Promise.all([p1, p2])
                     .finally(() => {
+                        if (this.checkEmbed(state)) {
+                            return;
+                        }
                         this.previousNS = CURRENT_NAMESPACE;
                         done();
                     });

@@ -59,7 +59,7 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
                 private router: Router
     ) {
         this.path$ = this.getNavigationEndStream();
-        if (this.us.isEmbedded()) {
+        if (this.storage.serverSettings?.Embed || this.us.isEmbedded()) {
             this.hs.visible$.next(false);
         }
     }
