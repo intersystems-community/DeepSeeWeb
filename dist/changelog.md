@@ -1,6 +1,3 @@
-#### 3.1.38
-* fixed issue with treemap tooltip values formatter (#228)
-
 #### 3.1.39
 * added Embed mode support for dashboard (#234)
 * added `maxZoom` data property to specify maximum zoom level for map widget (#235) 
