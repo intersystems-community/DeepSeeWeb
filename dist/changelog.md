@@ -1,5 +1,17 @@
+#### 3.1.40
+* added ability to override default widgets with custom addons, using `overrideBaseType` parameter defined in `AddonInfo` static variable
+eg.:
+```typescript
+// Ecample for overriding default "Bar Chart" widget with custom addon
+static AddonInfo: IAddonInfo = {
+    version: 1,     
+    type: 'custom',
+    overrideBaseType: 'barchart'
+};
+```
+
 #### 3.1.39
-* added Embed mode support for dashboard (#234)
+* added Embed mode support for the dashboard (#234)
 * added `maxZoom` data property to specify maximum zoom level for map widget (#235) 
 
 #### 3.1.38
