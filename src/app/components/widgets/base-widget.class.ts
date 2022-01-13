@@ -82,6 +82,7 @@ export interface IAddonInfo {
     version?: number;
     type?: IAddonType;
     chart?: string;
+    overrideBaseType?: string;
 }
 
 export type WidgetColumnDisplayType = 'trendLine' | 'plotBox' | 'itemNo' | 'value' | 'label' | '';

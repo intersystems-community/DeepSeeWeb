@@ -249,8 +249,12 @@ export class StartupService {
                             .split('.').slice(0, -1).join('.');
 
                         const info = module.AddonInfo;
+                        if (info.overrideBaseType) {
+                            this.wt.register(info.overrideBaseType, info?.type || 'custom', module, info);
+                        } else {
+                            this.wt.register(fileName, info?.type || 'custom', module, info);
+                        }
 
-                        this.wt.register(fileName, info?.type || 'custom', module, info);
 
                         //this.wt.register(fileName, info?.type || 'custom', factory.componentType, info);
                     } else {

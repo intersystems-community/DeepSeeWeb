@@ -129,8 +129,8 @@ export class TreeMapComponent extends BaseChartClass implements OnInit {
             }
             this.totalSum = data.Data.map(d => parseFloat(d) || 0).reduce((a, b) => a + b, 0);
 
-            const xAxis = this.chartConfig.xAxis as XAxisOptions;
-            xAxis.categories = ['fdsfds', 'fdsdfs'];
+            // const xAxis = this.chartConfig.xAxis as XAxisOptions;
+            // xAxis.categories = ['fdsfds', 'fdsdfs'];
 
             this.addSeries({
                 // type: 'treemap',

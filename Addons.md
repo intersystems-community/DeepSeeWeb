@@ -40,6 +40,18 @@ However, addon with an inappropriate version still  loaded and executed, but can
 
 *Note: version should be set as number, **not as reference** and be always equal to `BaseWidget.CURRENT_ADDON_VERSION`, don't increment version after each build, only check it equal to version in base class.*
 
+## 3.1. Overriding default widgets
+There is possibiliti to override default widget with addons, using `overrideBaseType` parameter of `IAddonInfo` structure.
+Eg. to override "Bar chart" widget, following structure should be used:
+```typescript
+static AddonInfo: IAddonInfo = {
+    version: 1,
+    type: 'custom',
+    overrideBaseType: 'barchart'
+};
+```
+Default types are defined in `widget-type.service.ts` in `TYPES` map.
+
 ## 4. Development info
 Each addon is Angular component written on TypeScript. Each file can export only one class.
 
