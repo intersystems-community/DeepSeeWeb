@@ -155,7 +155,7 @@ const TRANSLATIONS = {
         errWidgetRequest: 'Unable to load widget data',
         errLoginRequired: 'Please enter login',
         errPassRequired: 'Please enter password',
-        errUnauth: 'Uknown login and password pair. Please try again',
+        errUnauth: 'Unknown login and password pair. Please try again',
         errNotFound: 'Requested url not fount on server',
         errTimeout: 'Request timeout',
         errWidgetNotSupported: 'Widget is not supported',
