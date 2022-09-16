@@ -1,3 +1,6 @@
+#### 3.1.41
+* updated mdx2json dependency version
+
 #### 3.1.40
 * added ability to override default widgets with custom addons, using `overrideBaseType` parameter defined in `AddonInfo` static variable
 eg.:

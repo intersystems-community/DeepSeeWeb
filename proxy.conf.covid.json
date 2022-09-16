@@ -1,18 +1,18 @@
 {
     "/config.json": {
-        "target": "http://34.77.54.254:52773/dsw/",
+        "target": "https://covid-19.demo.community.intersystems.com/dsw/",
         "secure": false,
         "logLevel": "debug",
         "changeOrigin": true
     },
     "/configs/": {
-        "target": "http://34.77.54.254:52773/dsw/",
+        "target": "https://covid-19.demo.community.intersystems.com/dsw/",
         "secure": false,
         "logLevel": "debug",
         "changeOrigin": true
     },
     "/csp/uspolygons.js": {
-        "target": "http://34.77.54.254:52773/csp/uspolygons.js",
+        "target": "https://covid-19.demo.community.intersystems.com/csp/uspolygons.js",
         "secure": false,
         "logLevel": "debug",
         "changeOrigin": true,
@@ -21,7 +21,7 @@
         }
     },
     "**": {
-        "target": "http://34.77.54.254:52773/",
+        "target": "https://covid-19.demo.community.intersystems.com/",
         "secure": false,
         "logLevel": "debug",
         "changeOrigin": true
