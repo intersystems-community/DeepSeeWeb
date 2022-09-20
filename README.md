@@ -2,6 +2,7 @@
 ![Build Angular](https://github.com/intersystems-community/DeepSeeWeb/actions/workflows/angular-build.yml/badge.svg)
 ![Test UI](https://github.com/intersystems-community/DeepSeeWeb/actions/workflows/test-ui.yml/badge.svg)
 [![Gitter](https://img.shields.io/badge/chat-on%20telegram-blue.svg)](https://t.me/joinchat/FoZ4M0xJSMDPlCQBLPRosw)
+ [![Quality Gate Status](https://community.objectscriptquality.com/api/project_badges/measure?project=intersystems_iris_community%2FDeepSeeWeb&metric=alert_status)](https://community.objectscriptquality.com/dashboard?id=intersystems_iris_community%2FDeepSeeWeb)
 
 Renderer for DeepSee Dashboards in Browser with MDX2JSON as a Serverside and JS web-client.<br>
 Developed using AngularJS and Bootstrap.<br><br>
