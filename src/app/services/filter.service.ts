@@ -265,15 +265,17 @@ export class FilterService {
     }
 
     getClickFilterTarget(widgetName: string) {
+        const widgets = [];
         for (let i = 0; i < this.items.length; i++) {
             const flt = this.items[i];
             if (flt.location !== 'click') {
                 continue;
             }
             if (flt.source.toLowerCase() === widgetName.toLowerCase() || flt.source === '*') {
-                return flt.target;
+                widgets.push(flt.target);
             }
         }
+        return widgets;
     }
 
     /**

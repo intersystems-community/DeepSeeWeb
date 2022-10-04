@@ -671,8 +671,8 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
 
     setupDrillFilter() {
         const flt = this.fs.getClickFilterTarget(this.widget.name);
-        if (flt) {
-            this.drillFilterWidgets = flt.split(',');
+        if (flt?.length) {
+            this.drillFilterWidgets = flt;
         }
     }
 
