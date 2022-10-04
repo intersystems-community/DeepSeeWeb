@@ -1,3 +1,6 @@
+#### 3.1.43
+* prevent drill on chart widgets if widget have click filter
+
 #### 3.1.42
 * fixed issue with multiple click filter
 
