@@ -893,6 +893,7 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
                                 if (_this.drillFilterWidgets?.length) {
                                     // Prevent drill if widget has click filter (#261)
                                     _this.doDrillFilter(e.point.path, _this.drills);
+                                    _this.parent?.header?.cd.detectChanges();
                                     return;
                                 }
                                 if (!e.point) {
