@@ -890,6 +890,11 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
                     point: {
                         events: {
                             click(e: any) {
+                                if (_this.drillFilterWidgets?.length) {
+                                    // Prevent drill if widget has click filter (#261)
+                                    _this.doDrillFilter(e.point.path, _this.drills);
+                                    return;
+                                }
                                 if (!e.point) {
                                     return;
                                 }
