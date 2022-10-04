@@ -1,3 +1,6 @@
+#### 3.1.42
+* fixed issue with multiple click filter
+
 #### 3.1.41
 * updated mdx2json dependency version
 
