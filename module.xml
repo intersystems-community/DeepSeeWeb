@@ -3,7 +3,7 @@
   <Document name="dsw.ZPM">
     <Module>
       <Name>dsw</Name>
-      <Version>3.1.41</Version>
+      <Version>3.1.42</Version>
       <Packaging>module</Packaging>
       <Description>DeepSeeWeb (DSW) is an Angular UI layer for IRIS BI (DeepSee) dashboards</Description>
       <Dependencies>
