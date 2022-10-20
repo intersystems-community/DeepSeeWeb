@@ -1,3 +1,6 @@
+#### 3.1.44
+* fixed issue with reset click filter button on charts
+
 #### 3.1.43
 * prevent drill on chart widgets if widget have click filter
 
