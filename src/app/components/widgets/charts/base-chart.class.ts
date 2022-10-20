@@ -725,7 +725,8 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
                             cube: data.Info.cubeName,
                             drilldown: true,
                             path: data.Cols[1].tuples[g].path,
-                            title: data.Cols[1].tuples[g].title
+                            name: data.Cols[1].tuples[g].title || data.Cols[1].tuples[g].caption,
+                            title: data.Cols[1].tuples[g].title || data.Cols[1].tuples[g].caption
                         });
                         k++;
                     }
@@ -858,7 +859,11 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
                     const fmt = ov?.valueLabelFormat || (t.series.options as any).format;
                     let val = t.y;
                     val = _this.formatNumber(val, fmt);
-                    let a = (t.point.name || t.x || '') + '<br>' + (t.point.title ? (t.point.title + '<br>') : '') + t.series.name + ': <b>' + val + '</b><br>';
+                    let title = t.point.title;
+                    if (title === t.point.name) {
+                        title = '';
+                    }
+                    let a = (t.point.name || t.x || '') + '<br>' + (title ? (title + '<br>') : '') + t.series.name + ': <b>' + val + '</b><br>';
                     if (t.point.percentage) {
                         a += _this.formatNumber(this.point.percentage, _this.getDataPropValue('percentageFormat') || '#.##') + '%';
                         // a += parseFloat(t.point.percentage).toFixed(2).toString() + '%';
