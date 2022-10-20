@@ -1,3 +1,6 @@
+#### 3.1.45
+* fixed issue with pie chart and "children" in "tuples" response from mdx2json 
+
 #### 3.1.44
 * fixed issue with reset click filter button on charts
 
