@@ -177,6 +177,12 @@ const TYPES = {
         chart: 'column',
         allowShowAsPivot: true
     },
+    columnchart3d: {
+        class: ColumnChartComponent,
+        type: 'chart',
+        chart: 'column',
+        allowShowAsPivot: true
+    },
     columnchartstacked: {
         class: ColumnChartComponent,
         type: 'chart',

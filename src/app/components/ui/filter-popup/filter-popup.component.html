@@ -24,7 +24,7 @@
 </div>
 
 <!-- All/Exclude/Inteval checkboxes -->
-<div class="checks-container">
+<div class="checks-container" *ngIf="model?.filter.type !== 'radioSet'">
     <!-- All check -->
     <span [hidden]="model.isInterval">
         <input id="all" type="checkbox" [(ngModel)]="model.isAll" (click)="setAll($event)">
@@ -62,8 +62,14 @@
 
 <!-- Filter values -->
 <div [hidden]="model.isInterval" class="values-list">
+    <!-- Default(All) value for radio buttons -->
+    <div class="value-row" *ngIf="model?.filter.type === 'radioSet'" (click)="setAll($event)">
+        <input type="radio" [checked]="this.model.isAll" name="filter-item">
+        <div>Default</div>
+    </div>
+    <!-- Filter items -->
     <div class="value-row" *ngFor="let v of model.values" (click)="toggleRow(v, $event)">
-            <input type="checkbox" [(ngModel)]="v.checked" (click)="onItemSelect($event)">
+            <input [type]="model?.filter.type === 'radioSet' ? 'radio' : 'checkbox'" [checked]="v.checked" [(ngModel)]="v.checked" (click)="onItemSelect($event)" name="filter-item" [class.readonly]="model?.filter.type === 'radioSet'">
             <div [class]="v.default ? 'bold' : ''">{{v.name}}<div *ngIf="v.info">{{v.info}}</div></div>
     </div>
 

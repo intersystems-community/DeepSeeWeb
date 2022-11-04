@@ -1,3 +1,10 @@
+#### 3.1.46
+* added support for different chart types for combo chart with new mdx2json
+* added pivot-view support for widgets
+* added support for radio buttons in filters
+* added support for ColumnChart3D and PieChart3D
+* added support for navigate button
+
 #### 3.1.45
 * fixed issue with pie chart and "children" in "tuples" response from mdx2json 
 

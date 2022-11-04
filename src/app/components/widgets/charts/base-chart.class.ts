@@ -8,15 +8,19 @@ import {IButtonToggle} from '../../../services/widget.service';
 
 // Highcharts
 import * as  Highcharts from 'highcharts/highstock';
+
 import More from 'highcharts/highcharts-more';
-
 More(Highcharts);
+
 import Tree from 'highcharts/modules/treemap';
-
 Tree(Highcharts);
-import Heatmap from 'highcharts/modules/heatmap';
 
+import Heatmap from 'highcharts/modules/heatmap';
 Heatmap(Highcharts);
+
+import ThreeD from 'highcharts/highcharts-3d';
+ThreeD(Highcharts);
+
 // Load the exporting module.
 import Exporting from 'highcharts/modules/exporting';
 import {Subscription} from 'rxjs';
@@ -501,6 +505,7 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
 
         // Set axis for combo chart
         if (this.widget.type.toLowerCase() === 'combochart') {
+            // TODO: check if overrides already exists in new mdx2json?
             const o = this.widget.overrides?.find(ov => ov._type.toLowerCase() === 'combochart');
             if (o) {
                 let sy: number[] = [];
@@ -518,6 +523,11 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
                 for (let k = 0; k < series.length; k++) {
                     series[k].yAxis = sy[k] || 0;
                 }*/
+            }
+
+            const st = this.widget?.seriesTypes[this.chart.series.length];
+            if (st) {
+                data.type = st;
             }
         }
         data.showInLegend = true;
@@ -979,6 +989,8 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
                 text: ''
             }
         };
+
+        this.setup3DChart();
         // this.removeUndefinedColors(this.chartConfig);
 
         // this.showZeroOnAxis();
@@ -1376,5 +1388,22 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
                 tempData[g].y = null;
             }
         }
+    }
+
+    private setup3DChart() {
+        if (!this.widget?.type.toLowerCase().includes('3d')) {
+            return;
+        }
+
+        this.chartConfig.chart.options3d = {
+            enabled: true,
+            alpha: 0,
+            beta: 8,
+            depth: 50,
+            viewDistance: 8
+        };
+        this.chartConfig.plotOptions.column.depth = 25;
+        this.chartConfig.plotOptions.bar.depth = 25;
+        this.chartConfig.plotOptions.pie.depth = 25;
     }
 }

@@ -142,7 +142,7 @@ select {
     }
 }
 
-input[type=checkbox] {
+input[type=checkbox], input[type=radio] {
     cursor: pointer;
     &:focus {
         outline: none;
@@ -182,4 +182,8 @@ input[type=checkbox] {
 .interval-container {
     padding: 4px;
     color: var(--cl-txt);
+}
+
+.readonly {
+    pointer-events: none;
 }

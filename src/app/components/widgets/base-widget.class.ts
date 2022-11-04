@@ -141,6 +141,7 @@ export interface IWidgetInfo {
     kpitype: string;
     mdx: string;
     properties: any;
+    seriesTypes: string[];
 
     isExpanded: boolean;
 
@@ -447,8 +448,12 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         this.setupActions();
 
         this.requestPivotData();
-        if (!this.customDataSource) {
-            this.requestData();
+        if (this.widget?.properties?.chartToggle === 'table' && this.widget.type !== 'pivot' && !this.widget.oldType) {
+            this.displayAsPivot();
+        } else {
+            if (!this.customDataSource) {
+                this.requestData();
+            }
         }
     }
 
@@ -514,7 +519,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         }
         const stdList = ['chooserowspec', 'choosedatasource', 'choosecharttype', 'applyfilter',
             'setfilter', 'refresh', 'reloaddashboard', 'showlisting', 'showgeolisting',
-            'showbreakdown', 'setdatasource', 'applyvariable', 'viewdashboard', 'setrowcount',
+            'showbreakdown', 'setdatasource', 'applyvariable', 'setrowcount',
             'setrowsort', 'setcolumncount', 'setcolumnsort', 'choosecolumnspec'];
 
         /*var stdList = ['applyfilter', 'setfilter', 'refresh', 'reloaddashboard', 'setdatasource',
@@ -796,6 +801,9 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
     performAction(action) {
         const a = action.action.toLowerCase();
 
+        if (a === 'viewdashboard') {
+           this.navigateDashboard(action.targetProperty);
+        } else
         if (a === 'navigate') {
             this.actionNavigate(action);
         } else if (a === 'newwindow') {
@@ -1807,5 +1815,9 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         catch (e) {
             console.error(e);
         }
+    }
+
+    private navigateDashboard(path: string) {
+        void this.ds.router.navigateByUrl(CURRENT_NAMESPACE + '/' + path);
     }
 }

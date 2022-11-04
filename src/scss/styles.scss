@@ -72,11 +72,11 @@ input, textarea, select {
         outline-offset: -1px;
     }
 }
-input[type=checkbox] {
+input[type=checkbox], input[type=radio] {
     margin: 0;
     width: 30px;
 }
-input:not([type=checkbox]), textarea {
+input:not([type=checkbox]):not([type=radio]), textarea {
     -moz-appearance: none;
     -webkit-appearance: none;
 }
