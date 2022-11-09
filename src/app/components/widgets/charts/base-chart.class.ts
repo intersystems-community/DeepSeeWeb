@@ -1301,6 +1301,10 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
 
         let axis = ov?.yAxisList[0];
 
+        if (!data.some(val => val < 0)) {
+            yAxis.min = 0;
+        }
+
         // Swap axis for bar charts
         if (this.baseType === 'barChart' || this.baseType === 'barChartStacked') {
             axis = ov?.xAxis;
