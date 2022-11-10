@@ -1299,8 +1299,11 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
         const yAxis = this.chartConfig.yAxis as Highcharts.YAxisOptions;
         const xAxis = this.chartConfig.xAxis as Highcharts.XAxisOptions;
 
-        yAxis.min = 0;
         let axis = ov?.yAxisList[0];
+
+        if (!data.some(val => val < 0)) {
+            yAxis.min = 0;
+        }
 
         // Swap axis for bar charts
         if (this.baseType === 'barChart' || this.baseType === 'barChartStacked') {
