@@ -1,4 +1,7 @@
 #### 3.1.46
+* fixed issue with negative values in linear chart
+
+#### 3.1.46
 * added support for different chart types for combo chart with new mdx2json
 * added pivot-view support for widgets
 * added support for radio buttons in filters
