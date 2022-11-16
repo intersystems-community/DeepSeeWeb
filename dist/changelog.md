@@ -1,5 +1,10 @@
-#### 3.1.46
+#### 3.1.47
 * fixed issue with negative values in linear chart
+* added support for color formatting for text meters 
+* added ChooseRowSpec filter support
+* fixed LPT to work with empty rows response from mdx2json
+* added support of show listing control for pivot tables
+* updated highcharts to v10.3.1
 
 #### 3.1.46
 * added support for different chart types for combo chart with new mdx2json
