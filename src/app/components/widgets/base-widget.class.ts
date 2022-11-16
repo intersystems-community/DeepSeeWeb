@@ -106,6 +106,8 @@ export interface IWidgetDataProperties {
     targetValue: string | number;
     showAs: WidgetColumnShowType;
     summary: WidgetColumnSummaryType;
+    override: string;
+    overrideJSON?: any;
     /*style: string;
     subtype: string;
     summary: string;
@@ -445,6 +447,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
 
         this.setupDrillFilter();
         this.setupChoseDataSource();
+        this.setupInputControls();
         this.setupActions();
 
         this.requestPivotData();
@@ -486,6 +489,20 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
             this.subColSpecAll.unsubscribe();
         }
         this.destroy();
+    }
+
+    protected parseOverridesForDataProperties() {
+        if (!this.widget.dataProperties?.length) {
+            return;
+        }
+        this.widget.dataProperties.forEach(p => {
+            if (p.override && typeof p.override === 'string') {
+                try {
+                    // tslint:disable-next-line:no-eval
+                    p.overrideJSON = eval('(' + p.override +')');
+                } catch {}
+            }
+        });
     }
 
     getDataProp(name: string): IWidgetDataProperties|undefined {
@@ -537,6 +554,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         this.widget.acItems = actions;
         // Filters.isFiltersOnToolbarExists = true;
     }
+
 
     /**
      * Will setup datasource chooser. If widget has control chooseDataSource
@@ -592,7 +610,8 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
                 dsSelected: choosers[i].value,
                 control: choosers[i],
                 labels: [],
-                values: []
+                values: [],
+                field: 'select'
             };
             this.widget.dsItems.push(item);
             this.ds.getTermList(prop).then(data => {
@@ -604,6 +623,10 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
                     }
                     item.labels = [];
                     item.values = [];
+                    if (item.control.action === 'chooseRowSpec') {
+                        item.labels.push('');
+                        item.values.push('');
+                    }
                     for (const k in data) {
                         item.labels.push(k);
                         item.values.push(data[k]);
@@ -1580,11 +1603,9 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         }
 
         if (this.customRowSpec) {
-            const match = mdx.match(/ON 0,(.*)ON 1/);
-            if (match.length === 2) {
-                str = match[1];
-                const isNonEmpty = str.indexOf('NON EMPTY') !== -1;
-                mdx = mdx.replace(str, (isNonEmpty ? 'NON EMPTY ' : ' ') + this.customRowSpec + ' ');
+            const idx = mdx.indexOf('ON 0');
+            if (idx !== -1) {
+                mdx = mdx.slice(0, idx) + 'ON 0, NON EMPTY ' + this.customRowSpec + ' ON 1 ' + mdx.slice(idx + 4);
             }
         }
 
@@ -1819,5 +1840,20 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
 
     private navigateDashboard(path: string) {
         void this.ds.router.navigateByUrl(CURRENT_NAMESPACE + '/' + path);
+    }
+
+    private setupInputControls() {
+        // TODO: make rowcount mdx support first
+        // const INPUT_CONTROLS = 'setRowCount';
+        const INPUT_CONTROLS = 'setRowCount';
+        const inputControls = this.widget.controls.filter(c => INPUT_CONTROLS.includes(c.action));
+        inputControls.forEach(c => {
+            this.widget.dsItems.push({
+                action: c.action,
+                label: c.label,
+                field: 'input',
+                type: 'number'
+            });
+        });
     }
 }

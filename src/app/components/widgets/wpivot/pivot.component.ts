@@ -50,7 +50,8 @@ export class WPivotComponent extends BaseWidget implements OnInit, AfterViewInit
             columnResizeAnimation: true,
             locale: this.i18n.current,
             hideButtons: true,
-            formatNumbers: '#,###.##'
+            formatNumbers: '#,###.##',
+            controls: this.widget.controls
         };
         delete this.widget.pivotMdx;
 

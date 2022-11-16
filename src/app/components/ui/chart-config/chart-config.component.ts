@@ -183,7 +183,7 @@ export class ChartConfigComponent implements OnInit, OnDestroy {
     private getDefaultColors(): IThemeColors {
         const opt = Highcharts.getOptions();
         return {
-            hcColors: opt.colors.slice(),
+            hcColors: opt.colors.slice() as string[],
             hcBackground: opt.chart.backgroundColor as string,
             hcTextColor: (opt as any).labels.style.color,
             hcBorderColor: null, // opt.plotOptions.bar.borderColor as string,

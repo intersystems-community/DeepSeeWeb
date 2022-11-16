@@ -11,7 +11,7 @@ export class XyChartComponent extends BaseChartClass implements OnInit {
 
     ngOnInit() {
         super.ngOnInit();
-        this.chartConfig.chart.zoomType = 'xy';
+        // this.chartConfig.chart.zoomType = 'xy';
         this.chartConfig.plotOptions = {
             series: {
                 lineWidth: 3,

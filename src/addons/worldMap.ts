@@ -82,7 +82,7 @@ export class WorldMap extends BaseChartClass implements OnInit {
                 min: 0,
                 stops: [
                     [0, '#EFEFFF'],
-                    [0.5, Highcharts.getOptions().colors[0]],
+                    [0.5, Highcharts.getOptions().colors[0] as string],
                     [1, new Highcharts.Color(Highcharts.getOptions().colors[0]).brighten(-0.5).get() as string]
                 ]
             },

@@ -301,7 +301,7 @@ DataController.prototype.TOTAL_FUNCTIONS = {
         if (a == "") return false;
         return isFinite(a);
     },
-
+    
     totalSUM: function (array, iStart, iEnd, column, xStart, row) {
         var sum = 0;
         for (var i = iStart; i < iEnd; i++) {
@@ -339,7 +339,7 @@ DataController.prototype.TOTAL_FUNCTIONS = {
         }
         return count;
     },
-
+    
     totalMIN: function (array, iStart, iEnd, column, xStart, row) {
         var min = Infinity;
         for (var i = iStart; i < iEnd; i++) {
@@ -363,7 +363,7 @@ DataController.prototype.TOTAL_FUNCTIONS = {
         }
         return max;
     },
-
+    
     totalPERCENTAGE: function (array, iStart, iEnd, column, xStart, row) {
         var averages = [], x, summ;
         for (x = xStart; x < typeof column === "undefined" ? array.length : array[0].length; x++) {
@@ -375,11 +375,11 @@ DataController.prototype.TOTAL_FUNCTIONS = {
         return (averages[(typeof row === "undefined" ? column : row) - xStart]
             / summ * 100 || 0).toFixed(2) + "%";
     },
-
+    
     totalNONE: function () {
         return "";
     }
-
+    
 };
 
 DataController.prototype.setLeftHeaderColumnsNumber = function (data) {
@@ -983,7 +983,7 @@ DataSource.prototype._convert = function (data) {
         o = {
             dimensions: [
                 data["Cols"][0]["tuples"],
-                data["Cols"][1]["tuples"]
+                data["Cols"][1] ? data["Cols"][1]["tuples"] : [{caption:""}]
             ],
             dataArray: data["Data"],
             info: data["Info"]
@@ -1521,7 +1521,10 @@ LightPivotTable.prototype.tryDrillThrough = function (filters) {
     // clone dataSource config object
     for (var i in _.CONFIG.dataSource) { ds[i] = _.CONFIG.dataSource[i]; }
 
-    ds.basicMDX = this.mdxParser.drillThrough(this.dataSource.BASIC_MDX, filters)
+    // get custom listing
+    const customListing = this.CONFIG.controls?.find(c => c.action === 'showListing')?.targetProperty;
+
+    ds.basicMDX = this.mdxParser.drillThrough(this.dataSource.BASIC_MDX, filters, customListing)
         || this.dataSource.basicMDX;
 
     oldDataSource = this.dataSource;
@@ -1620,6 +1623,7 @@ LightPivotTable.prototype.init = function () {
     this.refresh();
 
 };
+
 /**
  * MDX parser.
  *
@@ -1704,7 +1708,6 @@ MDXParser.prototype.drillDown = function (mdx, filter, expression) {
 
     if (dimensions.length < 2) {
         this._warnMDX(mdx, "DrillDown is impossible");
-        this._warnMDX(mdx, "DrillDown is impossible");
         return ""; // no dimensions matched
     }
 
@@ -1744,13 +1747,16 @@ MDXParser.prototype.drillDown = function (mdx, filter, expression) {
  * @param {string} basicMDX
  * @param {string[]} [filters]
  */
-MDXParser.prototype.drillThrough = function (basicMDX, filters) {
+MDXParser.prototype.drillThrough = function (basicMDX, filters, customListing) {
 
-    var cubeAndFilters = basicMDX.slice(basicMDX.lastIndexOf("FROM ")),
-        query = "DRILLTHROUGH SELECT " + cubeAndFilters;
+    var cubeAndFilters = basicMDX.slice(basicMDX.lastIndexOf("FROM "));
+    let query = "DRILLTHROUGH SELECT " + cubeAndFilters;
 
     for (var i in filters) {
         query = this.applyFilter(query, filters[i]);
+    }
+    if (customListing) {
+        query += ` %LISTING [${customListing}]`;
     }
 
     return query;
@@ -1787,6 +1793,7 @@ MDXParser.prototype.applyFilter = function (basicMDX, filterSpec) {
     return basicMDX + (filterSpec ? " %FILTER " + filterSpec : "");
 
 };
+
 /*!
  * numeral.js
  * version : 1.5.3

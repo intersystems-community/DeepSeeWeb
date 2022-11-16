@@ -1,8 +1,9 @@
 import {
     ChangeDetectorRef,
     Component,
-    ComponentFactoryResolver, ElementRef,
-    EventEmitter, HostBinding,
+    ElementRef,
+    EventEmitter,
+    HostBinding,
     Input,
     OnInit,
     Output,
@@ -15,6 +16,7 @@ import {FilterPopupComponent} from '../../../ui/filter-popup/filter-popup.compon
 import {FilterService} from '../../../../services/filter.service';
 import {ModalService} from '../../../../services/modal.service';
 import {UtilService} from '../../../../services/util.service';
+import {BroadcastService} from '../../../../services/broadcast.service';
 
 @Component({
     selector: 'dsw-widget-filter',
@@ -32,15 +34,6 @@ export class WidgetFilterComponent implements OnInit {
     @Output() onDataSource = new EventEmitter<any>();
     @Output() onAction = new EventEmitter<string>();
     @Output() onFilter = new EventEmitter<number>();
-
-
-    @HostBinding('class.wrap') get hasViewSize(): boolean {
-        if (!this.widget) {
-            return false;
-        }
-        return !!this.widget.viewSize;
-    }
-
     openedFilter = -1;
 
     constructor(private fs: FilterService,
@@ -48,8 +41,16 @@ export class WidgetFilterComponent implements OnInit {
                 private ms: ModalService,
                 private el: ElementRef,
                 private us: UtilService,
+                private bs: BroadcastService,
                 private cd: ChangeDetectorRef
-                ) {
+    ) {
+    }
+
+    @HostBinding('class.wrap') get hasViewSize(): boolean {
+        if (!this.widget) {
+            return false;
+        }
+        return !!this.widget.viewSize;
     }
 
     ngOnInit(): void {
@@ -111,5 +112,10 @@ export class WidgetFilterComponent implements OnInit {
                 this.cd.detectChanges();
             }
         });
+    }
+
+    setControlValue(ctrl: any, value: string) {
+        ctrl._value = value;
+        this.bs.broadcast('refresh:' + this.widget.name);
     }
 }

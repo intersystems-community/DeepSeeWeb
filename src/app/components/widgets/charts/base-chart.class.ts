@@ -1052,7 +1052,7 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
                                 this.chartConfig.yAxis[k].endOnTick = false;
                                 this.chartConfig.yAxis[k].labels = {
                                     formatter() {
-                                        return (this.value * 100).toFixed(0) + '%';
+                                        return ((this.value as number) * 100).toFixed(0) + '%';
                                     }
                                 };
                             }

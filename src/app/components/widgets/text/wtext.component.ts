@@ -22,6 +22,7 @@ export class WTextComponent extends BaseWidget implements OnInit, AfterViewInit 
     }
 
     ngOnInit(): void {
+        this.parseOverridesForDataProperties();
         this.model.textData = [];
         super.ngOnInit();
     }
@@ -39,7 +40,7 @@ export class WTextComponent extends BaseWidget implements OnInit, AfterViewInit 
         if (!this.widget.dataProperties) {
             return;
         }
-        for (let k = 0; k < this.widget.dataProperties.length - 1; k++) {
+        for (let k = 0; k < this.widget.dataProperties.length; k++) {
             if (this.widget.dataProperties[k].dataValue === str) {
                 return this.widget.dataProperties[k];
             }
@@ -94,7 +95,7 @@ export class WTextComponent extends BaseWidget implements OnInit, AfterViewInit 
                 }
 
                 let caption = result.Cols[0].tuples[i].caption;
-                const prop = this.findDataPropByName(result.Cols[0].tuples[i].dimension);
+                const prop = this.findDataPropByName(result.Cols[0].tuples[i]?.caption);
                 if (prop) {
                     if (prop.label === '$auto') {
                         caption = prop.dataValue || caption;
@@ -117,15 +118,38 @@ export class WTextComponent extends BaseWidget implements OnInit, AfterViewInit 
                     if (prop) {
                         const lower = prop.thresholdLower;
                         const upper = prop.thresholdUpper;
+                        const o = prop.override;
+                        if (o) {
 
-                        if (lower !== undefined && lower !== '' && this.widget.properties.lowRangeColor) {
-                            if (parseFloat(v) < lower) {
-                                valueColor = this.widget.properties.lowRangeColor;
+                        }
+                        if (prop.overrideJSON.normalStyle) {
+                            const css = this.getCss(prop.overrideJSON.normalStyle);
+                            if (css.fill) {
+                                valueColor = css.fill;
+                            };
+                        }
+                        if ((lower !== undefined) && (lower !== '') && (this.getNumber(v) < lower)) {
+                            let col = this.widget.properties?.lowRangeColor;
+
+                            if (prop.overrideJSON.lowStyle) {
+                                const css = this.getCss(prop.overrideJSON.lowStyle);
+                                col = css.fill;
+                            }
+
+                            if (col) {
+                                valueColor = col;
                             }
                         }
-                        if (upper !== undefined && upper !== '' && this.widget.properties.highRangeColor) {
-                            if (parseFloat(v) > upper) {
-                                valueColor = this.widget.properties.highRangeColor;
+                        if ((upper !== undefined) && (upper !== '') && (this.getNumber(v) > upper)) {
+                            let col = this.widget.properties?.highRangeColor;
+
+                            if (prop.overrideJSON.highStyle) {
+                                const css = this.getCss(prop.overrideJSON.highStyle);
+                                col = css.fill;
+                            }
+
+                            if (col) {
+                                valueColor = col;
                             }
                         }
                     }
@@ -137,5 +161,23 @@ export class WTextComponent extends BaseWidget implements OnInit, AfterViewInit 
         }
         this.cd.detectChanges();
         setTimeout(() => this.adjustSize());
+    }
+
+    private getCss(css: string): any {
+        const res = {};
+        css.split(';')
+            .filter(s => s)
+            .forEach(a => {
+                const parts = a.split(':');
+                res[parts[0]] = parts[1];
+            });
+        return res;
+    }
+
+    private getNumber(v: string|number): number {
+        if (typeof v === 'string') {
+            return parseFloat(v.replace(/,/g, '').replace(/ /g, ''));
+        }
+        return v;
     }
 }

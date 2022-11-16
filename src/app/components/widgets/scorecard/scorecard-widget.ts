@@ -36,7 +36,7 @@ export class ScorecardWidgetComponent extends BaseWidget implements OnInit, OnDe
     ngOnInit(): void {
         super.ngOnInit();
 
-        this.color = Highcharts.getOptions().colors[0];
+        this.color = Highcharts.getOptions().colors[0] as string;
         if (this.tc && this.tc.hcColors) {
             this.color = this.tc.hcColors[0];
         }
