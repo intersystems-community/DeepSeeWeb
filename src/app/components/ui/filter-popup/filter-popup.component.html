@@ -69,7 +69,14 @@
     </div>
     <!-- Filter items -->
     <div class="value-row" *ngFor="let v of model.values" (click)="toggleRow(v, $event)">
-            <input [type]="model?.filter.type === 'radioSet' ? 'radio' : 'checkbox'" [checked]="v.checked" [(ngModel)]="v.checked" (click)="onItemSelect($event)" name="filter-item" [class.readonly]="model?.filter.type === 'radioSet'">
+            <input
+                [type]="model?.filter.type === 'radioSet' ? 'radio' : 'checkbox'"
+                [(ngModel)]="v.checked"
+                [checked]="v.checked"
+                (click)="onItemSelect($event)"
+                name="filter-item"
+                [class.readonly]="model?.filter.type === 'radioSet'"
+            >
             <div [class]="v.default ? 'bold' : ''">{{v.name}}<div *ngIf="v.info">{{v.info}}</div></div>
     </div>
 

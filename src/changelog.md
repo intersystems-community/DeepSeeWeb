@@ -1,3 +1,6 @@
+#### 3.1.48
+* fixed multiple filter issues
+
 #### 3.1.47
 * fixed issue with negative values in linear chart
 * added support for color formatting for text meters 
