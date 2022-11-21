@@ -39,6 +39,9 @@ export class WidgetComponent implements OnInit, OnDestroy, AfterViewInit {
     @ViewChild('header', {static: true})
     header: WidgetHeaderComponent;
 
+    @ViewChild('filters', {static: true})
+    filters: WidgetHeaderComponent;
+
     model = {
         error: '',
         filters: null

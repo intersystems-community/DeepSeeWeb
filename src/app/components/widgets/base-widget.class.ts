@@ -643,6 +643,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
                     } else {
                         item.dsSelected = item.labels[selIdx];
                     }
+                    this.parent?.filters?.cd.detectChanges();
                 }
             });
         }
@@ -931,7 +932,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
      * @param {} [noDrillCallback]  that called if no dill exists
      * @returns {IPromise<T>}
      */
-    doDrill(path?: string, name?: string, category?: string, noDrillCallback?: () => void, preventDrillFilter = false, autoDrillSuccess?: () => void) {
+    doDrill(path?: string, name?: string, category?: string, noDrillCallback?: () => void, preventDrillFilter = false, autoDrillSuccess?: () => void, drillError?: (e) => void) {
         return new Promise((res: any, rej) => {
             this.clearError();
             // Apply drill filter if clickfilter is exists
@@ -970,14 +971,23 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
                         this.widget.backButton = true;
                         this.widget.pivotData = data2;
                         this.displayAsPivot(ddMdx);
+                    })
+                    .catch(e => {
+                        if (drillError) {
+                            drillError(e);
+                        }
                     });
             };
 
             this.showLoading();
             this.ds.execMDX(mdx)
-                .catch(() => {
+                .catch((e) => {
                     if (!preventDrillFilter) {
                         performNoDrillAction();
+                    } else {
+                        if (drillError) {
+                            drillError(e);
+                        }
                     }
                 })
                 .then((data) => {
@@ -1033,6 +1043,8 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
                 this.widget.backButton = false;
                 this.parent?.header?.cd.detectChanges();
                 success = true;
+            }, () => {
+                this.oneItemDrillApplied = false;
             });
         }
         return success;
@@ -1603,11 +1615,15 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         }
 
         if (this.customRowSpec) {
-            const idx = mdx.indexOf('ON 0');
-            if (idx !== -1) {
-                mdx = mdx.slice(0, idx) + 'ON 0, NON EMPTY ' + this.customRowSpec + ' ON 1 ' + mdx.slice(idx + 4);
+            const idx0 = mdx.indexOf('ON 0');
+            const idx1 = mdx.indexOf('ON 1');
+            if (idx0 !== -1) {
+                mdx = mdx.slice(0, idx0) + 'ON 0, NON EMPTY ' + this.customRowSpec + ' ON 1 ' + mdx.slice(idx1 + 4);
             }
         }
+
+        // Row count
+        mdx = this.applyRowCount(mdx);
 
         // Apply col spec
         mdx = this.checkColSpec(mdx);
@@ -1850,10 +1866,26 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         inputControls.forEach(c => {
             this.widget.dsItems.push({
                 action: c.action,
-                label: c.label,
+                label: c.label || 'Row count',
                 field: 'input',
                 type: 'number'
             });
         });
+    }
+
+    private applyRowCount(mdx: string) {
+        const ctrl = this.widget.dsItems.find(c => c.action === 'setRowCount');
+        if (!ctrl || !ctrl._value) {
+            return mdx;
+        }
+        const m = mdx.match(/ON 0,(.*)ON 1/);
+        let part = m[1];
+        if (!part) {
+            return mdx;
+        }
+        // const isNEmpty = part.toLowerCase().includes('non empty');
+        part = part.replace('NON EMPTY', '');
+        const newPart = ' HEAD(' + part.trim() + `, ${ctrl._value}) `;
+        return mdx.replace(part, newPart);
     }
 }

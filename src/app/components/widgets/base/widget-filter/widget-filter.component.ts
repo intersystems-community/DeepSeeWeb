@@ -114,8 +114,14 @@ export class WidgetFilterComponent implements OnInit {
         });
     }
 
-    setControlValue(ctrl: any, value: string) {
-        ctrl._value = value;
+    setControlValue(ctrl: any, value: string, input: HTMLInputElement) {
+        const v = parseInt(value, 10);
+        if (isNaN(v) || v === 0) {
+            delete ctrl._value;
+            input.value = '';
+        } else {
+            ctrl._value = value;
+        }
         this.bs.broadcast('refresh:' + this.widget.name);
     }
 }

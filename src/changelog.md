@@ -1,3 +1,9 @@
+#### 3.1.49
+* added rowCount control support
+* fixed choose row spec control width issue when response is slow
+* fixed issues with choose row spec
+* fixed issue when auto-drill causes empty widget title
+
 #### 3.1.48
 * fixed multiple filter issues
 
