@@ -1,3 +1,6 @@
+#### 3.1.50
+* fixed multiple filter issues
+
 #### 3.1.49
 * added rowCount control support
 * fixed choose row spec control width issue when response is slow

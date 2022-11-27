@@ -68,14 +68,13 @@
         <div>Default</div>
     </div>
     <!-- Filter items -->
-    <div class="value-row" *ngFor="let v of model.values" (click)="toggleRow(v, $event)">
+    <div class="value-row" *ngFor="let v of model.values; trackBy: trackByIndex" (click)="toggleRow(v, $event)">
             <input
                 [type]="model?.filter.type === 'radioSet' ? 'radio' : 'checkbox'"
-                [(ngModel)]="v.checked"
                 [checked]="v.checked"
-                (click)="onItemSelect($event)"
-                name="filter-item"
+                (click)="v.checked = true; onItemSelect($event)"
                 [class.readonly]="model?.filter.type === 'radioSet'"
+                name="filter-item"
             >
             <div [class]="v.default ? 'bold' : ''">{{v.name}}<div *ngIf="v.info">{{v.info}}</div></div>
     </div>

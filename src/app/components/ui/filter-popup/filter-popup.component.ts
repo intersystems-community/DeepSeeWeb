@@ -27,6 +27,7 @@ export class FilterPopupComponent implements OnInit {
     widget: IWidgetInfo;
     // source: any;
     //dataSource: any;
+    trackByIndex = (index: number, r: any) => index;
 
     constructor(private ss: StorageService,
                 private ds: DataService,
