@@ -1,3 +1,9 @@
+#### 3.1.51
+* fixed KPI scorecard widget
+* fixed issue with switching on pivot table for scorecard widgets
+* added support for incorrecrt mdx2json data for scorecard (returning number instead of string)
+* changed `overrides` processing to JSON object after mdx2json fixes (removed unsafe eval)
+
 #### 3.1.50
 * fixed multiple filter issues
 
