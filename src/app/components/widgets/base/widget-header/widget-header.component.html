@@ -101,7 +101,7 @@
 </button>
 
 <!-- Display as pivot -->
-<button *ngIf="widget?.isChart || widget?.isMap || widget?.type === 'regular'" (click)="onClick('displayAsPivot')"
+<button *ngIf="widget?.isChart || widget?.isMap || widget?.type === 'regular' || widget?.oldType === 'regular'" (click)="onClick('displayAsPivot')"
         [class.active]="widget?.type === 'pivot'" title="{{'showPivot' | i18n}}">
     <!--        <i class="fa fa-table"></i>-->
     <img src="assets/img/icons/view_list-black-18dp.svg">

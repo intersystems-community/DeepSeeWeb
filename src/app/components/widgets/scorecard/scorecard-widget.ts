@@ -44,6 +44,13 @@ export class ScorecardWidgetComponent extends BaseWidget implements OnInit, OnDe
         this.subColorsConfig = this.bs.subscribe('charts:update-colors', (tc) => this.updateColors(tc));
 
         this.prepareProps();
+        if (!this.props?.length) {
+            this.props = this.widget.overrides as any;
+            const sc = this.widget.overrides.find(ov => ov._type === 'scoreCard');
+            if (sc?.columns?.length) {
+                this.props = sc.columns;
+            }
+        }
     }
 
     ngOnDestroy() {
@@ -226,17 +233,23 @@ export class ScorecardWidgetComponent extends BaseWidget implements OnInit, OnDe
 
     private getSvgForTrendLine(prop: IWidgetDataProperties, data: string): string {
         const h = 30;
-
-        const values = data.split(',').map(v => {
-            if (!v) {
-                return 0;
-            }
-            const value = parseFloat(v);
-            if (isNaN(value)) {
-                return 0;
-            }
-            return value;
-        });
+        let values = [];
+        if (typeof data === 'string') {
+            values = data.split(',').map(v => {
+                if (!v) {
+                    return 0;
+                }
+                const value = parseFloat(v);
+                if (isNaN(value)) {
+                    return 0;
+                }
+                return value;
+            });
+        } else if (typeof data === 'number') {
+            values = [data];
+        } else if (Array.isArray(data)) {
+            console.log('gffd');
+        }
         const max = Math.max(...values);
         const min = Math.min(...values);
 

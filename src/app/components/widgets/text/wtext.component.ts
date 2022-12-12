@@ -22,7 +22,7 @@ export class WTextComponent extends BaseWidget implements OnInit, AfterViewInit 
     }
 
     ngOnInit(): void {
-        this.parseOverridesForDataProperties();
+        // this.parseOverridesForDataProperties();
         this.model.textData = [];
         super.ngOnInit();
     }
@@ -119,11 +119,9 @@ export class WTextComponent extends BaseWidget implements OnInit, AfterViewInit 
                         const lower = prop.thresholdLower;
                         const upper = prop.thresholdUpper;
                         const o = prop.override;
-                        if (o) {
 
-                        }
-                        if (prop.overrideJSON.normalStyle) {
-                            const css = this.getCss(prop.overrideJSON.normalStyle);
+                        if (o.normalStyle) {
+                            const css = this.getCss(o.normalStyle);
                             if (css.fill) {
                                 valueColor = css.fill;
                             };
@@ -131,8 +129,8 @@ export class WTextComponent extends BaseWidget implements OnInit, AfterViewInit 
                         if ((lower !== undefined) && (lower !== '') && (this.getNumber(v) < lower)) {
                             let col = this.widget.properties?.lowRangeColor;
 
-                            if (prop.overrideJSON.lowStyle) {
-                                const css = this.getCss(prop.overrideJSON.lowStyle);
+                            if (o.lowStyle) {
+                                const css = this.getCss(o.lowStyle);
                                 col = css.fill;
                             }
 
@@ -143,8 +141,8 @@ export class WTextComponent extends BaseWidget implements OnInit, AfterViewInit 
                         if ((upper !== undefined) && (upper !== '') && (this.getNumber(v) > upper)) {
                             let col = this.widget.properties?.highRangeColor;
 
-                            if (prop.overrideJSON.highStyle) {
-                                const css = this.getCss(prop.overrideJSON.highStyle);
+                            if (o.highStyle) {
+                                const css = this.getCss(o.highStyle);
                                 col = css.fill;
                             }
 

@@ -75,6 +75,7 @@ export interface IWidgetOverride {
     showPercentage?: number;
     seriesYAxes?: string;
     _type: string;
+    columns?: any[];
 }
 
 export type IAddonType = 'custom' | 'chart' | 'map';
@@ -106,8 +107,7 @@ export interface IWidgetDataProperties {
     targetValue: string | number;
     showAs: WidgetColumnShowType;
     summary: WidgetColumnSummaryType;
-    override: string;
-    overrideJSON?: any;
+    override: any;
     /*style: string;
     subtype: string;
     summary: string;
@@ -491,7 +491,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         this.destroy();
     }
 
-    protected parseOverridesForDataProperties() {
+    /* protected parseOverridesForDataProperties() {
         if (!this.widget.dataProperties?.length) {
             return;
         }
@@ -503,7 +503,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
                 } catch {}
             }
         });
-    }
+    } */
 
     getDataProp(name: string): IWidgetDataProperties|undefined {
         if (!this.widget.dataProperties) {
