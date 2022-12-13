@@ -4,6 +4,7 @@ ARG IMAGE=intersystemsdc/iris-aa-community:2020.3.0AA.331.0-zpm
 ARG IMAGE=intersystemsdc/iris-community:2020.3.0.200.0-zpm
 ARG IMAGE=intersystemsdc/irishealth-community:2020.4.0.524.0-zpm
 ARG IMAGE=intersystemsdc/irishealth-community:2021.1.0.215.3-zpm
+ARG IMAGE=intersystemsdc/irishealth-community:2022.3.0.555.0-zpm
 FROM $IMAGE
 
 USER root
