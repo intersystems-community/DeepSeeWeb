@@ -319,6 +319,8 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
     private subRefreshDepenend: Subscription;
     private subDrillFilter: Subscription;
     private subDrillFilterAll: Subscription;
+    private subDrilldown: Subscription;
+    private subDrillthrough: Subscription;
     private subPivotVar: Subscription;
     private subPivotVarAll: Subscription;
     private subDataSourcechange: Subscription;
@@ -376,9 +378,10 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         }
 
         if (this.widget.controls && this.widget.controls.length) {
-            this.canDoDrillthrough = this.widget.controls.find((c) => {
+            this.canDoDrillthrough = true;
+            /*this.canDoDrillthrough = this.widget.controls.find((c) => {
                 return c.action === 'showListing';
-            }) !== undefined;
+            }) !== undefined;*/
         }
 
         // this.liveUpdateInterval = setInterval(this.requestData, 5000);
@@ -407,6 +410,16 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         });
         this.subDrillFilterAll = this.bs.subscribe('drillFilter:*', ({path, drills}) => {
             this.onDrillFilter(path, drills);
+        });
+
+        // Subscription for drilldown
+        this.subDrilldown = this.bs.subscribe('drilldown:' + this.widget.name, ({path, title}) => {
+            void this.doDrillOnly(path, title, title);
+        });
+
+        // Subscription for drillthrough
+        this.subDrillthrough = this.bs.subscribe('drillthrough:' + this.widget.name, ({path, title}) => {
+            void this.doDrillthrough(path, title, title);
         });
 
         // Subscribe for pivot variable changes
@@ -452,7 +465,8 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
 
         this.requestPivotData();
         if (this.widget?.properties?.chartToggle === 'table' && this.widget.type !== 'pivot' && !this.widget.oldType) {
-            this.displayAsPivot();
+            // this.displayAsPivot();
+            this.requestData();
         } else {
             if (!this.customDataSource) {
                 this.requestData();
@@ -461,6 +475,12 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
     }
 
     ngOnDestroy() {
+        if (this.subDrilldown) {
+            this.subDrilldown.unsubscribe();
+        }
+        if (this.subDrillthrough) {
+            this.subDrillthrough.unsubscribe();
+        }
         if (this.subLinkedMdx) {
             this.subLinkedMdx.unsubscribe();
         }
@@ -905,7 +925,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         }
         // Check for max rows parameter in pivot
         let sRows = '';
-        if (this.pivotData.listingRows) {
+        if (this.pivotData?.listingRows) {
             const listingRows = parseInt(this.pivotData.listingRows, 10);
             if (listingRows) {
                 sRows = ` MAXROWS ${listingRows} `;
@@ -1001,6 +1021,103 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
                         performNoDrillAction();
                         return;
                     }
+                    if (this.isEmptyData(data)) {
+                        return;
+                    }
+
+                    // Drill can be done, store new level and pass received data
+                    if (path) {
+                        this.drills.push({path, name, category});
+                    } else {
+                        this.drills.pop();
+                    }
+                    this.widget.backButton = this.drills.length !== 0;
+                    this.widget.title = this.getDrillTitle(this.drills[this.drills.length - 1]);
+                    // this.wid
+                    this.broadcastDependents(mdx);
+                    this.retrieveData(data);
+                    this.updateLocationDrillParameters();
+                    this.parent?.header?.cd.detectChanges();
+                    if (autoDrillSuccess) {
+                        autoDrillSuccess();
+                    }
+                    // this.cd.detectChanges();
+                })
+                .finally(() => {
+                    this.hideLoading();
+                    res();
+                });
+        });
+    }
+
+    doDrillthrough(path?: string, name?: string, category?: string, noDrillCallback?: () => void, preventDrillFilter = false, autoDrillSuccess?: () => void, drillError?: (e) => void) {
+        return new Promise((res: any, rej) => {
+            if (!this.canDoDrillthrough) {
+                res();
+                return;
+            }
+
+            this.clearError();
+            const old = this.drills.slice();
+            if (path) {
+                this.drills.push({path, name, category});
+            } else {
+                this.drills.pop();
+            }
+            const mdx = this.getMDX();
+            this.drills = old;
+
+            this.showLoading();
+
+            const ddMdx = this.getDrillthroughMdx(mdx);
+
+            this.ds.execMDX(ddMdx)
+                    // .error(this._onRequestError)
+                    .then((data2: any) => {
+                        if (!data2 || !data2.children || data2.children.length === 0) {
+                            return;
+                        }
+                        this.widget.isDrillthrough = true;
+                        this.widget.backButton = true;
+                        this.widget.pivotData = data2;
+                        this.displayAsPivot(ddMdx);
+                    })
+                    .catch(e => {
+                        if (drillError) {
+                            drillError(e);
+                        }
+                    });
+        });
+    }
+
+    doDrillOnly(path?: string, name?: string, category?: string, noDrillCallback?: () => void, preventDrillFilter = false, autoDrillSuccess?: () => void, drillError?: (e) => void) {
+        return new Promise((res: any, rej) => {
+            this.clearError();
+
+            const old = this.drills.slice();
+            if (path) {
+                this.drills.push({path, name, category});
+            } else {
+                this.drills.pop();
+            }
+            const mdx = this.getMDX();
+            this.drills = old;
+
+            this.showLoading();
+            this.ds.execMDX(mdx)
+                .catch((e) => {
+                    if (drillError) {
+                        drillError(e);
+                    }
+                })
+                .then((data) => {
+                    if (!data) {
+                        return;
+                    }
+                    if (this.chartConfig) {
+                        this.chartConfig.loading = false;
+                    }
+
                     if (this.isEmptyData(data)) {
                         return;
                     }
@@ -1859,8 +1976,6 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
     }
 
     private setupInputControls() {
-        // TODO: make rowcount mdx support first
-        // const INPUT_CONTROLS = 'setRowCount';
         const INPUT_CONTROLS = 'setRowCount';
         const inputControls = this.widget.controls.filter(c => INPUT_CONTROLS.includes(c.action));
         inputControls.forEach(c => {
@@ -1868,7 +1983,8 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
                 action: c.action,
                 label: c.label || 'Row count',
                 field: 'input',
-                type: 'number'
+                type: 'number',
+                _value: c.value || undefined
             });
         });
     }

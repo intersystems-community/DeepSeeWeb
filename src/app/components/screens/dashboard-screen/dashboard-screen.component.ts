@@ -3,9 +3,11 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
-    ElementRef, HostListener,
+    ElementRef,
+    HostListener,
     OnDestroy,
-    OnInit, QueryList,
+    OnInit,
+    QueryList,
     Renderer2,
     ViewChild,
     ViewChildren
@@ -44,6 +46,14 @@ const SWIPE_PIXELS_Y_THRESHOLD = 100;
 const SWIPE_PIXELS_X_THRESHOLD = 50;
 
 export const DEFAULT_COL_COUNT = 12;
+
+export interface IContextMenuData {
+    canDrill: boolean;
+    canDrillthrough: boolean;
+    drillPath?: string;
+    drillTitle?: string;
+}
+
 interface ITouchInfo {
     startTime: number;
     endTime: number;
@@ -69,12 +79,17 @@ export class DashboardScreenComponent implements OnInit, OnDestroy, AfterViewIni
     private readonly sharedWidget: string;
     private readonly subReset: Subscription;
     private subCtxClose: Subscription;
+    private subContextMenu: Subscription;
     private subMobileFilterDialog: Subscription;
     private touchInfo: ITouchInfo;
     page = 0;
 
     model: any;
     ctxItem: IWidgetInfo = null;
+    contexMenuData: IContextMenuData = {
+        canDrill: false,
+        canDrillthrough: false
+    };
     tilesOptions: GridsterConfig = {
 
         useTransformPositioning: true,
@@ -190,8 +205,13 @@ export class DashboardScreenComponent implements OnInit, OnDestroy, AfterViewIni
         });
 
         this.subMobileFilterDialog = this.hs.mobileFilterDialogToggle.subscribe(() => {
-           this.isMobileFilterVisible = !this.isMobileFilterVisible;
-           this.cd.detectChanges();
+            this.isMobileFilterVisible = !this.isMobileFilterVisible;
+            this.cd.detectChanges();
+        });
+
+        this.subContextMenu = this.bs.subscribe('contextmenu', (data: any) => {
+            this.showContextMenu(data.widget, data.event, data.ctxData);
+            this.cd.detectChanges();
         });
     }
 
@@ -227,13 +247,14 @@ export class DashboardScreenComponent implements OnInit, OnDestroy, AfterViewIni
     }
 
     ngAfterViewInit() {
-       /* if (this.isMobile) {
-            (this.gridster).onResize = () => {};
-        }*/
+        /* if (this.isMobile) {
+             (this.gridster).onResize = () => {};
+         }*/
     }
 
     ngOnDestroy() {
         window.onafterprint = null;
+        this.subContextMenu.unsubscribe();
         this.subMobileFilterDialog.unsubscribe();
         if (this.subCtxClose) {
             this.subCtxClose.unsubscribe();
@@ -592,7 +613,8 @@ export class DashboardScreenComponent implements OnInit, OnDestroy, AfterViewIni
      * @param item
      * @param e
      */
-    showContextMenu(item: IWidgetInfo, e: MouseEvent) {
+    showContextMenu(item: IWidgetInfo, e: MouseEvent, ctxData?) {
+        this.contexMenuData = ctxData;
         const ctxEl = this.ctxMenu.nativeElement;
         this.r2.setStyle(ctxEl, 'visibility', 'hidden');
 
@@ -859,5 +881,21 @@ export class DashboardScreenComponent implements OnInit, OnDestroy, AfterViewIni
             //comp.onResize();
             return;
         }
+    }
+
+    ctxDrill() {
+        this.bs.broadcast('drilldown:' + this.ctxItem.name, {
+            path: this.contexMenuData.drillPath,
+            title: this.contexMenuData.drillTitle
+        });
+        this.hideContextMenu();
+    }
+
+    ctxDrillthrough() {
+        this.bs.broadcast('drillthrough:' + this.ctxItem.name, {
+            path: this.contexMenuData.drillPath,
+            title: this.contexMenuData.drillTitle
+        });
+        this.hideContextMenu();
     }
 }

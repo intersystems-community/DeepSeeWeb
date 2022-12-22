@@ -37,6 +37,9 @@
 
 <!-- Context menu -->
 <div #ctxMenu class="ctx-menu" style="visibility:hidden">
+    <div *ngIf="contexMenuData?.canDrill" (click)="ctxDrill()">Drilldown</div>
+    <div *ngIf="contexMenuData?.canDrillthrough" (click)="ctxDrillthrough()">Drillthrough</div>
+
     <div (click)="refreshItem()">{{'refresh' | i18n}}</div>
     <div (click)="printItem()" *ngIf="ctxItem?.isChart">{{'print' | i18n}}</div>
     <div (click)="shareItem()">{{'share' | i18n}}</div>

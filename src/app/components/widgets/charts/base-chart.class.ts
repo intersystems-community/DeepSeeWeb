@@ -1,6 +1,6 @@
 /* tslint:disable:no-string-literal */
 import {BaseWidget, IWidgetOverride} from '../base-widget.class';
-import {AfterViewInit, OnInit, Directive} from '@angular/core';
+import {AfterViewInit, OnInit, Directive, OnDestroy} from '@angular/core';
 import {dsw} from '../../../../environments/dsw';
 import * as numeral from 'numeral';
 import {AxisTypeValue, SeriesOptionsType, XAxisOptions, YAxisOptions} from 'highcharts';
@@ -45,8 +45,14 @@ export const CHART_COLOR_CONFIG_APPEARANCES: {[type: string]: IChartConfigAppear
     }
 };
 
+interface IAxisLabelListener {
+    event: string;
+    element: SVGTextElement;
+    func: (event?: Event) => void;
+}
+
 @Directive()
-export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit {
+export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit, OnDestroy {
 
     widgetData = null;
     seriesTypes = [];
@@ -57,6 +63,7 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
     private subPrint: Subscription;
     private subColorsConfig: Subscription;
 
+    private axisLabelListeners: IAxisLabelListener[] = [];
 
     ngOnInit() {
         super.ngOnInit();
@@ -103,6 +110,12 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
         setTimeout(() => {
             this.chart.reflow();
         }, 100);
+    }
+
+    private removeAxisListeners() {
+        this.axisLabelListeners.forEach(l => {
+            l.element.removeEventListener(l.event, l.func);
+        });
     }
 
     createChart() {
@@ -689,9 +702,9 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
      */
     async parseData(d) {
         const data = d;
-        if (await this.checkForAutoDrill(d)) {
+        /*if (await this.checkForAutoDrill(d)) {
             return;
-        }
+        }*/
         let i;
         const currentAxis = 0;
         // Add non exists axis as count
@@ -855,7 +868,64 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
             },
             chart: {
                 type: typeDesc?.chart || 'column',
-                backgroundColor: this.tc.hcBackground || 'transparent'
+                backgroundColor: this.tc.hcBackground || 'transparent',
+                events: {
+                    redraw: event => {
+                        _this.removeAxisListeners();
+                        // Add right click
+                        // @ts-ignore
+                        event.target?.series?.forEach(se => {
+                            se.data.forEach((d, dIdx) => {
+                                const ev = 'contextmenu';
+                                const element = d.graphic?.element;
+                                if (!element) {
+                                    return;
+                                }
+                                const func = (e) => {
+                                    console.log(e);
+                                    e.preventDefault();
+                                    e.stopImmediatePropagation();
+
+                                    const aData = _this._currentData?.Cols[1]?.tuples;
+                                    if (!aData || !aData[dIdx]) {
+                                        return;
+                                    }
+
+                                    this.bs.broadcast('contextmenu', {
+                                        widget: this.widget,
+                                        event: e,
+                                        ctxData: {
+                                            canDrillthrough: this.canDoDrillthrough,
+                                            canDrill: true,
+                                            drillPath: aData[dIdx].path,
+                                            drillTitle: aData[dIdx].caption || aData[dIdx].title
+                                        }
+                                    });
+                                };
+                                d.graphic?.element?.addEventListener(ev, func);
+                                this.axisLabelListeners.push({event: ev, element, func});
+                            });
+                        });
+
+                        // @ts-ignore
+                        _this.chart.xAxis[0]?.labelGroup?.element?.childNodes?.forEach((el, idx) => {
+                            const onClick = () => {
+                                const aData = _this._currentData?.Cols[1]?.tuples;
+                                if (!aData || !aData[idx]) {
+                                    return;
+                                }
+
+                                _this.showLoading();
+                                _this.doDrillOnly(aData[idx].path, aData[idx].caption || aData[idx].title, aData[idx].caption || aData[idx].title)
+                                    .finally(() => {
+                                        _this.hideLoading();
+                                    });
+                            };
+                            el.addEventListener('click', onClick);
+                            this.axisLabelListeners.push({event: 'click', element: el, func: onClick});
+                        });
+                    }
+                }
             },
             credits: {
                 enabled: false
@@ -921,7 +991,7 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
                                     }
                                 }
                                 _this.showLoading();
-                                _this.doDrill(e.point.path, e.point.name, e.point.category)
+                                _this.doDrillthrough(e.point.path, e.point.name, e.point.category)
                                     .finally(() => {
                                         _this.hideLoading();
                                     });
@@ -951,7 +1021,8 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
                 }
             },
             yAxis: {
-                events: {},
+                events: {
+                },
                 title: {
                     text: ''
                 },
@@ -968,7 +1039,8 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
                 tickColor: this.tc.hcLineColor
             },
             xAxis: {
-                events: {},
+                events: {
+                },
                 title: {
                     text: ''
                 },
@@ -976,7 +1048,8 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
                     // formatter: axisFormatter,
                     style: {
                         color: this.tc.hcTextColor,
-                        textOverflow: 'none'
+                        textOverflow: 'none',
+                        cursor: 'pointer'
                     }
                 },
                 minorGridLineColor: this.tc.hcLineColor,
@@ -1408,5 +1481,10 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit 
         this.chartConfig.plotOptions.column.depth = 25;
         this.chartConfig.plotOptions.bar.depth = 25;
         this.chartConfig.plotOptions.pie.depth = 25;
+    }
+
+    ngOnDestroy() {
+        this.removeAxisListeners();
+        super.ngOnDestroy();
     }
 }

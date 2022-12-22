@@ -10,7 +10,7 @@
     <select *ngIf="chooser.field === 'select'" [(ngModel)]="chooser.dsSelected" (change)="onDataSourceChangeHandler(chooser)">
         <option *ngFor="let c of chooser.labels" [ngValue]="c">{{c}}</option>
     </select>
-    <input #inp *ngIf="chooser.field === 'input'" [type]="chooser.type" (keydown.enter)="inp.blur()" (change)="setControlValue(chooser, inp.value, inp)">
+    <input #inp *ngIf="chooser.field === 'input'" [type]="chooser.type" (keydown.enter)="inp.blur()" [value]="chooser._value" (change)="setControlValue(chooser, inp.value, inp)">
 </span>
 
 <!-- Actions -->

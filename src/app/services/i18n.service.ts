@@ -10,7 +10,7 @@ const SUPPORTED = {
 // Pipe for translation
 @Pipe({name: 'i18n'})
 export class I18nPipe implements PipeTransform {
-    constructor (private i18n: I18nService) {}
+    constructor(private i18n: I18nService) {}
     transform(value: string): string {
         return this.i18n.get(value);
     }

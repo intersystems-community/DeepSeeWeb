@@ -1,3 +1,10 @@
+#### 3.1.52
+* **Warning! Beta version** of new drilldown/drillthrough implementation. Changed behavior for drilldown/drillthrough/clickfilter:
+    * Clicking on the axis label will perform drilldown action
+    * Clicking on the chart bar will perform a click filter action and if it is not available, then drillthrough action if possible
+    * Context menu for chart bar now contains drilldown & drillthrough menu items
+* fixed issue with default rowcount values
+* 
 #### 3.1.51
 * fixed KPI scorecard widget
 * fixed issue with switching on pivot table for scorecard widgets
