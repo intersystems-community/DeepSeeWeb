@@ -1,3 +1,6 @@
+#### 3.1.53
+* fixed drilldown issue when drilling second time
+
 #### 3.1.52
 * **Warning! Beta version** of new drilldown/drillthrough implementation. Changed behavior for drilldown/drillthrough/clickfilter:
     * Clicking on the axis label will perform drilldown action

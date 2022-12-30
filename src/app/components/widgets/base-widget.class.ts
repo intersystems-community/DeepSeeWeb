@@ -887,7 +887,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
             this.restoreWidgetType();
             this.widget.isDrillthrough = false;
         } else {
-            this.doDrill();
+            void this.doDrillOnly();
         }
     }
 
@@ -1086,7 +1086,10 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
                         if (drillError) {
                             drillError(e);
                         }
-                    });
+                    })
+                .finally(() => {
+                    this.hideLoading();
+                });
         });
     }
 
@@ -1121,6 +1124,8 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
                     if (this.isEmptyData(data)) {
                         return;
                     }
+                    this._currentData = data;
+
 
                     // Drill can be done, store new level and pass received data
                     if (path) {
