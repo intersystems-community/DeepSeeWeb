@@ -1,42 +1,33 @@
-ARG IMAGE=store/intersystems/iris-aa-community:2020.3.0AA.331.0
-ARG IMAGE=intersystemsdc/iris-community:2020.2.0.196.0-zpm
-ARG IMAGE=intersystemsdc/iris-aa-community:2020.3.0AA.331.0-zpm
-ARG IMAGE=intersystemsdc/iris-community:2020.3.0.200.0-zpm
-ARG IMAGE=intersystemsdc/irishealth-community:2020.4.0.524.0-zpm
-ARG IMAGE=intersystemsdc/irishealth-community:2021.1.0.215.3-zpm
+ARG IMAGE=intersystemsdc/irishealth-community:2020.3.0.200.0-zpm
+ARG IMAGE=intersystemsdc/iris-community:2020.4.0.547.0-zpm
+ARG IMAGE=containers.intersystems.com/intersystems/iris:2021.1.0.215.0
 ARG IMAGE=intersystemsdc/iris-community
+ARG IMAGE=intersystemsdc/iris-community:preview
+ARG IMAGE=intersystemsdc/irishealth-community
 FROM $IMAGE
 
-USER root
-WORKDIR /opt/irisapp
-RUN chown ${ISC_PACKAGE_MGRUSER}:${ISC_PACKAGE_IRISGROUP} /opt/irisapp
+WORKDIR /home/irisowner/irisdev
 
-COPY irissession.sh /
-RUN chmod +x /irissession.sh
+## install git
+## USER root   
+##RUN apt update && apt-get -y install git
+##USER ${ISC_PACKAGE_MGRUSER}
 
-USER ${ISC_PACKAGE_MGRUSER}
+ARG TESTS=0
+ARG MODULE="dc-sample"
+ARG NAMESPACE="IRISAPP"
 
-# copy files
-COPY  Installer.cls .
-# COPY  src src
-# COPY iris.script /tmp/iris.script
-SHELL ["/irissession.sh"]
+## Embedded Python environment
+ENV IRISUSERNAME "_SYSTEM"
+ENV IRISPASSWORD "SYS"
+ENV IRISNAMESPACE $NAMESPACE
+ENV PYTHON_PATH=/usr/irissys/bin/
+ENV PATH "/usr/irissys/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/irisowner/bin"
 
-RUN \
-do $SYSTEM.OBJ.Load("Installer.cls", "ck") \
-  set sc = ##class(App.Installer).setup() \
-  zn "IRISAPP" \
-  zpm "install dsw" \
-  zpm "install samples-bi"
 
-# bringing the standard shell back
-SHELL ["/bin/bash", "-c"]
-
-# special extract treatment for hate-speech dataset
-# RUN mkdir /data/hate-speech/ \
-#	&& tar -xf /data/hate-speech.tar -C /data/
-
-# load demo stuff
-RUN iris start IRIS
-RUN rm -r /usr/irissys/csp/dsw/*
-COPY ./dist/. /usr/irissys/csp/dsw/
+RUN --mount=type=bind,src=.,dst=. \
+    pip3 install -r requirements.txt && \
+    iris start IRIS && \
+	iris session IRIS < iris.script && \
+    ([ $TESTS -eq 0 ] || iris session iris -U $NAMESPACE "##class(%ZPM.PackageManager).Shell(\"test $MODULE -v -only\",1,1)") && \
+    iris stop IRIS quietly
