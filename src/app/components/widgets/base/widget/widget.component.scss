@@ -8,6 +8,7 @@
     min-height: 0;
     overflow: hidden;
     background-color: var(--cl-widget-bg);
+    padding: 20px;
 }
 
 .error {
@@ -28,7 +29,7 @@
     position: absolute;
     left: 0;
     right: 0;
-    top: var(--tile-header-height);
+    top: 44px;
     bottom: 0;
     z-index: 3;
     display: flex;

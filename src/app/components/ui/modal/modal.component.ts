@@ -77,7 +77,7 @@ export class ModalComponent implements OnInit, OnDestroy {
 
     }
 
-    @HostListener('click', ['$event'])
+    @HostListener('mousedown', ['$event'])
     onClick(e: MouseEvent) {
         if (!this.data.closeByBackdropClick) { return; }
         const clickedOnComponent = this.getPath(e).some(e => e.attributes && e.attributes['dynamic-component']);

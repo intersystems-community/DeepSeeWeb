@@ -579,7 +579,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
     /**
      * Will setup datasource chooser. If widget has control chooseDataSource
      */
-    setupChoseDataSource() {
+    async setupChoseDataSource() {
         if (!this.widget) {
             return;
         }
@@ -617,13 +617,25 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         this.hasDatasourceChoser = true;
         this.widget.dsItems = [];
         for (let i = 0; i < choosers.length; i++) {
+            const list = choosers[i].valueList;
+            const display = choosers[i].displayList;
+            let listData = null;
             let prop = choosers[i].targetProperty;
             if (!prop) {
-                continue;
+                if (!list || !display) {
+                    continue;
+                } else {
+                    listData = {};
+                    const values = list.split(',');
+                    display.split(',').forEach((d, idx) => {
+                        listData[d] = values[idx];
+                    });
+                }
+            } else {
+                const a = prop.split('.');
+                a.pop();
+                prop = a.join('.');
             }
-            const a = prop.split('.');
-            a.pop();
-            prop = a.join('.');
             const item = {
                 action: choosers[i].action,
                 label: choosers[i].label || this.i18n.get('dataSource'),
@@ -634,38 +646,43 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
                 field: 'select'
             };
             this.widget.dsItems.push(item);
-            this.ds.getTermList(prop).then(data => {
-                if (data && typeof data === 'object') {
-                    for (const prop in data) {
-                        if (data[prop] === this.widget.dataSource) {
-                            this.widget.dsSelected = prop;
-                        }
+            let data = null;
+            if (prop) {
+                data = await this.ds.getTermList(prop);
+            } else {
+                data = listData;
+            }
+
+            if (data && typeof data === 'object') {
+                for (const p in data) {
+                    if (data[p] === this.widget.dataSource) {
+                        this.widget.dsSelected = p;
                     }
-                    item.labels = [];
-                    item.values = [];
-                    if (item.control.action === 'chooseRowSpec') {
-                        item.labels.push('');
-                        item.values.push('');
-                    }
-                    for (const k in data) {
-                        item.labels.push(k);
-                        item.values.push(data[k]);
-                    }
-                    // Set selection to first item
-                    let selIdx = -1;
-                    if (this.customDataSource) {
-                        selIdx = item.values.findIndex(v => v === this.customDataSource);
-                    } else {
-                        selIdx = item.values.findIndex(v => v.split('/').pop() === item.dsSelected);
-                    }
-                    if (selIdx === -1) {
-                        item.dsSelected = item.labels[0];
-                    } else {
-                        item.dsSelected = item.labels[selIdx];
-                    }
-                    this.parent?.filters?.cd.detectChanges();
                 }
-            });
+                item.labels = [];
+                item.values = [];
+                if (item.control.action === 'chooseRowSpec') {
+                    item.labels.push('');
+                    item.values.push('');
+                }
+                for (const k in data) {
+                    item.labels.push(k);
+                    item.values.push(data[k]);
+                }
+                // Set selection to first item
+                let selIdx = -1;
+                if (this.customDataSource) {
+                    selIdx = item.values.findIndex(v => v === this.customDataSource);
+                } else {
+                    selIdx = item.values.findIndex(v => v.split('/').pop() === item.dsSelected);
+                }
+                if (selIdx === -1) {
+                    item.dsSelected = item.labels[0];
+                } else {
+                    item.dsSelected = item.labels[selIdx];
+                }
+                this.parent?.filters?.cd.detectChanges();
+            }
         }
     }
 

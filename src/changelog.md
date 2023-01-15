@@ -1,3 +1,13 @@
+#### 3.1.54
+* new design for default theme (other themes will be supported soon)
+* fixed filter issue when deselecting selected value
+* fixed filter popup closing issue when selecting search text
+* fixed issue when clearing filter by "X" icon
+* added support for several charts
+* fixed issue when opening filter popup near edge of the screen
+* fixed issue with navigating to ZEN when there are special characters in url
+* added support for valuelist/displaylist properties for choose controls
+
 #### 3.1.53
 * fixed drilldown issue when drilling second time
 

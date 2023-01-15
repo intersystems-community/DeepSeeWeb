@@ -37,7 +37,7 @@
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
-    border-bottom: 1px solid var(--cl-header-border);
+    border-bottom: var(--cl-widget-header-border);
 
     & > .drag-handle {
         position: absolute;
@@ -149,7 +149,7 @@ button.btn-with-text {
 .title-text {
     pointer-events: none;
     //margin-right: auto;
-    margin-left: 4px;
+    margin-left: 0;
     margin-right: 4px;
     font-size: 14px;
     font-weight: bold;

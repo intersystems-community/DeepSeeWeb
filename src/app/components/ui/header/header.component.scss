@@ -132,9 +132,9 @@ h2 {
 // Search input
 input[type=search] {
     font-family: $font;
-    background-color: #dbdbdb;
-    border-radius: 0;
-    border: none;
+    background-color: var(--cl-header-bg);
+    border: 1px solid #EBEBEA;
+    border-radius: 13px;
     box-shadow: none;
     margin-right: 16px;
     &::placeholder {
