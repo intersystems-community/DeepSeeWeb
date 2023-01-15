@@ -25,19 +25,19 @@
 <ng-container *ngIf="isEmptyWidget()">
     <!-- Display 3 columns  button -->
     <button class="only-desktop" (click)="onClick('by3columns')" [title]="'by3columns' | i18n"
-            [class.active]="widget?.viewSize === 33">
+            [class.active]="widget?.viewSize === 2">
         <img src="assets/img/icons/view_module-black-18dp.svg">
     </button>
 
     <!-- Display 2 columns  button -->
     <button class="only-desktop" (click)="onClick('by2columns')" [title]="'by2columns' | i18n"
-            [class.active]="widget?.viewSize === 50">
+            [class.active]="widget?.viewSize === 1">
         <i class="fa fa-th-large"></i>
     </button>
 
     <!-- Display as rows button -->
     <button class="only-desktop" (click)="onClick('byRows')" [title]="'byRows' | i18n"
-            [class.active]="widget?.viewSize === 100">
+            [class.active]="widget?.viewSize === 0">
         <img src="assets/img/icons/view_headline-black-18dp.svg">
     </button>
 

@@ -43,10 +43,11 @@ $mobile-folder-height: 80px;
 //}
 
 :root {
-    --cl-bg: white;
-    --cl-accent: black;
+    --cl-bg: #F5F5F5;
+    --cl-accent: #1A73E8;
+    --cl-hover: #E8F0FE;
     --cl-txt: #555555;
-    --input-border-radius: 0px;
+    --input-border-radius: 13px;
 
     // Buttons
     --cl-btn-main: #5cb85c;
@@ -75,13 +76,13 @@ $mobile-folder-height: 80px;
     --cl9: #9df1ae;
 
     // Header
-    --cl-header-bg: #f8fafb;
-    --cl-header-border: #e8eaea;
+    --cl-header-bg: #FFFFFF;
+    --cl-header-border: #F5F5F5;
     --cl-header-txt: black;
     --cl-header-ico: var(--cl-header-txt);
-    --cl-header-btn-active: #eff1f1;
-    --cl-header-btn-hover: #{darken(#eff1f1, 5%)};
-    --cl-header-btn-hover-darken: rgba(0, 0, 0, 0.05);
+    --cl-header-btn-active: var(--cl-header-bg);
+    --cl-header-btn-hover: var(--cl-bg);
+    --cl-header-btn-hover-darken: var(--cl-hover);
 
     --header-height: 58px;
 
@@ -89,14 +90,14 @@ $mobile-folder-height: 80px;
     --menu-item-icon-filter: none;
 
     // Sidebar
-    --cl-sidebar-bg: var(--cl-header-btn-active);
+    --cl-sidebar-bg: #F5F5F5;
     --cl-sidebar-txt: black;
     //--sidebar-width: 300px;
 
     // Tiles
-    --tile-border: 1px solid #afafaf;
-    --tile-border-radius: 0;
-    --tile-header-height: 22px;
+    --tile-border: none;// 1px solid #EBEBEA;
+    --tile-border-radius: 10px;
+    --tile-header-height: 28px;
 
     // Font colors
     --fc1: black;
@@ -108,18 +109,22 @@ $mobile-folder-height: 80px;
     // Widgets
     --cl-widget-bg: white;
     --cl-widget-header-btn-active: #A9FFA1;
+    --cl-widget-header-border: none;
     --cl-text-widget-font: #6b6464;
     --cl-widget-header-bg: var(--cl-header-bg);
     --cl-widget-header-txt: var(--cl-header-txt);
-    --cl-widget-filter-txt: var(--cl-header-txt);
+    --cl-widget-filter-txt: #606367;
     --cl-widget-filter-bg:  var(--cl-header-bg);
     --widget-header-btn-opacity: 0.5;
     --widget-header-btn-filter: none;
-    --widget-header-btn-active-filter: contrast(0.2) sepia(1) brightness(1.1) hue-rotate(-655deg) contrast(4);
+    --widget-header-btn-active-filter: contrast(0.22) sepia(1) brightness(1) hue-rotate(-898deg) contrast(9);
 
     // Forms
     --cl-input-bg: white;
-    --cl-input-border: #ccc;
+    --cl-input-border: #EBEBEA;
+    --cl-check-border: #606367;
+    --cl-input-placeholder: rgba(96, 99, 103, 0.6);
+    --cl-input-text: #606367;
 
     // Pivot
     --cl-pivot-cell-border: rgb(208, 208, 208);

@@ -12,6 +12,7 @@ ul {
     list-style-type: none;
     margin: 0;
     padding: 0;
+    padding-top: 17px;
 }
 
 @keyframes pulse {
@@ -34,8 +35,11 @@ li {
     cursor: pointer;
     transition: background-color $animSpeed linear;
     white-space: nowrap;
+    padding-left: 40px;
+    border-radius: 0 40px 40px 0;
     &:hover {
-        background-color: var(--cl-header-btn-hover);
+        background-color: var(--cl-hover);
+
     }
 
     // Icon
@@ -47,7 +51,7 @@ li {
     // Image icon
     & > img {
         padding: 4px;
-        background-color: rgba(0, 0, 0, 0.1);
+        // background-color: rgba(0, 0, 0, 0.1);
         border-radius: 4px;
         height: 28px;
         min-width: 28px;

@@ -1,26 +1,7 @@
 <!-- Header line -->
 <div class="header">
-    <!-- Search field -->
-    <input type="search" placeholder="{{'search' | i18n}}" [(ngModel)]="model.search" (change)="onSearch()" (keydown.enter)="searchFilters()" dswAutoFocus="desktop">
-
-    <span>
-        <!-- Apply button -->
-        <button class="btn" (click)="acceptFilter()">
-            <img class="ico ico-accept" src="assets/img/icons/check-black-18dp.svg">
-            {{'accept' | i18n}}
-        </button>
-        <button class="btn" (click)="removeFilter()">
-            <img class="ico ico-accept" src="assets/img/icons/undo-black-18dp.svg">
-            {{'dismiss' | i18n}}
-        </button>
-        <!--        <button class="btn" (click)="removeFilter()"><i class="fa fa-eraser"></i>&nbsp;{{'dismiss' | i18n}}</button>-->
-        <!-- Close button -->
-        <button class="btn" (click)="close()">
-            <img class="ico ico-close" src="assets/img/icons/close-black-18dp.svg">
-            {{'close' | i18n}}
-        </button>
-
-    </span>
+    <img src="assets/img/icons/icon-search.svg">
+    <input #sr type="search" placeholder="{{'search' | i18n}}" [(ngModel)]="model.search" (search)="onSearch(sr.value)" (keyup)="onSearch(sr.value)" (keydown.enter)="searchFilters()" dswAutoFocus="desktop">
 </div>
 
 <!-- All/Exclude/Inteval checkboxes -->
@@ -70,13 +51,14 @@
     <!-- Filter items -->
     <div class="value-row" *ngFor="let v of model.values; trackBy: trackByIndex" (click)="toggleRow(v, $event)">
             <input
+                #inp
                 [type]="model?.filter.type === 'radioSet' ? 'radio' : 'checkbox'"
                 [checked]="v.checked"
-                (click)="v.checked = true; onItemSelect($event)"
+                (click)="v.checked = inp.checked; onItemSelect($event)"
                 [class.readonly]="model?.filter.type === 'radioSet'"
                 name="filter-item"
             >
-            <div [class]="v.default ? 'bold' : ''">{{v.name}}<div *ngIf="v.info">{{v.info}}</div></div>
+            <div [class]="v.default ? 'bold' : ''" [class.selected]="v.checked">{{v.name}}<div *ngIf="v.info">{{v.info}}</div></div>
     </div>
 
     <!-- Loading spinner -->
@@ -85,59 +67,21 @@
     </div>
 </div>
 
-<!--<div class="flt-modal">-->
-<!--    <div class="mobile-filters-header" desktop-hidden>{{model.filter.label}}</div>-->
-<!--    <div class="mobile-header" desktop-hidden></div>-->
-<!--    <div class="filter-toolbar-holder">-->
-<!--        <div class="flt-toolbar">-->
-<!--            <div class="form-horizontal" style="width: 100%">-->
-<!--                <div class="btn-group pull-right filter-modal-buttons">-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--        <div class="flt-toolbar flt-options">-->
-<!--            <div class="form-horizontal" style="width: 100%">-->
-<!--                <span [hidden]="model.isInterval">-->
-<!--                    <label class="filter-label">-->
-<!--                        <input type="checkbox" [(ngModel)]="model.isAll" (click)="setAll()">-->
-<!--                        <span>{{'all' | i18n}}</span>-->
-<!--                    </label>-->
-<!--                </span>-->
-<!--                <span [hidden]="model.isInterval">-->
-<!--                    <label class="filter-label">-->
-<!--                        <input type="checkbox" [(ngModel)]="model.isExclude">-->
-<!--                        <span>{{'exclude' | i18n}}</span>-->
-<!--                    </label>-->
-<!--                </span>-->
-<!--                <label class="filter-label">-->
-<!--                    <input type="checkbox" [(ngModel)]="model.isInterval">-->
-<!--                    <span>{{'interval' | i18n}}</span>-->
-<!--                </label>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--    <div class="container-fluid" style="padding-top: 10px" *ngIf="model.isInterval">-->
-<!--        <div class="form-group">-->
-<!--            <label>{{'from' | i18n}}</label>-->
-<!--            <select class="form-control" [(ngModel)]="model.from" [ngModelOptions]="model.values"></select>-->
-<!--        </div>-->
-<!--        <div class="form-group">-->
-<!--            <label>{{'to' | i18n}}</label>-->
-<!--            <select class="form-control" [(ngModel)]="model.to" [ngModelOptions]="model.values"></select>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--    <div class="filter-items" [hidden]="model.isInterval">-->
-<!--        <table class="table table-striped table-hover table-small">-->
-<!--            <tbody>-->
-<!--            <tr *ngFor="let v of model.values">-->
-<!--                <td style="width:24px;padding-left:6px;vertical-align: inherit;"><input type="checkbox" [(ngModel)]="v.checked" (click)="onItemSelect()"></td>-->
-<!--                <td (click)="toggleRow(v)" [class]="v.default ? 'bold' : ''">{{v.name}}<div class="flt-item-desc" *ngIf="v.info">{{v.info}}</div></td>-->
-<!--            </tr>-->
-<!--            </tbody>-->
-<!--        </table>-->
-<!--        <div class="loader-holder" *ngIf="model.isLoading">-->
-<!--            <div class="loader"></div>-->
-<!--        </div>-->
-<!--        <div class="mobile-header" desktop-hidden></div>-->
-<!--    </div>-->
-<!--</div>-->
+<div class="footer">
+        <!-- Apply button -->
+        <button class="btn default" (click)="acceptFilter()">
+            <img class="ico ico-accept" src="assets/img/icons/icon-check.svg">
+            {{'accept' | i18n}}
+        </button>
+        <button class="btn" (click)="removeFilter()">
+            <img class="ico ico-accept" src="assets/img/icons/icon-reload.svg">
+            {{'dismiss' | i18n}}
+        </button>
+    <!--        <button class="btn" (click)="removeFilter()"><i class="fa fa-eraser"></i>&nbsp;{{'dismiss' | i18n}}</button>-->
+    <!-- Close button -->
+        <button class="btn" (click)="close()">
+            <img class="ico ico-close" src="assets/img/icons/icon-close.svg">
+            {{'close' | i18n}}
+        </button>
+
+</div>

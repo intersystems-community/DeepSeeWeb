@@ -3,7 +3,7 @@ import {BaseWidget, IWidgetOverride} from '../base-widget.class';
 import {AfterViewInit, OnInit, Directive, OnDestroy} from '@angular/core';
 import {dsw} from '../../../../environments/dsw';
 import * as numeral from 'numeral';
-import {AxisTypeValue, SeriesOptionsType, XAxisOptions, YAxisOptions} from 'highcharts';
+import {AxisTypeValue, Series, SeriesOptionsType, XAxisOptions, YAxisOptions} from 'highcharts';
 import {IButtonToggle} from '../../../services/widget.service';
 
 // Highcharts
@@ -857,6 +857,7 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
             },
             legend: {
                 enabled: this.widget.isLegend,
+                align: 'left',
                 itemStyle: {
                     color: this.tc.hcTextColor
                 }
@@ -875,6 +876,27 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
                         // Add right click
                         // @ts-ignore
                         event.target?.series?.forEach(se => {
+
+                            // Add hover events for legend (only for pie chart)
+                            if (_this.chartConfig.chart.type === 'pie') {
+
+
+                                _this.chart.legend.allItems.forEach((l: any) => {
+                                    const onLegendItemHover = (e) => {
+                                        this.onLegendItemHover({series: l.series, index: l.index});
+                                    };
+                                    const onLegendItemOut = (e) => {
+                                        this.onLegendItemOut({series: l.series, index: l.index});
+                                    };
+                                    const element = (l.legendItem as any).group.element;
+                                    element.addEventListener('mouseover', onLegendItemHover);
+                                    _this.axisLabelListeners.push({event: 'mouseover', element, func: onLegendItemHover});
+
+                                    element.addEventListener('mouseout', onLegendItemOut);
+                                    _this.axisLabelListeners.push({event: 'out', element, func: onLegendItemOut});
+                                });
+                            }
+
                             se.data.forEach((d, dIdx) => {
                                 const ev = 'contextmenu';
                                 const element = d.graphic?.element;
@@ -1486,5 +1508,13 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
     ngOnDestroy() {
         this.removeAxisListeners();
         super.ngOnDestroy();
+    }
+
+    protected onLegendItemHover(e: any) {
+
+    }
+
+    protected onLegendItemOut(e: any) {
+
     }
 }

@@ -53,17 +53,17 @@ html, body {
 
 input, textarea, select {
     display: block;
-    height: 30px;
+    padding: 0 10px;
+    height: 26px;
     border-radius: var(--input-border-radius);
     width: 100%;
-    padding: 6px 12px;
     font-size: 14px;
-    color: #555;
+    color: var(--cl-input-text);
     background-color: var(--cl-input-bg);
     background-image: none;
     border: 1px solid var(--cl-input-border);
-    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
-    box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+   /* -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075);*/
     -webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;
     -o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
     transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
@@ -71,14 +71,65 @@ input, textarea, select {
         outline: 1px solid var(--cl-accent);
         outline-offset: -1px;
     }
+    &::placeholder {
+        color: var(--cl-input-placeholder);
+    }
 }
 input[type=checkbox], input[type=radio] {
     margin: 0;
-    width: 30px;
+    width: 16px;
+    height: 16px;
+    position: relative;
+    padding: 0;
+
+    &::before {
+        content: "";
+        width: 16px;
+        height: 16px;
+        transform-origin: center;
+        transform: scale(0);
+        transition: 120ms transform ease-in-out;
+        background-image: url('^assets/img/icons/checkbox.svg');
+        display: block;
+        background-repeat: no-repeat;
+        position: absolute;
+        left: 2px;
+        top: 3px;
+    }
+
+    &:checked {
+        border: 1.2px solid var(--cl-accent);
+        &::before {
+            transform: scale(1);
+        }
+    }
 }
-input:not([type=checkbox]):not([type=radio]), textarea {
+
+input[type=radio] {
+    border: 1px solid var(--cl-check-border);
+    &:checked {
+        border: 4px solid var(--cl-accent);
+    }
+    &::before {
+        background-image: none;
+    }
+}
+
+input, textarea {
     -moz-appearance: none;
     -webkit-appearance: none;
+    appearance: none;
+    /* For iOS < 15 to remove gradient background */
+    background-color: #fff;
+    /* Not removed via appearance */
+    margin: 0;
+}
+
+input[type=checkbox] {
+    border: 1px solid var(--cl-check-border);
+    border-radius: 2px;
+    width: 16px;
+    height: 16px;
 }
 
 .btn {
@@ -292,3 +343,12 @@ dsw-widget-filter + * {
     }
 }
 */
+
+.gridster-preview {
+    background: var(--cl-hover);
+}
+
+.gridster-item-moving, .gridster-item-resizing {
+    box-shadow: none !important;// 0 0 12px rgba(0, 0, 0, 0.25) !important;
+    outline: 1px solid var(--cl-accent);
+}

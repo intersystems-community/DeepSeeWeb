@@ -129,13 +129,14 @@ export class FilterPopupComponent implements OnInit {
     /**
      * Search input onChange callback. Searches filter values by input text
      */
-    onSearch() {
-        if (this.model.search === '') {
+    onSearch(search: string) {
+        if (search === '') {
             this.model.values = this.model.filter.values;
         } else {
+            const s = search.toLowerCase();
             this.model.values = [];
             for (let i = 0; i < this.model.filter.values.length; i++) {
-                if (this.model.filter.values[i].name.toString().toLowerCase().indexOf(this.model.search.toLowerCase()) != -1) {
+                if (this.model.filter.values[i].name.toString().toLowerCase().indexOf(s) !== -1) {
                     this.model.values.push(this.model.filter.values[i]);
                 }
             }

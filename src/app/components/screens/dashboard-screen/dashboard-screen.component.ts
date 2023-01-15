@@ -93,7 +93,7 @@ export class DashboardScreenComponent implements OnInit, OnDestroy, AfterViewIni
     tilesOptions: GridsterConfig = {
 
         useTransformPositioning: true,
-        margin: 10,
+        margin: 20,
         gridType: GridType.VerticalFixed,
         draggable: {
             ignoreContent: true,
