@@ -1,3 +1,6 @@
+#### 3.1.55
+* added missing images from new design 
+
 #### 3.1.54
 * new design for default theme (other themes will be supported soon)
 * fixed filter issue when deselecting selected value
