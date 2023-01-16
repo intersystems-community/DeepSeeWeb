@@ -1,3 +1,6 @@
+#### 3.1.56
+* fixed meters widget 
+
 #### 3.1.55
 * added missing images from new design 
 
