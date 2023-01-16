@@ -930,7 +930,7 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
                         });
 
                         // @ts-ignore
-                        _this.chart.xAxis[0]?.labelGroup?.element?.childNodes?.forEach((el, idx) => {
+                        _this.chart?.xAxis[0]?.labelGroup?.element?.childNodes?.forEach((el, idx) => {
                             const onClick = () => {
                                 const aData = _this._currentData?.Cols[1]?.tuples;
                                 if (!aData || !aData[idx]) {
