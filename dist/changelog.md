@@ -1,3 +1,6 @@
+#### 3.1.60
+* extended scorecard widget. now it supports `targetValue` & `target%`, uses auto max value for `plotBox` axis
+
 #### 3.1.59
 * fixed `.termlist' issue 
 
