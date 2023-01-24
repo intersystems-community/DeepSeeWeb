@@ -648,6 +648,9 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
             this.widget.dsItems.push(item);
             let data = null;
             if (prop) {
+                if (!prop.toLowerCase().includes('.termlist')) {
+                    prop += '.termlist';
+                }
                 data = await this.ds.getTermList(prop);
             } else {
                 data = listData;
