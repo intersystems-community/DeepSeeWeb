@@ -1,3 +1,6 @@
+#### 3.1.58
+* compatibility termlist support for ChooseRowSpec, ChooseDataSource, ChooseColSpec
+
 #### 3.1.57
 * extended drag region for widget, now it covers full size of header
 * updated icons for widget header actions
