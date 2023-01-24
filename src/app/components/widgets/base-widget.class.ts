@@ -87,7 +87,7 @@ export interface IAddonInfo {
 }
 
 export type WidgetColumnDisplayType = 'trendLine' | 'plotBox' | 'itemNo' | 'value' | 'label' | '';
-export type WidgetColumnShowType = 'value';
+export type WidgetColumnShowType = 'value' | 'target%';
 export type WidgetColumnSummaryType = 'sum' | '';
 
 export interface IWidgetDataProperties {

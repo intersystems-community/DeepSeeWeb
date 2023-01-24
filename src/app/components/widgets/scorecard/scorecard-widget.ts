@@ -24,6 +24,7 @@ export class ScorecardWidgetComponent extends BaseWidget implements OnInit, OnDe
     columns: any[] = [];
     rows: any[] = [];
     data: (string | number)[][] = [];
+    targets: (string | number)[][] = [];
     color: string;
     props: IWidgetDataProperties[];
 
@@ -139,6 +140,20 @@ export class ScorecardWidgetComponent extends BaseWidget implements OnInit, OnDe
         });
     }
 
+    private getPropValue(data: any[], rowIndex: number, prop: IWidgetDataProperties, valueToGet = 'dataValue') {
+        const isNumber = !isNaN(parseFloat(prop[valueToGet] as string));
+        let v: string | number = prop[valueToGet];
+        if (!isNumber) {
+            const colIdx = this.getColumnIndex(prop[valueToGet]);
+            if (colIdx === -1) {
+                v = 0;
+            } else {
+                v = data[rowIndex * this.columns.length + colIdx];
+            }
+        }
+        return v;
+    }
+
     getValue(data: any[], rowIndex: number, prop: IWidgetDataProperties): string | number {
         switch (prop.display) {
             case 'itemNo':
@@ -152,16 +167,7 @@ export class ScorecardWidgetComponent extends BaseWidget implements OnInit, OnDe
             case 'value':
             case 'plotBox': {
                 const fmt = prop.format;
-                const isNumber = !isNaN(parseFloat(prop.dataValue as string));
-                let v: string | number = prop.dataValue;
-                if (!isNumber) {
-                    const colIdx = this.getColumnIndex(prop);
-                    if (colIdx === -1) {
-                        v = 0;
-                    } else {
-                        v = data[rowIndex * this.columns.length + colIdx];
-                    }
-                }
+                const v: string | number = this.getPropValue(data, rowIndex, prop);
 
                 if (prop.display === 'plotBox') {
                     // Calc in % for plotbox
@@ -172,12 +178,16 @@ export class ScorecardWidgetComponent extends BaseWidget implements OnInit, OnDe
                     }
                     return (v as number - min) / (max - min) * 100;
                 } else {
+                    if (prop.showAs === 'target%') {
+                        const targetV = this.getPropValue(data, rowIndex, prop, 'targetValue');
+                        return this.formatNumber((v as number) / (targetV as number), fmt);
+                    }
                     return this.formatNumber(v, fmt);
                 }
             }
 
             case 'trendLine': {
-                const colIdx = this.getColumnIndex(prop);
+                const colIdx = this.getColumnIndex(prop.dataValue as string);
                 let v = '';
                 if (colIdx !== -1) {
                     v = data[rowIndex * this.columns.length + colIdx];
@@ -189,27 +199,63 @@ export class ScorecardWidgetComponent extends BaseWidget implements OnInit, OnDe
         return 0;
     }
 
-
-    private getColumnIndex(prop: IWidgetDataProperties): number {
+    private getColumnIndex(dimension: string): number {
         const colIdx = this.columns.findIndex(c => {
             if (c.dimension) {
-                return c.dimension === prop.dataValue;
+                return c.dimension === dimension;
             }
             const regExp = /^Properties\(\"([^)]+)\"\)/;
             const matches = regExp.exec(c.valueID);
-            return matches[1] === prop.dataValue;
+            return matches[1] === dimension;
         });
         return colIdx;
     }
 
     private prepareData(data: any[]) {
+        // Calc min and max for all columns if needed
+        const extremes = [];
+        for (let p = 0; p < this.props.length; p++) {
+            if (this.props[p].rangeLower && this.props[p].rangeUpper) {
+                extremes.push({min: this.props[p].rangeLower, max: this.props[p].rangeUpper});
+                continue;
+            }
+            let min = 0;
+            let max = 0;
+            if (this.props[p].display === 'plotBox') {
+                const colIdx = this.getColumnIndex(this.props[p].dataValue as string);
+                const d = data.filter((da, idx) => {
+                    return (idx + colIdx) % this.columns.length === 0;
+                });
+                max = Math.max(...d);
+                min = Math.min(...d);
+            }
+            min = 0;
+
+            extremes.push({min, max});
+
+            if (!this.props[p].rangeLower) {
+                this.props[p].rangeLower = min;
+            }
+            if (!this.props[p].rangeUpper) {
+                this.props[p].rangeUpper = max;
+            }
+        }
+
         this.data = [];
+        this.targets = [];
         for (let r = 0; r < this.rows.length; r++) {
             if (!this.data[r]) {
                 this.data[r] = [];
+                this.targets[r] = [];
             }
             for (let p = 0; p < this.props.length; p++) {
+                const min = extremes[p].min;
+                const max = extremes[p].max;
+
                 this.data[r][p] = this.getValue(data, r, this.props[p]);
+                if (this.props[p].targetValue && (max - min !== 0)) {
+                    this.targets[r][p] = 100 * 1 / (this.data[r][p] as number) * (this.getPropValue(data, r, this.props[p], 'targetValue') as number - min) / (max - min) * 100;
+                }
             }
         }
         this.prepareFooter();
@@ -248,7 +294,7 @@ export class ScorecardWidgetComponent extends BaseWidget implements OnInit, OnDe
         } else if (typeof data === 'number') {
             values = [data];
         } else if (Array.isArray(data)) {
-            console.log('gffd');
+
         }
         const max = Math.max(...values);
         const min = Math.min(...values);
@@ -275,7 +321,7 @@ export class ScorecardWidgetComponent extends BaseWidget implements OnInit, OnDe
     }
 
     private calcTotal(propIndex: number, op: string) {
-        const colIdx = this.getColumnIndex(this.props[propIndex]);
+        const colIdx = this.getColumnIndex(this.props[propIndex].dataValue as string);
         if (colIdx === -1) {
             return 0;
         }
