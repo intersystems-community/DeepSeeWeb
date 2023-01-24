@@ -758,13 +758,15 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
                         this.addSeries({
                             data: tempData,
                             name: data.Cols[0].tuples[t].caption, // + '/' + data.Cols[0].tuples[t].children[c].caption,
-                            format: data.Cols[0].tuples[t].children[c].format || this.getFormat(data)
+                            format: data.Cols[0].tuples[t].children[c].format || this.getFormat(data),
+                            path: data.Cols[0].tuples[t].children[c].path
                         });
                     } else {
                         this.addSeries({
                             data: tempData,
                             name: data.Cols[0].tuples[t].caption,
-                            format: data.Cols[0].tuples[t].format || this.getFormat(data)
+                            format: data.Cols[0].tuples[t].format || this.getFormat(data),
+                            path: data.Cols[0].tuples[t].path
                         });
                     }
                 }
@@ -904,7 +906,6 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
                                     return;
                                 }
                                 const func = (e) => {
-                                    console.log(e);
                                     e.preventDefault();
                                     e.stopImmediatePropagation();
 
@@ -913,13 +914,19 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
                                         return;
                                     }
 
+                                    const seriesPath = se.userOptions.path;
+                                    const path = [aData[dIdx].path];
+                                    if (seriesPath) {
+                                        path.push(seriesPath);
+                                    }
+
                                     this.bs.broadcast('contextmenu', {
                                         widget: this.widget,
                                         event: e,
                                         ctxData: {
                                             canDrillthrough: this.canDoDrillthrough,
                                             canDrill: true,
-                                            drillPath: aData[dIdx].path,
+                                            drillPath: path,
                                             drillTitle: aData[dIdx].caption || aData[dIdx].title
                                         }
                                     });
@@ -1012,8 +1019,13 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
                                         return;
                                     }
                                 }
+                                const seriesPath = e.point.series.userOptions.path;
+                                const path = [e.point.path];
+                                if (seriesPath) {
+                                    path.push(seriesPath);
+                                }
                                 _this.showLoading();
-                                _this.doDrillthrough(e.point.path, e.point.name, e.point.category)
+                                _this.doDrillthrough(path, e.point.name, e.point.category)
                                     .finally(() => {
                                         _this.hideLoading();
                                     });

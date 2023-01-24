@@ -26,24 +26,24 @@
     <!-- Display 3 columns  button -->
     <button class="only-desktop" (click)="onClick('by3columns')" [title]="'by3columns' | i18n"
             [class.active]="widget?.viewSize === 2">
-        <img src="assets/img/icons/view_module-black-18dp.svg">
+        <img src="assets/img/icons/view-3colums.svg">
     </button>
 
     <!-- Display 2 columns  button -->
     <button class="only-desktop" (click)="onClick('by2columns')" [title]="'by2columns' | i18n"
             [class.active]="widget?.viewSize === 1">
-        <i class="fa fa-th-large"></i>
+        <img src="assets/img/icons/view-2colums.svg">
     </button>
 
     <!-- Display as rows button -->
     <button class="only-desktop" (click)="onClick('byRows')" [title]="'byRows' | i18n"
             [class.active]="widget?.viewSize === 0">
-        <img src="assets/img/icons/view_headline-black-18dp.svg">
+        <img src="assets/img/icons/view-list.svg">
     </button>
 
     <!-- Refresh button -->
     <button (click)="onClick('setDefault')" [title]="'setDefault' | i18n">
-        <img src="assets/img/icons/refresh-black-18dp.svg">
+        <img src="assets/img/icons/reset.svg">
         <label>{{'refresh' | i18n}}</label>
     </button>
 
@@ -87,7 +87,7 @@
 <button *ngIf="widget?.isChart" (click)="onClick('isTop')"
         [class.active]="widget?.isTop" title="{{'showTop' | i18n}}">
     <!--        <i class="fa fa-star"></i>-->
-    <img src="assets/img/icons/trending-up.svg">
+    <img src="assets/img/icons/top-records.svg">
     <label>Top</label>
 </button>
 
@@ -104,14 +104,14 @@
 <button *ngIf="widget?.isChart || widget?.isMap || widget?.type === 'regular' || widget?.oldType === 'regular'" (click)="onClick('displayAsPivot')"
         [class.active]="widget?.type === 'pivot'" title="{{'showPivot' | i18n}}">
     <!--        <i class="fa fa-table"></i>-->
-    <img src="assets/img/icons/view_list-black-18dp.svg">
+    <img src="assets/img/icons/table.svg">
     <label>Pivot</label>
 </button>
 
 <!-- Chart settings -->
 <button *ngIf="widget?.isChart || widget?.type === 'regular'" title="{{'changeColors' | i18n}}"
         (click)="onClick('chartConfig')">
-    <img src="assets/img/icons/color_lens-black-18dp.svg">
+    <img src="assets/img/icons/palette-icon.svg">
     <label>Colors</label>
 </button>
 
@@ -119,7 +119,7 @@
 <!-- Fullscreen button -->
 <button (click)="onClick('expand')" class="only-desktop" [class.active]="widget?.isExpanded"
         [title]="'fullscreen' | i18n" [hidden]="isEmptyWidget() || !widget?.isSupported" *ngIf="!widget?.shared">
-    <img src="assets/img/icons/fullscreen.svg">
+    <img src="assets/img/icons/full-screen.svg">
 </button>
 
 

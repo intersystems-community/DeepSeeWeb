@@ -1067,7 +1067,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         });
     }
 
-    doDrillthrough(path?: string, name?: string, category?: string, noDrillCallback?: () => void, preventDrillFilter = false, autoDrillSuccess?: () => void, drillError?: (e) => void) {
+    doDrillthrough(path?: string|string[], name?: string, category?: string, noDrillCallback?: () => void, preventDrillFilter = false, autoDrillSuccess?: () => void, drillError?: (e) => void) {
         return new Promise((res: any, rej) => {
             if (!this.canDoDrillthrough) {
                 res();
@@ -1077,7 +1077,13 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
             this.clearError();
             const old = this.drills.slice();
             if (path) {
-                this.drills.push({path, name, category});
+                if (Array.isArray(path)) {
+                    path.forEach(p => {
+                        this.drills.push({path: p, name, category});
+                    });
+                } else {
+                    this.drills.push({path, name, category});
+                }
             } else {
                 this.drills.pop();
             }

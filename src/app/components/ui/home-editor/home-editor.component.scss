@@ -64,9 +64,10 @@ input[type=checkbox] {
     }
 }
 
-.color-rect svg {
-    position: absolute;
-    font-family: FontAwesome;
+.color-rect img {
+    // position: absolute;
+    max-width: 16px;
+    // font-family: FontAwesome;
 }
 
 .container {

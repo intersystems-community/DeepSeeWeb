@@ -1,4 +1,14 @@
-import {ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren} from '@angular/core';
+import {
+    ChangeDetectorRef,
+    Component,
+    ElementRef,
+    HostListener,
+    OnDestroy,
+    OnInit,
+    QueryList,
+    ViewChild,
+    ViewChildren
+} from '@angular/core';
 import {StorageService} from '../../../services/storage.service';
 import {dsw} from '../../../../environments/dsw';
 import {GridsterComponent, GridsterConfig} from 'angular-gridster2';
@@ -32,6 +42,7 @@ interface IHomeModel {
 export class FolderScreenComponent implements OnInit, OnDestroy {
     @ViewChildren('widgets', {read: WidgetComponent}) widgets: QueryList<WidgetComponent>;
     @ViewChild('gridster', {read: ElementRef, static: true}) gridster: ElementRef;
+    @ViewChild('gridster', {static: true}) gridsterComp: GridsterComponent;
     private settings: any;
     private folder = '';
     private subOnTilesChanged;
@@ -41,6 +52,10 @@ export class FolderScreenComponent implements OnInit, OnDestroy {
     isResizing = false;
     model: IHomeModel;
     tilesOptions: GridsterConfig = {
+        maxCols: 8,
+        minCols: 8,
+        fixedRowHeight: 122,
+        gridType: 'verticalFixed',
         mobileBreakpoint: 576,
         margin: 20,
         draggable: {
@@ -63,6 +78,7 @@ export class FolderScreenComponent implements OnInit, OnDestroy {
                 private route: ActivatedRoute,
                 private router: Router,
                 private ss: SidebarService,
+                private cd: ChangeDetectorRef,
                 private hs: HeaderService,
                 private ms: MenuService,
                 private ds: DataService,
@@ -70,6 +86,7 @@ export class FolderScreenComponent implements OnInit, OnDestroy {
                 private i18n: I18nService,
                 private fs: FilterService,
                 private ns: NamespaceService) {
+        this.onResize();
         this.settings = st.getAppSettings();
         this.ms.onSetTitle.emit('');
         this.fs.clear();
@@ -95,6 +112,19 @@ export class FolderScreenComponent implements OnInit, OnDestroy {
         // //$location.search('FILTERS', null);
 
 
+    }
+
+    @HostListener('window:resize', ['$event'])
+    onResize() {
+       /* let delta = (window.innerWidth - 1336) / 2;
+        if (delta < 20) {
+            delta = 20;
+        }
+        this.tilesOptions.outerMarginLeft = delta;
+        this.tilesOptions.outerMarginRight = delta;
+        if (this.gridsterComp) {
+            this.gridsterComp.optionsChanged();
+        }*/
     }
 
     ngOnInit(): void {
@@ -403,8 +433,8 @@ export class FolderScreenComponent implements OnInit, OnDestroy {
                 if (!this.widgets || (e.propertyName !== 'width' && e.propertyName !== 'height')) { return; }
                 this.widgets.toArray().forEach(w => {
                     if (!w.component) { return; }
-                    w.component.onResize()
-                })
+                    w.component.onResize();
+                });
             });
     }
 }

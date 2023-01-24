@@ -13,15 +13,11 @@
 
         <!-- Icon -->
         <div class="tile-icon" [hidden]="itemDescs[tile.idx]">
-            <svg viewBox="-10 -16 20 20" [class]="model.fontColors[tile.fontColor]">
-                <g>
-                    <text text-anchor="middle" font-size="16px">{{model.icons[tile.icon]}}</text>
-                </g>
-            </svg>
+            <img *ngIf="model.icons[tile.icon] as icon" [src]="'assets/img/widget-icons/' + icon">
         </div>
 
         <!-- Title -->
-        <label [hidden]="tile.hideTitle" [class]="model.fontColors[tile.fontColor]">
+        <label [hidden]="tile.hideTitle" [class]="model.fontColors[tile.fontColor]" [title]="tile.customTitle || tile.title">
             <span>{{tile.customTitle || tile.title}}</span>
             <!--<span>{{tile.fullPath}}</span>-->
         </label>

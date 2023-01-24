@@ -13,6 +13,8 @@ import {CURRENT_NAMESPACE} from '../../../services/namespace.service';
 import {TextAreaComponent} from '../text-area/text-area.component';
 import {ModalService} from '../../../services/modal.service';
 import {FilterService} from '../../../services/filter.service';
+import {DataService} from "../../../services/data.service";
+import {I18nService} from "../../../services/i18n.service";
 
 /**
  * Breadcrumb
@@ -47,17 +49,23 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
 
     path: IPathNav[] = [];
     isMobileFilterButton = false;
+    languages: string[];
+    selectedLanguage = this.i18n.current.toUpperCase();
 
     constructor(public ss: SidebarService,
                 public hs: HeaderService,
+                private ds: DataService,
                 private ms: MenuService,
                 private us: UtilService,
                 private modal: ModalService,
                 private fs: FilterService,
                 private storage: StorageService,
+                private i18n: I18nService,
                 private route: ActivatedRoute,
                 private router: Router
     ) {
+        this.languages = this.i18n.getLanguages().map(l => l.toUpperCase());
+
         this.path$ = this.getNavigationEndStream();
         if (this.storage.serverSettings?.Embed || this.us.isEmbedded()) {
             this.hs.visible$.next(false);
@@ -207,5 +215,18 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
      */
     toggleMobileFilter() {
         this.hs.toggleMobileFilterDialog();
+    }
+
+    selectLanguage(l: string) {
+        const lang = l.toLowerCase();
+        const settings = this.storage.getAppSettings();
+        this.i18n.current = lang;
+        settings.language = lang;
+        this.storage.setAppSettings(settings);
+        window.location.reload();
+    }
+
+    logout() {
+        void this.ds.signOut();
     }
 }

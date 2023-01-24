@@ -18,6 +18,7 @@
     & > div:first-child {
         flex-shrink: 1;
         min-width: 0;
+        width: 100%;
 
         @include sm {
             width: 100%
@@ -33,8 +34,14 @@
     white-space: nowrap;
     flex-shrink: 1;
     min-width: 0;
+    max-width: 60%;
+    overflow: hidden;
 
+    & > .items {
+        display: flex;
+    }
     @include sm {
+        max-width: 100%;
         width: 100%;
         & > div {
             width: calc(100% - 6px);
@@ -96,26 +103,39 @@ h2 {
     box-shadow: none;
     transition: background-color $animSpeed linear;
     color: var(--cl-header-ico);
+    padding-left: 8px;
+    padding-right: 8px;
 
     // Font awesome icon
     & > i {
         font-size: 24px;
     }
 
+    & > img {
+        margin-right: 8px;
+    }
+
     // Square buttons
     &.square {
+        padding-left: 8px;
+        padding-right: 8px;
         width: var(--header-height);
 
         // 60% size
         &.s60 {
             height: calc(var(--header-height) * 0.6);
-            width: calc(var(--header-height) * 0.6);
+            width: calc(var(--header-height) * 0.4);
+        }
+
+        & > img {
+            margin-right: 0;
         }
     }
 
     // Pressed state
     &.active {
-        background-color: var(--cl-header-btn-active);
+        // background-color: var(--cl-header-btn-active);
+        background-color: var(--cl-sidebar-bg);
         // border-bottom: 1px solid var(--cl-header-btn-active);
         // border-right: 1px solid var(--cl-header-border);
 
@@ -131,29 +151,44 @@ h2 {
 
 // Search input
 input[type=search] {
-    font-family: $font;
-    background-color: var(--cl-header-bg);
-    border: 1px solid #EBEBEA;
-    border-radius: 13px;
-    box-shadow: none;
-    margin-right: 16px;
+    border: none;
+    color: #606367;
+    height: 24px;
+    border-bottom: 1px solid #EBEBEA;
+    padding-left: 16px;
+    border-radius: 0;
+
+    &:focus, &:active {
+        border:none;
+        border-bottom: 1px solid var(--cl-accent);
+        outline: none;
+    }
+
     &::placeholder {
         color: var(--cl-header-txt);
         opacity: 0.5;
     }
 }
 
+.img-search {
+    position: absolute;
+    pointer-events: none;
+    top: 5px;
+}
+
 .path {
     cursor: pointer;
     outline: none;
     text-decoration: none;
-    color: var(--cl-header-txt);
+    font-weight: bold;
+    font-size: 14px;
+    color: #1C1D20;
     font-family: $font;
     &:hover {
         text-decoration: underline;
     }
     &:not(:last-child) {
-        opacity: 0.6;
+        color: var(--cl-header-txt);
 
         @include sm {
             opacity: 1;
@@ -162,6 +197,8 @@ input[type=search] {
     &:last-child {
         cursor: default;
         pointer-events: none;
+        text-overflow: ellipsis;
+        overflow: hidden;
     }
     &:not(:last-child):after {
         content: "/";
@@ -186,8 +223,16 @@ input[type=search] {
     margin-left: 8px;
 }
 
-.search-block > div {
-    margin-right: 12px;
+.search-block {
+    padding-right: 20px;
+}
+
+.search-block > .search {
+    width: min(15vw, 300px);
+    margin-right: 20px;
+    & > div {
+        position: relative;
+    }
     @include sm {
         position: relative;
         transition: width 0.2s linear;
@@ -262,5 +307,16 @@ input[type=search] {
     & > img {
         height: calc(var(--header-height) * 0.5);
         opacity: 0.6;
+    }
+}
+
+.lang-selector {
+    border: none;
+    width: 50px;
+    padding: 0;
+    margin-right: 10px;
+    &:focus, &:active {
+        outline: none;
+        border: none;
     }
 }

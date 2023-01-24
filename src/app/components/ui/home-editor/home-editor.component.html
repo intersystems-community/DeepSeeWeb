@@ -26,11 +26,12 @@
     <label>{{'icon' | i18n}}</label>
     <div class="color-rect" *ngFor="let ico of model.icons; let idx = index" (click)='setIcon(idx)'
          [class]="'cl' + tile.color + ' ' +  (tile.icon == idx ? 'active' : '')">
-        <svg viewBox="-10 -16 20 20" [class]="model.fontColors[tile.fontColor]">
+        <img *ngIf="ico" [src]="'assets/img/widget-icons/' + ico">
+        <!--<svg viewBox="-10 -16 20 20" [class]="model.fontColors[tile.fontColor]">
             <g>
                 <text text-anchor="middle" font-size="16px">{{ico}}</text>
             </g>
-        </svg>
+        </svg>-->
     </div>
 
     <!-- Widgets -->

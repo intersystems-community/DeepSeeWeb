@@ -12,7 +12,7 @@ ul {
     list-style-type: none;
     margin: 0;
     padding: 0;
-    padding-top: 17px;
+    padding-top: 30px;
 }
 
 @keyframes pulse {
@@ -29,8 +29,8 @@ li {
     position: relative;
     font-family: $font;
     color: var(--cl-header-txt);
-    font-size: 18px;
-    padding: 15px 15px;
+    font-size: 14px;
+    padding: 10px 15px;
     background-color: var(--cl-sidebar-bg);
     cursor: pointer;
     transition: background-color $animSpeed linear;
@@ -50,13 +50,13 @@ li {
 
     // Image icon
     & > img {
-        padding: 4px;
+        //padding: 4px;
         // background-color: rgba(0, 0, 0, 0.1);
-        border-radius: 4px;
-        height: 28px;
-        min-width: 28px;
-        margin-right: 10px;
-        filter: var(--menu-item-icon-filter);
+        //border-radius: 4px;
+        //height: 28px;
+        //min-width: 28px;
+        margin-right: 8px;
+        //filter: var(--menu-item-icon-filter);
     }
 
     &:hover > img {
@@ -82,10 +82,11 @@ li {
 .version {
     position: absolute;
     bottom: 0;
-    right: 0;
+    left: 0;
     font-family: $font;
     font-size: 9px;
     padding: 6px;
+    color: var(--cl-header-txt);
 }
 
 // Loading spinner

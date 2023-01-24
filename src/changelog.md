@@ -1,3 +1,10 @@
+#### 3.1.57
+* extended drag region for widget, now it covers full size of header
+* updated icons for widget header actions
+* added new design for menu & header
+* added new design for folders screen
+* added drillthrough by category for chart widgets
+
 #### 3.1.56
 * fixed meters widget 
 

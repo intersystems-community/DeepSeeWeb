@@ -34,17 +34,18 @@
     font-size: 8pt;
     text-align: center;
     color: var(--cl-widget-header-txt);
-    overflow: hidden;
+    // overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
     border-bottom: var(--cl-widget-header-border);
 
     & > .drag-handle {
         position: absolute;
-        left: 0;
-        right: 0;
+        position: absolute;
+        left: -20px;
+        right: -20px;
         bottom: 0;
-        top: 0;
+        top: -20px;
     }
    /* & > span {
         display: inline-flex;
@@ -64,8 +65,12 @@
         padding-left: 4px;
         padding-right: 4px;
         margin: 0;
-        min-width: var(--tile-header-height);
-        height: 100%;
+        // min-width: var(--tile-header-height);
+        height: 22px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: -3px;
         // border-left: 1px solid var(--cl-header-border);
         transition: background-color $animSpeed line-height;
         outline: none;

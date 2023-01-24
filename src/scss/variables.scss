@@ -9,6 +9,8 @@ $labelColor: $fontColor;
 
 $sidebar-width: 322px;
 $mobile-folder-height: 80px;
+
+$max-width: 1336px;
 //:root {
 //    --cl-bg: #ffffff;
 //    --cl-accent: #ffffff;
@@ -78,13 +80,13 @@ $mobile-folder-height: 80px;
     // Header
     --cl-header-bg: #FFFFFF;
     --cl-header-border: #F5F5F5;
-    --cl-header-txt: black;
+    --cl-header-txt: #606367;
     --cl-header-ico: var(--cl-header-txt);
     --cl-header-btn-active: var(--cl-header-bg);
     --cl-header-btn-hover: var(--cl-bg);
     --cl-header-btn-hover-darken: var(--cl-hover);
 
-    --header-height: 58px;
+    --header-height: 64px;
 
     // Menu
     --menu-item-icon-filter: none;
@@ -115,9 +117,9 @@ $mobile-folder-height: 80px;
     --cl-widget-header-txt: var(--cl-header-txt);
     --cl-widget-filter-txt: #606367;
     --cl-widget-filter-bg:  var(--cl-header-bg);
-    --widget-header-btn-opacity: 0.5;
+    --widget-header-btn-opacity: 1;
     --widget-header-btn-filter: none;
-    --widget-header-btn-active-filter: contrast(0.22) sepia(1) brightness(1) hue-rotate(-898deg) contrast(9);
+    --widget-header-btn-active-filter: contrast(0.7) sepia(1) brightness(1) hue-rotate(-898deg) contrast(9);
 
     // Forms
     --cl-input-bg: white;
