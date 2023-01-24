@@ -632,9 +632,9 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
                     });
                 }
             } else {
-                const a = prop.split('.');
-                a.pop();
-                prop = a.join('.');
+                if (prop.toLowerCase().slice(-9) === '.termlist') {
+                    prop = prop.slice(0, -9);
+                }
             }
             const item = {
                 action: choosers[i].action,
@@ -648,9 +648,6 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
             this.widget.dsItems.push(item);
             let data = null;
             if (prop) {
-                if (!prop.toLowerCase().includes('.termlist')) {
-                    prop += '.termlist';
-                }
                 data = await this.ds.getTermList(prop);
             } else {
                 data = listData;
