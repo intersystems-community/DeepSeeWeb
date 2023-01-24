@@ -1,3 +1,6 @@
+#### 3.1.59
+* fixed `.termlist' issue 
+
 #### 3.1.58
 * compatibility termlist support for ChooseRowSpec, ChooseDataSource, ChooseColSpec
 
