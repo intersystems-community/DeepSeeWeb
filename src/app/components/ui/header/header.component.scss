@@ -35,10 +35,15 @@
     flex-shrink: 1;
     min-width: 0;
     max-width: 60%;
-    overflow: hidden;
+    overflow: visible;
 
     & > .items {
         display: flex;
+        max-height: 17px;
+
+        & > a {
+            position: relative;
+        }
     }
     @include sm {
         max-width: 100%;
@@ -318,5 +323,48 @@ input[type=search] {
     &:focus, &:active {
         outline: none;
         border: none;
+    }
+}
+
+.btn-more {
+    width: 20px;
+    height: 20px;
+    display: inline-flex;
+    justify-content: center;
+    border-radius: 2px;
+
+    &.pressed {
+        background: var(--cl-hover);
+    }
+
+    &:after {
+        display: none;
+    }
+}
+
+.dropdown-more {
+    position: absolute;
+    left: -10px;
+    top: 30px;
+    padding: 20px;
+    background-color: var(--cl-header-bg);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    z-index: 4;
+    & > a {
+        display: block;
+        &:not(:last-child) {
+            margin-bottom: 10px;
+        }
+
+        &:last-child {
+            cursor: pointer;
+            color: var(--cl-header-txt);
+            pointer-events: auto;
+        }
+
+        &:after {
+            display: none;
+        }
     }
 }

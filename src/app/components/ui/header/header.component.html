@@ -6,7 +6,22 @@
 <!--        <a routerLink="/" class="path">DeepSeeWeb</a>-->
         <div class="only-sm" *ngIf="!isSearch">{{title}}</div>
         <div [class.no-opacity]="isSearch" class="items">
-            <a [routerLink]="p.url" class="path" *ngFor="let p of path$ | async; let idx = index" [title]="p.title" [class.show-only-last]="isSearch">{{p.title}}</a>
+            <a
+                [routerLink]="p.url"
+                class="path"
+                *ngFor="let p of path$ | async; let idx = index"
+                [title]="p.title"
+                [class.show-only-last]="isSearch"
+                (click)="hideMoreDropdown($event, p.isMoreButton)"
+            >
+                {{p.title}}
+                <span class="btn-more" *ngIf="p.isMoreButton" [class.pressed]="isMorePressed" (click)="isMorePressed = !isMorePressed">
+                    ...
+                </span>
+                <div class="dropdown-more" *ngIf="p.isMoreButton && isMorePressed">
+                    <a *ngFor="let l of p.moreList" [routerLink]="l.url" class="path" [title]="l.title">{{l.title}}</a>
+                </div>
+            </a>
         </div>
     </h2>
 

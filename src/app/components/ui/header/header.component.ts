@@ -1,10 +1,10 @@
-import {AfterViewInit, Component, OnDestroy, OnInit} from '@angular/core';
+import {AfterViewInit, Component, HostListener, OnDestroy, OnInit} from '@angular/core';
 import {MenuComponent} from '../menu/menu.component';
 import {SidebarService} from '../../../services/sidebar.service';
 import {HeaderService} from '../../../services/header.service';
 import {FormControl} from '@angular/forms';
-import {debounceTime, distinctUntilChanged, filter, map, shareReplay, switchMap, tap} from 'rxjs/operators';
-import {combineLatest, Observable, of, merge, Subscription} from 'rxjs';
+import {debounceTime, distinctUntilChanged, filter, map, tap} from 'rxjs/operators';
+import {merge, Observable, of, Subscription} from 'rxjs';
 import {MenuService} from '../../../services/menu.service';
 import {ActivatedRoute, NavigationEnd, Router} from '@angular/router';
 import {UtilService} from '../../../services/util.service';
@@ -22,6 +22,8 @@ import {I18nService} from "../../../services/i18n.service";
 interface IPathNav {
     title: string;
     url?: string;
+    isMoreButton?: boolean;
+    moreList?: IPathNav[];
 }
 
 @Component({
@@ -51,6 +53,7 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
     isMobileFilterButton = false;
     languages: string[];
     selectedLanguage = this.i18n.current.toUpperCase();
+    isMorePressed = false;
 
     constructor(public ss: SidebarService,
                 public hs: HeaderService,
@@ -137,6 +140,7 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
             .split('/').slice(1);
         this.initSearch(path);
         this.pathSegments = path.map((p, idx) => HeaderComponent.processPath(path, p, idx));
+        this.buildMoreDropdown();
         return this.pathSegments;
     }
 
@@ -156,10 +160,23 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
      */
     private getPathFromNavigation(e: any): IPathNav[] {
         const tree = this.router.parseUrl(this.router.url);
-        let path = tree.root.children.primary?.segments?.map(s => s.path) || [];
+        const path = tree.root.children.primary?.segments?.map(s => s.path) || [];
         this.initSearch(path);
         this.pathSegments = path.map((p, idx) => HeaderComponent.processPath(path, p, idx));
+        this.buildMoreDropdown();
+
         return this.pathSegments;
+    }
+
+    private buildMoreDropdown() {
+        if (this.pathSegments.length > 3) {
+            const more = this.pathSegments.splice(1, this.pathSegments.length - 2);
+            this.pathSegments.splice(1, 0, {
+                title: '',
+                isMoreButton: true,
+                moreList: more
+            });
+        }
     }
 
     /**
@@ -180,9 +197,9 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
                 filter(e => e instanceof NavigationEnd),
                 map(e => this.getPathFromNavigation(e))
             )).pipe(tap(path => {
-                this.path = path;
-                return path;
-            }));
+            this.path = path;
+            return path;
+        }));
     }
 
     /**
@@ -228,5 +245,14 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
 
     logout() {
         void this.ds.signOut();
+    }
+
+    @HostListener('document:click', ['$event'])
+    hideMoreDropdown(e: MouseEvent, isMoreBtn = false) {
+        if (isMoreBtn || (e?.target as any)?.classList?.contains('btn-more')) {
+            return;
+        }
+
+        this.isMorePressed = false;
     }
 }
