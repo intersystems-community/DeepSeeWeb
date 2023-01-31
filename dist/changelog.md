@@ -1,3 +1,6 @@
+#### 3.1.62
+* partially fixed filter saving for filters outside filter list 
+
 #### 3.1.61
 * added dropdown menu for breadcrumbs if path is long
 
