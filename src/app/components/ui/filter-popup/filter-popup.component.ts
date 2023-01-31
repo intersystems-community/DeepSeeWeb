@@ -220,7 +220,7 @@ export class FilterPopupComponent implements OnInit {
      * Data retrieved callback for searchFilters() request
      * @param {object} result Filter data
      */
-    onFilterValuesReceived(result) {
+    onFilterValuesReceived(result, doNotReplace = false) {
         this.model.isLoading = false;
         if (!result) {
             return;
@@ -240,15 +240,18 @@ export class FilterPopupComponent implements OnInit {
 
         // Path current filter modifications(selected state, etc.) to newly received values
         let oldFilters = this.model.filter.values.slice();
+        const toAdd = [];
         filter.children.forEach(f => {
             let o = oldFilters.find(flt => flt.path === f.path);
             if (o) {
                 Object.assign(f, o);
+            } else {
+                toAdd.push(o);
             }
         });
 
         // Update model values
-        this.model.filter.values = filter.children;
+        this.model.filter.values = [...toAdd]; // filter.children;
 
         // Prepare filter values
         this.prepareFilters();
