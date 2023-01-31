@@ -244,18 +244,24 @@ export class FilterService {
                             }
                         });
 
-                        exists.valueDisplay = flt.value.split('|').map(el => {
-                            const isNot = el.indexOf('.%NOT') !== -1;
-                            if (isNot) {
-                                el = el.replace('.%NOT', '');
-                            }
-                            const v = exists.values.find(e => e.path == el);
-                            let name = '';
-                            if (v && v.name) {
-                                name = v.name.toString();
-                            }
-                            return (isNot ? this.i18n.get('not') + ' ' : '') + name;
-                        }).join(',');
+                        if (flt.valueDisplay) {
+                            exists.valueDisplay = flt.valueDisplay.trim();
+                        }
+
+                        if (!exists.valueDisplay) {
+                            exists.valueDisplay = flt.value.split('|').map(el => {
+                                const isNot = el.indexOf('.%NOT') !== -1;
+                                if (isNot) {
+                                    el = el.replace('.%NOT', '');
+                                }
+                                const v = exists.values.find(e => e.path == el);
+                                let name = '';
+                                if (v && v.name) {
+                                    name = v.name.toString();
+                                }
+                                return (isNot ? this.i18n.get('not') + ' ' : '') + name;
+                            }).join(',');
+                        }
                     }
 
                     found = true;
@@ -473,7 +479,8 @@ export class FilterService {
                 isExclude: e.isExclude,
                 isInterval: e.isInterval,
                 fromIdx: e.fromIdx,
-                toIdx: e.toIdx
+                toIdx: e.toIdx,
+                valueDisplay: e.valueDisplay
             };
         });
 

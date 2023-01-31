@@ -86,7 +86,10 @@ export class FilterPopupComponent implements OnInit {
         this.ds
             .searchFilters('', ds, activeFilters, [this.model.filter.targetProperty])
             .catch(e => this.onError(e, e.status))
-            .then(data => this.onFilterValuesReceived(data));
+            .then(data => {
+                this.onFilterValuesReceived(data);
+                this.onSearch('');
+            });
     }
 
     /**
@@ -213,7 +216,10 @@ export class FilterPopupComponent implements OnInit {
         this.ds
             .searchFilters(searchStr, ds)
             .catch(e => this.onError(e, e.status))
-            .then(data => this.onFilterValuesReceived(data));
+            .then(data => {
+                this.onFilterValuesReceived(data);
+                this.onSearch(searchStr);
+            });
     }
 
     /**
@@ -242,19 +248,19 @@ export class FilterPopupComponent implements OnInit {
         let oldFilters = this.model.filter.values.slice();
         const toAdd = [];
         filter.children.forEach(f => {
-            let o = oldFilters.find(flt => flt.path === f.path);
+            let o = oldFilters.find(flt => flt?.path === f?.path);
             if (o) {
                 Object.assign(f, o);
             } else {
-                toAdd.push(o);
+                toAdd.push(f);
             }
         });
 
         // Update model values
-        this.model.filter.values = [...toAdd]; // filter.children;
+        this.model.filter.values.push(...toAdd); // filter.children;
 
         // Prepare filter values
-        this.prepareFilters();
+        //this.prepareFilters();
 
         // Recreate filters
         //Filters.init(Filters.items.slice());
