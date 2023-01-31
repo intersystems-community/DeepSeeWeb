@@ -1,3 +1,6 @@
+#### 3.1.61
+* added dropdown menu for breadcrumbs if path is long
+
 #### 3.1.60
 * extended scorecard widget. now it supports `targetValue` & `target%`, uses auto max value for `plotBox` axis
 
