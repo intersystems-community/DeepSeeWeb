@@ -102,6 +102,12 @@ export class WPivotComponent extends BaseWidget implements OnInit, AfterViewInit
      * Requests pivot data
      */
     requestData() {
+        const ds = this.customDataSource || this.widget.dataSource;
+        if (this.widget.kpitype) {
+           this._requestKPIData();
+           return;
+        }
+
         if (this.lpt) {
             let newMdx = this.getMDX();
             if (this.lpt.isListing()) {

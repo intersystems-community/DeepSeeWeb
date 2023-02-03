@@ -211,7 +211,7 @@ export class FilterService {
             return;
         }
 
-        if (!this.ss.getAppSettings()?.isSaveFilters) {
+        if (this.ss.getAppSettings()?.isSaveFilters === false) {
             return;
         }
         let found = false;
@@ -243,6 +243,8 @@ export class FilterService {
                                 v.checked = true;
                             }
                         });
+
+                        this._addSavedFilterToFilterList(flt, exists);
 
                         if (flt.valueDisplay) {
                             exists.valueDisplay = flt.valueDisplay.trim();
@@ -510,5 +512,34 @@ export class FilterService {
      */
     clear() {
         this.items = [];
+    }
+
+    private _addSavedFilterToFilterList(toAdd: any, filters: any) {
+        const values = toAdd.value.split('|');
+        if (!values.length) {
+            return;
+        }
+        const display = toAdd.valueDisplay.split(',');
+        values.forEach((v, idx) => {
+            // Check if this value already exists
+            if (filters.values.some(exists => {
+                if (exists.path === v) {
+                    return true;
+                }
+                // Check if path is number, because all saved filters is strings
+                if (!isNaN(exists.path) && (parseInt(v, 10) === exists.path)) {
+                    return true;
+                }
+                return false;
+            })) {
+                return;
+            }
+            filters.values.push({
+                name: display[idx],
+                path: v,
+                checked: true,
+                _saved: true
+            });
+        });
     }
 }

@@ -4,6 +4,8 @@ import {IWidgetInfo} from '../../widgets/base-widget.class';
 import {FilterService} from '../../../services/filter.service';
 import {ErrorService} from '../../../services/error.service';
 import {DataService} from '../../../services/data.service';
+import {dsw} from "../../../../environments/dsw";
+import {DashboardService} from "../../../services/dashboard.service";
 
 @Component({
     selector: 'dsw-filter-popup',
@@ -31,6 +33,7 @@ export class FilterPopupComponent implements OnInit {
 
     constructor(private ss: StorageService,
                 private ds: DataService,
+                private dbs: DashboardService,
                 private fs: FilterService,
                 private es: ErrorService) {
         const settings = this.ss.getAppSettings();
@@ -59,9 +62,9 @@ export class FilterPopupComponent implements OnInit {
     }
 
     requestRelatedFilters() {
-        let ds = this.getDataSource();
+        const ds = this.getDataSource();
+        this.prepareFilters();
         if (!ds) {
-            this.prepareFilters();
             return;
         }
         const related = [];
@@ -82,6 +85,12 @@ export class FilterPopupComponent implements OnInit {
             }
         });
         activeFilters = activeFilters.map(f => ({Filter: f.targetProperty, Value: f.Value}));
+
+        const isValuesExists = !!filters.find(f => f.targetProperty === this.model?.filter?.targetProperty)?.values?.filter(v => !v._saved)?.length;
+        if (isValuesExists) {
+            return;
+        }
+
         this.model.isLoading = true;
         this.ds
             .searchFilters('', ds, activeFilters, [this.model.filter.targetProperty])
@@ -99,7 +108,13 @@ export class FilterPopupComponent implements OnInit {
     getDataSource(): string {
         let ds = '';
         try {
-            ds = this.widget.dataSource;
+            if (this.widget.type.toLowerCase() === dsw.const.emptyWidgetClass) {
+                const src = this.model.filter?.source || '';
+                const w = this.dbs.getWidgets().filter(ww => ww.name === src)[0];
+                ds = w?.dataSource || '';
+            } else {
+                ds = this.widget.dataSource;
+            }
         } catch (e) {
             ds = '';
         }
@@ -248,7 +263,15 @@ export class FilterPopupComponent implements OnInit {
         let oldFilters = this.model.filter.values.slice();
         const toAdd = [];
         filter.children.forEach(f => {
-            let o = oldFilters.find(flt => flt?.path === f?.path);
+            let o = oldFilters.find(flt => {
+                if (flt?.path === f?.path) {
+                    return true;
+                }
+                if (!isNaN(f?.path) && (parseInt(flt?.path, 10) === f?.path)) {
+                    return true;
+                }
+                return false;
+            });
             if (o) {
                 Object.assign(f, o);
             } else {

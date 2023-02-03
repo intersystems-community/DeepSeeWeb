@@ -9,7 +9,10 @@ import {CURRENT_NAMESPACE} from './namespace.service';
 
 export let MDX2JSON = 'MDX2JSON';
 export let NAMESPACE = 'MDX2JSON';
-
+export interface IKPIFilter {
+    name: string; // targetProperty
+    value: string;
+}
 // Tile info object
 export interface ITileInfo {
     isFolder: boolean;
@@ -140,10 +143,10 @@ export class DataService {
      * @param {string} name Name of KPI
      * @returns {object} $http promise
      */
-    getKPIData(name: string) {
+    getKPIData(name: string, filters?: IKPIFilter[]) {
         return this.http.post(
             this.url + 'KPI?Namespace=' + CURRENT_NAMESPACE,
-            {KPI: name},
+            {KPI: name, FILTERS: filters},
             this.withCredentialsTimeoutHeaders
         ).toPromise();
     }

@@ -1421,9 +1421,9 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         const ds = this.customDataSource || this.widget.dataSource;
         // Check if this KPI
         if (this.widget.kpitype) {
-            if (ds) {
+           /* if (ds) {
                 this.ds.getKPIData(ds).then(data => this._retriveKPI(data));
-            }
+            }*/
         } else {
             if (ds) {
                 this.ds.getPivotData(ds)
@@ -1502,6 +1502,28 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
     public onResize() {
     }
 
+    protected _requestKPIData() {
+        const ds = this.customDataSource || this.widget.dataSource;
+        if (!ds) {
+            return;
+        }
+        const filters = this.fs.getWidgetFilters(this.widget.name)?.filter(f => !!f.value).map(f => {
+            const values = f.value.split('|');
+            return values.map(v => {
+                return {
+                    name: f.targetProperty,
+                    value: v
+                };
+            });
+        }).flat();
+        this.showLoading();
+        this.ds.getKPIData(ds, filters).then(data => this._retriveKPI(data))
+            .finally(() => {
+                this.hideLoading();
+            });
+        return;
+    }
+
     /**
      * Request widget data
      */
@@ -1524,11 +1546,8 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         // this.drillLevel = 0;
         // this.drills = [];
         if (this.widget.kpitype) {
-            const ds = this.customDataSource || this.widget.dataSource;
-            if (ds) {
-                this.ds.getKPIData(ds).then(data => this._retriveKPI(data));
-            }
-            return;
+           this._requestKPIData();
+           return;
         }
         const mdx = this.getMDX();
         if (!mdx) {
@@ -1725,6 +1744,11 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         let flt;
         let path;
         let str;
+
+        // No mdx for KPI widgets
+        if (this.widget.kpitype) {
+            return '';
+        }
 
         // If widget is linked, use linkedMDX
         // if (this.isLinked() && !this.widget.shared && !this.widget.inline) {

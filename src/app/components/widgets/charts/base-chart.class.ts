@@ -788,7 +788,7 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
                         cube: data.Info.cubeName,
                         path: data.Cols[1].tuples[i].path,
                         name: data.Cols[1].tuples[i].caption,
-                        title: data.Cols[1].tuples[i].title,
+                        title: data.Cols[1].tuples[i].title
                     });
                 }
                 this.fixData(tempData);
@@ -801,6 +801,7 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
                 this.addSeries({
                     data: tempData,
                     name,
+                    path: data.Cols[0]?.tuples[j]?.path,
                     format: format || this.getFormat(data)
                 });
             }
