@@ -516,9 +516,10 @@ export class FilterService {
 
     private _addSavedFilterToFilterList(toAdd: any, filters: any) {
         const values = toAdd.value.split('|');
-        if (!values.length) {
+        if (!values.length || !toAdd.valueDisplay) {
             return;
         }
+
         const display = toAdd.valueDisplay.split(',');
         values.forEach((v, idx) => {
             // Check if this value already exists
