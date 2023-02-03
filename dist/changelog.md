@@ -1,3 +1,13 @@
+#### 3.1.63
+* fixed issue with filters on dashboard & datasource (no filter values for KPI widgets)
+* added support for KPI filters. now widgets with kpitype uses `/KPI` filters feature to process filtering
+* fixed issue with drillthrough with filters
+* added loading indicator when pivot executes KPI requests
+* added KPI support for non-pivot widgets
+* now saved filters are always displayed in the filter dropdown, even if no user action for a filter request has been made
+* fixed issue with app option "save filters" (doesn't work in some cases)
+* fixed issue with saving filters that returned as numbers from mdx2json 
+
 #### 3.1.62
 * partially fixed filter saving for filters outside filter list 
 
