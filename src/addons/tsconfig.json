@@ -5,6 +5,9 @@
         "moduleResolution": "Node",
         "module": "CommonJS",
         "resolveJsonModule": true,
-        "outDir": "../../dist-addons/"
+        "outDir": "../../dist-addons/",
+        "lib": [
+            "es2019"
+        ]
     }
 }
