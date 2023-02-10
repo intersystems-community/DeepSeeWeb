@@ -1,3 +1,6 @@
+#### 3.1.64
+* fixed issue when loading dashboard with saved filters in old format
+
 #### 3.1.63
 * fixed issue with filters on dashboard & datasource (no filter values for KPI widgets)
 * added support for KPI filters. now widgets with kpitype uses `/KPI` filters feature to process filtering
