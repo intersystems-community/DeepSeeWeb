@@ -1662,11 +1662,11 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         return mdx;
     }
 
-    replaceMDXVariables(mdx) {
+    replaceMDXVariables(mdx, filters) {
         if (mdx.indexOf('$') === -1) {
             return mdx;
         }
-        const vars = this.vs.items;
+        const vars = filters.filter(f => f.action === 'applyVariable'); // this.vs.items;
 
         // Get variables from url parameters for shared widgets
         if (this.widget.shared) {
@@ -1766,16 +1766,18 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
             return '';
         }
 
+        // Check for active filters on widget
+        const filters = this.fs.getWidgetFilters(this.widget.name);
+
         // If widget is linked, use linkedMDX
         // if (this.isLinked() && !this.widget.shared && !this.widget.inline) {
         if (this.isLinked()) {
-            str = this.replaceMDXVariables(this.linkedMdx || this.widget.linkedMdx || '');
+            str = this.replaceMDXVariables(this.linkedMdx || this.widget.linkedMdx || '', filters);
             str = this.checkColSpec(str);
             return this.applyDrill(str);
         }
 
-        // Check for active filters on widget
-        const filters = this.fs.getWidgetFilters(this.widget.name);
+
 
         // Add filter for drillFilter feature
         if (this.drillFilter) {
@@ -1794,7 +1796,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
                 break;
             }
         }
-        let mdx = this.replaceMDXVariables(this.widget.mdx);
+        let mdx = this.replaceMDXVariables(this.widget.mdx, filters);
         if (!mdx) {
             console.warn('Widget without MDX');
         }
@@ -1836,6 +1838,10 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         // Find other filters
         for (i = 0; i < filters.length; i++) {
             flt = filters[i];
+            // Skip all apply variable filters
+            if (flt.action === 'applyVariable') {
+                continue
+            }
             if (flt.value !== '' && !flt.isInterval) {
                 let bracket = '{';
                 if (flt.isExclude) {

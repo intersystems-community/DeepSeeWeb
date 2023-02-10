@@ -2,12 +2,14 @@
 * text widgets now shows only customized meters, or all if no custom has been set
 * fixed issue with drillthrough and "%MDX()"
 * fixed issue with incorrect url after logged out and logged in
+* added implementation of pivot variables as filters
 * changed design for "share widget"/"copy mdx" modal dialogs
 * added new share dashboard dropdown to the header
 * added missing icons from new design on widget header
 * changed design of login form
 * fixed doubled series error for pie char when switching labels
 * fixed console errors, pie charts without labels
+* fixed issue when loading saved filters, when mdx2json return numbers instead of string
 * migrated to Angular 15.1 & Highcharts 10.3.3
  
 #### 3.1.64

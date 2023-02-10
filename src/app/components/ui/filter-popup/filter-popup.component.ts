@@ -40,6 +40,14 @@ export class FilterPopupComponent implements OnInit {
         this.isRelatedFilters = settings.isRelatedFilters === undefined ? true : settings.isRelatedFilters;
     }
 
+    get isRadio() {
+        return (this.model?.filter.type === 'radioSet' || this.model?.filter.action === 'applyVariable');
+    }
+
+    get hasDefault() {
+        return (this.model?.filter.type === 'radioSet' && this.model?.filter.action !== 'applyVariable');
+    }
+
     initialize(widget: IWidgetInfo, filter: any, dataSource: string) {
         this.widget = widget;
         // this.source = filter;

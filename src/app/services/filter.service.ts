@@ -239,7 +239,7 @@ export class FilterService {
 
                         // Multiple values was selected
                         exists.values.forEach((v) => {
-                            if (values.indexOf(v.path) !== -1) {
+                            if (values.indexOf(v.path.toString()) !== -1) {
                                 v.checked = true;
                             }
                         });
