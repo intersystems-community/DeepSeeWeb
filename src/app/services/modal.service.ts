@@ -22,6 +22,7 @@ export interface IModal {
     buttons?: IModalButton[];
     component?: any;
     hideBackdrop?: boolean;
+    class?: string;
     componentStyles?: {[key: string]: string};
     onComponentInit?: (comp: any) => void;
     onClose?: () => void;

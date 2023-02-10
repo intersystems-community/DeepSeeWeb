@@ -532,6 +532,13 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         return this.widget.dataProperties.find(pr => pr.name === name);
     }
 
+    getDataPropByDataValue(dataValue: string): IWidgetDataProperties|undefined {
+        if (!this.widget.dataProperties) {
+            return;
+        }
+        return this.widget.dataProperties.find(pr => pr.dataValue === dataValue);
+    }
+
     getDataPropValue(name: string): string|undefined {
         const prop = this.getDataProp(name);
         if (prop && prop.dataValue !== null && prop.dataValue !== undefined) {
@@ -924,14 +931,23 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
 
 
     getDrillthroughMdx(mdx: string) {
-        const m = mdx.toLowerCase();
+        let m = mdx.toLowerCase();
+
+        //TODO: check if this needed: Remove %MDX(...) to ignore in processing mdx
+        // m = m.replace(/(?<=\%MDX\().*?(?=\))/ig, '');
+        /* const matches = m.match(/(?<=\%MDX\().*?(?=\))/ig);
+        const indices = matches.map(ma => m.indexOf(ma));
+        matches.forEach(ma => {
+            m = m.replace(ma, '');
+        });*/
+
         let selTxt = 'select non empty';
-        let idx1 = m.indexOf(selTxt);
+        let idx1 = m.lastIndexOf(selTxt);
         if (idx1 === -1) {
             selTxt = 'select';
-            idx1 = m.indexOf(selTxt);
+            idx1 = m.lastIndexOf(selTxt);
         }
-        const idx2 = m.indexOf('from');
+        const idx2 = m.lastIndexOf('from');
         if (idx1 === -1) {
             console.warn('Can\'t find \'select\' in MDX during calculation drillthrough mdx');
             return;

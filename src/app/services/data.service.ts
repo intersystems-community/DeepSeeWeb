@@ -226,7 +226,7 @@ export class DataService {
     handleError() {
         return catchError(err => {
             if (err.status === 401 || err.status === 403) {
-                void this.router.navigateByUrl('/login?from=' + this.router.url);
+                void this.router.navigateByUrl('/login?from=' + encodeURIComponent(this.router.url));
                 return of();
             }
             this.es.show(err.message);

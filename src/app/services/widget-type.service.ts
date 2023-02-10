@@ -43,14 +43,14 @@ const btnPieChart: IHeaderButton[] = [
         id: 'btn.ShowAnnotations',
         text: 'Show annotations',
         tooltip: 'Show annotations',
-        icon: 'assets/img/icons/format_color_text_black_18dp.svg',
+        icon: 'assets/img/icons/text.svg',
         defValue: true
     },
     {
         id: 'btn.ShowPercents',
         text: 'Show percents',
         tooltip: 'Show percents',
-        icon: 'assets/img/icons/percentage.svg'
+        icon: 'assets/img/icons/percent.svg'
     }
 ];
 

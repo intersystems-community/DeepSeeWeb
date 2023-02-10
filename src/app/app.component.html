@@ -5,7 +5,7 @@
 </div>
 
 <!-- Modals -->
-<dsw-modal *ngFor="let modal of ms.modals | async" [data]="modal"></dsw-modal>
+<dsw-modal *ngFor="let modal of ms.modals | async" [data]="modal" [ngClass]="modal.class" ></dsw-modal>
 
 <!-- Error list -->
 <dsw-error

@@ -891,12 +891,18 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
                                     const onLegendItemOut = (e) => {
                                         this.onLegendItemOut({series: l.series, index: l.index});
                                     };
-                                    const element = (l.legendItem as any).group.element;
-                                    element.addEventListener('mouseover', onLegendItemHover);
-                                    _this.axisLabelListeners.push({event: 'mouseover', element, func: onLegendItemHover});
+                                    const element = (l.legendItem as any)?.group.element;
+                                    if (element) {
+                                        element.addEventListener('mouseover', onLegendItemHover);
+                                        _this.axisLabelListeners.push({
+                                            event: 'mouseover',
+                                            element,
+                                            func: onLegendItemHover
+                                        });
 
-                                    element.addEventListener('mouseout', onLegendItemOut);
-                                    _this.axisLabelListeners.push({event: 'out', element, func: onLegendItemOut});
+                                        element.addEventListener('mouseout', onLegendItemOut);
+                                        _this.axisLabelListeners.push({event: 'out', element, func: onLegendItemOut});
+                                    }
                                 });
                             }
 

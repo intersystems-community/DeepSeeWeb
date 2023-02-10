@@ -172,7 +172,8 @@ export class DashboardScreenComponent implements OnInit, OnDestroy, AfterViewIni
             if (this.gridster) {
                 this.gridster.optionsChanged();
                 setTimeout(() => {
-                    this.gridster.resize();
+                    // this.gridster.resize();
+                    this.gridster.onResize();
                 }, 1000);
             }
         });
@@ -766,7 +767,9 @@ export class DashboardScreenComponent implements OnInit, OnDestroy, AfterViewIni
 
         const filename = (this.ctxItem.title || 'data') + '.csv';
         const blob = new Blob([csvFile], {type: 'text/csv;charset=utf-8;'});
+        // @ts-ignore
         if (navigator.msSaveBlob) { // IE 10+
+            // @ts-ignore
             navigator.msSaveBlob(blob, filename);
         } else {
             const link = document.createElement('a');

@@ -47,6 +47,7 @@ $max-width: 1336px;
 :root {
     --cl-bg: #F5F5F5;
     --cl-accent: #1A73E8;
+    --cl-btn-hover: #025BD0;
     --cl-hover: #E8F0FE;
     --cl-txt: #555555;
     --input-border-radius: 13px;
@@ -57,7 +58,7 @@ $max-width: 1336px;
     --cl-btn-main-border: #4cae4c;
     --cl-btn-main-hover: #6eca6e;
 
-    --cl-btn-secondary: #363535;
+    --cl-btn-secondary: #e6e6e6;
     --cl-btn-secondary-txt: #cccccc;
     --cl-btn-secondary-border: #b4b2b2;
     --cl-btn-secondary-hover: #dbdbdb;
@@ -93,7 +94,7 @@ $max-width: 1336px;
 
     // Sidebar
     --cl-sidebar-bg: #F5F5F5;
-    --cl-sidebar-txt: black;
+    --cl-sidebar-txt: #606367;
     //--sidebar-width: 300px;
 
     // Tiles

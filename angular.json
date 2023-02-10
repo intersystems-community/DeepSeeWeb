@@ -41,7 +41,7 @@
                             "src/scss/styles.scss",
                             {
                                 "input": "src/scss/themes/contrast.scss",
-                                "bundleName": "css/themes/contrast",
+                                "bundleName": "contrast",
                                 "inject": false
                             }
                         ],
@@ -51,6 +51,29 @@
                         ]
                     },
                     "configurations": {
+                        "development": {
+                            "optimization": false,
+                            "outputHashing": "none",
+                            "sourceMap": true,
+                            "namedChunks": true,
+                            "extractLicenses": false,
+                            "vendorChunk": false,
+                            "buildOptimizer": false,
+                            "budgets": [
+                                {
+                                    "type": "initial",
+                                    "maximumWarning": "3mb",
+                                    "maximumError": "5mb"
+                                },
+                                {
+                                    "type": "anyComponentStyle",
+                                    "maximumWarning": "6kb",
+                                    "maximumError": "10kb"
+                                }
+                            ],
+                            "serviceWorker": false,
+                            "ngswConfigPath": "ngsw-config.json"
+                        },
                         "production": {
                             "fileReplacements": [
                                 {
@@ -61,7 +84,6 @@
                             "optimization": true,
                             "outputHashing": "all",
                             "sourceMap": false,
-                            "extractCss": true,
                             "namedChunks": false,
                             "extractLicenses": true,
                             "vendorChunk": false,
@@ -84,6 +106,7 @@
                     }
                 },
                 "serve": {
+                    "defaultConfiguration": "development",
                     "builder": "@angular-devkit/build-angular:dev-server",
                     "options": {
                         "browserTarget": "DeepSeeWeb:build"
@@ -91,6 +114,9 @@
                     "configurations": {
                         "production": {
                             "browserTarget": "DeepSeeWeb:build:production"
+                        },
+                        "development": {
+                            "browserTarget": "DeepSeeWeb:build:development"
                         }
                     }
                 },

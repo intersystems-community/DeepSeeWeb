@@ -11,17 +11,18 @@
 
 // Label text style
 label {
-    display: block;
-    clear: both;
+    display: flex;
+    justify-content: space-between;
     font-family: $font;
     color: var(--cl-sidebar-txt);
     margin-top: 10px;
     margin-bottom: 2px;
+    font-size: 14px;
+    width: calc(100% - 4px);
 }
 
 // Upload control
 input[type=file] {
-    padding: 3px;
     &::-webkit-file-upload-button {
         // color: red;
     }
@@ -30,11 +31,8 @@ input[type=file] {
 // Checkbox, must be placed inside label
 input[type=checkbox] {
     cursor: pointer;
-    height: 20px;
-    width: 20px;
     outline: none;
     display: inline;
-    float: right;
     &:focus, &:active {
         outline: none;
     }
@@ -71,10 +69,10 @@ input[type=checkbox] {
 }
 
 .container {
-    margin-left: 10px;
-    margin-right: 10px;
-    overflow-y: auto;
     height: 100%;
+    width: calc(100% - 20px);
+    overflow-y: auto;
+    margin-left: 20px;
 }
 
 input {

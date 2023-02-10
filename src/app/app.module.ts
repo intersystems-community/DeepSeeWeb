@@ -65,6 +65,7 @@ import Heatmap from 'highcharts/modules/heatmap';
 // Load the exporting module.
 import Exporting from 'highcharts/modules/exporting';
 import Map from 'highcharts/modules/map';
+import { ShareDashboardComponent } from './components/ui/share-dashboard/share-dashboard/share-dashboard.component';
 
 More(Highcharts);
 Tree(Highcharts);
@@ -123,7 +124,8 @@ export function createCompiler(compilerFactory: CompilerFactory) {
         AppSettingsComponent,
         MenuSettingsComponent,
         ThemeSettingsComponent,
-        ScorecardWidgetComponent
+        ScorecardWidgetComponent,
+        ShareDashboardComponent
     ],
     imports: [
         BrowserAnimationsModule,

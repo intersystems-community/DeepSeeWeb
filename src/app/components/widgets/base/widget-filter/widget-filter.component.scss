@@ -46,7 +46,7 @@
     & > label {
         font-size: 12px;
         color: var(--cl-widget-filter-txt);
-        margin-bottom: 2px;
+        margin-bottom: 4px;
         white-space: nowrap;
         text-overflow: ellipsis;
         overflow: hidden;
@@ -105,7 +105,7 @@
     flex-direction: row;
 }
 
-.btn {
+/*.btn {
     // border: 1px solid #cccccc;
     box-shadow: none;
     background-color: var(--cl-hover);
@@ -115,4 +115,4 @@
     &:hover {
         filter: contrast(0.9);
     }
-}
+}*/

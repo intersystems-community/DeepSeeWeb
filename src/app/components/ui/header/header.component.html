@@ -31,9 +31,11 @@
     </button>
 
     <!-- Share dashboard -->
-    <button class="btn btn-icon square s60 only-desktop" (click)="showShareDashboard()" *ngIf="!isSearch" [title]="'shareDashboard' | i18n">
+    <div class="btn btn-icon square s60 only-desktop btn-share" (mouseover)="showShareDashboard()" *ngIf="!isSearch" [title]="'shareDashboard' | i18n">
         <img src="assets/img/icons/icon-share.svg">
-    </button>
+
+        <dsw-share-dashboard [shareUrl]="shareUrl" [isSmall]="true"></dsw-share-dashboard>
+    </div>
 
     <!-- Mobile filter -->
     <div class="btn btn-icon square btn-mobile-filter only-sm" (click)="toggleMobileFilter()" *ngIf="!isSearch && isMobileFilterButton">

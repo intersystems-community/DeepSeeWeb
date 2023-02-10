@@ -199,6 +199,16 @@ export class PieChartComponent extends BaseChartClass implements OnInit {
         if (bt.name === 'ShowValues' || bt.name === 'btn.ShowAnnotations' || bt.name === 'btn.ShowPercents') {
             (this.chartConfig.plotOptions.pie.dataLabels as SeriesPieDataLabelsOptionsObject).enabled = this.isValuesVisible();
             this.updateChart(true);
+
+            // Highcharts issue with doubled legend. Need legend refresh after hidding datalables
+            this.chart?.series.forEach((s, idx) => {
+                if (idx !== 0) {
+                    s.options.showInLegend = false;
+                }
+            });
+            if (this.chart?.series.length > 1) {
+                this.chart.legend.update(this.chartConfig.legend, true);
+            }
         }
         super.onHeaderButton(bt);
     }

@@ -1,0 +1,5 @@
+<div>
+    <p>{{title}}</p>
+    <textarea type="text" [value]="shareUrl" [class.small]="isSmall"></textarea>
+    <button class="btn" (click)="onCopyClick()">{{isCopied ? 'Copied!' : btnTitle}}</button>
+</div>

@@ -26,10 +26,12 @@
     width: 300px;
     padding: 25px 25px;
     // background-color: white;
-    box-shadow: #00000045 0 0 4px 0;
     margin-bottom: 20vh;
-    background-color: transparent;
     backdrop-filter: blur(6px);
+
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    background-color: rgba(255, 255, 255, 0.5);
     & > div:first-child {
         width: 100%;
         display: flex;
@@ -74,10 +76,11 @@ img {
 }
 
 input {
-    margin-bottom: 16px;
+    margin-bottom: 24px;
     width: 100%;
 
     @include sm {
+        margin-bottom: 16px;
         height: 40px;
         /*margin-bottom: 16px;
         width: 100%;
@@ -107,6 +110,7 @@ input {
 .btn {
     width: 100%;
     display: block;
+    margin-top: 30px;
     margin-bottom: 4px;
     height: 40px;
    /* @include sm {
@@ -128,6 +132,6 @@ input {
 .logo {
     font-size: 26px;
     font-weight: bold;
-    margin-bottom: 25px;
-    color: #29328a;
+    margin-bottom: 30px;
+    color: #1C1D20;
 }

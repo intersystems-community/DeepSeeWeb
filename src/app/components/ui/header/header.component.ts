@@ -15,6 +15,7 @@ import {ModalService} from '../../../services/modal.service';
 import {FilterService} from '../../../services/filter.service';
 import {DataService} from "../../../services/data.service";
 import {I18nService} from "../../../services/i18n.service";
+import {ShareDashboardComponent} from "../share-dashboard/share-dashboard/share-dashboard.component";
 
 /**
  * Breadcrumb
@@ -36,7 +37,7 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
     private subTitle: Subscription;
     private subOnSearch: Subscription;
     private subOnSearchReset: Subscription;
-    private subShareDashboard: Subscription;
+    // private subShareDashboard: Subscription;
     private subGotoDSZ: Subscription;
     private subToggleMobileFilter: Subscription;
 
@@ -54,6 +55,7 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
     languages: string[];
     selectedLanguage = this.i18n.current.toUpperCase();
     isMorePressed = false;
+    shareUrl = '';
 
     constructor(public ss: SidebarService,
                 public hs: HeaderService,
@@ -90,9 +92,9 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
             this.title = t || this.path[this.path?.length - 1]?.title || '';
         });
 
-        this.subShareDashboard = this.hs.shareDashboardEmitter.subscribe(() => {
+        /*this.subShareDashboard = this.hs.shareDashboardEmitter.subscribe(() => {
             this.showShareDashboard();
-        });
+        });*/
 
         this.subGotoDSZ = this.hs.gotoZenDeepSeeEmitter.subscribe(() => {
             this.gotoZenDeepSee();
@@ -105,7 +107,7 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
 
     ngOnDestroy() {
         this.subToggleMobileFilter.unsubscribe();
-        this.subShareDashboard.unsubscribe();
+        // this.subShareDashboard.unsubscribe();
         this.subGotoDSZ.unsubscribe();
         this.subTitle.unsubscribe();
         this.subOnSearch.unsubscribe();
@@ -216,7 +218,19 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
      * Shows share dashboard screen
      */
     showShareDashboard() {
-        const url = this.fs.getFiltersShareUrl();
+        this.shareUrl = this.fs.getFiltersShareUrl();
+        /*if (asModal) {
+            this.modal.show({
+                title: 'Share dashboard',
+                component: ShareDashboardComponent,
+                closeByEsc: true,
+               /!* onComponentInit: (c: TextAreaComponent) => {
+                    c.value = url;
+                }*!/
+            });
+        }*/
+
+        /*const url = this.fs.getFiltersShareUrl();
         this.modal.show({
             title: 'Share dashboard',
             component: TextAreaComponent,
@@ -224,7 +238,7 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
             onComponentInit: (c: TextAreaComponent) => {
                 c.value = url;
             }
-        });
+        });*/
     }
 
     /**

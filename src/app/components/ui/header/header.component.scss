@@ -101,6 +101,7 @@ h2 {
 
 // Header button
 .btn {
+    position: relative;
     height: 100%;
     border: none;
     background-color: transparent;
@@ -128,7 +129,8 @@ h2 {
 
         // 60% size
         &.s60 {
-            height: calc(var(--header-height) * 0.6);
+            height: 26px;
+            // height: calc(var(--header-height) * 0.6);
             width: calc(var(--header-height) * 0.4);
         }
 
@@ -150,7 +152,7 @@ h2 {
 
     // Hover state
     &:hover {
-        background-color: var(--cl-header-btn-hover);
+        background-color: var(--cl-hover);
     }
 }
 
@@ -367,4 +369,23 @@ input[type=search] {
             display: none;
         }
     }
+}
+
+.btn-share {
+    & > dsw-share-dashboard {
+        display: none;
+    }
+
+    &:hover, &:active {
+        transform: none;
+        & > dsw-share-dashboard {
+            display: block;
+        }
+    }
+}
+
+dsw-share-dashboard {
+    position: absolute;
+    top: 17px;
+    left: -20px;
 }
