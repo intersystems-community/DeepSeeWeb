@@ -642,6 +642,9 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
                 if (prop.toLowerCase().slice(-9) === '.termlist') {
                     prop = prop.slice(0, -9);
                 }
+                if (prop.toLowerCase().slice(-5) === '.term') {
+                    prop = prop.slice(0, -5);
+                }
             }
             const item = {
                 action: choosers[i].action,
@@ -934,6 +937,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         let m = mdx.toLowerCase();
 
         //TODO: check if this needed: Remove %MDX(...) to ignore in processing mdx
+        // (AAA(?:( ?!%MDX()[^)]+))BBB)
         // m = m.replace(/(?<=\%MDX\().*?(?=\))/ig, '');
         /* const matches = m.match(/(?<=\%MDX\().*?(?=\))/ig);
         const indices = matches.map(ma => m.indexOf(ma));

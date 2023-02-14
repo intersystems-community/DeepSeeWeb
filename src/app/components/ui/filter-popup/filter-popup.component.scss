@@ -4,6 +4,9 @@
 :host {
     position: absolute;
     user-select: none;
+
+    display: flex;
+    flex-direction: column;
 //    background:  #EFF1F2;
     width: 340px;
     // box-shadow: 0px 0px 4px 0 #00000036;

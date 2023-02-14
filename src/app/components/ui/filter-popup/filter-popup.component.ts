@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, OnInit} from '@angular/core';
 import {StorageService} from '../../../services/storage.service';
 import {IWidgetInfo} from '../../widgets/base-widget.class';
 import {FilterService} from '../../../services/filter.service';
@@ -12,7 +12,7 @@ import {DashboardService} from "../../../services/dashboard.service";
     templateUrl: './filter-popup.component.html',
     styleUrls: ['./filter-popup.component.scss']
 })
-export class FilterPopupComponent implements OnInit {
+export class FilterPopupComponent implements OnInit, AfterViewInit {
     model = {
         search: '',
         isLoading: false,
@@ -32,6 +32,7 @@ export class FilterPopupComponent implements OnInit {
     trackByIndex = (index: number, r: any) => index;
 
     constructor(private ss: StorageService,
+                private el: ElementRef,
                 private ds: DataService,
                 private dbs: DashboardService,
                 private fs: FilterService,
@@ -47,6 +48,21 @@ export class FilterPopupComponent implements OnInit {
     get hasDefault() {
         return (this.model?.filter.type === 'radioSet' && this.model?.filter.action !== 'applyVariable');
     }
+
+    ngAfterViewInit() {
+        const el = this.el?.nativeElement;
+        if (!el) {
+            return;
+        }
+        const rect = el.getBoundingClientRect();
+        const maxH = window.innerHeight;
+        if (rect.top + rect.height > maxH) {
+            const delta = (rect.top + rect.height) - maxH;
+            el.style.maxHeight = (rect.height - delta - 20) + 'px';
+            console.log(delta);
+        }
+    }
+
 
     initialize(widget: IWidgetInfo, filter: any, dataSource: string) {
         this.widget = widget;

@@ -43,6 +43,9 @@ export class SpeedometerChartComponent extends BaseChartClass implements OnInit 
                 plotShadow: false
             },
             plotOptions: {
+                legend: {
+                    enabled: false
+                },
                 series: {
                     dataLabels: {
                         enabled: true,
