@@ -1,15 +1,20 @@
+#### 3.1.66
+* added support for ".term" for ChooseRowSpec, ChooseDataSource, ChooseColSpec
+* legend for speedometer now hidden
+* filter popup window now has limit to height, never can overflow window height
+
 #### 3.1.65
-* text widgets now shows only customized meters, or all if no custom has been set
+* text widgets now show only customized meters, or all if no custom has been set
 * fixed issue with drillthrough and "%MDX()"
-* fixed issue with incorrect url after logged out and logged in
-* added implementation of pivot variables as filters
+* fixed issue with incorrect url after logging out and logging in
+* added an implementation of pivot variables as filters
 * changed design for "share widget"/"copy mdx" modal dialogs
-* added new share dashboard dropdown to the header
-* added missing icons from new design on widget header
-* changed design of login form
+* added a new share dashboard dropdown to the header
+* added missing icons from the new design on the widget header
+* changed the design of the login form
 * fixed doubled series error for pie char when switching labels
 * fixed console errors, pie charts without labels
-* fixed issue when loading saved filters, when mdx2json return numbers instead of string
+* fixed issue when loading saved filters when mdx2json returns numbers instead of string
 * migrated to Angular 15.1 & Highcharts 10.3.3
  
 #### 3.1.64
