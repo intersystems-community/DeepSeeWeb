@@ -135,10 +135,10 @@ SimpleAddon.AddonInfo = {
     type: 'custom'
 };
 __decorate([
-    core_1.ViewChild('canvas', { static: false })
+    (0, core_1.ViewChild)('canvas', { static: false })
 ], SimpleAddon.prototype, "canvas", void 0);
 SimpleAddon = __decorate([
-    core_1.Component({
+    (0, core_1.Component)({
         selector: 'dsw-simple-addon',
         template: `
         <h2>Hello, this is simple addon component</h2>
@@ -164,6 +164,6 @@ SimpleAddon = __decorate([
         }
     `]
     }),
-    __param(0, core_1.Inject(core_1.Injector))
+    __param(0, (0, core_1.Inject)(core_1.Injector))
 ], SimpleAddon);
 exports.SimpleAddon = SimpleAddon;

@@ -51,10 +51,10 @@ HtmlViewer.AddonInfo = {
     type: 'custom'
 };
 HtmlViewer = __decorate([
-    core_1.Component({
+    (0, core_1.Component)({
         template: `
         <iframe [src]="url" style="border: none; width:100%; height:100%; flex: 1 1 100%"></iframe>`
     }),
-    __param(0, core_1.Inject(core_1.Injector))
+    __param(0, (0, core_1.Inject)(core_1.Injector))
 ], HtmlViewer);
 exports.HtmlViewer = HtmlViewer;
