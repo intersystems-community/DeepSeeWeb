@@ -1,3 +1,6 @@
+#### 3.1.67
+* fixed issue with KPI filters and `number` value in filter received from mdx2json
+
 #### 3.1.66
 * added support for ".term" for ChooseRowSpec, ChooseDataSource, ChooseColSpec
 * legend for speedometer now hidden

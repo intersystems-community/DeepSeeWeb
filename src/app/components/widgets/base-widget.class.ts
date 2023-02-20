@@ -1528,7 +1528,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
             return;
         }
         const filters = this.fs.getWidgetFilters(this.widget.name)?.filter(f => !!f.value).map(f => {
-            const values = f.value.split('|');
+            const values = (f.value.toString()).split('|');
             return values.map(v => {
                 return {
                     name: f.targetProperty,
