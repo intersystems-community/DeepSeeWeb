@@ -1,3 +1,14 @@
+#### 3.1.68
+* fixed issue with `rowcount` if MDX already contains HEAD
+* fixed broken navigation after a page refresh
+* fixed navigating to Iris BI issue
+* fixed issue with a legend for speedometer, when visibility option has been saved on the client side
+* now filters panel always fits to max height of the dashboard if no user settings for it
+* now widgets perfectly fit to the screen, but if the widget is small - the widget becomes larger and the dashboard becomes scrollable. this solves the issue when there are many widgets on the dashboard
+* added support of format that comes from widget info for text meters
+* fixed issue with fitting widgets into the screen after the redesign
+* fixed fullscreen widget bottom margin
+
 #### 3.1.67
 * fixed issue with KPI filters and `number` value in filter received from mdx2json
 
