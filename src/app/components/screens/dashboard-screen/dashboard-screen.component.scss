@@ -53,6 +53,7 @@ gridster {
         height: auto !important;
         transform: none !important;
         transition: none !important;
+        margin: 0 !important;
         & .drag-handle {
             pointer-events: none;
         }

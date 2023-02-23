@@ -34,6 +34,7 @@ export interface IWidgetType {
     type: string;
     chart: string;
     allowShowAsPivot: boolean;
+    disableLegend?: boolean;
     headerButtons?: IHeaderButton[];
 }
 
@@ -76,7 +77,8 @@ const TYPES = {
         class: SpeedometerChartComponent,
         type: 'chart',
         chart: 'gauge',
-        allowShowAsPivot: true
+        allowShowAsPivot: true,
+        disableLegend: true,
     },
     bubblechart: {
         class: BubbleChartComponent,

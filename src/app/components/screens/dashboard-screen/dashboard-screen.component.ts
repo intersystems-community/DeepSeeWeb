@@ -91,9 +91,10 @@ export class DashboardScreenComponent implements OnInit, OnDestroy, AfterViewIni
         canDrillthrough: false
     };
     tilesOptions: GridsterConfig = {
-
         useTransformPositioning: true,
         margin: 20,
+        // rowHeightRatio: 1.5,
+        //gridType: GridType.ScrollVertical,
         gridType: GridType.VerticalFixed,
         draggable: {
             ignoreContent: true,
@@ -380,10 +381,18 @@ export class DashboardScreenComponent implements OnInit, OnDestroy, AfterViewIni
             return;
         }
         if (result.displayInfo && result.displayInfo.gridRows && !this.settings.widgetHeight && !this.sharedWidget) {
-            const headerHeight = 58;
+            const headerHeight = 63;
             const rows = result.displayInfo.gridRows;
-            const padding = 10;
-            this.tilesOptions.fixedRowHeight = Math.floor((window.innerHeight - (headerHeight + padding * (rows + 1))) / rows);
+            const padding = 20;
+            let minHeight = window.innerHeight;
+            if (minHeight < 800) {
+                minHeight = 800;
+            }
+            this.tilesOptions.fixedRowHeight = Math.floor((minHeight - (headerHeight + padding * (rows + 1))) / rows);
+            // this.tilesOptions.fixedRowHeight = 400;
+           /* if (this.tilesOptions.fixedRowHeight < 20) {
+                this.tilesOptions.fixedRowHeight = 20;
+            }*/
             if (this.gridster) {
                 this.gridster.optionsChanged();
             }
@@ -476,7 +485,6 @@ export class DashboardScreenComponent implements OnInit, OnDestroy, AfterViewIni
             if (result.widgets[i].name) {
                 this.setWidgetSizeAndPos(item, result.widgets[i].name.toString(), path);
             }
-
             // For shared widget set pos to zero and index too
             if (this.sharedWidget) {
                 item.x = 0;
@@ -511,6 +519,8 @@ export class DashboardScreenComponent implements OnInit, OnDestroy, AfterViewIni
         if (!this.sharedWidget) {
             setTimeout(() => this.broadcastDependents(), 0);
         }
+
+        this.fitEmptyWidget();
 
         this.dbs.setWidgets(this.widgetInfo);
 
@@ -900,5 +910,29 @@ export class DashboardScreenComponent implements OnInit, OnDestroy, AfterViewIni
             title: this.contexMenuData.drillTitle
         });
         this.hideContextMenu();
+    }
+
+    private fitEmptyWidget() {
+        let empty = null;
+        let maxx = 0;
+        let maxy = 0;
+        this.widgetInfo.forEach(wi => {
+            if (wi.name === 'emptyWidget') {
+                empty = wi;
+                return;
+            }
+            const x = (wi.x || 0) + (wi.cols || 0);
+            const y = (wi.y || 0) + (wi.rows || 0);
+            if (x > maxx) {
+                maxx = x;
+            }
+            if (y > maxy) {
+                maxy = y;
+            }
+        });
+        if (!empty) {
+            return;
+        }
+        empty.rows = maxy || 2;
     }
 }

@@ -36,6 +36,9 @@ export class SpeedometerChartComponent extends BaseChartClass implements OnInit 
             tooltip: {
                 enabled: false
             },
+            legend: {
+                enabled: false
+            },
             chart: {
                 plotBackgroundColor: null,
                 plotBackgroundImage: null,
@@ -43,9 +46,6 @@ export class SpeedometerChartComponent extends BaseChartClass implements OnInit 
                 plotShadow: false
             },
             plotOptions: {
-                legend: {
-                    enabled: false
-                },
                 series: {
                     dataLabels: {
                         enabled: true,

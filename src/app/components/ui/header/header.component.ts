@@ -82,7 +82,7 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
         if (title.indexOf('?') !== -1) {
             title = title.split('?')[0];
         }
-        return {title, url: path.slice(0, idx + 1).join('/')};
+        return {title, url: decodeURIComponent(path.slice(0, idx + 1).join('/'))};
     }
 
     ngOnInit() {
@@ -210,7 +210,7 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
     gotoZenDeepSee() {
         const folder = this.storage.serverSettings.DefaultApp || '/csp/' + CURRENT_NAMESPACE;
         const dashboard = this.path[this.path.length - 1].url.split('/').slice(1).join('/');
-        const url = folder + '/_DeepSee.UserPortal.DashboardViewer.zen?DASHBOARD=' + encodeURIComponent(dashboard);
+        const url = folder + '/_DeepSee.UserPortal.DashboardViewer.zen?DASHBOARD=' + encodeURIComponent(decodeURIComponent(dashboard));
         window.open(url);
     }
 

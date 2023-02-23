@@ -75,14 +75,19 @@ export class WTextComponent extends BaseWidget implements OnInit, AfterViewInit 
         this.hideLoading();
         if (result) {
             for (let i = 0; i < result.Cols[0].tuples.length; i++) {
+                let dProp = null;
                 if (this.widget.dataProperties) {
-                    if (!this.getDataPropByDataValue(result.Cols[0].tuples[i].dimension)) {
+                    dProp = this.getDataPropByDataValue(result.Cols[0].tuples[i].dimension);
+                    if (!dProp) {
                         continue;
                     }
                 }
                 let propFmt = '';
-                if (this.widget && this.widget.properties && this.widget.properties.format) {
-                    propFmt = this.widget.properties.format;
+                if (this.widget?.format) {
+                    propFmt = this.widget.format;
+                }
+                if (dProp?.format) {
+                    propFmt = dProp?.format;
                 }
                 // Format value
                 let v = result.Data[i];

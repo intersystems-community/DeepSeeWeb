@@ -67,7 +67,7 @@
 </button>
 
 <!-- Toggle legend -->
-<button *ngIf="widget?.isChart && !widget.noToggleLegend" (click)="onClick('isLegend')"
+<button *ngIf="!typeDesc?.disableLegend && (widget?.isChart && !widget.noToggleLegend)" (click)="onClick('isLegend')"
         [class.active]="widget?.isLegend"
         title="{{'showLegend' | i18n}}">
     <!--        <i class="fa fa-info"></i>-->

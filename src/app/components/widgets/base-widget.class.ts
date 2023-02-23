@@ -123,7 +123,7 @@ export interface IWidgetInfo {
     x: number;
     y: number;
     cols: number;
-    row: number;
+    rows: number;
 
     dataProperties: IWidgetDataProperties[];
 
@@ -198,6 +198,9 @@ export interface IWidgetInfo {
     // For empty widget filters size
     viewSize: number;
     shared?: boolean;
+
+    // Additional
+    format?: string;
 }
 
 @Directive()
@@ -2072,6 +2075,12 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         if (!ctrl || !ctrl._value) {
             return mdx;
         }
+        // Check if there is already rowcout HEAD keyword in mdx
+        const pattern = /(HEAD\(.*),(.*)(\))/i;
+        if (mdx.match(pattern)) {
+            return mdx.replace(pattern, `$1,${ctrl._value}$3`);
+        }
+
         const m = mdx.match(/ON 0,(.*)ON 1/);
         let part = m[1];
         if (!part) {
