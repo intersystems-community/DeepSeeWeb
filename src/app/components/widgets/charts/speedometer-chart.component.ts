@@ -163,13 +163,13 @@ export class SpeedometerChartComponent extends BaseChartClass implements OnInit 
     async parseData(data) {
         if (this.confs.length === 0) {
             for (let t = 0; t < data.Cols[0].tuples.length; t++) {
-                this.confs.push(this.us.mergeRecursive({}, this.chartConfig));
                 let caption = data.Cols[0].tuples[t].caption;
-                const dp = this.widget.dataProperties[t];
+                const dp = this.widget.dataProperties.find(p => p.dataValue === data.Cols[0].tuples[t].dimension);
                 if (dp && dp.label && dp.label !== '$auto') {
                     caption = dp.label;
                 }
-                this.confs[t].title.text = caption;
+                this.confs.push(this.us.mergeRecursive({}, this.chartConfig));
+                this.confs[this.confs.length - 1].title.text = caption;
             }
             this.cd.detectChanges();
 

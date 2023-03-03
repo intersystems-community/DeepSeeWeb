@@ -428,6 +428,13 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
             }
             // this.createChart();
         }
+
+        // Don't show legend for 1 series (#346)
+        if (this.chart?.series.length < 2) {
+            this.chart.legend.update({
+                enabled: false
+            });
+        }
     }
 
     /**

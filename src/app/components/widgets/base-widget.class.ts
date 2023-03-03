@@ -87,7 +87,7 @@ export interface IAddonInfo {
 }
 
 export type WidgetColumnDisplayType = 'trendLine' | 'plotBox' | 'itemNo' | 'value' | 'label' | '';
-export type WidgetColumnShowType = 'value' | 'target%';
+export type WidgetColumnShowType = 'value' | 'target%' | 'sum%';
 export type WidgetColumnSummaryType = 'sum' | '';
 
 export interface IWidgetDataProperties {
@@ -201,6 +201,31 @@ export interface IWidgetInfo {
 
     // Additional
     format?: string;
+}
+
+export interface IKPIDataInfo {
+    Error: string;
+    KpiName: string;
+}
+
+export interface IKPIDataProperty {
+    caption: string;
+    columnNo: number;
+    name: string;
+}
+
+export interface IKPIDataSeries{
+    [key: string]: number;
+}
+
+export interface IKPIDataResult {
+    Properties: IKPIDataProperty[];
+    Series: IKPIDataSeries[];
+}
+
+export interface IKPIData {
+    Info: IKPIDataInfo;
+    Result: IKPIDataResult;
 }
 
 @Directive()
@@ -342,6 +367,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
     ngOnInit() {
         this.baseType = this.widget?.type;
         this.override = this.getOverride();
+        this.extendPropsWithOverrides();
         const settings = this.ss.getAppSettings();
 
         const theme = settings.theme || '';
@@ -553,6 +579,9 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         let t = this.baseType;
         if (t === 'lineChartMarkers') {
             t = 'lineChart';
+        }
+        if (t === 'regular') {
+            t = 'scoreCard';
         }
         return this.widget?.overrides?.find(o => o._type === t);
     }
@@ -1054,6 +1083,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
                     if (!data) {
                         return;
                     }
+
                     if (this.chartConfig) {
                         this.chartConfig.loading = false;
                     }
@@ -1484,7 +1514,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         return res;
     }
 
-    retrieveData(data: any) {
+    retrieveData(data: any, kpiData?: IKPIData) {
         this.hideLoading();
         if (data.Error) {
             this.showError(data.Error);
@@ -1507,7 +1537,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
             // this.lpt.refresh();
             return;
         }
-        this.retrieveData(this.convertKPIToMDXData(data));
+        this.retrieveData(this.convertKPIToMDXData(data), data);
         // console.log(data);
     }
 
@@ -1592,6 +1622,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
 
         this.showLoading();
         this.ds.execMDX(mdx).catch((e) => this._onRequestError(e)).then((data) => {
+            this.removeColsThatNotExistInDataProperties(data);
             this._currentData = data;
             this.retrieveData(data);
         })
@@ -2090,5 +2121,59 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         part = part.replace('NON EMPTY', '');
         const newPart = ' HEAD(' + part.trim() + `, ${ctrl._value}) `;
         return mdx.replace(part, newPart);
+    }
+
+    private extendPropsWithOverrides() {
+        if (!this.override) {
+            return;
+        }
+        this.override.columns?.forEach((c, idx) => {
+            const prop = this.widget.dataProperties[idx];// .find(p => p.dataValue === c.dataValue);
+            if (!prop) {
+                return;
+            }
+            if (c.showAs) {
+                prop.showAs = c.showAs;
+            }
+            if (c.format) {
+                prop.format = c.format;
+            }
+            if (c.display) {
+                prop.display = c.display;
+            }
+            if (c.label) {
+                prop.label = c.label;
+            }
+            if (c.summary) {
+                prop.summary = c.summary;
+            }
+            if (c.rangeLower) {
+                prop.rangeLower = c.rangeLower;
+            }
+            if (c.rangeUpper) {
+                prop.rangeUpper = c.rangeUpper;
+            }
+            if (c.targetValue) {
+                prop.targetValue = c.targetValue;
+            }
+            if (c.thresholdLower) {
+                prop.thresholdLower = c.thresholdLower;
+            }
+            if (c.thresholdUpper) {
+                prop.thresholdUpper = c.thresholdUpper;
+            }
+        });
+    }
+
+    private removeColsThatNotExistInDataProperties(data: any) {
+        if (!this.widget.dataProperties?.length) {
+            return;
+        }
+        if (!data?.Cols[0]?.tuples?.length) {
+            return;
+        }
+        data.Cols[0].tuples = data?.Cols[0]?.tuples.filter(t => {
+            return this.widget.dataProperties.some(p => p.dataValue === t.dimension);
+        });
     }
 }

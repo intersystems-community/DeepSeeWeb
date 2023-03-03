@@ -214,6 +214,13 @@ export class PieChartComponent extends BaseChartClass implements OnInit {
     }
 
     addSeries(data, chart?: Highcharts.Chart, conf?: Highcharts.Options, redraw = false) {
+        /*
+          let count = 1;
+        const totalSeries = this._currentData?.Cols[1]?.tuples?.length || this._currentData?.Cols[0]?.tuples?.length || 1;
+        if (this._currentData?.Cols.length > 1) {
+            count = this._currentData?.Cols[0]?.tuples?.length || 1;
+        }
+         */
         const count = this._currentData?.Cols[0]?.tuples?.length || 1;
         const totalSeries = this._currentData?.Cols[1]?.tuples?.length || 1;
         if (count !== 1) {

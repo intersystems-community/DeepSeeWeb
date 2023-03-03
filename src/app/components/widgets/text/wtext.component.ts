@@ -86,12 +86,15 @@ export class WTextComponent extends BaseWidget implements OnInit, AfterViewInit 
                 if (this.widget?.format) {
                     propFmt = this.widget.format;
                 }
+                if (result.Cols[0].tuples[i].format) {
+                    propFmt = result.Cols[0].tuples[i].format;
+                }
                 if (dProp?.format) {
                     propFmt = dProp?.format;
                 }
                 // Format value
                 let v = result.Data[i];
-                const fmt = result.Cols[0].tuples[i].format || propFmt;
+                const fmt = propFmt;
                 if (fmt) {
                     v = numeral(v).format(fmt);
                 }
