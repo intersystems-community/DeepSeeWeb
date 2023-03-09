@@ -235,7 +235,7 @@ export class FilterService {
                         exists.toIdx = flt.toIdx;
                         exists.valueDisplay = exists.values[exists.fromIdx].name + ':' + exists.values[exists.toIdx].name;
                     } else {
-                        const values = flt.value.split('|');
+                        const values = flt.value.toString().split('|');
 
                         // Multiple values was selected
                         exists.values.forEach((v) => {
