@@ -515,12 +515,12 @@ export class FilterService {
     }
 
     private _addSavedFilterToFilterList(toAdd: any, filters: any) {
-        const values = toAdd.value.split('|');
+        const values = toAdd.value.toString().split('|');
         if (!values.length || !toAdd.valueDisplay) {
             return;
         }
 
-        const display = toAdd.valueDisplay.split(',');
+        const display = toAdd.valueDisplay.toString().split(',');
         values.forEach((v, idx) => {
             // Check if this value already exists
             if (filters.values.some(exists => {
