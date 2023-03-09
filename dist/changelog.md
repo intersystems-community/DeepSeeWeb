@@ -1,3 +1,15 @@
+#### 3.1.70
+* **Warning! Now if `data properties` is present, only defined properties will be displayed for ALL widgets!** (#354) 
+* added `sum%` support for scorecard (#350)
+* changed format priority for text meters, low to high: `widget > data > data properties` (#352)
+* added `target%` support for scorecard (#353)
+* added support for non-numeric `rangeLower/rangeUpper`. when linked to a column by text name 
+* now format from `overrides` always overwrites `dataProperties` format
+
+#### 3.1.69
+* fixed issue with multiple pie charts when only one axis was present in an MDX result
+* legend is hidden for charts with one series (#346)
+
 #### 3.1.68
 * fixed issue with `rowcount` if MDX already contains HEAD
 * fixed broken navigation after a page refresh
