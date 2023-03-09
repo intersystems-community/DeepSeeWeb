@@ -2172,8 +2172,20 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         if (!data?.Cols[0]?.tuples?.length) {
             return;
         }
-        data.Cols[0].tuples = data?.Cols[0]?.tuples.filter(t => {
-            return this.widget.dataProperties.some(p => p.dataValue === t.dimension);
+        const indices = [];
+        const colCount = data.Cols[0]?.tuples?.length || 0;
+        if (!colCount) {
+            return;
+        }
+        data.Cols[0].tuples = data?.Cols[0]?.tuples.filter((t, idx) => {
+            const exists = this.widget.dataProperties.some(p => p.dataValue === t.dimension);
+            if (!exists) {
+                indices.push(idx);
+            }
+            return exists;
+        });
+        data.Data = data.Data?.filter((d, idx) => {
+            return !indices.some(i => idx % colCount === i);
         });
     }
 }

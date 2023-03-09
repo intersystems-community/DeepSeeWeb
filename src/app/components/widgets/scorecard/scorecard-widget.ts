@@ -190,6 +190,9 @@ export class ScorecardWidgetComponent extends BaseWidget implements OnInit, OnDe
                     }
                     return (v as number - min) / (max - min) * 100;
                 } else {
+                    if (v === '') {
+                        return '';
+                    }
                     if (prop.showAs === 'target%') {
                         const targetV = this.getPropValue(data, rowIndex, prop, 'targetValue');
                         return this.formatNumber((v as number) / (targetV as number), fmt);
