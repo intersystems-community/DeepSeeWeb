@@ -1,3 +1,7 @@
+#### 3.1.71
+* fixed issue with invalid data on widgets with data properties (#358)
+* scorecard widget now show empty values as empty instead of '0.00' (#359)
+
 #### 3.1.70
 * **Warning! Now if `data properties` is present, only defined properties will be displayed for ALL widgets!** (#354) 
 * added `sum%` support for scorecard (#350)
