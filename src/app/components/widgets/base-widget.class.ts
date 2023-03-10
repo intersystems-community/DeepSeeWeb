@@ -1511,6 +1511,8 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
             });
         }
         res.Cols.push({tuples: ser});
+
+        this.removeColsThatNotExistInDataProperties(res);
         return res;
     }
 
@@ -1555,7 +1557,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
     public onResize() {
     }
 
-    protected _requestKPIData() {
+    protected _requestKPIData(drillthroughFilter?) {
         const ds = this.customDataSource || this.widget.dataSource;
         if (!ds) {
             return;
@@ -1569,12 +1571,14 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
                 };
             });
         }).flat();
+        if (drillthroughFilter) {
+            filters.push(...drillthroughFilter);
+        }
         this.showLoading();
-        this.ds.getKPIData(ds, filters).then(data => this._retriveKPI(data))
+        return this.ds.getKPIData(ds, filters, !!drillthroughFilter).then(data => this._retriveKPI(data))
             .finally(() => {
                 this.hideLoading();
             });
-        return;
     }
 
     /**

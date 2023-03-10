@@ -38,8 +38,15 @@ export class WPivotComponent extends BaseWidget implements OnInit, AfterViewInit
             },
             triggers: {
                 drillDown: (p) => this.onDrillDown(p),
+                // Prevent drilldown for KPI
+                rowClick: () => {
+                    if (this.widget.kpitype) {
+                        return false;
+                    }
+                    return true;
+                },
                 back: (p) => this.onDrillDown(p),
-                cellDrillThrough: () => this.onDrillThrough(),
+                cellDrillThrough: (...args) => this.onDrillThrough(...args),
                 responseHandler: (info) => {
                     if (info.status !== 200) {
                         this.showError(info.xhr.responseText);
@@ -71,8 +78,30 @@ export class WPivotComponent extends BaseWidget implements OnInit, AfterViewInit
         this.parent.cd.detectChanges();
     }
 
-    onDrillThrough() {
+    onDrillThrough(...args) {
         if (!this.canDoDrillthrough) {
+            return false;
+        }
+        if (this.widget.kpitype) {
+            const {cellData, x, y} = args[0];
+            const {info, dimensions} = args[1];
+            if (!dimensions[0]) {
+                return;
+            }
+            const pathX = dimensions[0][x - info.leftHeaderColumnsNumber]?.dimension || '';
+            const pathY = dimensions[0][0]?.dimension || '';
+            const val = dimensions[1][y - info.topHeaderRowsNumber]?.title || '';
+            if (!pathX || !pathY) {
+                return;
+            }
+            const flt = [{name: pathX, value: cellData.value}, {name: pathY, value: val}];
+
+            this._requestKPIData(flt)
+                .then(() => {
+                    this.widget.isDrillthrough = true;
+                    this.widget.backButton = true;
+                    this.parent.cd.detectChanges();
+                });
             return false;
         }
         this._oldMdx = this.lpt.getActualMDX();

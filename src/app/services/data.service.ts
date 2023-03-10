@@ -143,10 +143,10 @@ export class DataService {
      * @param {string} name Name of KPI
      * @returns {object} $http promise
      */
-    getKPIData(name: string, filters?: IKPIFilter[]) {
+    getKPIData(name: string, filters?: IKPIFilter[], isDrillthrough = false) {
         return this.http.post(
             this.url + 'KPI?Namespace=' + CURRENT_NAMESPACE,
-            {KPI: name, FILTERS: filters},
+            {KPI: name, FILTERS: filters, Drillthrough: isDrillthrough ? 1 : undefined},
             this.withCredentialsTimeoutHeaders
         ).toPromise();
     }

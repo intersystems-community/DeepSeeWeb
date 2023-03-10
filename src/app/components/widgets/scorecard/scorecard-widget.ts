@@ -390,7 +390,5 @@ export class ScorecardWidgetComponent extends BaseWidget implements OnInit, OnDe
                 return partialSum + parseFloat(a);
             }, 0);
         });
-
-        console.log(this.totalByColumn);
     }
 }
