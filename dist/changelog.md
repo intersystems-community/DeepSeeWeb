@@ -1,3 +1,8 @@
+#### 3.1.74
+* added series filtering depending on data properties for KPI widgets (#354)
+* removed ability to make drilldown for KPI widgets
+* added support for future feature - listing for KPI. feature not present in this release, because have to be implemented on mdx2json side (#291)
+ 
 #### 3.1.73
 * fixed issue with saved filters when it is number
  
