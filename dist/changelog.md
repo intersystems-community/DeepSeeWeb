@@ -1,3 +1,6 @@
+#### 3.1.73
+* fixed issue with saved filters when it is number
+ 
 #### 3.1.72
 * fixed issue with saved filters when it is number
 
