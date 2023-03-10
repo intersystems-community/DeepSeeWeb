@@ -387,7 +387,14 @@ export class ScorecardWidgetComponent extends BaseWidget implements OnInit, OnDe
                 if (index % this.columns.length !== idx) {
                     return partialSum;
                 }
-                return partialSum + parseFloat(a);
+                if (a === '') {
+                    return partialSum;
+                }
+                const v = parseFloat(a);
+                if (isNaN(v)) {
+                    return partialSum;
+                }
+                return partialSum + v;
             }, 0);
         });
     }

@@ -1,3 +1,6 @@
+#### 3.1.76
+* fixed scorecard `sum%` issue if data has empty values
+ 
 #### 3.1.75
 * added support for scorecard columns without `display` property
 
