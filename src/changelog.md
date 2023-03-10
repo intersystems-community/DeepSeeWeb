@@ -1,3 +1,6 @@
+#### 3.1.75
+* added support for scorecard columns without `display` property
+
 #### 3.1.74
 * added series filtering depending on data properties for KPI widgets (#354)
 * removed ability to make drilldown for KPI widgets

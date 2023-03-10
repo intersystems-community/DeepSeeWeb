@@ -153,7 +153,7 @@ export class ScorecardWidgetComponent extends BaseWidget implements OnInit, OnDe
     }
 
     getValue(data: any[], rowIndex: number, prop: IWidgetDataProperties, _min?: number, _max?: number): string | number {
-        switch (prop.display) {
+        switch ((prop.display || '')) {
             case 'itemNo':
                 return (rowIndex + 1).toString();
 
