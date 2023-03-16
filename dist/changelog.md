@@ -1,3 +1,7 @@
+#### 3.1.77
+* added support for new widget types: `smiley`, `light bar`, `traffic light`. fixed `gauge` widget (#1316)
+* fixed issue with `combo chart` and overrides for series type (#357) 
+
 #### 3.1.76
 * fixed scorecard `sum%` issue if data has empty values
  
