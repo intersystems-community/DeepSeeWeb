@@ -18,6 +18,9 @@ import {XyChartComponent} from '../components/widgets/charts/xy-chart.component'
 import {TimeChartComponent} from '../components/widgets/charts/time-chart.component';
 import {BarChartComponent} from '../components/widgets/charts/bar-chart.component';
 import {ScorecardWidgetComponent} from '../components/widgets/scorecard/scorecard-widget';
+import {WSmileyComponent} from "../components/widgets/smiley/smiley.component";
+import {WLightBarComponent} from "../components/widgets/light-bar/light-bar.component";
+import {WTrafficLightComponent} from "../components/widgets/traffic-light/traffic-light.component";
 
 export const ADDON_PREFIX = 'DSW.Addons.';
 
@@ -61,9 +64,9 @@ const TYPES = {
         allowShowAsPivot: true
     },
     fuelgauge: {
-        class: FuelGaugeChartComponent,
+        class: SpeedometerChartComponent,
         type: 'chart',
-        chart: 'gauge',
+        chart: 'solidgauge',
         allowShowAsPivot: true
     },
     bullseyechart: {
@@ -237,7 +240,19 @@ const TYPES = {
     verticalcontrols: {
         class: EmptyWidgetComponent,
         type: 'empty'
-    }
+    },
+    smiley: {
+        class: WSmileyComponent,
+        allowShowAsPivot: false
+    },
+    lightbar: {
+        class: WLightBarComponent,
+        allowShowAsPivot: false
+    },
+    trafficlight: {
+        class: WTrafficLightComponent,
+        allowShowAsPivot: false
+    },
     /*'dsw.addons.htmlviewer': {
         class: HtmlViewerComponent
     },*/

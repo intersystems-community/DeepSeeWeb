@@ -575,6 +575,30 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         }
     }
 
+    protected getFormat(index: number, mdxResult: any, prop: IWidgetDataProperties) {
+        let fmt = '';
+        if (this.widget?.format) {
+            fmt = this.widget.format;
+        }
+        if (mdxResult.Cols[0].tuples[index].format) {
+            fmt = mdxResult.Cols[0].tuples[index].format;
+        }
+        if (prop?.format) {
+            fmt = prop?.format;
+        }
+        return fmt;
+    }
+
+    protected getDataValue(index: number, mdxResult: any, prop: IWidgetDataProperties) {
+        // Format value
+        let v = mdxResult.Data[index];
+        const fmt = this.getFormat(index, mdxResult, prop);
+        if (fmt) {
+            v = numeral(v).format(fmt);
+        }
+        return v;
+    }
+
     private getOverride(): IWidgetOverride {
         let t = this.baseType;
         if (t === 'lineChartMarkers') {
@@ -2169,7 +2193,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         });
     }
 
-    private removeColsThatNotExistInDataProperties(data: any) {
+    protected removeColsThatNotExistInDataProperties(data: any) {
         if (!this.widget.dataProperties?.length) {
             return;
         }

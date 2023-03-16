@@ -73,8 +73,8 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
 
 
         // Check for series types
-        if (this.widget.overrides && this.widget.overrides[0] && this.widget.overrides[0].seriesTypes) {
-            this.seriesTypes = this.widget.overrides[0].seriesTypes.split(',');
+        if (this.override?.seriesTypes) {
+            this.seriesTypes = this.override?.seriesTypes.split(',');
         }
 
         this.subPrint = this.bs.subscribe('print:' + this.widget.name, () => {
@@ -508,12 +508,19 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
         data.color = cols[(c.series.length % cols.length) || 0];
         // data.color = cols[(this.chartConfig.series.length % cols.length) || 0];
 
-        // Check chart type
-        const curIdx = (conf || this.chartConfig).series.length;
+        // Check series type from widget
+        if (this.widget?.seriesTypes) {
+            const st = this.widget?.seriesTypes[(this.chart || this.chartConfig).series.length];
+            if (st) {
+                data.type = st;
+            }
+        }
+
+        // Check series type from override
+        const curIdx = (conf || (this.chart || this.chartConfig)).series.length;
         if (this.seriesTypes && this.seriesTypes[curIdx]) {
             data.type = this.seriesTypes[curIdx];
         }
-
         data.visible = true;
         // Show or hide series depending on settings
         if (this.widgetsSettings && this.widgetsSettings[this.widget.name] && this.widgetsSettings[this.widget.name].series) {
@@ -525,29 +532,23 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
 
         // Set axis for combo chart
         if (this.widget.type.toLowerCase() === 'combochart') {
-            // TODO: check if overrides already exists in new mdx2json?
-            const o = this.widget.overrides?.find(ov => ov._type.toLowerCase() === 'combochart');
-            if (o) {
-                let sy: number[] = [];
-                if (o && o.seriesYAxes) {
-                    sy = o.seriesYAxes.split(',').map(el => parseInt(el, 10));
-                }
-                let st: string[] = [];
-                if (o.seriesTypes) {
-                    st = o.seriesTypes.split(',');
-                }
-                const idx = this.chart.series.length;
-                data.type = st[idx] || (idx === 0 ? 'bar' : 'line');
-                data.yAxis = sy[idx] || 0;
-                /*const series = this.chartConfig.series;
-                for (let k = 0; k < series.length; k++) {
-                    series[k].yAxis = sy[k] || 0;
-                }*/
+            // Use default series type of not set
+            if (!data.type) {
+                data.type = (curIdx === 0 ? 'bar' : 'line');
             }
 
-            const st = this.widget?.seriesTypes[this.chart.series.length];
-            if (st) {
-                data.type = st;
+            if (this.override) {
+                let sy: number[] = [];
+                if (this.override.seriesYAxes) {
+                    sy = this.override.seriesYAxes.split(',').map(el => parseInt(el, 10));
+                }
+               /* let st: string[] = [];
+                if (o.seriesTypes) {
+                    st = o.seriesTypes.split(',');
+                }*/
+                const idx = (this.chart || this.chartConfig).series.length;
+                // data.type = st[idx] || (idx === 0 ? 'bar' : 'line');
+                data.yAxis = sy[idx] || 0;
             }
         }
         data.showInLegend = true;

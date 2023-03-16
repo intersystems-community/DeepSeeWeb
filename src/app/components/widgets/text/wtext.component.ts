@@ -82,22 +82,13 @@ export class WTextComponent extends BaseWidget implements OnInit, AfterViewInit 
                         continue;
                     }
                 }
-                let propFmt = '';
-                if (this.widget?.format) {
-                    propFmt = this.widget.format;
-                }
-                if (result.Cols[0].tuples[i].format) {
-                    propFmt = result.Cols[0].tuples[i].format;
-                }
-                if (dProp?.format) {
-                    propFmt = dProp?.format;
-                }
                 // Format value
-                let v = result.Data[i];
-                const fmt = propFmt;
+                const v = this.getDataValue(i, result, dProp);
+                /*let v = result.Data[i];
+                const fmt = this.getFormat(result, dProp);
                 if (fmt) {
                     v = numeral(v).format(fmt);
-                }
+                }*/
 
                 // Change font color, if widget is displayed on tile
                 let color = 'var(--cl-text-widget-font)'; // getComputedStyle(document.documentElement).getPropertyValue('--cl-text-widget-font');

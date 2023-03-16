@@ -65,11 +65,16 @@ import Heatmap from 'highcharts/modules/heatmap';
 // Load the exporting module.
 import Exporting from 'highcharts/modules/exporting';
 import Map from 'highcharts/modules/map';
+import SolidGauge from 'highcharts/modules/solid-gauge';
 import { ShareDashboardComponent } from './components/ui/share-dashboard/share-dashboard/share-dashboard.component';
+import {WSmileyComponent} from "./components/widgets/smiley/smiley.component";
+import {WLightBarComponent} from "./components/widgets/light-bar/light-bar.component";
+import {WTrafficLightComponent} from "./components/widgets/traffic-light/traffic-light.component";
 
 More(Highcharts);
 Tree(Highcharts);
 Heatmap(Highcharts);
+SolidGauge(Highcharts);
 // Initialize exporting module.
 Exporting(Highcharts);
 Map(Highcharts);
@@ -125,7 +130,10 @@ export function createCompiler(compilerFactory: CompilerFactory) {
         MenuSettingsComponent,
         ThemeSettingsComponent,
         ScorecardWidgetComponent,
-        ShareDashboardComponent
+        ShareDashboardComponent,
+        WSmileyComponent,
+        WLightBarComponent,
+        WTrafficLightComponent
     ],
     imports: [
         BrowserAnimationsModule,
