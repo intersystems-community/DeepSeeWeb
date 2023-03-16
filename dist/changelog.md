@@ -1,3 +1,6 @@
+#### 3.1.78
+* fixes for images for DSW installed not in the root of the site
+ 
 #### 3.1.77
 * added support for new widget types: `smiley`, `light bar`, `traffic light`. fixed `gauge` widget (#1316)
 * fixed issue with `combo chart` and overrides for series type (#357) 
