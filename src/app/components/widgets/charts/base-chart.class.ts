@@ -155,6 +155,9 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
                 break;
             case 'showValues': {
                 (this.chartConfig.plotOptions.series.dataLabels as Highcharts.PlotSeriesDataLabelsOptions).enabled = bt.state;
+                if (this.chartConfig.plotOptions?.pie?.dataLabels) {
+                    (this.chartConfig.plotOptions.pie.dataLabels as any).enabled = bt.state;
+                }
                 this.updateChart();
                 // Update legend due to highcharts bug - legend is hidden after disabling data labels
                 this.chart.legend.update({

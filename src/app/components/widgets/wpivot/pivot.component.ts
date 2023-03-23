@@ -25,6 +25,7 @@ export class WPivotComponent extends BaseWidget implements OnInit, AfterViewInit
     }
 
     createPivotTable() {
+        const _this = this;
         const setup = {
             initialData: this.widget.pivotData,
             container: this.el.nativeElement,
@@ -39,7 +40,14 @@ export class WPivotComponent extends BaseWidget implements OnInit, AfterViewInit
             triggers: {
                 drillDown: (p) => this.onDrillDown(p),
                 // Prevent drilldown for KPI
-                rowClick: () => {
+                rowClick: (idx, rowData, cellData) => {
+                    if (_this.drillFilterWidgets?.length) {
+                        // Prevent drill if widget has click filter (#261)
+                        _this.doDrillFilter(cellData.source.path, _this.drills);
+                        _this.parent?.header?.cd.detectChanges();
+                        return false;
+                    }
+
                     if (this.widget.kpitype) {
                         return false;
                     }

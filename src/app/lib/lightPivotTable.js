@@ -1749,12 +1749,13 @@ MDXParser.prototype.drillDown = function (mdx, filter, expression) {
  */
 MDXParser.prototype.drillThrough = function (basicMDX, filters, customListing) {
 
-    var cubeAndFilters = basicMDX.slice(basicMDX.lastIndexOf("FROM "));
-    let query = "DRILLTHROUGH SELECT " + cubeAndFilters;
+    var cubeAndFilters = basicMDX.slice(basicMDX.lastIndexOf("FROM ")),
+        query = "DRILLTHROUGH SELECT " + cubeAndFilters;
 
     for (var i in filters) {
         query = this.applyFilter(query, filters[i]);
     }
+
     if (customListing) {
         query += ` %LISTING [${customListing}]`;
     }
@@ -2929,7 +2930,7 @@ PivotView.prototype._rowClickHandler = function (rowIndex, cellData) {
         var d = this.controller.getRowsValues([rowIndex])[0].slice(
             this.controller.dataController.getData().info.leftHeaderColumnsNumber
         );
-        res = this.controller.CONFIG.triggers["rowClick"](rowIndex, d);
+        res = this.controller.CONFIG.triggers["rowClick"](rowIndex, d, cellData);
     }
     if (res !== false)
         this.controller.tryDrillDown(cellData.source.path);
