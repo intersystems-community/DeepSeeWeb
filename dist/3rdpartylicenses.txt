@@ -25,6 +25,9 @@ MIT
 @angular/service-worker
 MIT
 
+air-datepicker
+MIT
+
 angular-gridster2
 MIT
 MIT License
