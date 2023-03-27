@@ -28,6 +28,12 @@
         flex-direction: column;
         padding-top: 4px;
     }
+
+    &.date-filter {
+        padding: 0;
+        width: auto;
+        padding-bottom: 45px;
+    }
 }
 
 // Header line with search and buttons

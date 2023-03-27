@@ -70,6 +70,8 @@ import { ShareDashboardComponent } from './components/ui/share-dashboard/share-d
 import {WSmileyComponent} from "./components/widgets/smiley/smiley.component";
 import {WLightBarComponent} from "./components/widgets/light-bar/light-bar.component";
 import {WTrafficLightComponent} from "./components/widgets/traffic-light/traffic-light.component";
+import {DatePickerComponent} from "./components/ui/date-picker/date-picker.component";
+import {DateFilterComponent} from "./components/ui/date-filter/date-filter.component";
 
 More(Highcharts);
 Tree(Highcharts);
@@ -133,7 +135,9 @@ export function createCompiler(compilerFactory: CompilerFactory) {
         ShareDashboardComponent,
         WSmileyComponent,
         WLightBarComponent,
-        WTrafficLightComponent
+        WTrafficLightComponent,
+        DatePickerComponent,
+        DateFilterComponent
     ],
     imports: [
         BrowserAnimationsModule,

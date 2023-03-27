@@ -90,8 +90,9 @@ export class WidgetFilterComponent implements OnInit {
         const b = target.getBoundingClientRect();
         let x = b.x - 4; // 4 is padding
         const y = b.y + b.height + 4;
-        if (x + 340 > window.innerWidth) {
-            x = b.x + b.width - 340;
+        const width = flt.isDate ? 420 : 340;
+        if (x + width > window.innerWidth) {
+            x = b.x + b.width - width;
         }
         const isMobile = this.us.isMobile();
         let height;

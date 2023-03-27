@@ -1,6 +1,6 @@
 {
   "name": "deep-see-web",
-  "version": "3.1.79",
+  "version": "3.1.80",
   "scripts": {
     "ng": "ng",
     "start": "ng serve --proxy-config=proxy.conf.json --port 4007",
@@ -29,12 +29,9 @@
     "@angular/platform-browser": "^15.1.0",
     "@angular/platform-browser-dynamic": "^15.1.0",
     "@angular/router": "^15.1.0",
-    "rxjs": "~7.8.0",
-    "tslib": "^2.3.0",
-    "zone.js": "~0.12.0",
-
     "@angular/service-worker": "~15.1.3",
     "@highcharts/map-collection": "^2.0.1",
+    "air-datepicker": "^3.3.5",
     "angular-gridster2": "^15.0.2",
     "font-awesome": "^4.7.0",
     "highcharts": "^10.3.3",
@@ -44,33 +41,35 @@
     "npm-force-resolutions": "^0.0.7",
     "numeral": "^2.0.6",
     "ol": "^7.2.2",
-    "systemjs": "^6.5.1"
+    "rxjs": "~7.8.0",
+    "systemjs": "^6.5.1",
+    "tslib": "^2.3.0",
+    "zone.js": "~0.12.0"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^15.1.4",
     "@angular/cli": "~15.1.4",
     "@angular/compiler-cli": "^15.1.0",
-    "@types/jasmine": "~4.3.0",
-    "jasmine-core": "~4.5.0",
-    "karma": "~6.4.0",
-    "karma-chrome-launcher": "~3.1.0",
-    "karma-coverage": "~2.2.0",
-    "karma-jasmine": "~5.1.0",
-    "karma-jasmine-html-reporter": "~2.0.0",
-    "typescript": "~4.9.4",
-
     "@angular/language-service": "~15.1.3",
+    "@types/jasmine": "~4.3.0",
     "@types/jasminewd2": "~2.0.3",
     "@types/node": "^12.11.1",
     "@types/ol": "^6.4.2",
     "codelyzer": "^6.0.0",
+    "jasmine-core": "~4.5.0",
     "jasmine-spec-reporter": "~5.0.0",
     "jest": "^26.6.3",
+    "karma": "~6.4.0",
+    "karma-chrome-launcher": "~3.1.0",
+    "karma-coverage": "~2.2.0",
     "karma-coverage-istanbul-reporter": "~3.0.2",
+    "karma-jasmine": "~5.1.0",
+    "karma-jasmine-html-reporter": "~2.0.0",
     "protractor": "~7.0.0",
     "puppeteer": "^8.0.0",
     "ts-node": "~8.3.0",
     "tslint": "~6.1.0",
+    "typescript": "~4.9.4",
     "xml2js": "~0.4.23"
   }
 }

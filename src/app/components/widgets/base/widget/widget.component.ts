@@ -233,6 +233,10 @@ export class WidgetComponent implements OnInit, OnDestroy, AfterViewInit {
 
         for (let i = 0; i < this.model.filters.length; i++) {
             const flt = this.getFilter(i);
+            if (flt.isDate) {
+                this.model.filters[i].text = flt.valueDisplay;
+                continue;
+            }
             if (flt.isInterval) {
                 this.model.filters[i].text = flt.values[flt.fromIdx].name + ':' + flt.values[flt.toIdx].name;
                 continue;

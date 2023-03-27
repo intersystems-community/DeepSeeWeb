@@ -1,3 +1,7 @@
+#### 3.1.80
+* added datepicker support for filters with `%ZEN.Component.calendar` class (#338)
+* added click filter for multiple widgets target defined as comma-separated string  
+
 #### 3.1.79
 * added drill filter support for pivot (#16)
 * fixed hiding data labels on pie charts (#318)

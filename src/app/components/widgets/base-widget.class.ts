@@ -832,7 +832,13 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         }
         this.widget.clickFilterActive = !!path;
         for (i = 0; i < this.drillFilterWidgets.length; i++) {
-            this.bs.broadcast('drillFilter:' + this.drillFilterWidgets[i], {path, drills: dr});
+            if (!this.drillFilterWidgets[i]) {
+                continue;
+            }
+            const widgets = this.drillFilterWidgets[i].split(',');
+            widgets.forEach(w => {
+                this.bs.broadcast('drillFilter:' + w, {path, drills: dr});
+            });
         }
     }
 

@@ -9,6 +9,8 @@ import {BroadcastService} from './broadcast.service';
 import {DashboardService} from './dashboard.service';
 import {IWidgetEvent} from '../components/widgets/base-widget.class';
 
+const DATE_PICKER_CLASS = '%ZEN.Component.calendar';
+
 @Injectable({
     providedIn: 'root'
 })
@@ -42,6 +44,12 @@ export class FilterService {
         for (let i = 0; i < filterArray.length; i++) {
             this.items.push(filterArray[i]);
             const flt = this.items[this.items.length - 1];
+
+            // Check for date filters
+            flt.isDate = flt.controlClass === DATE_PICKER_CLASS;
+            if (flt.isDate) {
+                flt.values = [];
+            }
 
             // Check for valueList
             if (flt.valueList && flt.displayList) {
@@ -233,7 +241,17 @@ export class FilterService {
                     if (exists.isInterval) {
                         exists.fromIdx = flt.fromIdx;
                         exists.toIdx = flt.toIdx;
-                        exists.valueDisplay = exists.values[exists.fromIdx].name + ':' + exists.values[exists.toIdx].name;
+                        if (exists.isDate) {
+                            exists.valueDisplay = flt.valueDisplay;
+                            exists.values = flt.value.split('|').map(v => {
+                                return {
+                                    path: v,
+                                    checked: true
+                                };
+                            });
+                        } else {
+                            exists.valueDisplay = exists.values[exists.fromIdx].name + ':' + exists.values[exists.toIdx].name;
+                        }
                     } else {
                         const values = flt.value.toString().split('|');
 
@@ -392,6 +410,10 @@ export class FilterService {
         }
         if (val !== '') {
             val = val.substr(0, val.length - 1);
+        }
+        // Change "," to "-" for date filter, because it applied as range
+        if (flt.isDate) {
+            disp = disp.replace(',', ' - ');
         }
         flt.valueDisplay = disp;
         flt.value = val;

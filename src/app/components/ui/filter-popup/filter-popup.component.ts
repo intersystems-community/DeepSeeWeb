@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, ElementRef, OnInit} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, HostBinding, Inject, LOCALE_ID, OnInit, ViewChild} from '@angular/core';
 import {StorageService} from '../../../services/storage.service';
 import {IWidgetInfo} from '../../widgets/base-widget.class';
 import {FilterService} from '../../../services/filter.service';
@@ -6,6 +6,8 @@ import {ErrorService} from '../../../services/error.service';
 import {DataService} from '../../../services/data.service';
 import {dsw} from "../../../../environments/dsw";
 import {DashboardService} from "../../../services/dashboard.service";
+import {DateFilterComponent} from "../date-filter/date-filter.component";
+import {DatePipe} from "@angular/common";
 
 @Component({
     selector: 'dsw-filter-popup',
@@ -13,6 +15,7 @@ import {DashboardService} from "../../../services/dashboard.service";
     styleUrls: ['./filter-popup.component.scss']
 })
 export class FilterPopupComponent implements OnInit, AfterViewInit {
+    @ViewChild('dateFilter') dateFilter: DateFilterComponent;
     model = {
         search: '',
         isLoading: false,
@@ -27,18 +30,25 @@ export class FilterPopupComponent implements OnInit, AfterViewInit {
     };
     isRelatedFilters = false;
     widget: IWidgetInfo;
-    // source: any;
-    //dataSource: any;
+    private datePipe: DatePipe;
     trackByIndex = (index: number, r: any) => index;
+
 
     constructor(private ss: StorageService,
                 private el: ElementRef,
                 private ds: DataService,
                 private dbs: DashboardService,
                 private fs: FilterService,
-                private es: ErrorService) {
+                private es: ErrorService,
+                @Inject(LOCALE_ID) private locale: string) {
+        this.datePipe = new DatePipe(locale);
         const settings = this.ss.getAppSettings();
         this.isRelatedFilters = settings.isRelatedFilters === undefined ? true : settings.isRelatedFilters;
+    }
+
+    @HostBinding('class.date-filter')
+    get isDateFilter() {
+        return this.model?.filter?.isDate;
     }
 
     get isRadio() {
@@ -59,8 +69,9 @@ export class FilterPopupComponent implements OnInit, AfterViewInit {
         if (rect.top + rect.height > maxH) {
             const delta = (rect.top + rect.height) - maxH;
             el.style.maxHeight = (rect.height - delta - 20) + 'px';
-            console.log(delta);
         }
+
+        this.initializeDateFilter();
     }
 
 
@@ -71,7 +82,7 @@ export class FilterPopupComponent implements OnInit, AfterViewInit {
         this.model.filter = filter;
 
         // Check for related filters
-        if (this.isRelatedFilters/* && Filters.filtersChanged*/) {
+        if (!filter.isDate && this.isRelatedFilters/* && Filters.filtersChanged*/) {
             this.requestRelatedFilters();
         } else {
             this.prepareFilters();
@@ -350,6 +361,30 @@ export class FilterPopupComponent implements OnInit, AfterViewInit {
             delete this.model.filter.from;
             delete this.model.filter.to;
         }
+
+        // Date filter
+        if (this.model.filter.isDate) {
+            this.model.filter.isInterval = false;
+            delete this.model.filter.from;
+            delete this.model.filter.to;
+
+            const values = this.dateFilter.getValues();
+            this.model.filter.values = values.map(v => {
+                const dTxt = v.getFullYear() + '-' + ('0' + (v.getMonth() + 1)).slice(-2) + '-' + ('0' + v.getDate()).slice(-2);
+                return {
+                    name:  this.datePipe.transform(v, 'dd MMM yyyy'),
+                    path: `&[${dTxt}]`,
+                    checked: true
+                };
+            });
+
+            if (values.length === 2) {
+                this.model.filter.isInterval = true;
+                this.model.filter.fromIdx = 0;
+                this.model.filter.toIdx = 1;
+            }
+        }
+
         this.fs.applyFilter(this.model.filter);
         this.fs.filtersChanged = true;
         this.close();
@@ -357,5 +392,20 @@ export class FilterPopupComponent implements OnInit, AfterViewInit {
 
     close() {
         this['$modal'].close();
+    }
+
+    private initializeDateFilter() {
+        if (!this.model?.filter?.isDate || !this.dateFilter) {
+            return;
+        }
+        const value = this.model?.filter?.value;
+        if (!value) {
+            return;
+        }
+        let values = value.split('|').map(v => new Date(v.replace('&[', '').replace(']', '')));
+      /*  if (values[0] === values[1]) {
+            values = values.splice(-1);
+        }*/
+        this.dateFilter.setDateRange(values[0], values[1]);
     }
 }

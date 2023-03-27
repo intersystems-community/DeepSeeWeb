@@ -3,6 +3,8 @@
 @import "fonts";
 @import "gridster";
 @import "breakpoints";
+@import 'air-datepicker/air-datepicker.css';
+@import 'date-picker';
 
 .only-sm {
     @media (min-width: #{$screen-sm-min}) {
