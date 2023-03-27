@@ -1,3 +1,7 @@
+#### 3.1.79
+* added drill filter support for pivot (#16)
+* fixed hiding data labels on pie charts (#318)
+
 #### 3.1.78
 * fixes for images for DSW installed not in the root of the site
  
