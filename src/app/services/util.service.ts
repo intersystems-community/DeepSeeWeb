@@ -1,11 +1,12 @@
 import {Injectable} from '@angular/core';
+import {ActivatedRoute} from '@angular/router';
 
 @Injectable({
     providedIn: 'root'
 })
 export class UtilService {
 
-    constructor() {
+    constructor(private route: ActivatedRoute) {
     }
 
     // merge(o1: any, o2: any) {
@@ -37,7 +38,7 @@ export class UtilService {
                 return true;
             }
         }
-        return params.indexOf('embed=1') !== -1;
+        return this.route.snapshot.queryParams?.embed === '1';
     }
 
     isPreventContextMenu() {

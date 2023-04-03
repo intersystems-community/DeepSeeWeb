@@ -30,6 +30,8 @@ export class WPivotComponent extends BaseWidget implements OnInit, AfterViewInit
             initialData: this.widget.pivotData,
             container: this.el.nativeElement,
             pivotProperties: {},
+            enableListingSelect: false,
+            enableSearch: false,
             dataSource: {
                 pivot: this.widget.dataSource,
                 MDX2JSONSource: this.ds.url.substring(0, this.ds.url.length - 1),

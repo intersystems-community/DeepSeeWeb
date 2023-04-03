@@ -418,15 +418,19 @@ export class FilterService {
         flt.valueDisplay = disp;
         flt.value = val;
         if (!noRefresh) {
-            if (flt.targetArray.length !== 0) {
-                // Listened in widget.component.ts
-                for (i = 0; i < flt.targetArray.length; i++) {
-                    this.bs.broadcast('filter' + flt.targetArray[i], flt);
-                }
-            } else {
-                // Listened in widget.component.ts
-                if (flt.target === '*' || flt.target === '') {
-                    this.bs.broadcast('filterAll', flt);
+
+            // Only broadcast filtering if not `setFilter`
+            if (flt.action !== 'setFilter') {
+                if (flt.targetArray.length !== 0) {
+                    // Listened in widget.component.ts
+                    for (i = 0; i < flt.targetArray.length; i++) {
+                        this.bs.broadcast('filter' + flt.targetArray[i], flt);
+                    }
+                } else {
+                    // Listened in widget.component.ts
+                    if (flt.target === '*' || flt.target === '') {
+                        this.bs.broadcast('filterAll', flt);
+                    }
                 }
             }
 

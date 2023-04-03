@@ -5,6 +5,7 @@
 @import "breakpoints";
 @import 'air-datepicker/air-datepicker.css';
 @import 'date-picker';
+@import 'pivot-table';
 
 .only-sm {
     @media (min-width: #{$screen-sm-min}) {

@@ -232,6 +232,7 @@ export interface IKPIData {
 export abstract class BaseWidget implements OnInit, OnDestroy {
 
     static CURRENT_ADDON_VERSION = 1;
+    protected preventColFilteringBasedOnDataProperties = false;
 
     @HostBinding('class.inline') get inline(): boolean {
         return this.widget.inline;
@@ -617,13 +618,13 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         if (!this.widget.controls || this.widget.controls.length === 0) {
             return;
         }
-        const stdList = ['chooserowspec', 'choosedatasource', 'choosecharttype', 'applyfilter',
+        const stdList = ['chooserowspec', 'setrowspec', 'choosedatasource', 'choosecharttype', 'applyfilter',
             'setfilter', 'refresh', 'reloaddashboard', 'showlisting', 'showgeolisting',
             'showbreakdown', 'setdatasource', 'applyvariable', 'setrowcount',
             'setrowsort', 'setcolumncount', 'setcolumnsort', 'choosecolumnspec'];
 
         /*var stdList = ['applyfilter', 'setfilter', 'refresh', 'reloaddashboard', 'setdatasource',
-            'applyvariable', 'setrowspec', 'setcolumnspec',
+            'applyvariable', 'setcolumnspec',
             'choosecolumnspec', 'viewdashboard', 'navigate',
             'newwindow', 'setrowcount', 'setrowsort', 'setcolumncount', 'setcolumnsort', 'newwindow'];*/
         const actions = this.widget.controls.filter((el) => {
@@ -648,7 +649,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         }
 
         const filterChoosers = (el) => {
-            return el.action === 'chooseDataSource' || el.action === 'chooseRowSpec' || el.action === 'chooseColumnSpec';
+            return el.action === 'chooseDataSource' || el.action === 'chooseRowSpec' || el.action === 'setRowSpec' || el.action === 'chooseColumnSpec';
         };
 
         const isEmptyWidget = this.widget.type === 'mdx2json.emptyportlet';
@@ -727,7 +728,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
                 }
                 item.labels = [];
                 item.values = [];
-                if (item.control.action === 'chooseRowSpec') {
+                if (item.control.action === 'chooseRowSpec' || item.control.action === 'setRowSpec') {
                     item.labels.push('');
                     item.values.push('');
                 }
@@ -846,6 +847,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
                 this.bs.broadcast('drillFilter:' + w, {path, drills: dr});
             });
         }
+        this.parent?.header?.cd.detectChanges();
     }
 
     onDrillFilter(path: string, drills: string[]) {
@@ -1409,13 +1411,15 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
      * Change current row spec
      * @param {string} path Path
      */
-    changeRowSpec(path) {
+    changeRowSpec(path, refreshData = true) {
         if (!path) {
             this.customRowSpec = '';
         } else {
             this.customRowSpec = path;
         }
-        this.requestData();
+        if (refreshData) {
+            this.requestData();
+        }
     }
 
     /**
@@ -1449,8 +1453,8 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
             case 'chooseDataSource':
                 this.changeDataSource(val, item);
                 break;
-            case 'chooseRowSpec':
-                this.changeRowSpec(val);
+            case 'chooseRowSpec': case 'setRowSpec':
+                this.changeRowSpec(val, item.action !== 'setRowSpec');
                 break;
             case 'chooseColumnSpec':
                 this.changeColumnSpec(val, item);
@@ -2206,6 +2210,9 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
     }
 
     protected removeColsThatNotExistInDataProperties(data: any) {
+        if (this.preventColFilteringBasedOnDataProperties) {
+            return;
+        }
         if (!this.widget.dataProperties?.length) {
             return;
         }

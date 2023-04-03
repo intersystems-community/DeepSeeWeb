@@ -44,6 +44,8 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
     private isGeoJSON = false;
     private onMessage;
 
+    preventColFilteringBasedOnDataProperties = true;
+
     ngOnInit() {
         super.ngOnInit();
 

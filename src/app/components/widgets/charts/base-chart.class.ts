@@ -9,6 +9,9 @@ import {IButtonToggle} from '../../../services/widget.service';
 // Highcharts
 import * as  Highcharts from 'highcharts/highstock';
 
+import HighMaps from 'highcharts/modules/map';
+HighMaps(Highcharts);
+
 import More from 'highcharts/highcharts-more';
 More(Highcharts);
 
@@ -120,6 +123,9 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
 
     createChart() {
         this.chartConfig.chart.renderTo = this.el.nativeElement;
+        if (this.chartConfig?.chart?.type === 'map') {
+            this.chart = Highcharts.mapChart(this.chartConfig);
+        } else
         if (this.widget.type.toLowerCase() === 'timechart') {
             this.chart = Highcharts.stockChart(this.chartConfig);
         } else {

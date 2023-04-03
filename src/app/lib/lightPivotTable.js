@@ -301,7 +301,7 @@ DataController.prototype.TOTAL_FUNCTIONS = {
         if (a == "") return false;
         return isFinite(a);
     },
-    
+
     totalSUM: function (array, iStart, iEnd, column, xStart, row) {
         var sum = 0;
         for (var i = iStart; i < iEnd; i++) {
@@ -339,7 +339,7 @@ DataController.prototype.TOTAL_FUNCTIONS = {
         }
         return count;
     },
-    
+
     totalMIN: function (array, iStart, iEnd, column, xStart, row) {
         var min = Infinity;
         for (var i = iStart; i < iEnd; i++) {
@@ -363,7 +363,7 @@ DataController.prototype.TOTAL_FUNCTIONS = {
         }
         return max;
     },
-    
+
     totalPERCENTAGE: function (array, iStart, iEnd, column, xStart, row) {
         var averages = [], x, summ;
         for (x = xStart; x < typeof column === "undefined" ? array.length : array[0].length; x++) {
@@ -375,11 +375,11 @@ DataController.prototype.TOTAL_FUNCTIONS = {
         return (averages[(typeof row === "undefined" ? column : row) - xStart]
             / summ * 100 || 0).toFixed(2) + "%";
     },
-    
+
     totalNONE: function () {
         return "";
     }
-    
+
 };
 
 DataController.prototype.setLeftHeaderColumnsNumber = function (data) {
@@ -3432,7 +3432,7 @@ PivotView.prototype.recalculateSizes = function (container) {
         leftHeader.style.height = containerHeight - headerH - pagedHeight + "px";
         leftHeader.style.width = headerW + "px";
         if (mainHeaderWidth > headerW) leftHeader.style.width = mainHeaderWidth + "px";
-        tableBlock.style.height = containerHeight - headerH - pagedHeight + "px";
+        tableBlock.style.height = containerHeight - headerH - pagedHeight - 1 + "px";
         headerContainer.style.height = headerH + "px";
         headerContainer.style.width = headerW + "px";
         if (!this.controller.CONFIG.stretchColumns) {
