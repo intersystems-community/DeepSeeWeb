@@ -1,3 +1,11 @@
+#### 3.1.82
+* added new design for pivot tables (#311)
+* fixed issue with `embed=1` (#361)
+* added support for `setFilter`, `setRowSpec` actions (#281)
+* added `sourceURL` generation for addon files loaded at runtime for better access using dev tools
+* fixed issue with highcharts map rendering charts
+* fixed click filter for world map (#183)
+
 #### 3.1.81
 * fixed issue with click filter resetting 
  
