@@ -1833,6 +1833,13 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         return mdx;
     }
 
+    dateToHorolog(date: string) {
+        const start = new Date('12/31/1840');
+        const d = new Date(date);
+        const diff = d.getTime() - start.getTime();
+        return Math.ceil(diff / (1000 * 3600 * 24));
+    }
+
     /**
      * Return widget MDX depending on active filters
      */
@@ -1912,8 +1919,14 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
                 continue;
             }
             path = flt.targetProperty;
-            const v1 = flt.values[flt.fromIdx].path;
-            const v2 = flt.values[flt.toIdx].path;
+            let v1 = flt.values[flt.fromIdx].path;
+            let v2 = flt.values[flt.toIdx].path;
+            if (flt.isDate) {
+                v1 = this.dateToHorolog(v1.replace('&[', '').replace(']', ''));
+                v2 = this.dateToHorolog(v2.replace('&[', '').replace(']', ''));
+                v1 = `&[${v1}]`;
+                v2 = `&[${v2}]`;
+            }
             mdx += ' %FILTER %OR(' + path + '.' + v1 + ':' + v2 + ')';
         }
 

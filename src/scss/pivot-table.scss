@@ -164,8 +164,6 @@ $row-height: 22px;
     overflow-x: hidden;
 }
 
-.lpt-leftHeader +
-
 // Footer
 .lpt .lpt-pageSwitcher {
     // height: $row-height;
@@ -179,8 +177,8 @@ $row-height: 22px;
     color: #606367;
    //  bottom: 5px;
     border: none;
-    border-top: 1px solid #EBEBEA;
-    border-bottom: 1px solid #EBEBEA;
+    border: 1px solid #EBEBEA;
+    // border-bottom: 1px solid #EBEBEA;
 }
 
 // Footer counter and pages

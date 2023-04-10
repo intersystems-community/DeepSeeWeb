@@ -162,10 +162,8 @@ export class WPivotComponent extends BaseWidget implements OnInit, AfterViewInit
                 newMdx = newMdx + ' %FILTER ' + this.drillFilter;
             }
             this.broadcastDependents();
-            if (this.lpt.getActualMDX() !== newMdx) {
-                this.clearError();
-                this.lpt.changeBasicMDX(newMdx);
-            }
+            this.clearError();
+            this.lpt.changeBasicMDX(newMdx);
         }
     }
 
