@@ -1935,7 +1935,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
             flt = filters[i];
             // Skip all apply variable filters
             if (flt.action === 'applyVariable') {
-                continue
+                continue;
             }
             if (flt.value !== '' && !flt.isInterval) {
                 let bracket = '{';
@@ -1950,10 +1950,15 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
                     mdx += ' %FILTER %OR(' + bracket;
                 }
                 for (let j = 0; j < values.length; j++) {
+                    let v = values[j];
+                    if (flt.isDate) {
+                        v = this.dateToHorolog(v.replace('&[', '').replace(']', ''));
+                        v = `&[${v}]`;
+                    }
                     if (flt.isExclude) {
-                        mdx += path + '.' + values[j] + '.%NOT,';
+                        mdx += path + '.' + v + '.%NOT,';
                     } else {
-                        mdx += path + '.' + values[j] + ',';
+                        mdx += path + '.' + v + ',';
                     }
                 }
                 bracket = '}';

@@ -46,7 +46,7 @@ export class FilterService {
             const flt = this.items[this.items.length - 1];
 
             // Check for date filters
-            flt.isDate = flt.controlClass === DATE_PICKER_CLASS;
+            flt.isDate = flt.controlClass === DATE_PICKER_CLASS || flt.targetPropertyDataType === '%DeepSee.Time.DayMonthYear';
             if (flt.isDate) {
                 flt.values = [];
             }
