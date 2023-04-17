@@ -1,3 +1,8 @@
+#### 3.1.83
+* fixed issue with pivot table style (#311)
+* changed date format for MDX requests for horolog (#338)
+* fixed refresh issue for pivot table (#188)
+
 #### 3.1.82
 * added new design for pivot tables (#311)
 * fixed issue with `embed=1` (#361)
