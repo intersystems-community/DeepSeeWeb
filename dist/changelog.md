@@ -1,3 +1,9 @@
+#### 3.1.85
+* added checking for date picker filter by `targetPropertyDataType` equals to `%DeepSee.Time.DayMonthYear`
+
+#### 3.1.84
+* fixed issue with date picker and single date selection 
+
 #### 3.1.83
 * fixed issue with pivot table style (#311)
 * changed date format for MDX requests for horolog (#338)
