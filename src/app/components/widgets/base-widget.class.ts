@@ -144,6 +144,7 @@ export interface IWidgetInfo {
     mdx: string;
     properties: any;
     seriesTypes: string[];
+    kpiclass: string;
 
     isExpanded: boolean;
 

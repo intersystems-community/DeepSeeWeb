@@ -935,4 +935,26 @@ export class DashboardScreenComponent implements OnInit, OnDestroy, AfterViewIni
         }
         empty.rows = maxy || 2;
     }
+
+    gotoKPIPage(w: IWidgetInfo) {
+        if (!w.kpiclass) {
+            return;
+        }
+        const folder = this.ss.serverSettings.DefaultApp || '/csp/' + CURRENT_NAMESPACE;
+        const url = folder + '/' + w.kpiclass + '.cls';
+        window.open(url, '_blank');
+    }
+
+    gotoAnalyzer(w: IWidgetInfo) {
+        if (!w.dataSource) {
+            return;
+        }
+        const folder = this.ss.serverSettings.DefaultApp || '/csp/' + CURRENT_NAMESPACE;
+        const filters = this.fs.getFiltersUrlString(w.name, false, '\t', '\n');
+        let url = folder + '/_DeepSee.UI.Dialog.Analyzer.zen?&PIVOT=' + encodeURIComponent(w.dataSource);
+        if (filters) {
+            url += '&FILTERSTATE=' + filters;
+        }
+        window.open(url, '_blank');
+    }
 }

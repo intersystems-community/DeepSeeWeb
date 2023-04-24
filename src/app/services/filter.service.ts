@@ -129,7 +129,7 @@ export class FilterService {
      * @param {string} [widgetName] Name of widget
      * @returns {string}
      */
-    getFiltersUrlString(widgetName?: string, ignoreTargetAll = false) {
+    getFiltersUrlString(widgetName?: string, ignoreTargetAll = false, dot = '.', seporator = '~') {
         const f = [];
         let widgetFilters = widgetName ? this.getAffectsFilters(widgetName) : this.items;
         if (ignoreTargetAll && widgetFilters) {
@@ -143,9 +143,9 @@ export class FilterService {
             let v = '';
             if (flt.isInterval) {
                 // Format filter string like path.v1:v2
-                v = flt.targetProperty + '.' + flt.values[flt.fromIdx].path + ':' + flt.values[flt.toIdx].path;
+                v = flt.targetProperty + dot + flt.values[flt.fromIdx].path + ':' + flt.values[flt.toIdx].path;
             } else {
-                v = flt.targetProperty + '.' + (flt.isExclude ? '%NOT ' : '') + flt.value;
+                v = flt.targetProperty + dot + (flt.isExclude ? '%NOT ' : '') + flt.value;
             }
             // For many selected values make correct filter string {v1,v2,v3}
             if (v.indexOf('|') !== -1) {
@@ -153,7 +153,7 @@ export class FilterService {
             }
             f.push(v);
         }
-        return encodeURIComponent(f.join('~'));
+        return encodeURIComponent(f.join(seporator));
     }
 
 

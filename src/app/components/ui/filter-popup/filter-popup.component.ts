@@ -67,8 +67,20 @@ export class FilterPopupComponent implements OnInit, AfterViewInit {
         const rect = el.getBoundingClientRect();
         const maxH = window.innerHeight;
         if (rect.top + rect.height > maxH) {
-            const delta = (rect.top + rect.height) - maxH;
-            el.style.maxHeight = (rect.height - delta - 20) + 'px';
+            const deltaBottom = maxH - rect.top;
+            const deltaTop = rect.top - 26 - 4 - 4;
+            if (maxH - rect.top < 200 && deltaTop > deltaBottom) {
+                // Open filter above
+                const bottom = maxH - rect.top + 30 + 4;
+                const delta = maxH - bottom - rect.height;
+                el.style.maxHeight = (rect.height + delta - 20) + 'px';
+                el.style.top = '';
+                el.style.bottom = bottom + 'px';
+            } else {
+                // Open filter below
+                const delta = (rect.top + rect.height) - maxH;
+                el.style.maxHeight = (rect.height - delta - 20) + 'px';
+            }
         }
 
         this.initializeDateFilter();

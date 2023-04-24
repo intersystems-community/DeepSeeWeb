@@ -44,6 +44,8 @@
     <div (click)="printItem()" *ngIf="ctxItem?.isChart">{{'print' | i18n}}</div>
     <div (click)="shareItem()">{{'share' | i18n}}</div>
     <div (click)="copyMDX()">{{'copyMDX' | i18n}}</div>
+    <div *ngIf="ctxItem?.kpitype" (click)="gotoKPIPage(ctxItem)">{{'showKPI' | i18n}}</div>
+    <div *ngIf="ctxItem?.dataSource" (click)="gotoAnalyzer(ctxItem)">{{'openAnalyzer' | i18n}}</div>
     <div class="divider"></div>
 
     <!-- Export -->

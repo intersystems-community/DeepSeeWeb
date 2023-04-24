@@ -1,5 +1,12 @@
+#### 3.1.86
+* fixed issue with pivot table style (#311)
+* changed date format for MDX requests for horolog (#338)
+* fixed refresh issue for pivot table (#188)
+* added "Open analyzer" context menu item for the widget (#364)
+* now filter popup opens above filter field if there is not enough free space below field (#362)
+
 #### 3.1.85
-* added checking for date picker filter by `targetPropertyDataType` equals to `%DeepSee.Time.DayMonthYear`
+* added check for date picker filter by `targetPropertyDataType` equals to `%DeepSee.Time.DayMonthYear`
 
 #### 3.1.84
 * fixed issue with date picker and single date selection 
