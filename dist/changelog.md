@@ -1,3 +1,8 @@
+#### 3.1.87
+* fixed horizontal scroll in pivot tables (#366)
+* fixed state of exclude filters (#367)
+* fixed series reset after filtering (#140)
+
 #### 3.1.86
 * fixed issue with pivot table style (#311)
 * changed date format for MDX requests for horolog (#338)
