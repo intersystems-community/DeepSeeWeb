@@ -101,7 +101,7 @@ export class FilterPopupComponent implements OnInit, AfterViewInit {
         }
 
         this.model.isAll = !this.isAnyChecked();
-
+        this.model.isExclude = filter.isExclude;
         this.model.isInterval = filter.isInterval;
     }
 

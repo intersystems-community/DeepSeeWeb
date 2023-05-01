@@ -67,6 +67,7 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
     private subColorsConfig: Subscription;
 
     private axisLabelListeners: IAxisLabelListener[] = [];
+    private seriesVisibility: boolean[] = [];
 
     ngOnInit() {
         super.ngOnInit();
@@ -336,7 +337,8 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
     retrieveData(result) {
         let i;
         this.hideLoading();
-        // Clean up previous data
+        // Clean up previous data and store visibility state
+        this.seriesVisibility = this.chart?.series?.map(s => s.visible);
         while (this.chart?.series?.length > 0) {
             this.chart.series[0].remove();
         }
@@ -563,6 +565,10 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
         data.showInLegend = true;
         // this.chartConfig.series.push(data);
         c.addSeries(data, redraw, false);
+        const visibility = this.seriesVisibility[c.series.length - 1];
+        if (visibility !== undefined) {
+            c.series[c.series.length - 1].visible = visibility;
+        }
     }
 
     /**
