@@ -1,5 +1,13 @@
 <!-- Title -->
-<span class="title-text">{{widget?.title}}</span>
+<span class="title-text">
+    {{widget?.title}}
+    <img
+        *ngIf="hasFilters"
+        class="btn-filters"
+        src="assets/img/icons/icon-filter.svg"
+        [tooltip]="filtersTooltip"
+    >
+</span>
 
 <!--<span class="left-side">-->
 <!-- Back button -->

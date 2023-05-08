@@ -1,23 +1,4 @@
-<!--
-<div
-    *ngFor="let item of model.textData; let idx = index"
-    class='item'
->
-    <label [hidden]="model?.textData?.length === 1"
-           [style.color]="item.color">
-        {{item.label}}
-    </label>
-
-    <svg #images class='text-widget'>
-        <text [style.fill]='item.valueColor'>{{item.value}}
-            <tspan style='font-size: 4px;fill:red'>{{item.deltaNeg}}</tspan>
-            <tspan style='font-size: 4px;fill:green'>{{item.delta}}</tspan>
-        </text>
-    </svg>
-</div>
--->
-
-<div *ngFor="let item of model.textData; let idx = index" class='item2'>
+<div *ngFor="let item of model.textData; let idx = index" class='item2' (click)="onClick(item)" [class.clickable]="canDrillthrough">
     <svg #images class='text-widget'>
         <text [style.fill]='item.valueColor'>{{item.value}}
             <tspan style='font-size: 4px;fill:red'>{{item.deltaNeg}}</tspan>

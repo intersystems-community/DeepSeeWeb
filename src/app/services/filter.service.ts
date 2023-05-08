@@ -21,6 +21,7 @@ export class FilterService {
     items = [];
 
     onApplyFilter = new EventEmitter<any>();
+    onFiltersChanged = new EventEmitter<void>();
 
     constructor(private route: ActivatedRoute,
                 private us: UtilService,
@@ -415,6 +416,12 @@ export class FilterService {
         if (flt.isDate) {
             disp = disp.replace(',', ' - ');
         }
+        if (flt.isExclude) {
+            disp = this.i18n.get('not') + ' ' + disp;
+        }
+        if (flt.isInterval) {
+            disp = (flt.values[flt.fromIdx]?.name?.toString() || '') + ':' + (flt.values[flt.toIdx]?.name?.toString() || '');
+        }
         flt.valueDisplay = disp;
         flt.value = val;
         if (!noRefresh) {
@@ -444,6 +451,7 @@ export class FilterService {
         this.filtersChanged = true;
         this.saveFilters();
         this.updateFiltersParameterInURL();
+        this.onFiltersChanged.emit();
     }
 
     private updateFiltersParameterInURL() {

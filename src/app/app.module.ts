@@ -72,6 +72,7 @@ import {WLightBarComponent} from "./components/widgets/light-bar/light-bar.compo
 import {WTrafficLightComponent} from "./components/widgets/traffic-light/traffic-light.component";
 import {DatePickerComponent} from "./components/ui/date-picker/date-picker.component";
 import {DateFilterComponent} from "./components/ui/date-filter/date-filter.component";
+import {TooltipDirective} from "./directives/tooltip.directive";
 
 More(Highcharts);
 Tree(Highcharts);
@@ -92,6 +93,7 @@ export function createCompiler(compilerFactory: CompilerFactory) {
         LoginScreenComponent,
         FocusNextDirective,
         AutoFocusDirective,
+        TooltipDirective,
         FolderScreenComponent,
         HeaderComponent,
         SidebarComponent,

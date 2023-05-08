@@ -49,6 +49,10 @@ label {
     min-height: 0;
     min-width: 0;
 
+    &.clickable {
+        cursor: pointer;
+    }
+
     & > label {
         height: auto;
         background: transparent;

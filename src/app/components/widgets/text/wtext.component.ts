@@ -3,6 +3,14 @@ import {BaseWidget, IWidgetInfo} from '../base-widget.class';
 import * as numeral from 'numeral';
 import {dsw} from '../../../../environments/dsw';
 
+interface ITextWidgetData {
+    label: string;
+    value: string;
+    color: string;
+    valueColor: string;
+    dimension: string;
+}
+
 @Component({
     selector: 'dsw-wtext',
     templateUrl: './wtext.component.html',
@@ -19,6 +27,10 @@ export class WTextComponent extends BaseWidget implements OnInit, AfterViewInit 
             return;
         }
         return el.offsetWidth > el.offsetHeight ? 'row' : 'column';
+    }
+
+    get canDrillthrough() {
+        return this.canDoDrillthrough;
     }
 
     ngOnInit(): void {
@@ -157,7 +169,13 @@ export class WTextComponent extends BaseWidget implements OnInit, AfterViewInit 
                     }
 
                     // Add parameter
-                    this.model.textData.push({label: caption, value: v, color, valueColor});
+                    this.model.textData.push({
+                        label: caption,
+                        value: v,
+                        color,
+                        valueColor,
+                        dimension: result.Cols[0].tuples[i].dimension
+                    } as ITextWidgetData);
                 }
             }
         }
@@ -181,5 +199,9 @@ export class WTextComponent extends BaseWidget implements OnInit, AfterViewInit 
             return parseFloat(v.replace(/,/g, '').replace(/ /g, ''));
         }
         return v;
+    }
+
+    onClick(item: ITextWidgetData) {
+        void this.doDrillthrough('', item.label);
     }
 }

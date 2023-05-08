@@ -412,3 +412,16 @@ dsw-modal.modal-no-border {
         }
     }
 }
+
+.dsw-tooltip {
+    position: absolute;
+    z-index: 100;
+    font-family: $font;
+    color: var(--cl-input-text);
+    font-size: 14px;
+    padding: 10px;
+    background: #FFFFFF;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    white-space: pre-line;
+}

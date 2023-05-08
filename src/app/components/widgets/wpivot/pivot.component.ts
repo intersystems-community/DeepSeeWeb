@@ -80,6 +80,9 @@ export class WPivotComponent extends BaseWidget implements OnInit, AfterViewInit
         if (this.widget.isDrillthrough && this.restoreWidgetType) {
             this.widget.isDrillthrough = null;
             this.restoreWidgetType();
+            if (this.widget.kpitype) {
+                this.requestData();
+            }
         } else {
             this.lpt.CONTROLS.back();
         }

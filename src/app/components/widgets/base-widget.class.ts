@@ -993,8 +993,10 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         delete this.widget.pivotMdx;
         delete this.widget.pivotData;
         // TODO: this.widget.backButton = this.drills.length !== 0;
-        this.widget.type = this.widget.oldType;
-        this.createWidgetComponent();
+        if (this.widget?.oldType) {
+            this.widget.type = this.widget.oldType;
+            this.createWidgetComponent();
+        }
     }
 
     changeWidgetType(newType: string) {
@@ -1529,7 +1531,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         }
     }
 
-    convertKPIToMDXData(d) {
+    convertKPIToMDXData(d, isDrillthrough = false) {
         const orig = d;
         d = d.Result;
         const res = {Info: {cubeName: orig.Info.KpiName}, Cols: [], Data: []};
@@ -1553,7 +1555,9 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         }
         res.Cols.push({tuples: ser});
 
-        this.removeColsThatNotExistInDataProperties(res);
+        if (!isDrillthrough) {
+            this.removeColsThatNotExistInDataProperties(res);
+        }
         return res;
     }
 
@@ -1569,18 +1573,18 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
      * Callback for retrieving KPI data
      * @param {object} data KPI data
      */
-    _retriveKPI(data) {
+    _retriveKPI(data, isDrillthrough = false) {
         if (!this) {
             return;
         }
         this._kpiData = data;
         // this._desc.kpiName = data.Info;
         if (this.lpt) {
-            this.lpt.dataController.setData(this.lpt.dataSource._convert(this.convertKPIToMDXData(data)));
+            this.lpt.dataController.setData(this.lpt.dataSource._convert(this.convertKPIToMDXData(data, isDrillthrough)));
             // this.lpt.refresh();
             return;
         }
-        this.retrieveData(this.convertKPIToMDXData(data), data);
+        this.retrieveData(this.convertKPIToMDXData(data, isDrillthrough), data);
         // console.log(data);
     }
 
@@ -1616,7 +1620,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
             filters.push(...drillthroughFilter);
         }
         this.showLoading();
-        return this.ds.getKPIData(ds, filters, !!drillthroughFilter).then(data => this._retriveKPI(data))
+        return this.ds.getKPIData(ds, filters, !!drillthroughFilter).then(data => this._retriveKPI(data, !!drillthroughFilter))
             .finally(() => {
                 this.hideLoading();
             });
@@ -1835,7 +1839,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
     }
 
     dateToHorolog(date: string) {
-        const start = new Date('12/31/1840');
+        const start = new Date('12/31/1840Z');
         const d = new Date(date);
         const diff = d.getTime() - start.getTime();
         return Math.ceil(diff / (1000 * 3600 * 24));

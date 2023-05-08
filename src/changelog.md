@@ -1,3 +1,10 @@
+#### 3.1.88
+* fixed back button issue after KPI drillthrough (#291)
+* for KPI drillthrough data properties filtering now disabled (#291)
+* added drillthrough action to text meters (#368)
+* fixed datepicker issue with horolog and timezones (#338)
+* added filter state display for widgets (#369)
+
 #### 3.1.87
 * fixed horizontal scroll in pivot tables (#366)
 * fixed state of exclude filters (#367)

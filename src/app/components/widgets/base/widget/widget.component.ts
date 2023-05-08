@@ -241,7 +241,8 @@ export class WidgetComponent implements OnInit, OnDestroy, AfterViewInit {
                 this.model.filters[i].text = flt.values[flt.fromIdx].name + ':' + flt.values[flt.toIdx].name;
                 continue;
             }
-            this.model.filters[i].text = ((flt.isExclude === true && flt.valueDisplay) ? (this.i18n.get('not') + ' ') : '') + flt.valueDisplay;
+            // ((flt.isExclude === true && flt.valueDisplay) ? (this.i18n.get('not') + ' ') : '')
+            this.model.filters[i].text = flt.valueDisplay;
         }
         this.cd.detectChanges();
     }

@@ -158,6 +158,7 @@ button.btn-with-text {
     margin-right: 4px;
     font-size: 14px;
     font-weight: bold;
+    z-index: 2;
 
     @include sm {
         display: none !important;
@@ -168,53 +169,7 @@ button.btn-with-text {
     margin-left: auto;
 }
 
-/*.left-side {
-    @include sm {
-        flex-grow: 1;
-        flex-shrink: 1;
-        min-width: 0;
-        width: auto;
-    }
-}*/
-
-/*
-.right-side {
-    & > button > label {
-        display: none;
-    }
-
-    @include sm {
-        // flex-basis: 100%;
-        flex-grow: 1;
-        flex-shrink: 1;
-        width: auto;
-        justify-content: space-between;
-    }
+.btn-filters {
+    pointer-events: auto;
+    vertical-align: top;
 }
-
-.right-side, .left-side {
-    @include sm {
-        & > button {
-            display: inline-flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            width: auto;
-            // min-width: var(--header-height);
-            flex: 1 1 100%;
-            padding: 0;
-
-            & > img {
-                height: calc(var(--header-height) * 0.5);
-            }
-
-            & > label {
-                display: inline-block;
-                font-size: 13px;
-                opacity: var(--widget-header-btn-opacity);
-                filter: var(--widget-header-btn-filter);
-            }
-        }
-    }
-}
-*/
