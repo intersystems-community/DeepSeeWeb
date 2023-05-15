@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1683551120009,
+  "timestamp": 1684157242777,
   "index": "/index.html",
   "assetGroups": [
     {
@@ -13,12 +13,12 @@
       "urls": [
         "/contrast.css",
         "/index.html",
-        "/main.b6ad3a5f988e9b82.js",
+        "/main.dd629c8617b8e3b2.js",
         "/manifest.webmanifest",
         "/polyfills.fc4e187b2cf60df2.js",
         "/runtime.2d49badc8e04eafd.js",
         "/scripts.9c9d6631c17b571c.js",
-        "/styles.2d12af8400047fc0.css"
+        "/styles.7b7438e4454b660a.css"
       ],
       "patterns": []
     },
@@ -78,6 +78,8 @@
         "/assets/img/icons/icon-logout.svg",
         "/assets/img/icons/icon-namespace.svg",
         "/assets/img/icons/icon-navigate.svg",
+        "/assets/img/icons/icon-next-blue.svg",
+        "/assets/img/icons/icon-next.svg",
         "/assets/img/icons/icon-reload.svg",
         "/assets/img/icons/icon-search.svg",
         "/assets/img/icons/icon-settings.svg",
@@ -191,6 +193,8 @@
     "/assets/img/icons/icon-logout.svg": "bffc192305cec2c464861bd4a7467ecb9a3814c3",
     "/assets/img/icons/icon-namespace.svg": "d8a518712759e9ed5df057be2d19573cc2cff924",
     "/assets/img/icons/icon-navigate.svg": "127c80bd65580078821d80b7101fdc6c7ce6e6b3",
+    "/assets/img/icons/icon-next-blue.svg": "4d04c59fceca1a3b4ef2a540f8054aee8d8422b4",
+    "/assets/img/icons/icon-next.svg": "aa3034a0a5cfe88a7ef9afd8274ae61f3bd9fdc6",
     "/assets/img/icons/icon-reload.svg": "7d7d26e015cdadf7878d103736a794acabf2e2b2",
     "/assets/img/icons/icon-search.svg": "326eb0ef86d51383ed518f847b54322fa5620d9f",
     "/assets/img/icons/icon-settings.svg": "c4819e1c51f7212885cd10eb8a8074d9c933daaf",
@@ -226,19 +230,19 @@
     "/assets/img/widget-icons/dashboard-1.svg": "cae18ad39107da3e678a189308dcd344c3b073b7",
     "/assets/img/widget-icons/folder-1.svg": "658bcb3c18eb2c5adde5856572f61967dba02755",
     "/assets/img/widget-icons/widget-1.svg": "6dae83224700ad9acd9b65458180d0360a07f73f",
-    "/contrast.css": "0219d14373f81037f4f32b79f53e2015e02ada76",
+    "/contrast.css": "3534e697cdb88ad4b0e6d85a412044ba5dab9b7d",
     "/fontawesome-webfont.2b13baa7dd4f54c9.eot": "d980c2ce873dc43af460d4d572d441304499f400",
     "/fontawesome-webfont.8a7cb27d142e3e19.ttf": "13b1eab65a983c7a73bc7997c479d66943f7c6cb",
     "/fontawesome-webfont.cf011583fb81df9f.woff": "28b782240b3e76db824e12c02754a9731a167527",
     "/fontawesome-webfont.da909aa098b0ee2d.svg": "98a8aa5cf7d62c2eff5f07ede8d844b874ef06ed",
     "/fontawesome-webfont.e9955780856cf8aa.woff2": "d6f48cba7d076fb6f2fd6ba993a75b9dc1ecbf0c",
-    "/index.html": "384770031461e104bfc9de669e859318e5816b02",
-    "/main.b6ad3a5f988e9b82.js": "f131d628ecb9b4e46f117689847f1b445f782c90",
+    "/index.html": "e4cc3d7203a009fe49ea28fd923e7f2c8a336930",
+    "/main.dd629c8617b8e3b2.js": "9b7c97b22d8b4d89f8ac361330214215fa20f841",
     "/manifest.webmanifest": "b848c77a4ea79860cc030444d6b4138668e449ae",
     "/polyfills.fc4e187b2cf60df2.js": "c79ce4f8cdf874d8258fba225bd8d038f68eac62",
     "/runtime.2d49badc8e04eafd.js": "a3a69d6bd6abbc9549bf3b8f914c7ef4c87ea52d",
     "/scripts.9c9d6631c17b571c.js": "c1724b91b3123712ab04f9f36845f388300efa35",
-    "/styles.2d12af8400047fc0.css": "89281a9154d20479a203a70d093b0275a0f18dc9"
+    "/styles.7b7438e4454b660a.css": "4444cf8888502669481b8e37156d4b500e55f0ca"
   },
   "navigationUrls": [
     {
