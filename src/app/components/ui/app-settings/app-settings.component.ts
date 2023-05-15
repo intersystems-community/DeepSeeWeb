@@ -10,7 +10,7 @@ import {I18nService} from '../../../services/i18n.service';
 @Component({
     selector: 'dsw-app-settings',
     templateUrl: './app-settings.component.html',
-    styleUrls: ['./../home-editor/home-editor.component.scss', './app-settings.component.scss']
+    styleUrls: ['./../../editor/editor-styles.scss', './app-settings.component.scss']
 })
 export class AppSettingsComponent implements OnInit {
     model: any;
@@ -34,12 +34,12 @@ export class AppSettingsComponent implements OnInit {
     }
 
     onCancel() {
-        this.sbs.sidebarToggle.next(null);
+        this.sbs.showComponent(null);
     }
 
     onApply() {
         this.applySettrings();
-        this.sbs.sidebarToggle.next(null);
+        this.sbs.showComponent(null);
     }
 
     private applySettrings() {
@@ -66,7 +66,7 @@ export class AppSettingsComponent implements OnInit {
             const contents = JSON.parse(String.fromCharCode.apply(null, new Uint8Array(e.target.result)));
             this.ss.setAllSettings(contents);
             this.ss.onSettingsChanged.emit(this.ss.getAppSettings());
-            this.sbs.sidebarToggle.next(null);
+            this.sbs.showComponent(null);
             this.modal.show(this.i18n.get('settingsImported'), () => {
                 window.location.reload();
             });

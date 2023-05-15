@@ -13,6 +13,7 @@
 
     <!-- footer with buttons -->
     <div class="footer" *ngIf="data.buttons?.length">
+        <dsw-search-input *ngIf="data.search !== undefined" [ngModel]="data.search" (search)="onSearch($event)"></dsw-search-input>
         <button
             class="btn"
             *ngFor="let btn of data.buttons"

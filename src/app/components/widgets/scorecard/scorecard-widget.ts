@@ -121,7 +121,7 @@ export class ScorecardWidgetComponent extends BaseWidget implements OnInit, OnDe
             widgetsSettings[name].themeColors = {};
         }
 
-        this.sbs.sidebarToggle.next({
+        this.sbs.showComponent({
             component: ChartConfigComponent,
             inputs: {
                 appearance: {

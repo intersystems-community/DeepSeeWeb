@@ -21,11 +21,13 @@ export interface IModal {
     noPadding?: boolean;
     buttons?: IModalButton[];
     component?: any;
+    search?: string;
     hideBackdrop?: boolean;
     class?: string;
     componentStyles?: {[key: string]: string};
     onComponentInit?: (comp: any) => void;
     onClose?: () => void;
+    outputs?: {[key: string]: (...args) => void };
 }
 
 @Injectable({

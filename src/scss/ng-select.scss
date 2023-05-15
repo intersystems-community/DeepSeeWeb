@@ -1,0 +1,72 @@
+@import "variables";
+
+.ng-select {
+    height: var(--cl-input-height);
+    cursor: pointer;
+}
+
+.ng-select.dsw .ng-select-container {
+    min-height: 0px;
+    border: 1px solid var(--cl-input-border);
+    height: var(--cl-input-height);
+
+    font-family: $font;
+    font-size: 13px;
+    color: var(--cl-input-text);
+}
+
+// Fix text input height
+.ng-select .ng-select-container .ng-value-container .ng-input>input {
+    height: 100%;
+    font-family: $font;
+    color: var(--cl-input-text);
+    font-size: 13px;
+    border-radius: 0;
+}
+
+
+// Fix dropdown text
+.ng-dropdown-panel .ng-dropdown-panel-items .ng-option {
+    font-family: $font;
+    color: var(--cl-input-text);
+}
+
+// Dropdown panel
+.ng-dropdown-panel {
+    border-color: var(--cl-input-border);
+    // box-shadow: none;
+    // border-color: var(--cl-accent);
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
+// Scroll area
+.ng-dropdown-panel .scroll-host {
+    @include dsw-scrollbar-v;
+}
+
+// Options text
+.ng-dropdown-panel .ng-dropdown-panel-items .ng-option {
+    font-family: $font;
+    color: var(--cl-input-text);
+    font-size: 13px;
+    height: 26px;
+    padding: 5px 10px;
+}
+
+// Selected option
+.ng-dropdown-panel .ng-dropdown-panel-items .ng-option.ng-option-selected, .ng-dropdown-panel .ng-dropdown-panel-items .ng-option.ng-option-selected.ng-option-marked {
+    color: var(--cl-accent);
+    font-weight: normal;
+}
+
+// Focused style
+.ng-select.ng-select-focused:not(.ng-select-opened) > .ng-select-container, .ng-select.ng-select-opened > .ng-select-container {
+    box-shadow: none;
+    border-color: var(--cl-accent);
+}
+
+// Hover state
+.ng-select .ng-select-container:hover {
+    box-shadow: none;
+    // background-color: var(--cl-hover);
+}

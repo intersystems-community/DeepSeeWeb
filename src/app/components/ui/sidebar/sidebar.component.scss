@@ -9,4 +9,7 @@
     flex: 0 0 var(--sidebar-width);
     border-right: 1px solid var(--cl-sidebar-border);
     z-index: 3;
+
+    position: relative;
+    overflow: hidden;
 }

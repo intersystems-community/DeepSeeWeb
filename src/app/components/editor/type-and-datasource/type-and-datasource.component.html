@@ -1,0 +1,36 @@
+<dsw-sidebar-actions [isBack]="true">Type & Datasource</dsw-sidebar-actions>
+
+<div class="container" *ngIf="widget">
+    <label>Widget type</label>
+    <ng-select
+        class="dsw"
+        [(ngModel)]="type"
+        [items]="widgetTypes"
+        bindLabel="label"
+        [clearable]="false"
+        [closeOnSelect]="true"
+        (change)="onTypeChange()"
+    ></ng-select>
+
+
+    <!-- Data source -->
+    <label>Data source</label>
+    <dsw-input [(ngModel)]="widget.dataSource" chooseButton="true" (choose)="onSelectDataSource()"></dsw-input>
+
+    <!-- Reference to -->
+    <label>Reference to</label>
+    <ng-select
+        class="dsw"
+        [items]="widgetList"
+        [(ngModel)]="widget.referenceTo"
+        bindLabel="label"
+        bindValue="name"
+        [clearable]="false"
+        [closeOnSelect]="true">
+
+    </ng-select>
+
+    <!-- Target details -->
+   <!-- <label>Target details</label>
+    <input class="select">-->
+</div>

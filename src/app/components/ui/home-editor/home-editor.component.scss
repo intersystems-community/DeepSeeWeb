@@ -1,26 +1,5 @@
 @import "src/scss/variables";
 
-:host {
-    display: flex;
-    flex-direction: column;
-    height: calc(100% - var(--header-height));
-        //margin-top: calc(-1 * var(--header-height));
-    //height: calc(100% + var(--header-height));
-    //background-color: var(--cl-sidebar-bg);
-}
-
-// Label text style
-label {
-    display: flex;
-    justify-content: space-between;
-    font-family: $font;
-    color: var(--cl-sidebar-txt);
-    margin-top: 10px;
-    margin-bottom: 2px;
-    font-size: 14px;
-    width: calc(100% - 4px);
-}
-
 // Upload control
 input[type=file] {
     &::-webkit-file-upload-button {
@@ -36,47 +15,6 @@ input[type=checkbox] {
     &:focus, &:active {
         outline: none;
     }
-}
-
-
-.color-rect {
-    display: inline-flex;
-    position: relative;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    width: 32px;
-    height: 32px;
-    margin-right: 4px;
-    margin-bottom: 4px;
-    border: var(--tile-border);
-    font-size: 24px;
-    transition: outline 0.1s ease-out;
-    outline-offset: -2px;
-    float: left;
-    &:hover {
-        outline: 1px solid var(--cl-accent);
-    }
-    &.active {
-        outline: 3px solid var(--cl-accent);
-    }
-}
-
-.color-rect img {
-    // position: absolute;
-    max-width: 16px;
-    // font-family: FontAwesome;
-}
-
-.container {
-    height: 100%;
-    width: calc(100% - 20px);
-    overflow-y: auto;
-    margin-left: 20px;
-}
-
-input {
-    margin-bottom: 4px;
 }
 
 .divider {

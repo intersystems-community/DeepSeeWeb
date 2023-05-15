@@ -165,7 +165,8 @@ const TRANSLATIONS = {
         changeColors: 'Change colors',
         fullscreen: 'Toggle fullscreen',
         showKPI: 'Show KPI',
-        openAnalyzer: 'Open analyzer'
+        openAnalyzer: 'Open analyzer',
+        addWidget: 'Add widget'
     },
     de: {
         settingsImported: 'Einstellungen wurden erfolgreich importiert!',

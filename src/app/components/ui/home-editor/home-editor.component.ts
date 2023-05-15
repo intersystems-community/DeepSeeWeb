@@ -20,7 +20,7 @@ import {Subscription} from 'rxjs';
 @Component({
     selector: 'dsw-home-editor',
     templateUrl: './home-editor.component.html',
-    styleUrls: ['./home-editor.component.scss'],
+    styleUrls: ['./../../editor/editor-styles.scss', './home-editor.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HomeEditorComponent implements OnInit, OnDestroy {
@@ -227,6 +227,6 @@ export class HomeEditorComponent implements OnInit, OnDestroy {
      */
     close() {
         this.ms.onEditDashboard.emit(false);
-        this.sbs.sidebarToggle.next(null);
+        this.sbs.showComponent(null);
     }
 }

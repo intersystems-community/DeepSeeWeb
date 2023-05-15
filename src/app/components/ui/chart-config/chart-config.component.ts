@@ -27,7 +27,7 @@ export interface IChartConfigAppearance {
 @Component({
     selector: 'dsw-chart-config',
     templateUrl: './chart-config.component.html',
-    styleUrls: ['./../home-editor/home-editor.component.scss', './chart-config.component.scss']
+    styleUrls: ['./../../editor/editor-styles.scss', './chart-config.component.scss']
 })
 export class ChartConfigComponent implements OnInit, OnDestroy {
     @Input() chart: Chart;
@@ -97,7 +97,7 @@ export class ChartConfigComponent implements OnInit, OnDestroy {
     }
 
     onCancel() {
-        this.sbs.sidebarToggle.next(null);
+        this.sbs.showComponent(null);
     }
 
     onApply() {
@@ -114,7 +114,7 @@ export class ChartConfigComponent implements OnInit, OnDestroy {
             settings.themeColors[this.key] = this.model.themeColors;
             this.ss.setAppSettings(settings);
         }
-        this.sbs.sidebarToggle.next(null);
+        this.sbs.showComponent(null);
     }
 
     update() {
@@ -187,7 +187,7 @@ export class ChartConfigComponent implements OnInit, OnDestroy {
             hcBackground: opt.chart.backgroundColor as string,
             hcTextColor: (opt as any).labels.style.color,
             hcBorderColor: null, // opt.plotOptions.bar.borderColor as string,
-            hcLineColor: '#FFFFFF' // ((this.chart as any).colorAxis as ColorAxisOptions).minorGridLineColor as string
+            hcLineColor: '#e6e6e6' // ((this.chart as any).colorAxis as ColorAxisOptions).minorGridLineColor as string
         };
     }
 

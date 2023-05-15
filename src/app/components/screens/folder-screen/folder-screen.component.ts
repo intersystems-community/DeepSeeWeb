@@ -193,7 +193,7 @@ export class FolderScreenComponent implements OnInit, OnDestroy {
         this.tilesOptions.draggable.enabled = true;
         this.tilesOptions.resizable.enabled = true;
         this.tilesOptions.api.optionsChanged();
-        this.ss.sidebarToggle.next({
+        this.ss.showComponent({
             component: HomeEditorComponent,
             inputs: {
                 tiles: this.model.tiles,
@@ -220,7 +220,7 @@ export class FolderScreenComponent implements OnInit, OnDestroy {
         // If editing mode - update editing sidebar
         if (this.model.edItem) {
             this.model.edItem = tile;
-            this.ss.sidebarToggle.next({ component: HomeEditorComponent, inputs: {tile}});
+            this.ss.showComponent({ component: HomeEditorComponent, inputs: {tile}});
             return;
         }
         // Default navigate to dashboard

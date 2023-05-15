@@ -1,0 +1,2 @@
+<img src="assets/img/icons/icon-search.svg">
+<input #inp [formControl]="formControl" type="search" placeholder="Search" [(ngModel)]="model" (blur)="isSearchActive = false" (keydown.enter)="isSearchActive = false">

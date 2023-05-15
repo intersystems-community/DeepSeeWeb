@@ -73,6 +73,13 @@ import {WTrafficLightComponent} from "./components/widgets/traffic-light/traffic
 import {DatePickerComponent} from "./components/ui/date-picker/date-picker.component";
 import {DateFilterComponent} from "./components/ui/date-filter/date-filter.component";
 import {TooltipDirective} from "./directives/tooltip.directive";
+import {WidgetEditorComponent} from "./components/editor/widget-editor/widget-editor.component";
+import {DataSourceSelectorDialog} from "./components/editor/datasource-selector-dialog/datasource-selector-dialog";
+import {TabsComponent} from "./components/ui/tabs/tabs.component";
+import {TypeAndDatasourceComponent} from "./components/editor/type-and-datasource/type-and-datasource.component";
+import { InputComponent } from './components/ui/input/input/input.component';
+import { SearchInputComponent } from './components/ui/search/search-input/search-input.component';
+import {NgSelectModule} from "@ng-select/ng-select";
 
 More(Highcharts);
 Tree(Highcharts);
@@ -139,12 +146,19 @@ export function createCompiler(compilerFactory: CompilerFactory) {
         WLightBarComponent,
         WTrafficLightComponent,
         DatePickerComponent,
-        DateFilterComponent
+        DateFilterComponent,
+        WidgetEditorComponent,
+        DataSourceSelectorDialog,
+        TabsComponent,
+        TypeAndDatasourceComponent,
+        InputComponent,
+        SearchInputComponent
     ],
     imports: [
         BrowserAnimationsModule,
         GridsterModule,
         BrowserModule,
+        NgSelectModule,
         FormsModule,
         ReactiveFormsModule,
         AppRoutingModule,

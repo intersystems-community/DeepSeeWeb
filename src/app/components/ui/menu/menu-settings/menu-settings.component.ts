@@ -18,14 +18,14 @@ export class MenuSettingsComponent implements OnInit {
     }
 
     showThemeSettings() {
-        this.sbs.sidebarToggle.next({component: ThemeSettingsComponent});
+        this.sbs.showComponent({component: ThemeSettingsComponent});
     }
 
     showAppSettings() {
-        this.sbs.sidebarToggle.next({component: AppSettingsComponent});
+        this.sbs.showComponent({component: AppSettingsComponent});
     }
 
     showChartsSettings() {
-        this.sbs.sidebarToggle.next({component: ChartConfigComponent});
+        this.sbs.showComponent({component: ChartConfigComponent});
     }
 }

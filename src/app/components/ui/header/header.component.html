@@ -37,21 +37,25 @@
         <dsw-share-dashboard [shareUrl]="shareUrl" [isSmall]="true"></dsw-share-dashboard>
     </div>
 
+    <!-- Add widget-->
+    <button class="btn btn-icon square s60 btn-goto only-desktop" (click)="onAddClick()" *ngIf="!isSearch && allowAdd" [title]="'addWidget' | i18n">
+       <span class="icon-plus">+</span>
+       <!--<img class="flip" src="assets/img/icons/icon-copy.svg">-->
+    </button>
+
     <!-- Mobile filter -->
     <div class="btn btn-icon square btn-mobile-filter only-sm" (click)="toggleMobileFilter()" *ngIf="!isSearch && isMobileFilterButton">
         <img src="assets/img/icons/filter_alt-black-18dp.svg">
     </div>
 </div>
 <div class="search-block">
-    <span class="search" [hidden]="!isSearch">
+   <!-- <span class="search" [hidden]="!isSearch">
         <div [class.active]="isSearchActive">
             <img class="img-search" src="assets/img/icons/icon-search.svg">
             <input #inp [formControl]="searchField" type="search" placeholder="Search" (blur)="isSearchActive = false" (keydown.enter)="isSearchActive = false">
         </div>
-        <!--<span class="btn-search" [class.active]="isSearchActive" (click)="isSearchActive = !isSearchActive; isSearchActive ? inp.focus() : null">
-            <img src="assets/img/icons/search-black-18dp.svg">
-        </span>-->
-    </span>
+    </span>-->
+    <dsw-search-input [hidden]="!isSearch" (search)="onSearch($event)"></dsw-search-input>
 
     <!-- Language selector -->
     <select #lang class="lang-selector only-desktop" [(ngModel)]="selectedLanguage" (change)="selectLanguage(lang.value)">

@@ -1,12 +1,14 @@
 import {
+    ChangeDetectorRef,
     ComponentFactoryResolver,
+    Directive,
     ElementRef,
     HostBinding,
-    OnDestroy,
-    OnInit,
-    Directive,
+    Inject,
+    Injector,
     NgZone,
-    ChangeDetectorRef, Inject, Injector
+    OnDestroy,
+    OnInit
 } from '@angular/core';
 import {UtilService} from '../../services/util.service';
 import {VariablesService} from '../../services/variables.service';
@@ -15,7 +17,7 @@ import {DataService} from '../../services/data.service';
 import {FilterService} from '../../services/filter.service';
 import {ActivatedRoute} from '@angular/router';
 import {I18nService} from '../../services/i18n.service';
-import {IWidgetType, WidgetTypeService} from '../../services/widget-type.service';
+import {WidgetTypeService} from '../../services/widget-type.service';
 import * as Highcharts from 'highcharts';
 import {IButtonToggle} from '../../services/widget.service';
 import {Subscription} from 'rxjs';
@@ -79,6 +81,7 @@ export interface IWidgetOverride {
 }
 
 export type IAddonType = 'custom' | 'chart' | 'map';
+
 export interface IAddonInfo {
     version?: number;
     type?: IAddonType;
@@ -94,7 +97,7 @@ export interface IWidgetDataProperties {
     // align: string;
     // baseValue: string
     name: string;
-    dataValue: string|number;
+    dataValue: string | number;
     display: WidgetColumnDisplayType;
     format: string;
     label: string;
@@ -202,6 +205,12 @@ export interface IWidgetInfo {
 
     // Additional
     format?: string;
+
+    // Gridster
+    //item?: GridsterItem;
+
+    // editor
+    referenceTo?: string;
 }
 
 export interface IKPIDataInfo {
@@ -215,7 +224,7 @@ export interface IKPIDataProperty {
     name: string;
 }
 
-export interface IKPIDataSeries{
+export interface IKPIDataSeries {
     [key: string]: number;
 }
 
@@ -556,21 +565,21 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         });
     } */
 
-    getDataProp(name: string): IWidgetDataProperties|undefined {
+    getDataProp(name: string): IWidgetDataProperties | undefined {
         if (!this.widget.dataProperties) {
             return;
         }
         return this.widget.dataProperties.find(pr => pr.name === name);
     }
 
-    getDataPropByDataValue(dataValue: string): IWidgetDataProperties|undefined {
+    getDataPropByDataValue(dataValue: string): IWidgetDataProperties | undefined {
         if (!this.widget.dataProperties) {
             return;
         }
         return this.widget.dataProperties.find(pr => pr.dataValue === dataValue);
     }
 
-    getDataPropValue(name: string): string|undefined {
+    getDataPropValue(name: string): string | undefined {
         const prop = this.getDataProp(name);
         if (prop && prop.dataValue !== null && prop.dataValue !== undefined) {
             return prop.dataValue.toString();
@@ -944,9 +953,8 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         const a = action.action.toLowerCase();
 
         if (a === 'viewdashboard') {
-           this.navigateDashboard(action.targetProperty);
-        } else
-        if (a === 'navigate') {
+            this.navigateDashboard(action.targetProperty);
+        } else if (a === 'navigate') {
             this.actionNavigate(action);
         } else if (a === 'newwindow') {
             this.actionNavigate(action, true);
@@ -1161,7 +1169,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         });
     }
 
-    doDrillthrough(path?: string|string[], name?: string, category?: string, noDrillCallback?: () => void, preventDrillFilter = false, autoDrillSuccess?: () => void, drillError?: (e) => void) {
+    doDrillthrough(path?: string | string[], name?: string, category?: string, noDrillCallback?: () => void, preventDrillFilter = false, autoDrillSuccess?: () => void, drillError?: (e) => void) {
         return new Promise((res: any, rej) => {
             if (!this.canDoDrillthrough) {
                 res();
@@ -1189,21 +1197,21 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
             const ddMdx = this.getDrillthroughMdx(mdx);
 
             this.ds.execMDX(ddMdx)
-                    // .error(this._onRequestError)
-                    .then((data2: any) => {
-                        if (!data2 || !data2.children || data2.children.length === 0) {
-                            return;
-                        }
-                        this.widget.isDrillthrough = true;
-                        this.widget.backButton = true;
-                        this.widget.pivotData = data2;
-                        this.displayAsPivot(ddMdx);
-                    })
-                    .catch(e => {
-                        if (drillError) {
-                            drillError(e);
-                        }
-                    })
+                // .error(this._onRequestError)
+                .then((data2: any) => {
+                    if (!data2 || !data2.children || data2.children.length === 0) {
+                        return;
+                    }
+                    this.widget.isDrillthrough = true;
+                    this.widget.backButton = true;
+                    this.widget.pivotData = data2;
+                    this.displayAsPivot(ddMdx);
+                })
+                .catch(e => {
+                    if (drillError) {
+                        drillError(e);
+                    }
+                })
                 .finally(() => {
                     this.hideLoading();
                 });
@@ -1456,7 +1464,8 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
             case 'chooseDataSource':
                 this.changeDataSource(val, item);
                 break;
-            case 'chooseRowSpec': case 'setRowSpec':
+            case 'chooseRowSpec':
+            case 'setRowSpec':
                 this.changeRowSpec(val, item.action !== 'setRowSpec');
                 break;
             case 'chooseColumnSpec':
@@ -1517,9 +1526,9 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         const ds = this.customDataSource || this.widget.dataSource;
         // Check if this KPI
         if (this.widget.kpitype) {
-           /* if (ds) {
-                this.ds.getKPIData(ds).then(data => this._retriveKPI(data));
-            }*/
+            /* if (ds) {
+                 this.ds.getKPIData(ds).then(data => this._retriveKPI(data));
+             }*/
         } else {
             if (ds) {
                 this.ds.getPivotData(ds)
@@ -1648,8 +1657,8 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         // this.drillLevel = 0;
         // this.drills = [];
         if (this.widget.kpitype) {
-           this._requestKPIData();
-           return;
+            this._requestKPIData();
+            return;
         }
         const mdx = this.getMDX();
         if (!mdx) {
@@ -1665,7 +1674,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
                 this.pivotVariables = d;
             })
                 .catch(e => {
-                   this.showError(e.message);
+                    this.showError(e.message);
                 });
         }
 
@@ -1701,7 +1710,8 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         }
         let msg = this.i18n.get('errWidgetRequest');
         switch (status) {
-            case 401: case 403:
+            case 401:
+            case 403:
                 msg = this.i18n.get('errUnauth');
                 break;
             case 404:
@@ -1870,7 +1880,6 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
             str = this.checkColSpec(str);
             return this.applyDrill(str);
         }
-
 
 
         // Add filter for drillFilter feature
@@ -2073,7 +2082,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
             [],
             {
                 relativeTo: this.route,
-                queryParams: { drilldown: drills },
+                queryParams: {drilldown: drills},
                 queryParamsHandling: 'merge'
             });
 
@@ -2096,18 +2105,18 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         }
     }
 
-   /* replaceUrlParam(url: string, paramName: string, paramValue: string)
-    {
-        if (paramValue === null) {
-            paramValue = '';
-        }
-        const pattern = new RegExp('\\b(' + paramName + '=).*?(&|#|$)');
-        if (url.search(pattern) >= 0) {
-            return url.replace(pattern, '$1' + paramValue + '$2');
-        }
-        url = url.replace(/[?#]$/, '');
-        return url + (url.indexOf('?') > 0 ? '&' : '?') + paramName + '=' + paramValue;
-    }*/
+    /* replaceUrlParam(url: string, paramName: string, paramValue: string)
+     {
+         if (paramValue === null) {
+             paramValue = '';
+         }
+         const pattern = new RegExp('\\b(' + paramName + '=).*?(&|#|$)');
+         if (url.search(pattern) >= 0) {
+             return url.replace(pattern, '$1' + paramValue + '$2');
+         }
+         url = url.replace(/[?#]$/, '');
+         return url + (url.indexOf('?') > 0 ? '&' : '?') + paramName + '=' + paramValue;
+     }*/
 
     getDrillsAsParameter(): string {
         const drills = this.drills;
@@ -2126,7 +2135,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
             [],
             {
                 relativeTo: this.route,
-                queryParams: { datasource: this.customDataSource },
+                queryParams: {datasource: this.customDataSource},
                 queryParamsHandling: 'merge'
             });
 
@@ -2144,8 +2153,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
             if ((window.parent as any).dsw?.onDataSource) {
                 (window.parent as any).dsw.onDataSource(event);
             }
-        }
-        catch (e) {
+        } catch (e) {
             console.error(e);
         }
     }

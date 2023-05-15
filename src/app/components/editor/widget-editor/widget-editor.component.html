@@ -1,0 +1,50 @@
+<dsw-sidebar-actions (cancel)="onCancelEditing()" (apply)="onSave()" >Add widget</dsw-sidebar-actions>
+
+<div class="container">
+    <div class="headline">
+        General settings
+    </div>
+    <!-- Name -->
+    <label>Name</label>
+    <dsw-input [(ngModel)]="model.name"></dsw-input>
+
+    <!-- Title -->
+    <label>Title</label>
+    <dsw-input [(ngModel)]="model.title"></dsw-input>
+
+    <div class="navigation">
+        <button class="btn-section" (click)="onTypeAndDataSourceClick()">
+            Type and data source
+            <img src="assets/img/icons/icon-next-blue.svg">
+        </button>
+        <button class="btn-section">
+            Widget settings
+            <img src="assets/img/icons/icon-next-blue.svg">
+        </button>
+        <button class="btn-section">
+            Controls
+            <img src="assets/img/icons/icon-next-blue.svg">
+        </button>
+        <button class="btn-section">
+            Data properties
+            <img src="assets/img/icons/icon-next-blue.svg">
+        </button>
+
+        <div class="headline">
+            Diagram and pivot table
+        </div>
+
+        <button class="btn-section">
+            Table settings
+            <img src="assets/img/icons/icon-next-blue.svg">
+        </button>
+        <button class="btn-section">
+            Diagram settings
+            <img src="assets/img/icons/icon-next-blue.svg">
+        </button>
+        <button class="btn-section">
+            Diagram legend
+            <img src="assets/img/icons/icon-next-blue.svg">
+        </button>
+    </div>
+</div>

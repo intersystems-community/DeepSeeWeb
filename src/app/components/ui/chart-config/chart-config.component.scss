@@ -5,3 +5,33 @@
 .divider {
     margin-bottom: 10px;
 }
+
+
+.color-rect {
+    display: inline-flex;
+    position: relative;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+    margin-right: 4px;
+    margin-bottom: 4px;
+    border: var(--tile-border);
+    font-size: 24px;
+    transition: outline 0.1s ease-out;
+    outline-offset: -2px;
+    float: left;
+    &:hover {
+        outline: 1px solid var(--cl-accent);
+    }
+    &.active {
+        outline: 3px solid var(--cl-accent);
+    }
+}
+
+.color-rect img {
+    // position: absolute;
+    max-width: 16px;
+    // font-family: FontAwesome;
+}

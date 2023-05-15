@@ -21,7 +21,7 @@ import {
 } from 'angular-gridster2';
 import {StorageService} from '../../../services/storage.service';
 import {dsw} from '../../../../environments/dsw';
-import {combineLatest, fromEvent, Observable, of, Subscription} from 'rxjs';
+import {BehaviorSubject, combineLatest, fromEvent, Observable, of, Subscription} from 'rxjs';
 import {DataService} from '../../../services/data.service';
 import {map, switchMap} from 'rxjs/operators';
 import {ActivatedRoute, Router} from '@angular/router';
@@ -40,6 +40,8 @@ import {DashboardService} from '../../../services/dashboard.service';
 import {MenuService} from '../../../services/menu.service';
 import {WTextComponent} from '../../widgets/text/wtext.component';
 import {BaseChartClass} from '../../widgets/charts/base-chart.class';
+import {SidebarService} from "../../../services/sidebar.service";
+import {EditorService} from "../../../services/editor.service";
 
 const SWIPE_TIME_THRESHOLD = 200;
 const SWIPE_PIXELS_Y_THRESHOLD = 100;
@@ -113,12 +115,17 @@ export class DashboardScreenComponent implements OnInit, OnDestroy, AfterViewIni
     isMobileFilterVisible = false;
 
     private subSettingsChanged: Subscription;
+    private subOnSidebarAnim: Subscription;
+    private subOnNewWidget: Subscription;
+    private editedWidget: IWidgetInfo = null;
+    private refreshData = new BehaviorSubject(false);
 
     constructor(private ds: DataService,
                 private vs: VariablesService,
                 private fs: FilterService,
                 public us: UtilService,
                 private ss: StorageService,
+                private sbs: SidebarService,
                 private es: ErrorService,
                 private hs: HeaderService,
                 public dbs: DashboardService,
@@ -127,6 +134,7 @@ export class DashboardScreenComponent implements OnInit, OnDestroy, AfterViewIni
                 private ns: NamespaceService,
                 private cd: ChangeDetectorRef,
                 private bs: BroadcastService,
+                private eds: EditorService,
                 private r2: Renderer2,
                 private ms: MenuService,
                 private route: ActivatedRoute) {
@@ -179,6 +187,24 @@ export class DashboardScreenComponent implements OnInit, OnDestroy, AfterViewIni
             }
         });
 
+        // Add widget when creating new one
+        this.subOnNewWidget = this.eds.onNewWidget.subscribe(w => {
+            /*this.editedWidget = w as IWidgetInfo;
+            this.refreshData.next(true);
+            this.cd.markForCheck();
+            this.cd.detectChanges();*/
+
+        });
+
+        // Resize gridster after sidebar animation
+        this.subOnSidebarAnim = this.sbs.onAnimEnd.subscribe(() => {
+            this.isLoaded = true;
+            setTimeout(() => {
+                this.gridster.onResize();
+                this.isLoaded = false;
+            });
+        });
+
         if (this.sharedWidget) {
             this.tilesOptions.maxCols = 1;
             this.tilesOptions.minCols = 1;
@@ -220,7 +246,8 @@ export class DashboardScreenComponent implements OnInit, OnDestroy, AfterViewIni
     ngOnInit() {
         this.data$ = combineLatest([
             this.route.url,
-            this.route.params
+            this.route.params,
+            this.refreshData
         ]).pipe(
             switchMap(([segments, params]) => {
                 // Switch namespace if changed
@@ -229,7 +256,7 @@ export class DashboardScreenComponent implements OnInit, OnDestroy, AfterViewIni
                 }
                 // Build path
                 const path = [params.name, ...segments.map(s => s.path)].join('/').slice(1);
-                // Return nothis if this is not dashboard
+                // Return if this is not a dashboard
                 if (path.indexOf('.dashboard') === -1) {
                     return of([]);
                 }
@@ -256,7 +283,9 @@ export class DashboardScreenComponent implements OnInit, OnDestroy, AfterViewIni
 
     ngOnDestroy() {
         window.onafterprint = null;
+        this.subOnSidebarAnim.unsubscribe();
         this.subContextMenu.unsubscribe();
+        this.subOnNewWidget.unsubscribe();
         this.subMobileFilterDialog.unsubscribe();
         if (this.subCtxClose) {
             this.subCtxClose.unsubscribe();
@@ -529,6 +558,10 @@ export class DashboardScreenComponent implements OnInit, OnDestroy, AfterViewIni
 
         if (this.isMobile) {
             this.isLoaded = true;
+        }
+
+        if (this.editedWidget) {
+            this.widgetInfo.push(this.editedWidget);
         }
 
         return this.widgetInfo;

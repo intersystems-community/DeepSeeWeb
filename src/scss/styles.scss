@@ -6,6 +6,8 @@
 @import 'air-datepicker/air-datepicker.css';
 @import 'date-picker';
 @import 'pivot-table';
+@import '@ng-select/ng-select/scss/default.theme';
+@import 'ng-select';
 
 .only-sm {
     @media (min-width: #{$screen-sm-min}) {
@@ -57,7 +59,7 @@ html, body {
 input:not([type=file]), textarea, select {
     display: block;
     padding: 0 10px;
-    height: 26px;
+    height: var(--cl-input-height);
     border-radius: var(--input-border-radius);
     width: 100%;
     font-size: 14px;
@@ -425,3 +427,27 @@ dsw-modal.modal-no-border {
     border-radius: 10px;
     white-space: pre-line;
 }
+
+.dsw-spinner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.7);
+    z-index: 2;
+}
+
+/*
+.go-out {
+    transform: translateX(calc(100% + 40px));
+    position: absolute;
+}
+
+.go-in {
+    transform: translateX(0) !important;
+}
+*/

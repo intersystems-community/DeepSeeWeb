@@ -10,12 +10,11 @@ import {ActivatedRoute, NavigationEnd, Router} from '@angular/router';
 import {UtilService} from '../../../services/util.service';
 import {StorageService} from '../../../services/storage.service';
 import {CURRENT_NAMESPACE} from '../../../services/namespace.service';
-import {TextAreaComponent} from '../text-area/text-area.component';
 import {ModalService} from '../../../services/modal.service';
 import {FilterService} from '../../../services/filter.service';
 import {DataService} from "../../../services/data.service";
 import {I18nService} from "../../../services/i18n.service";
-import {ShareDashboardComponent} from "../share-dashboard/share-dashboard/share-dashboard.component";
+import {WidgetEditorComponent} from "../../editor/widget-editor/widget-editor.component";
 
 /**
  * Breadcrumb
@@ -33,7 +32,6 @@ interface IPathNav {
     styleUrls: ['./header.component.scss']
 })
 export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
-    searchField = new FormControl();
     private subTitle: Subscription;
     private subOnSearch: Subscription;
     private subOnSearchReset: Subscription;
@@ -47,7 +45,6 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
     namespace = '';
     isSearch = false;
 
-    isSearchActive = false;
     title = '';
 
     path: IPathNav[] = [];
@@ -56,6 +53,7 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
     selectedLanguage = this.i18n.current.toUpperCase();
     isMorePressed = false;
     shareUrl = '';
+    allowAdd = ['pie-chart-bug.demo.community.intersystems.com', 'localhost'].includes(location.hostname.toLowerCase());
 
     constructor(public ss: SidebarService,
                 public hs: HeaderService,
@@ -115,20 +113,13 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     ngAfterViewInit() {
-        this.subOnSearch = this.searchField.valueChanges
-            .pipe(debounceTime(200), distinctUntilChanged())
-            .subscribe(term => {
-                // Cancel editing during search
-                this.ms.onEditDashboard.emit(false);
-                this.ss.sidebarToggle.next(null);
-                // Emit search event
-                this.hs.onSearch.next(term);
-            });
+
 
         this.subOnSearchReset = this.hs.onSearchReset.subscribe(() => {
-            this.searchField.setValue('', {emitEvent: false});
-            this.hs.onSearch.next('');
-            this.isSearchActive = false;
+            // TODO: !!!
+            // this.searchField.setValue('', {emitEvent: false});
+            // this.hs.onSearch.next('');
+
         });
     }
 
@@ -151,9 +142,9 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
      */
     toggleMenu() {
         if (this.ss.sidebarToggle.value) {
-            this.ss.sidebarToggle.next(null);
+            this.ss.showComponent(null);
         } else {
-            this.ss.sidebarToggle.next({component: MenuComponent});
+            this.ss.showComponent({component: MenuComponent});
         }
     }
 
@@ -268,5 +259,17 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
         }
 
         this.isMorePressed = false;
+    }
+
+    onAddClick() {
+        this.ss.showComponent({component: WidgetEditorComponent, inputs: {}});
+    }
+
+    onSearch(term: string) {
+        // Cancel editing during search
+        this.ms.onEditDashboard.emit(false);
+        this.ss.showComponent(null);
+        // Emit search event
+        this.hs.onSearch.next(term);
     }
 }

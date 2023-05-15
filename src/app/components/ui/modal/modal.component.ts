@@ -1,7 +1,7 @@
 import {
     Component,
     ComponentFactoryResolver,
-    ComponentRef, ElementRef,
+    ComponentRef, ElementRef, EventEmitter,
     HostBinding,
     HostListener,
     Input, OnDestroy,
@@ -10,6 +10,7 @@ import {
     ViewContainerRef
 } from '@angular/core';
 import {IModal, IModalButton, ModalService} from '../../../services/modal.service';
+import {Subscription} from "rxjs";
 
 @Component({
     selector: 'dsw-modal',
@@ -22,9 +23,10 @@ export class ModalComponent implements OnInit, OnDestroy {
 
     @Input() data: IModal;
 
-
     compRef: ComponentRef<any>;
     component: any;
+    search = new EventEmitter<string>();
+    private subscriptions: Subscription[] = [];
 
     @HostBinding('class.no-backdrop') get noBackdrop(): boolean {
         return this.data.hideBackdrop;
@@ -53,10 +55,13 @@ export class ModalComponent implements OnInit, OnDestroy {
             if (this.data.onComponentInit) {
                 this.data.onComponentInit(this.component);
             }
+
+            this.subscribeForOutputs();
         }
     }
 
     ngOnDestroy(){
+        this.subscriptions.forEach(s => s.unsubscribe());
         if (this.compRef) {
             this.compRef.destroy();
         }
@@ -154,5 +159,25 @@ export class ModalComponent implements OnInit, OnDestroy {
     private isTopmost(): boolean {
         const modals = this.ms.modals.getValue();
         return modals[modals.length - 1] === this.data;
+    }
+
+    private subscribeForOutputs() {
+        if (!this.data.outputs) {
+            return;
+        }
+        for (const o in this.data.outputs) {
+            const e: EventEmitter<any> = this.component[o];
+            if (!e) {
+                return;
+            }
+            if (!(e instanceof EventEmitter)) {
+                return;
+            }
+            this.subscriptions.push(e.subscribe((...args) => this.data.outputs[o](...args)));
+        }
+    }
+
+    onSearch(term: string) {
+        this.search.emit(term);
     }
 }

@@ -1277,7 +1277,7 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
 
         const appearance = CHART_COLOR_CONFIG_APPEARANCES[this.chart?.options?.chart?.type];
 
-        this.sbs.sidebarToggle.next({
+        this.sbs.showComponent({
             component: ChartConfigComponent,
             inputs: {
                 widgetSettings: widgetsSettings[name],

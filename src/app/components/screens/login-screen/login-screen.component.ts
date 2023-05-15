@@ -28,7 +28,7 @@ export class LoginScreenComponent implements OnInit {
                 private route: ActivatedRoute,
                 private router: Router) {
         this.hs.visible$.next(false);
-        this.ss.sidebarToggle.next(null);
+        this.ss.showComponent(null);
         delete sessionStorage.dashboarList;
         if (dsw.desktop) {
             delete localStorage.DSWMobileServer;

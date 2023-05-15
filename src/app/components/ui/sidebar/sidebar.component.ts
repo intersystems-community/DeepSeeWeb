@@ -3,7 +3,7 @@ import {
     ComponentFactoryResolver,
     ComponentRef,
     OnDestroy,
-    OnInit,
+    OnInit, Renderer2,
     ViewChild,
     ViewContainerRef
 } from '@angular/core';
@@ -38,6 +38,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
     private subSidebarToggle: Subscription;
 
     constructor(private ss: SidebarService,
+                private r2: Renderer2,
                 private cfr: ComponentFactoryResolver) {
     }
 
@@ -47,18 +48,38 @@ export class SidebarComponent implements OnInit, OnDestroy {
                 return;
             }
             // Check if component of same type already created
-            if (this.component && this.component.componentType === info.component) {
+            /*if (!this.com this.component && this.component.componentType === info.component) {
                 // Only update properties
                 this.updateComponentProperties(info);
                 if (this.component.instance.cd) {
                     this.component.instance.cd.markForCheck();
                     this.component.instance.cd.detectChanges();
                 }
-            } else {
-                // Create new component and destroy old
-                this.removeComponent();
-                this.createComponent(info);
+            } else {*/
+            // Create new component and destroy old
+            // this.removeComponent();
+            if (this.container.length) {
+                // @ts-ignore
+                /*const el = this.container.get(0).rootNodes[0];
+                this.r2.removeStyle(el, 'transform');
+                this.r2.addClass(el, 'go-out');
+                this.r2.removeClass(el, 'go-in');*/
+                this.container.detach(0);
             }
+            if (info.compRef) {
+                this.container.insert(info.compRef.hostView, 0);
+                /*const el = info.compRef.location.nativeElement;
+                this.r2.setStyle(el, 'transform', 'translateX(-100%)')
+                this.r2.addClass(el, 'go-in');*/
+            } else {
+                info.compRef = this.createComponent(info);
+                /*const el = info.compRef.location.nativeElement;
+                this.r2.setStyle(el, 'transform', 'translateX(-100%)');
+                setTimeout(() => {
+                    this.r2.addClass(el, 'go-in');
+                });*/
+            }
+            // }
         });
     }
 
@@ -73,6 +94,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
         const factory = this.cfr.resolveComponentFactory(info.component);
         this.component = this.container.createComponent(factory);
         this.updateComponentProperties(info);
+        return this.component;
     }
 
     /**

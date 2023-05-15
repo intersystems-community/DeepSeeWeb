@@ -6,6 +6,9 @@ import {ERROR_TOGGLE_ANIMATION} from './components/ui/error/error.component';
 import {HeaderService} from './services/header.service';
 import {ModalService} from './services/modal.service';
 import {NavigationStart, Router, RouterEvent} from '@angular/router';
+import {DataSourceSelectorDialog} from "./components/editor/datasource-selector-dialog/datasource-selector-dialog";
+import {WidgetEditorComponent} from "./components/editor/widget-editor/widget-editor.component";
+import {TypeAndDatasourceComponent} from "./components/editor/type-and-datasource/type-and-datasource.component";
 
 @Component({
     selector: 'app-root',
@@ -25,17 +28,22 @@ export class AppComponent implements OnInit {
                 public es: ErrorService,
                 public ms: ModalService,
                 private router: Router) {
+
+        /*setTimeout(() => {
+            this.sbs.showComponent({ component: WidgetEditorComponent, inputs: { }});
+        }, 400);*/
+
     }
 
     ngOnInit() {
         // Hide sidebar on any route change
         this.router.events.subscribe((e: RouterEvent) => {
             if (e instanceof NavigationStart) {
-                this.sbs.sidebarToggle.next(null);
+                this.sbs.showComponent(null);
             }
         });
-        this.sbs.sidebarToggle.subscribe((constructor) => {
-            this.isSidebar = !!constructor;
+        this.sbs.sidebarToggle.subscribe(info => {
+            this.isSidebar = !!info;
         });
     }
 

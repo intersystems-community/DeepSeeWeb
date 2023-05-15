@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {dsw} from '../../environments/dsw';
-import {Observable, of} from 'rxjs';
+import {firstValueFrom, Observable, of} from 'rxjs';
 import {catchError, tap} from 'rxjs/operators';
 import {ErrorService} from './error.service';
 import {CURRENT_NAMESPACE} from './namespace.service';
@@ -54,7 +54,7 @@ export class DataService {
         if (redirect) {
             prefix = redirect;
         }
-        return prefix + '/' + MDX2JSON + '/';
+        return prefix + MDX2JSON + '/';
     }
 
     public dashboardList = new Map<string, string>();
@@ -479,6 +479,14 @@ export class DataService {
             this.url + 'Test?Namespace=' + namespace,
             this.withCredentialsTimeoutHeaders
         ).toPromise();
+    }
+
+    requestListOfDataSources(type: string) {
+        return firstValueFrom<any>(this.http.post(
+            this.url + `DataSourceList/${type}?Namespace=` + CURRENT_NAMESPACE,
+            {},
+            this.withCredentialsTimeoutHeaders
+        ));
     }
 
 }

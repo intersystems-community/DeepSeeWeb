@@ -58,8 +58,9 @@ const btnPieChart: IHeaderButton[] = [
     }
 ];
 
-const TYPES = {
+export const WIDGET_TYPES = {
     regular: {
+        label: 'Scorecard chart',
         class: ScorecardWidgetComponent,
         allowShowAsPivot: true
     },
@@ -70,6 +71,7 @@ const TYPES = {
         allowShowAsPivot: true
     },
     bullseyechart: {
+        label: 'Bullseye chart',
         class: BullseyeChartComponent,
         type: 'chart',
         chart: 'pie',
@@ -84,12 +86,14 @@ const TYPES = {
         disableLegend: true,
     },
     bubblechart: {
+        label: 'Bubble chart',
         class: BubbleChartComponent,
         type: 'chart',
         chart: 'bubble',
         allowShowAsPivot: true
     },
     treemapchart: {
+        label: 'Tree map chart',
         class: TreeMapComponent,
         type: 'chart',
         chart: 'treemap',
@@ -102,12 +106,14 @@ const TYPES = {
         }]*/
     },
     hilowchart: {
+        label: 'Hi-low chart',
         class: HiLowChartComponent,
         type: 'chart',
         chart: 'boxplot',
         allowShowAsPivot: true
     },
     piechart3d: {
+        label: 'Pie chart 3D',
         class: PieChartComponent,
         type: 'chart',
         chart: 'pie',
@@ -115,6 +121,7 @@ const TYPES = {
         allowShowAsPivot: true
     },
     donutchart3d: {
+        label: 'Donut chart 3D',
         class: PieChartComponent,
         type: 'chart',
         chart: 'pie',
@@ -122,6 +129,7 @@ const TYPES = {
         allowShowAsPivot: true
     },
     donutchart: {
+        label: 'Donut chart',
         class: PieChartComponent,
         type: 'chart',
         chart: 'pie',
@@ -129,6 +137,7 @@ const TYPES = {
         allowShowAsPivot: true
     },
     piechart: {
+        label: 'Pie chart',
         class: PieChartComponent,
         type: 'chart',
         chart: 'pie',
@@ -136,12 +145,14 @@ const TYPES = {
         allowShowAsPivot: true
     },
     areachart: {
+        label: 'Area chart',
         class: AreaChartComponent,
         type: 'chart',
         chart: 'area',
         allowShowAsPivot: true
     },
     barchart: {
+        label: 'Bar chart',
         class: BarChartComponent,
         type: 'chart',
         chart: 'bar',
@@ -153,59 +164,69 @@ const TYPES = {
         allowShowAsPivot: true
     },
     barchartstacked: {
+        label: 'Bar chart stacked',
         class: BarChartComponent,
         type: 'chart',
         chart: 'bar',
         allowShowAsPivot: true
     },
     linechart: {
+        label: 'Linear chart',
         class: LineChartComponent,
         type: 'chart',
         chart: 'line',
         allowShowAsPivot: true
     },
     linechartmarkers: {
+        label: 'Linear chart with markers',
         class: LineChartComponent,
         type: 'chart',
         chart: 'line',
         allowShowAsPivot: true
     },
     combochart: {
+        label: 'Combo chart',
         class: LineChartComponent,
         type: 'chart',
         chart: 'line',
         allowShowAsPivot: true
     },
     columnchart: {
+        label: 'Column chart',
         class: ColumnChartComponent,
         type: 'chart',
         chart: 'column',
         allowShowAsPivot: true
     },
     columnchart3d: {
+        label: 'Column chart 3D',
         class: ColumnChartComponent,
         type: 'chart',
         chart: 'column',
         allowShowAsPivot: true
     },
     columnchartstacked: {
+        label: 'Column chart stacked',
         class: ColumnChartComponent,
         type: 'chart',
         chart: 'column',
         allowShowAsPivot: true
     },
     xychart: {
+        label: 'XY chart',
         class: XyChartComponent,
         type: 'chart',
         chart: 'scatter',
         allowShowAsPivot: true
     },
     timechart: {
+        label: 'Time chart',
         class: TimeChartComponent,
         type: 'chart',
         allowShowAsPivot: true
     },
     pivot: {
+        label: 'Table',
         class: WPivotComponent,
         type: 'pivot'
     },
@@ -214,11 +235,13 @@ const TYPES = {
         type: 'pivot'
     },
     textmeter: {
+        label: 'Text meter',
         class: WTextComponent,
         type: 'text',
         allowShowAsPivot: true
     },
     map: {
+        label: 'World map',
         class: MapWidgetComponent,
         type: 'map',
         allowShowAsPivot: true
@@ -266,7 +289,7 @@ const TYPES = {
     }*/
 };
 
-TYPES[dsw.const.emptyWidgetClass] = {
+WIDGET_TYPES[dsw.const.emptyWidgetClass] = {
     class: EmptyWidgetComponent,
     type: 'empty'
 };
@@ -323,7 +346,7 @@ export class WidgetTypeService {
      * @param {object} [addonInfo] Addon information
      */
     register(name: string, type: string, cl: any, addonInfo: any) {
-        TYPES[name] = {
+        WIDGET_TYPES[name] = {
             class: cl,
             type,
             ...addonInfo,
@@ -337,13 +360,13 @@ export class WidgetTypeService {
      */
     getClass(name: string): Type<unknown> {
         let key = name.toLowerCase();
-        if (!TYPES[key]) {
+        if (!WIDGET_TYPES[key]) {
             key = key.replace('dsw.addons.', '');
         }
-        if (!TYPES[key]) {
+        if (!WIDGET_TYPES[key]) {
             return;
         }
-        return TYPES[key].class;
+        return WIDGET_TYPES[key].class;
     }
 
     /**
@@ -353,10 +376,10 @@ export class WidgetTypeService {
      */
     getDesc(name: string): any {
         let key = name.toLowerCase();
-        if (!TYPES[key]) {
+        if (!WIDGET_TYPES[key]) {
             key = key.replace('dsw.addons.', '');
         }
-        return TYPES[key];
+        return WIDGET_TYPES[key];
     }
 
     /**
@@ -366,12 +389,12 @@ export class WidgetTypeService {
      */
     getType(name: string): string {
         let key = name.toLowerCase();
-        if (!TYPES[key]) {
+        if (!WIDGET_TYPES[key]) {
             key = key.replace('dsw.addons.', '');
         }
-        if (!TYPES[key]) {
+        if (!WIDGET_TYPES[key]) {
             return '';
         }
-        return TYPES[key].type;
+        return WIDGET_TYPES[key].type;
     }
 }

@@ -102,6 +102,9 @@ $max-width: 1336px;
     --tile-border-radius: 10px;
     --tile-header-height: 28px;
 
+    // Modal
+    --cl-modal-bg: white;
+
     // Font colors
     --fc1: black;
     --fc2: red;
@@ -128,6 +131,7 @@ $max-width: 1336px;
     --cl-check-border: #606367;
     --cl-input-placeholder: rgba(96, 99, 103, 0.6);
     --cl-input-text: #606367;
+    --cl-input-height: 26px;
 
     // Pivot
     --cl-pivot-cell-border: rgb(208, 208, 208);
@@ -190,3 +194,46 @@ $max-width: 1336px;
 //$cl-btn-hover: rgba(255,255,255,0.1);
 
 
+@mixin editor-scrollbar {
+    &::-webkit-scrollbar {
+        width: 20px;
+        height: 4px;
+    }
+
+    &::-webkit-scrollbar-track {
+        border-left: solid 16px var(--cl-bg);
+        background: #EBEBEA;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        border-left: solid 16px var(--cl-bg);
+        border-radius: 0;
+        background: rgba(28, 29, 32, 0.4);
+    }
+}
+
+
+@mixin dsw-scrollbar-v {
+    &::-webkit-scrollbar {
+        width: 4px;
+        height: 4px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: #EBEBEA;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        border-radius: 0;
+        background: rgba(28, 29, 32, 0.4);
+    }
+}
+
+@mixin reset-input-styles {
+    &::-webkit-search-decoration,
+    &::-webkit-search-cancel-button,
+    &::-webkit-search-results-button,
+    &::-webkit-search-results-decoration {
+        -webkit-appearance:none;
+    }
+}
