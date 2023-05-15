@@ -1,16 +1,19 @@
+#### 3.1.90
+* fixes for mdx2json path
+
 #### 3.1.89
 * mdx2json endpoint now relative to dsw installation path (#379)
 * fixed default color for Highcharts lines (#380)
-* dev internal:  
-  * added search component
-  * changed modal styles, refactored modals
-  * changed styles for sidebar, refactored sidebar service
-  * added support for navigation on sidebar keeping previous instance of component alive, this used in designer to be able to go back
+* dev internal:
+    * added search component
+    * changed modal styles, refactored modals
+    * changed styles for sidebar, refactored sidebar service
+    * added support for navigation on sidebar keeping previous instances of component alive, this is used in the designer to be able to go back
 * designer mode (#121):
-  * added tabs, dropdown, input with picker, file selection components to use in designer
-  * added designer panel and base sections
-  * added data source selection and widget type list for designer
-
+    * added tabs, dropdown, input with picker, file selection components to use in designer
+    * added designer panel and base sections
+    * added data source selection and widget type list for designer
+  
 #### 3.1.88
 * fixed back button issue after KPI drillthrough (#291)
 * for KPI drillthrough data properties filtering now disabled (#291)

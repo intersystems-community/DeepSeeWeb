@@ -54,7 +54,7 @@ export class DataService {
         if (redirect) {
             prefix = redirect;
         }
-        return prefix + MDX2JSON + '/';
+        return prefix + '../' + MDX2JSON + '/';
     }
 
     public dashboardList = new Map<string, string>();
