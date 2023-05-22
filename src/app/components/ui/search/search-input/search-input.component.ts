@@ -1,7 +1,17 @@
-import {Component, EventEmitter, forwardRef, Input, Output} from '@angular/core';
+import {
+    Component,
+    ElementRef,
+    EventEmitter,
+    forwardRef,
+    Input,
+    OnDestroy,
+    OnInit,
+    Output,
+    ViewChild
+} from '@angular/core';
 import {ControlValueAccessor, FormControl, NG_VALUE_ACCESSOR} from "@angular/forms";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
-import {Subscription} from "rxjs";
+import {fromEvent, Subscription} from "rxjs";
 
 @Component({
   selector: 'dsw-search-input',
@@ -15,26 +25,29 @@ import {Subscription} from "rxjs";
         }
     ]
 })
-export class SearchInputComponent implements ControlValueAccessor {
-    @Input() model: string;
-    @Output() search = new EventEmitter<string>();
-    formControl = new FormControl();
-    isSearchActive = false;
-    private subOnSearch: Subscription;
+export class SearchInputComponent implements ControlValueAccessor, OnInit, OnDestroy {
+    @ViewChild('inp', {static: true}) inp: ElementRef;
 
+    @Output() search = new EventEmitter<string>();
+    value: string;
+    private subOnSearch: Subscription;
     constructor() {
-        this.subOnSearch = this.formControl.valueChanges
+    }
+
+    ngOnInit() {
+        this.subOnSearch = fromEvent(this.inp.nativeElement, 'input')
             .pipe(debounceTime(200), distinctUntilChanged())
-            .subscribe(term => {
-                this.search.emit(this.formControl.value);
+            .subscribe(() => {
+                this.search.emit(this.value);
             });
+
     }
 
     onChange = (_) => { };
     onTouched = () => { };
 
     writeValue(value: any): void {
-        this.model = value;
+        this.value = value;
     }
     registerOnChange(fn: any): void {
         this.onChange = fn;
@@ -44,5 +57,20 @@ export class SearchInputComponent implements ControlValueAccessor {
     }
     setDisabledState?(isDisabled: boolean): void {
         return;
+    }
+
+    onModelChange(txt: any) {
+        this.writeValue(txt);
+        this.onChange(txt);
+    }
+
+    emitValueChanged() {
+        this.search.emit(this.value);
+    }
+
+    ngOnDestroy() {
+        if (this.subOnSearch) {
+            this.subOnSearch.unsubscribe();
+        }
     }
 }

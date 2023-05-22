@@ -6,6 +6,7 @@ import {firstValueFrom, Observable, of} from 'rxjs';
 import {catchError, tap} from 'rxjs/operators';
 import {ErrorService} from './error.service';
 import {CURRENT_NAMESPACE} from './namespace.service';
+import {IWidgetInfo} from "../components/widgets/base-widget.class";
 
 export let MDX2JSON = 'MDX2JSON';
 export let NAMESPACE = 'MDX2JSON';
@@ -158,11 +159,11 @@ export class DataService {
      */
     getPivotData(name: string
     ) {
-        return this.http.post(
+        return firstValueFrom<any>(this.http.post(
             this.url + 'DataSource?Namespace=' + CURRENT_NAMESPACE,
             {DataSource: name},
             this.withCredentialsTimeoutHeaders
-        ).toPromise();
+        ));
     }
 
     /**
@@ -213,11 +214,11 @@ export class DataService {
      * Requests widgets list
      */
     getWidgets(dashboard) {
-        return this.http.post(
+        return firstValueFrom<any>(this.http.post(
             this.url + 'Dashboard?Namespace=' + CURRENT_NAMESPACE,
             {Dashboard: dashboard},
             {...this.withCredentialsTimeoutHeaders, ...{'Content-Type': 'application/json'}}
-        ).pipe(this.handleError());
+        ).pipe(this.handleError()));
     }
 
     /**
@@ -229,8 +230,12 @@ export class DataService {
                 void this.router.navigateByUrl('/login?from=' + encodeURIComponent(this.router.url));
                 return of();
             }
-            this.es.show(err.message);
-            return of([]);
+            let msg = err.message;
+            if (err?.error?.summary) {
+                msg = err?.error?.summary;
+            }
+            this.es.show(msg);
+            throw err;
         });
     }
 
@@ -487,6 +492,20 @@ export class DataService {
             {},
             this.withCredentialsTimeoutHeaders
         ));
+    }
+
+    async saveWidget(dashboard: string, data: Partial<IWidgetInfo>, key?: string) {
+        return firstValueFrom<any>(this.http.post(
+            this.url + 'saveWidget?Namespace=' + CURRENT_NAMESPACE,
+            {key: key || '', Dashboard: dashboard, WidgetData: data},
+            this.withCredentialsTimeoutHeaders
+        ).pipe(this.handleError()));
+
+        /*return firstValueFrom<any>(this.http.post(
+            this.url + 'TestError?Namespace=' + CURRENT_NAMESPACE,
+            {},
+            this.withCredentialsTimeoutHeaders
+        ));*/
     }
 
 }

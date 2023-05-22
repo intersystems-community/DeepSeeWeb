@@ -38,7 +38,7 @@
     </div>
 
     <!-- Add widget-->
-    <button class="btn btn-icon square s60 btn-goto only-desktop" (click)="onAddClick()" *ngIf="!isSearch && allowAdd" [title]="'addWidget' | i18n">
+    <button class="btn btn-icon square s60 btn-goto only-desktop" (click)="onAddClick()" *ngIf="!isSearch" [title]="'addWidget' | i18n">
        <span class="icon-plus">+</span>
        <!--<img class="flip" src="assets/img/icons/icon-copy.svg">-->
     </button>
@@ -55,7 +55,7 @@
             <input #inp [formControl]="searchField" type="search" placeholder="Search" (blur)="isSearchActive = false" (keydown.enter)="isSearchActive = false">
         </div>
     </span>-->
-    <dsw-search-input [hidden]="!isSearch" (search)="onSearch($event)"></dsw-search-input>
+    <dsw-search-input #inpSearch [hidden]="!isSearch" (search)="onSearch($event)"></dsw-search-input>
 
     <!-- Language selector -->
     <select #lang class="lang-selector only-desktop" [(ngModel)]="selectedLanguage" (change)="selectLanguage(lang.value)">

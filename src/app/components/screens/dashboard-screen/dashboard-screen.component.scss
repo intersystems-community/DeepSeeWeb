@@ -5,6 +5,7 @@
     display: block;
     width: 100%;
     height: 100%;
+    padding-bottom: 20px;
 }
 
 gridster {
@@ -43,7 +44,7 @@ gridster {
 
     // Fullscreen mode
     &.expanded {
-        position: fixed;
+        /*position: fixed;
         z-index: 2 !important;
         left: 0 !important;
         top: var(--header-height) !important;
@@ -53,9 +54,30 @@ gridster {
         height: auto !important;
         transform: none !important;
         transition: none !important;
+        margin: 0 !important;*/
+        position: fixed;
+        z-index: 3 !important;
+        left: 15px !important;
+        top: calc(var(--header-height) + 15px) !important;
+        right: 15px !important;
+        bottom: 15px !important;
+        width: auto !important;
+        height: auto !important;
+        transform: none !important;
+        transition: none !important;
         margin: 0 !important;
-        & .drag-handle {
-            pointer-events: none;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        border: 1px solid darkgray;
+
+        /*& .drag-handle {
+            cursor: default;
+
+            // pointer-events: ;
+        }*/
+
+        &::ng-deep .gridster-item-resizable-handler.handle-se {
+            display: none !important;
+            pointer-events: none !important;
         }
     }
 
@@ -86,7 +108,7 @@ gridster {
     justify-content: flex-start;
     border: 1px solid var(--cl-header-border);
     border-radius: 4px;
-    z-index: 2;
+    z-index: 4;
     background-color: white;
     white-space: nowrap;
     // box-shadow: 1px 1px 3px #0000000a;
@@ -207,4 +229,17 @@ gridster {
     top: 0;
     bottom: 0;
     z-index: 10;
+}
+
+.editing {
+    border: 2px solid var(--cl-accent);
+    // z-index: 0 !important;
+}
+
+gridster-item:not([style]) {
+    display: none;
+}
+
+.dsw-spinner {
+    top: var(--header-height);
 }

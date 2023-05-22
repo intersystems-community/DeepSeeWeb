@@ -15,6 +15,7 @@ import {ControlValueAccessor, NG_VALUE_ACCESSOR} from "@angular/forms";
 })
 export class InputComponent implements ControlValueAccessor {
     @Input() model: string;
+    @Input() type = 'text';
     @HostBinding('class.choose')
     @Input() chooseButton = false;
     @Output() choose = new EventEmitter<void>();
@@ -39,5 +40,10 @@ export class InputComponent implements ControlValueAccessor {
 
     onSelectButtonClick() {
         this.choose.emit();
+    }
+
+    onModelChange(txt: any) {
+        this.writeValue(txt);
+        this.onChange(txt);
     }
 }

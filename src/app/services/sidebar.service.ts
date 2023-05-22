@@ -6,6 +6,8 @@ export interface ISidebarInfo {
     component: any;
     inputs?: any;
     outputs?: any;
+    // Only single instance allowed in sidebar
+    single?: boolean;
     // If component already created. Used for stack to pop previous state of sidebar screens
     compRef?: ComponentRef<any>;
     // TODO: implement dynamic width
@@ -30,9 +32,32 @@ export class SidebarService {
     constructor() {
     }
 
+    /**
+     * Updates dynamic component properties
+     */
+    updateComponentProperties(component: ComponentRef<any>, info: ISidebarInfo) {
+        if (info.inputs) {
+            for (const prop in info.inputs) {
+                component.instance[prop] = info.inputs[prop];
+            }
+        }
+    }
+
     showComponent(info: ISidebarInfo) {
         if (!info) {
             this.resetComponentStack();
+        }
+        // check for single instance
+        if (info?.single) {
+            const exists = this.stack.find(el => el.component === info?.component);
+            if (exists) {
+                this.updateComponentProperties(exists.compRef, info);
+                if (exists.compRef.instance.cd) {
+                    exists.compRef.instance.cd.markForCheck();
+                    exists.compRef.instance.cd.detectChanges();
+                }
+                return;
+            }
         }
         // Push to state info with component
         if (info?.component) {

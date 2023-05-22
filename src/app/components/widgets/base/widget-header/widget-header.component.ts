@@ -144,4 +144,11 @@ export class WidgetHeaderComponent implements OnInit, OnDestroy {
     ngOnDestroy() {
         this.subFiltersChanged.unsubscribe();
     }
+
+    onHeaderDoubleClick() {
+        if (this.isEmptyWidget() || !this.widget.isSupported) {
+            return;
+        }
+        this.onClick('expand');
+    }
 }

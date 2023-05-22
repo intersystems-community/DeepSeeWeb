@@ -7,7 +7,6 @@ $fontColor: black;
 $tileBorder: #e0e0e0;
 $labelColor: $fontColor;
 
-$sidebar-width: 322px;
 $mobile-folder-height: 80px;
 
 $max-width: 1336px;
@@ -35,7 +34,7 @@ $max-width: 1336px;
 //
 //    --header-height: 60px;
 //
-//    // Sidebar
+
 //    --cl-sidebar-bg: var(--cl-header-btn-active);
 //    //--sidebar-width: 300px;
 //
@@ -138,8 +137,8 @@ $max-width: 1336px;
     --cl-pivot-cell-hover: #FFF7D7;
     --pivot-row-hover: inset 0 0 30px #fff5b9;
 
-
-
+    // Sidebar
+    --sidebar-width: 322px;
 
 
 

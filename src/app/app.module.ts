@@ -1,5 +1,5 @@
 import {BrowserModule} from '@angular/platform-browser';
-import {APP_INITIALIZER, CompilerFactory, NgModule} from '@angular/core';
+import {APP_INITIALIZER, CompilerFactory, InjectionToken, NgModule} from '@angular/core';
 
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
@@ -80,6 +80,7 @@ import {TypeAndDatasourceComponent} from "./components/editor/type-and-datasourc
 import { InputComponent } from './components/ui/input/input/input.component';
 import { SearchInputComponent } from './components/ui/search/search-input/search-input.component';
 import {NgSelectModule} from "@ng-select/ng-select";
+import {DashboardEditingClass} from "./components/screens/dashboard-screen/dashboard-editing.class";
 
 More(Highcharts);
 Tree(Highcharts);
@@ -152,7 +153,8 @@ export function createCompiler(compilerFactory: CompilerFactory) {
         TabsComponent,
         TypeAndDatasourceComponent,
         InputComponent,
-        SearchInputComponent
+        SearchInputComponent,
+        //DashboardEditingClass
     ],
     imports: [
         BrowserAnimationsModule,
@@ -175,7 +177,6 @@ export function createCompiler(compilerFactory: CompilerFactory) {
         {provide: COMPILER_OPTIONS, useValue: {}, multi: true},
         {provide: CompilerFactory, useClass: JitCompilerFactory, deps: [COMPILER_OPTIONS]},
         {provide: Compiler, useFactory: createCompiler, deps: [CompilerFactory]},*/
-
         {
             provide: APP_INITIALIZER,
             useFactory: (start: StartupService) => () => start.initialize(),

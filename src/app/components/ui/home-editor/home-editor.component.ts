@@ -20,7 +20,7 @@ import {Subscription} from 'rxjs';
 @Component({
     selector: 'dsw-home-editor',
     templateUrl: './home-editor.component.html',
-    styleUrls: ['./../../editor/editor-styles.scss', './home-editor.component.scss'],
+    styleUrls: ['./../../editor/editor-styles.scss', './../chart-config/chart-config.component.scss', './home-editor.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HomeEditorComponent implements OnInit, OnDestroy {
@@ -75,6 +75,7 @@ export class HomeEditorComponent implements OnInit, OnDestroy {
 
 
     ngOnDestroy() {
+        this.ms.onEditDashboard.emit(false);
         this.subRouteChange.unsubscribe();
     }
 
@@ -110,7 +111,7 @@ export class HomeEditorComponent implements OnInit, OnDestroy {
     private requestWidgetList() {
         this.model.widgetList = [];
         if (this.tile && !this.tile.isFolder) {
-            this.ds.getWidgets(this.tile.fullPath).toPromise().then((data) => this.fillWidgetList(data));
+            this.ds.getWidgets(this.tile.fullPath).then((data) => this.fillWidgetList(data));
         }
     }
 
@@ -226,7 +227,6 @@ export class HomeEditorComponent implements OnInit, OnDestroy {
      * Close sidebar and stop editing
      */
     close() {
-        this.ms.onEditDashboard.emit(false);
         this.sbs.showComponent(null);
     }
 }

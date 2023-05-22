@@ -117,7 +117,8 @@
 
     // Disable drag when widget is expanded to fullscreen
     &.expanded {
-        pointer-events: none;
+        cursor: default;
+        //pointer-events: none;
     }
 }
 

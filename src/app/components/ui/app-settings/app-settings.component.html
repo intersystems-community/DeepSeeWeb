@@ -1,7 +1,7 @@
 <dsw-sidebar-actions (cancel)="onCancel()" (apply)="onApply()" >Settings</dsw-sidebar-actions>
 <div class="container">
     <label>{{'dashColumns' | i18n}}</label>
-    <input type="number" [(ngModel)]="model.colCount">
+    <dsw-input type="number" [(ngModel)]="model.colCount"></dsw-input>
 
     <label>{{'saveFilters' | i18n}}
         <input type="checkbox" [(ngModel)]="model.isSaveFilters">

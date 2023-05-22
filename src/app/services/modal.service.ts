@@ -28,6 +28,7 @@ export interface IModal {
     onComponentInit?: (comp: any) => void;
     onClose?: () => void;
     outputs?: {[key: string]: (...args) => void };
+    minHeight?: boolean;
 }
 
 @Injectable({

@@ -5,10 +5,12 @@
 </button>
 <!-- Header text -->
 <label>
-    <ng-content></ng-content>
+    <div><ng-content></ng-content></div>
+    <div class="unsaved" *ngIf="(isWidgetEditorWarning && isWidgetEditorWarningVisible)">You have unsaved changes</div>
 </label>
 <!-- Apply button -->
-<button (click)="apply.emit()" [title]="'save' | i18n">
+<button (click)="apply.emit()" [title]="'save' | i18n" [class.warning]="(isWidgetEditorWarning && isWidgetEditorWarningVisible)">
+    <img src="assets/img/icons/icon-check.svg">
     <!--<img class="ico img-accept" src="assets/img/icons/check.svg">-->
     Save
 </button>

@@ -127,6 +127,7 @@ export interface IWidgetInfo {
     y: number;
     cols: number;
     rows: number;
+    dragEnabled?: boolean;
 
     dataProperties: IWidgetDataProperties[];
 
@@ -142,7 +143,7 @@ export interface IWidgetInfo {
     controls: any[];
     linkedMdx: string;
     dependents: any[];
-    Link: any;
+    dataLink?: string;
     kpitype: string;
     mdx: string;
     properties: any;
@@ -211,6 +212,8 @@ export interface IWidgetInfo {
 
     // editor
     referenceTo?: string;
+    edKey: string; // needed to recreate widget by generating new key, so angular will create new using trackBy
+    oldWidget?: IWidgetInfo;
 }
 
 export interface IKPIDataInfo {
@@ -484,14 +487,20 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         // }
 
         if (this.isLinked()) {
-            if (this.widget.shared || this.widget.inline) {
+            if (this.widget.shared || this.widget.inline || this.widget.edKey) {
                 const widgets = this.dbs.getAllWidgets();
-                const link = widgets.find(w => w.name === this.widget.Link);
+                const link = widgets.find(w => w.name === this.widget.dataLink);
                 if (link) {
                     this.linkedMdx = link.mdx;
                 }
             } else {
                 this.subLinkedMdx = this.bs.subscribe('setLinkedMDX:' + this.widget.name, (mdx: string) => this.onSetLinkedMdx(null, mdx));
+
+                // When setting link for edited widget, refresh target
+                // to be sure that edited widget will receive mdx
+               /* if (this.widget.edKey) {
+                    this.bs.broadcast('refresh:' + this.widget.dataLink);
+                }*/
             }
         }
         if (this.hasDependents()) {
@@ -1504,7 +1513,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         if (!this.widget) {
             return false;
         }
-        return this.widget.Link;
+        return this.widget.dataLink;
     }
 
     /**
@@ -1662,6 +1671,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         }
         const mdx = this.getMDX();
         if (!mdx) {
+            this.isSpinner = false;
             return;
         }
         this.clearError();
@@ -1686,6 +1696,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         })
             .finally(() => {
                 this.hideLoading();
+                // this.cd.detectChanges();
             });
     }
 
@@ -1901,7 +1912,11 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         }
         let mdx = this.replaceMDXVariables(this.widget.mdx, filters);
         if (!mdx) {
-            console.warn('Widget without MDX');
+            // Don't show message for new or edited widget
+            if (!this.widget.edKey) {
+                this.showError('Widget without MDX');
+            }
+            return '';
         }
 
         if (this.customRowSpec) {
@@ -2024,6 +2039,9 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
     public onHeaderButton(bt: IButtonToggle) {
         if (bt.name === 'expand') {
             this.widget.isExpanded = bt.state;
+            this.widget.dragEnabled = this.widget.isExpanded;
+            // this.parent..api.optionsChanged();
+
             setTimeout(() => {
                 this.onResize();
             }, 0);

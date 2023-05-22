@@ -3,6 +3,7 @@ $border-radius: 4px;
 
 :host {
     position: relative;
+    display: block;
 
     &.choose > input {
        // padding-right: calc(10px + var(--cl-input-height));

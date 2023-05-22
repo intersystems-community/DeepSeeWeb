@@ -27,7 +27,6 @@
     color: var(--cl-sidebar-txt);
 
     max-height: 90vh;
-    min-height: min(400px, 90vh);
     display: flex;
     flex-direction: column;
     min-width: 320px;
@@ -38,6 +37,10 @@
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
     border-radius: 10px;
     padding: 20px;
+
+    &.min-height {
+        height: min(500px, 90vh);
+    }
 
     &.no-padding {
         padding: 0;

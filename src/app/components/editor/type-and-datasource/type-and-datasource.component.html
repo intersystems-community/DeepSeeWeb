@@ -1,6 +1,12 @@
-<dsw-sidebar-actions [isBack]="true">Type & Datasource</dsw-sidebar-actions>
+<dsw-sidebar-actions
+    isWidgetEditorWarning="true"
+    [isBack]="true"
+    (apply)="onSave()"
+>
+    Type & Datasource
+</dsw-sidebar-actions>
 
-<div class="container" *ngIf="widget">
+<div class="container" *ngIf="model">
     <label>Widget type</label>
     <ng-select
         class="dsw"
@@ -15,19 +21,25 @@
 
     <!-- Data source -->
     <label>Data source</label>
-    <dsw-input [(ngModel)]="widget.dataSource" chooseButton="true" (choose)="onSelectDataSource()"></dsw-input>
+    <dsw-input
+        [(ngModel)]="model.dataSource"
+        chooseButton="true"
+        (keydown.enter)="onDatasourceChanged()"
+        (choose)="onSelectDataSource()"
+    ></dsw-input>
 
     <!-- Reference to -->
     <label>Reference to</label>
     <ng-select
         class="dsw"
         [items]="widgetList"
-        [(ngModel)]="widget.referenceTo"
+        [(ngModel)]="model.dataLink"
         bindLabel="label"
         bindValue="name"
         [clearable]="false"
-        [closeOnSelect]="true">
-
+        [closeOnSelect]="true"
+        (change)="onLinkChange()"
+    >
     </ng-select>
 
     <!-- Target details -->

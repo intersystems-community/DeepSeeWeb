@@ -43,4 +43,5 @@ export class HeaderService {
     toggleMobileFilterDialog() {
         this.mobileFilterDialogToggle.emit();
     }
+
 }

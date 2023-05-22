@@ -111,9 +111,13 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
 
     ngAfterViewInit() {
         this.createChart();
+        /*this.chartConfig.chart.height = null;
+        this.chartConfig.chart.width = null;
+        this.chart.update(this.chartConfig, true);*/
+
         setTimeout(() => {
             this.chart.reflow();
-        }, 100);
+        });
     }
 
     private removeAxisListeners() {
@@ -1097,10 +1101,10 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
                     },
                     formatter: axisFormatter
                 },
-                minorGridLineColor: this.tc.hcLineColor,
-                gridLineColor: this.tc.hcLineColor,
-                lineColor: this.tc.hcLineColor,
-                tickColor: this.tc.hcLineColor
+                minorGridLineColor: this.tc.hcLineColor || '#e6e6e6',
+                gridLineColor: this.tc.hcLineColor || '#e6e6e6',
+                lineColor: this.tc?.hcLineColor || undefined,
+                tickColor: this.tc?.hcLineColor || undefined
             },
             xAxis: {
                 events: {
@@ -1116,10 +1120,10 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
                         cursor: 'pointer'
                     }
                 },
-                minorGridLineColor: this.tc.hcLineColor,
-                gridLineColor: this.tc.hcLineColor,
-                lineColor: this.tc.hcLineColor,
-                tickColor: this.tc.hcLineColor
+                minorGridLineColor: this.tc.hcLineColor || '#e6e6e6',
+                gridLineColor: this.tc.hcLineColor || '#e6e6e6',
+                lineColor: this.tc?.hcLineColor || undefined,
+                tickColor: this.tc?.hcLineColor || undefined
             },
             series: [],
             title: {

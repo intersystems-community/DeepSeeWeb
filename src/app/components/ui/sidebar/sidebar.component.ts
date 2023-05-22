@@ -50,11 +50,6 @@ export class SidebarComponent implements OnInit, OnDestroy {
             // Check if component of same type already created
             /*if (!this.com this.component && this.component.componentType === info.component) {
                 // Only update properties
-                this.updateComponentProperties(info);
-                if (this.component.instance.cd) {
-                    this.component.instance.cd.markForCheck();
-                    this.component.instance.cd.detectChanges();
-                }
             } else {*/
             // Create new component and destroy old
             // this.removeComponent();
@@ -93,19 +88,8 @@ export class SidebarComponent implements OnInit, OnDestroy {
     private createComponent(info: ISidebarInfo) {
         const factory = this.cfr.resolveComponentFactory(info.component);
         this.component = this.container.createComponent(factory);
-        this.updateComponentProperties(info);
+        this.ss.updateComponentProperties(this.component, info);
         return this.component;
-    }
-
-    /**
-     * Updates dynamic component properties
-     */
-    private updateComponentProperties(info: ISidebarInfo) {
-        if (info.inputs) {
-            for (const prop in info.inputs) {
-                this.component.instance[prop] = info.inputs[prop];
-            }
-        }
     }
 
     /**

@@ -73,7 +73,10 @@ export class WPivotComponent extends BaseWidget implements OnInit, AfterViewInit
         delete this.widget.pivotMdx;
 
         this.lpt = new LightPivotTable(setup);
-        (window as any).lpt = this.lpt;
+        // Remove spinner for editing widget because it created empty
+        if (this.widget.edKey) {
+            this.lpt.pivotView.displayMessage('');
+        }
     }
 
     doDrillUp() {
@@ -167,6 +170,7 @@ export class WPivotComponent extends BaseWidget implements OnInit, AfterViewInit
             this.broadcastDependents();
             this.clearError();
             this.lpt.changeBasicMDX(newMdx);
+            //this.parent.cd.detectChanges();
         }
     }
 

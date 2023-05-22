@@ -1,6 +1,8 @@
 import {Injectable} from '@angular/core';
 import {IWidgetInfo} from '../components/widgets/base-widget.class';
 import {dsw} from "../../environments/dsw";
+import {BehaviorSubject} from "rxjs";
+import {StorageService} from "./storage.service";
 
 @Injectable({
     providedIn: 'root'
@@ -9,7 +11,9 @@ export class DashboardService {
     private widgets: IWidgetInfo[] = [];
     private allWidgets: IWidgetInfo[] = [];
 
-    constructor() {
+    current = new BehaviorSubject<string>('');
+
+    constructor(private ss: StorageService) {
     }
 
     setWidgets(widgets: IWidgetInfo[]) {
@@ -31,4 +35,28 @@ export class DashboardService {
     getAllWidgets(): IWidgetInfo[] {
         return this.allWidgets;
     }
+
+    saveWidgetPositionAndSize(widget: IWidgetInfo) {
+        const widgets = this.ss.getWidgetsSettings(widget.dashboard);
+        const k = widget.name;
+        if (!widgets[k]) {
+            widgets[k] = {};
+        }
+
+        if (!isNaN(widget.x)) {
+            widgets[k].col = widget.x;
+        }
+        if (!isNaN(widget.y)) {
+            widgets[k].row = widget.y;
+        }
+        if (!isNaN(widget.cols)) {
+            widgets[k].sizeX = widget.cols;
+        }
+        if (!isNaN(widget.rows)) {
+            widgets[k].sizeY = widget.rows;
+        }
+
+        this.ss.setWidgetsSettings(widgets, widget.dashboard);
+    }
+
 }

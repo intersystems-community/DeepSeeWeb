@@ -58,7 +58,7 @@ gridster {
     // Selected state
     &.selected {
         opacity: 1;
-        outline: 2px solid var(--cl-accent);
+        border: 2px solid var(--cl-accent);
     }
     @include sm {
         border: none;

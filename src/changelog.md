@@ -1,3 +1,45 @@
+#### 3.1.92
+* fixed issue with an invisible header after login
+* fixed fullscreen widget position and styles. prevent resizing in fullscreen. fixed sidebar overlap
+* now fullscreen mode can be activated by double-clicking on the widget header
+* added new icons for widgets
+* fixed issue with search on the dashboard, when searching from folder
+* fixed issue with a dashboard loading spinner
+* fixed styling issue with bottom padding on dashboards
+* fixed issue with context menu on empty widget
+* fixed "Copy MDX" and "Share" dialog styles
+* changed the style of the main scrollbar on the dashboard screen
+* fixed styles for dashboard editor, new components used
+* fixed styles for app settings
+* fixed styles for theme settings
+* fixed issue when pressing menu during editing folders screen
+* fixed issue with widget resizing when there is an error displayed on widget (unable to resize)
+* dev internal:
+    * improved performance of widget rendering
+    * optimized widget resizing
+    * added `type=numeric` support for "dsw-input" component
+    * optimized widget position and size saving
+    * added minimum height support for modal dialogs, refactored modal size styles
+    * widget list now is not using async pipe for rendering
+    * refactored dashboard screen class
+    * sidebar now can create components with single instance(used by widget editor)
+* designer mode (#121):
+    * added "Edit widget" context menu item
+    * added widget saving
+    * added restoring of dashboard and widget state after canceling editing
+    * added message if the user has unsaved changes during widget creation/editing
+    * added MDX generation for the edited widget
+    * added ability to change the data source for the edited widget
+    * added the ability to link widget to another
+    * added ability to change the widget type
+    * widget leaves fullscreen mode, if the "edit widget" menu item has been chosen from the context menu
+    * header buttons now hidden for the edited widget
+    * context menu now hidden for the edited widget
+    * fixed Safari styling of input with the select button
+  
+#### 3.1.91
+* fixed issue with invisible app header
+
 #### 3.1.90
 * fixes for mdx2json path
 

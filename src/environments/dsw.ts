@@ -14,7 +14,7 @@ export const dsw = {
         ],
         bgColorClasses: ['', 'cl1', 'cl2', 'cl3', 'cl4', 'cl5', 'cl6', 'cl7', 'cl8', 'cl9'],
         fontColors: ['fc1', 'fc2', 'fc3', 'fc4', 'fc5'],
-        icons: ['', 'widget-1.svg', 'folder-1.svg', 'dashboard-1.svg', 'back-1.svg'],
+        icons: ['', 'back-1.svg', 'folder-1.svg', 'widget-1.svg', 'dashboard-1.svg', 'widget-2.svg', 'widget-3.svg', 'widget-4.svg'],
 
         timeout: 60000,
         ver: pkg.version,

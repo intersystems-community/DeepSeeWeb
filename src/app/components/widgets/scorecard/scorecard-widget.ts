@@ -46,7 +46,7 @@ export class ScorecardWidgetComponent extends BaseWidget implements OnInit, OnDe
 
         this.prepareProps();
         if (!this.props?.length) {
-            if (this.override.columns?.length) {
+            if (this.override?.columns?.length) {
                 this.props = this.override.columns;
             }
         }

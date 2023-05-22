@@ -110,9 +110,9 @@ export class FolderScreenComponent implements OnInit, OnDestroy {
         //         queryParamsHandling: 'merge'
         //     });
         // //$location.search('FILTERS', null);
-
-
     }
+
+    trackByIndex = (index: number, r: any) => index;
 
     @HostListener('window:resize', ['$event'])
     onResize() {
@@ -195,6 +195,7 @@ export class FolderScreenComponent implements OnInit, OnDestroy {
         this.tilesOptions.api.optionsChanged();
         this.ss.showComponent({
             component: HomeEditorComponent,
+            single: true,
             inputs: {
                 tiles: this.model.tiles,
                 tile: this.model.tiles[0],
@@ -220,17 +221,17 @@ export class FolderScreenComponent implements OnInit, OnDestroy {
         // If editing mode - update editing sidebar
         if (this.model.edItem) {
             this.model.edItem = tile;
-            this.ss.showComponent({ component: HomeEditorComponent, inputs: {tile}});
+            this.ss.showComponent({ component: HomeEditorComponent, single: true, inputs: {tile}});
             return;
         }
         // Default navigate to dashboard
-        let nav = tile.path;
+        let nav = tile.fullPath;
 
         if (tile.isFolder) {
             nav = tile.title === '' ? '..' : tile.title;
         }
 
-        this.router.navigate([nav], {relativeTo: this. route});
+        this.router.navigate([nav], {relativeTo: tile.isFolder ? this.route : this.route.root.children[0]});
     }
 
     /**
@@ -276,7 +277,6 @@ export class FolderScreenComponent implements OnInit, OnDestroy {
                 dashboards[i].icon = 0;
                 dashboards[i].requestedWidget = dashboards[i].widget;
                 this.ds.getWidgets(dashboards[i].fullPath)
-                    .toPromise()
                     .then((data) => {
                         this.retriveWidgetData(data, dashboards[i]);
                     });
@@ -393,7 +393,7 @@ export class FolderScreenComponent implements OnInit, OnDestroy {
             if (c.icon !== undefined) {
                 tiles[i].icon = c.icon;
             } else {
-                tiles[i].icon = (tiles[i].title === '' ? (this.model.icons.length - 1) : tiles[i].isFolder ? 2 : 1);
+                tiles[i].icon = (tiles[i].title === '' ? 1 : tiles[i].isFolder ? 2 : 3);
             }
             tiles[i].color = c.color || (tiles[i].title === '' ? 2 : tiles[i].isFolder ? 3 : 1);
             tiles[i].fontColor = c.fontColor || 0;

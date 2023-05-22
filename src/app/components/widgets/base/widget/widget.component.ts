@@ -302,6 +302,7 @@ export class WidgetComponent implements OnInit, OnDestroy, AfterViewInit {
             closeByEsc: true,
             buttons: [],
             class: 'modal-no-border',
+            componentStyles: {padding: '0'},
             onComponentInit: (sd: ShareDashboardComponent) => {
                 sd.title = 'Copy MDX';
                 sd.btnTitle = 'Copy';
@@ -383,6 +384,7 @@ export class WidgetComponent implements OnInit, OnDestroy, AfterViewInit {
             closeByEsc: true,
             buttons: [],
             class: 'modal-no-border',
+            componentStyles: {padding: '0'},
             onComponentInit: (sd: ShareDashboardComponent) => {
                 sd.title = 'Share widget';
                 sd.btnTitle = 'Copy';

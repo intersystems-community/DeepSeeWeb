@@ -3,6 +3,7 @@
 
 :host {
     position: relative;
+    display: block;
 
     & > input {
         @include reset-input-styles;

@@ -15,6 +15,10 @@
 //    transition: unset !important;
 //}
 
+gridster-item {
+    transition-property: width, height, transform !important;
+}
+
 // Gridster resize handler
 gridster-item:hover .gridster-item-resizable-handler.handle-se {
     border-color: transparent transparent var(--cl-accent) !important;

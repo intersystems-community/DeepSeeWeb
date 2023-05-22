@@ -3,7 +3,7 @@
 <div class="container">
     <!-- Title -->
     <label>{{'title' | i18n}}</label>
-    <input [(ngModel)]="tile.customTitle">
+    <dsw-input [(ngModel)]="tile.customTitle"></dsw-input>
 
     <!-- Bg colors -->
     <label>{{'bgColor' | i18n}}</label>
@@ -36,10 +36,14 @@
 
     <!-- Widgets -->
     <label>{{'widget' | i18n}}</label>
-    <select [(ngModel)]="tile.widget">
-        <option *ngFor="let opt of model.widgetList" value="{{opt.idx}}"
-                [selected]="opt.idx===tile.widget">{{opt.name}}</option>
-    </select>
+    <ng-select
+        class="dsw"
+        [(ngModel)]="tile.widget"
+        bindValue="idx"
+        bindLabel="name"
+        [clearable]="false"
+        [items]="model.widgetList">
+    </ng-select>
 
     <!-- Hide title -->
     <label>{{'hideTitle' | i18n}}

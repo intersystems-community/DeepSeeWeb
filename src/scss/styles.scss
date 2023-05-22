@@ -393,6 +393,10 @@ dsw-widget-filter ~ * {
 }
 */
 
+gridster {
+    @include dsw-scrollbar-v;
+}
+
 .gridster-preview {
     background: var(--cl-hover);
 }

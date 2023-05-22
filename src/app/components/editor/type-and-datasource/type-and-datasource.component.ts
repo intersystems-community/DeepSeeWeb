@@ -13,7 +13,7 @@ import {EditorService, IWidgetListItem} from "../../../services/editor.service";
     styleUrls: ['./../editor-styles.scss', './type-and-datasource.component.scss'],
 })
 export class TypeAndDatasourceComponent implements OnInit, OnDestroy {
-    @Input() widget: IWidgetInfo = null;
+    @Input() model: IWidgetInfo = null;
     widgetList: IWidgetListItem[] = [];
     widgetTypes = [
         WIDGET_TYPES.pivot,
@@ -43,13 +43,13 @@ export class TypeAndDatasourceComponent implements OnInit, OnDestroy {
     type: any;
 
     constructor(private ms: ModalService,
-                private es: EditorService,
+                private eds: EditorService,
                 private ds: DashboardService) {
-        this.widgetList = this.es.getWidgetsList([this.widget?.name])
     }
 
     ngOnInit() {
-        this.type = WIDGET_TYPES[this.widget?.type];
+        this.widgetList = this.eds.getWidgetsList([this.model?.name]);
+        this.type = WIDGET_TYPES[this.model?.type?.toLowerCase()];
     }
 
     onSelectDataSource() {
@@ -62,20 +62,39 @@ export class TypeAndDatasourceComponent implements OnInit, OnDestroy {
             }],
             closeByEsc: true,
             search: '',
+            minHeight: true,
             outputs: {
                 select: (ds: IDataSourceInfo) => {
-                    this.widget.dataSource = ds.value;
+                    this.model.dataSource = ds.value + '.' + ds.type;
+                    this.onDatasourceChanged();
                 }
             }
         });
     }
 
     ngOnDestroy() {
+        this.eds.cancelEditing();
     }
 
     onTypeChange() {
-        if (this.widget) {
-            this.widget.type = Object.entries(WIDGET_TYPES).find(el => el[1] === this.type)[0];
+        if (this.model) {
+            this.model.type = Object.entries(WIDGET_TYPES).find(el => el[1] === this.type)[0];
         }
+        this.eds.updateEditedWidget({widget: this.model, reCreate: true});
+    }
+
+    onDatasourceChanged() {
+        this.eds.generateWidgetMdx(this.model)
+            .then(() => {
+                this.eds.updateEditedWidget({widget: this.model, refreshData: true});
+            });
+    }
+
+    onLinkChange() {
+        this.eds.updateEditedWidget({widget: this.model, reCreate: true});
+    }
+
+    onSave() {
+        this.eds.save(this.model);
     }
 }
