@@ -1,3 +1,14 @@
+#### 3.1.93
+* fixed navigation to ZEN if dsw installed not in the root (#381)
+* added widget deletion. button placed in the editor panel footer and on the widget header in editor mode (#121)
+* fixed issue trying to edit/add another widget when editor already opened
+* new widget size and position now generated and saved for Zen (#121)
+* added validation and messages support for the editor (#121)
+* added validation for widget name/datasource/reference (#121)
+* dev internal:
+    * widget types converted to camelCase
+    * changed styles for non-default modal buttons
+
 #### 3.1.92
 * fixed issue with an invisible header after login
 * fixed fullscreen widget position and styles. prevent resizing in fullscreen. fixed sidebar overlap
@@ -14,15 +25,6 @@
 * fixed styles for theme settings
 * fixed issue when pressing menu during editing folders screen
 * fixed issue with widget resizing when there is an error displayed on widget (unable to resize)
-* dev internal:
-    * improved performance of widget rendering
-    * optimized widget resizing
-    * added `type=numeric` support for "dsw-input" component
-    * optimized widget position and size saving
-    * added minimum height support for modal dialogs, refactored modal size styles
-    * widget list now is not using async pipe for rendering
-    * refactored dashboard screen class
-    * sidebar now can create components with single instance(used by widget editor)
 * designer mode (#121):
     * added "Edit widget" context menu item
     * added widget saving
@@ -33,9 +35,18 @@
     * added the ability to link widget to another
     * added ability to change the widget type
     * widget leaves fullscreen mode, if the "edit widget" menu item has been chosen from the context menu
-    * header buttons now hidden for the edited widget
-    * context menu now hidden for the edited widget
+    * header buttons are now hidden for the edited widget
+    * context menu is now hidden for the edited widget
     * fixed Safari styling of input with the select button
+* dev internal:
+    * improved performance of widget rendering
+    * optimized widget resizing
+    * added `type=numeric` support for "dsw-input" component
+    * optimized widget position and size saving
+    * added minimum height support for modal dialogs, refactored modal size styles
+    * widget list now is not using async pipe for rendering
+    * refactored dashboard screen class
+    * sidebar now can create components with single instance(used by widget editor)
   
 #### 3.1.91
 * fixed issue with invisible app header
