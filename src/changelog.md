@@ -1,3 +1,6 @@
+#### 3.1.94
+* fixed issue with `donutChart3D` type
+
 #### 3.1.93
 * fixed navigation to ZEN if dsw installed not in the root (#381)
 * added widget deletion. button placed in the editor panel footer and on the widget header in editor mode (#121)

@@ -120,7 +120,7 @@ export const WIDGET_TYPES = {
         headerButtons: btnPieChart,
         allowShowAsPivot: true
     },
-    donutChart3d: {
+    donutChart3D: {
         label: 'Donut chart 3D',
         class: PieChartComponent,
         type: 'chart',
