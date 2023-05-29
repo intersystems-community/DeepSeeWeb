@@ -86,3 +86,15 @@ input {
     opacity: 0.5;
     //pointer-events: none;
 }
+
+.footer {
+    padding-left: 20px;
+
+    & > *:first-child {
+        margin-top: 20px;
+    }
+
+    & > button {
+        width: 100%;
+    }
+}

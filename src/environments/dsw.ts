@@ -8,7 +8,7 @@ export const dsw = {
     const: {
         themes: [
             {text: 'Default', file: ''},
-            {text: 'Contrast', file: 'themes/contrast.css'}
+            {text: 'Contrast', file: 'contrast.css'}
             // {text: 'Metro', file: 'themes/metro.css'},
             // {text: 'Black', file: 'themes/black.css'}
         ],

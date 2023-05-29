@@ -195,9 +195,10 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
      * Navigates to same dashboard on DeepSeeZen
      */
     gotoZenDeepSee() {
-        const folder = this.storage.serverSettings.DefaultApp || '/csp/' + CURRENT_NAMESPACE;
+        const folder = this.storage.serverSettings.DefaultApp || ('/csp/' + CURRENT_NAMESPACE);
         const dashboard = this.path[this.path.length - 1].url.split('/').slice(1).join('/');
-        const url = folder + '/_DeepSee.UserPortal.DashboardViewer.zen?DASHBOARD=' + encodeURIComponent(decodeURIComponent(dashboard));
+        const prefix = location.pathname.split('/').slice(0, -2).join('/') || '';
+        const url = folder + prefix + '/_DeepSee.UserPortal.DashboardViewer.zen?DASHBOARD=' + encodeURIComponent(decodeURIComponent(dashboard));
         window.open(url);
     }
 
@@ -258,6 +259,7 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     onAddClick() {
+        this.ss.showComponent(null);
         this.ss.showComponent({component: WidgetEditorComponent, single: true});
     }
 

@@ -17,8 +17,7 @@
         <button
             class="btn"
             *ngFor="let btn of data.buttons"
-            [class.btn-success]="btn.default"
-            [class.btn-text]="!btn.default"
+            [class.btn-white]="!btn.default"
             (click)="onButtonClick(btn)"
         >
             {{btn.label}}

@@ -218,6 +218,15 @@ input[type=file] {
     }
 }
 
+.btn-white {
+    color: var(--cl-accent);
+    background-color: white;
+    border: 1px solid var(--cl-input-border);
+    &:hover {
+        background-color: rgba(26, 115, 232, 0.05);;
+    }
+}
+
 .btn-link {
     background-color: transparent;
     border: none;

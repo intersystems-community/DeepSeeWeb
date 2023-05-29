@@ -58,6 +58,7 @@ export class DashboardEditingClass implements OnDestroy {
     private scrollToNewWidgetTimeout = 0;
     private subCancelEditing: Subscription;
     private subOnSaveWidget: Subscription;
+    private subOnDeleteWidget: Subscription;
 
     // Public
     @ViewChild('gridster') gridster: GridsterComponent;
@@ -103,6 +104,9 @@ export class DashboardEditingClass implements OnDestroy {
 
         // On cancel editing
         this.subCancelEditing = this.eds.onCancelEditing.subscribe(() => this.cancelEditing());
+
+        // On delete widget
+        this.subOnDeleteWidget = this.eds.onDeleteWidget.subscribe(w => this.deleteWidget(w as IWidgetInfo))
     }
 
     private updateEditedWidget(e: IEditedWidgetChangedEvent) {
@@ -191,6 +195,7 @@ export class DashboardEditingClass implements OnDestroy {
         this.subOnEditedWidgetChanged.unsubscribe();
         this.subCancelEditing.unsubscribe();
         this.subOnSaveWidget.unsubscribe();
+        this.subOnDeleteWidget.unsubscribe();
     }
 
     private detectChanges() {
@@ -200,5 +205,15 @@ export class DashboardEditingClass implements OnDestroy {
         this.gridster.onResize();
         this.gridster.el.scrollLeft = sX;
         this.gridster.el.scrollTop = sY;
+    }
+
+    private deleteWidget(w: IWidgetInfo) {
+        this.editedWidget = null;
+        const idx = this.list.indexOf(w);
+        if (idx !== -1) {
+            this.list.splice(idx, 1);
+        }
+        this.list = [...this.list];
+        this.cd.detectChanges();
     }
 }

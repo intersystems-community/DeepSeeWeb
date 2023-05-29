@@ -1,10 +1,7 @@
-import {ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, OnDestroy} from '@angular/core';
 import {SidebarService} from '../../../services/sidebar.service';
 import {dsw} from '../../../../environments/dsw';
 import {StorageService} from '../../../services/storage.service';
-import {IError} from '../../../services/error.service';
-import {Subscription} from 'rxjs';
-import {skip} from 'rxjs/operators';
 
 interface ICssVariable {
     name: string;

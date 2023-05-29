@@ -10,6 +10,12 @@ $border-radius: 4px;
         width: calc(100% - var(--cl-input-height));
         border-radius: $border-radius 0 0 $border-radius;
     }
+
+    &.invalid {
+        & input {
+            border-color: red;
+        }
+    }
 }
 
 input {

@@ -16,11 +16,17 @@ import {ControlValueAccessor, NG_VALUE_ACCESSOR} from "@angular/forms";
 export class InputComponent implements ControlValueAccessor {
     @Input() model: string;
     @Input() type = 'text';
+    @Input() required = false;
     @HostBinding('class.choose')
     @Input() chooseButton = false;
     @Output() choose = new EventEmitter<void>();
 
     constructor() {}
+
+    @HostBinding('class.invalid')
+    get isInvalid() {
+        return this.required && !this.model;
+    }
 
     onChange = (_) => { };
     onTouched = () => { };

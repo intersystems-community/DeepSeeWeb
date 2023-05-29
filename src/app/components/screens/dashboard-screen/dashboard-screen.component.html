@@ -4,7 +4,7 @@
     <gridster-item
         #list
         class="tile"
-        *ngFor="let item of list; let idx = index; trackBy: trackByIndex"
+        *ngFor="let item of list; let idx = index; trackBy: trackByName"
         [id]="item === editedWidget ? 'edited-widget' : undefined"
         [class.editing]="item === editedWidget"
         [class.no-anim]="isLoading || editedWidget"

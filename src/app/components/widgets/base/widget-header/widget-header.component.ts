@@ -10,6 +10,7 @@ import {IWidgetType} from '../../../../services/widget-type.service';
 import {HeaderService} from '../../../../services/header.service';
 import {FilterService} from "../../../../services/filter.service";
 import {Subscription} from "rxjs";
+import {EditorService} from "../../../../services/editor.service";
 
 @Component({
     selector: 'dsw-widget-header',
@@ -35,6 +36,7 @@ export class WidgetHeaderComponent implements OnInit, OnDestroy {
                 private ns: NamespaceService,
                 private fs: FilterService,
                 private hs: HeaderService,
+                private eds: EditorService,
                 private route: ActivatedRoute) {
     }
 
@@ -47,6 +49,9 @@ export class WidgetHeaderComponent implements OnInit, OnDestroy {
     }
 
     updateActiveFiltersInfo() {
+        if (!this.widget) {
+            return;
+        }
         if (this.widget.type === dsw.const.emptyWidgetClass) {
             return;
         }
@@ -150,5 +155,9 @@ export class WidgetHeaderComponent implements OnInit, OnDestroy {
             return;
         }
         this.onClick('expand');
+    }
+
+    deleteWidgetClick() {
+        this.eds.deleteWidget(this.widget);
     }
 }

@@ -7,6 +7,7 @@ export interface IError {
     id: number;
     message?: string;
     delay: number;
+    isLeft?: boolean;
 }
 
 @Injectable({
@@ -49,7 +50,7 @@ export class ErrorService {
     /**
      * Shows error
      */
-    show(message: string, delay: number = DEFAULT_ERROR_DELAY) {
+    show(message: string, isLeft = false, delay: number = DEFAULT_ERROR_DELAY) {
         // Generate id
         this.lastId++;
 
@@ -57,7 +58,8 @@ export class ErrorService {
         const error = {
             id: this.lastId,
             message,
-            delay
+            delay,
+            isLeft
         };
         this.errors.push(error);
 

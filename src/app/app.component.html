@@ -10,6 +10,7 @@
 <!-- Error list -->
 <dsw-error
     *ngFor="let err of es.errors$ | async; let idx = index; trackBy:trackError"
-    [@toggleError]
+    [@toggleError]="!err.isLeft"
+    [@toggleErrorLeft]="err.isLeft"
     [error]="err">
 </dsw-error>

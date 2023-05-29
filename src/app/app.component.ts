@@ -2,7 +2,7 @@ import {Component, OnInit, ViewChild} from '@angular/core';
 import {SIDEBAR_TOGGLE_ANIMATION, SidebarComponent} from './components/ui/sidebar/sidebar.component';
 import {SidebarService} from './services/sidebar.service';
 import {ErrorService, IError} from './services/error.service';
-import {ERROR_TOGGLE_ANIMATION} from './components/ui/error/error.component';
+import {ERROR_TOGGLE_ANIMATION, ERROR_TOGGLE_LEFT_ANIMATION} from './components/ui/error/error.component';
 import {HeaderService} from './services/header.service';
 import {ModalService} from './services/modal.service';
 import {NavigationStart, Router, RouterEvent} from '@angular/router';
@@ -14,7 +14,7 @@ import {TypeAndDatasourceComponent} from "./components/editor/type-and-datasourc
     selector: 'app-root',
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss'],
-    animations: [SIDEBAR_TOGGLE_ANIMATION, ERROR_TOGGLE_ANIMATION],
+    animations: [SIDEBAR_TOGGLE_ANIMATION, ERROR_TOGGLE_ANIMATION, ERROR_TOGGLE_LEFT_ANIMATION],
 })
 export class AppComponent implements OnInit {
     title = 'DeepSeeWeb';

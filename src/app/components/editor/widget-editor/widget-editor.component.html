@@ -12,7 +12,7 @@
     </div>
     <!-- Name -->
     <label>Name</label>
-    <dsw-input [(ngModel)]="model.name" (change)="updateWidget()"></dsw-input>
+    <dsw-input [required]="invalid.includes('name')" [(ngModel)]="model.name" (change)="updateWidget()"></dsw-input>
 
     <!-- Title -->
     <label>Title</label>
@@ -54,3 +54,8 @@
         </button>
     </div>
 </div>
+
+<div class="footer">
+    <button *ngIf="widget" class="btn btn-white" (click)="deleteWidgetClick()">Delete widget</button>
+</div>
+

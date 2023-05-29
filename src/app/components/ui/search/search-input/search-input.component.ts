@@ -27,9 +27,8 @@ import {fromEvent, Subscription} from "rxjs";
 })
 export class SearchInputComponent implements ControlValueAccessor, OnInit, OnDestroy {
     @ViewChild('inp', {static: true}) inp: ElementRef;
-
     @Output() search = new EventEmitter<string>();
-    value: string;
+    value = '';
     private subOnSearch: Subscription;
     constructor() {
     }

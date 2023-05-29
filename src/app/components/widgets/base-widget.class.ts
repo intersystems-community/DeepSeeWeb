@@ -31,6 +31,15 @@ import * as numeral from 'numeral';
 
 export type WidgetEventType = 'drill' | 'filter' | 'datasource';
 
+export interface IWidgetDisplayInfo {
+    colWidth: number;
+    leftRow: number;
+    rowHeight: number;
+    topCol: number;
+    width?: number;
+    height?: number;
+}
+
 export interface IWidgetDrill {
     name: string;
     path: string;
@@ -149,6 +158,7 @@ export interface IWidgetInfo {
     properties: any;
     seriesTypes: string[];
     kpiclass: string;
+    displayInfo?: IWidgetDisplayInfo;
 
     isExpanded: boolean;
 

@@ -97,15 +97,15 @@ export class DashboardScreenComponent extends DashboardEditingClass implements O
     private subParamsChange: Subscription;
     private onLoadingTimeout = 0;
 
-    trackByIndex = (index: number, w: IWidgetInfo) => {
-        const idxKey = this.path + '-' + index.toString();
+    trackByName = (index: number, w: IWidgetInfo) => {
+        const nameKey = this.path + '-' + w.name.toString();
         if (w === this.editedWidget) {
             // For edited widget use a key,
             // this allows us to recreate widget if needed (e.g. when type has been changed)
             // by changing the key
-            return this.editedWidget.edKey || idxKey;
+            return this.editedWidget.edKey || nameKey;
         }
-        return idxKey;
+        return nameKey;
     }
 
     constructor(@Inject(Injector) protected inj: Injector) {
@@ -860,6 +860,7 @@ export class DashboardScreenComponent extends DashboardEditingClass implements O
         this.cd.detectChanges();
         this.ds.getWidgets(this.path || '')
             .then(data => {
+                this.dbs.dashboard.next(data);
                 this.prepareData(data);
             })
             .finally(() => {
@@ -888,6 +889,10 @@ export class DashboardScreenComponent extends DashboardEditingClass implements O
     }
 
     ctxEdit() {
+        // Reset editing if edit another widget
+        if (this.editedWidget && this.editedWidget !== this.ctxItem) {
+            this.sbs.showComponent(null);
+        }
         if (this.ctxItem.isExpanded) {
             const w = this.getWidgetByInfo(this.ctxItem);
             w?.header?.onClick('expand');

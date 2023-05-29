@@ -500,12 +500,13 @@ export class DataService {
             {key: key || '', Dashboard: dashboard, WidgetData: data},
             this.withCredentialsTimeoutHeaders
         ).pipe(this.handleError()));
-
-        /*return firstValueFrom<any>(this.http.post(
-            this.url + 'TestError?Namespace=' + CURRENT_NAMESPACE,
-            {},
-            this.withCredentialsTimeoutHeaders
-        ));*/
     }
 
+    async deleteWidget(dashboard: string, key?: string) {
+        return firstValueFrom<any>(this.http.post(
+            this.url + 'deleteWidget?Namespace=' + CURRENT_NAMESPACE,
+            {key: key || '', Dashboard: dashboard},
+            this.withCredentialsTimeoutHeaders
+        ).pipe(this.handleError()));
+    }
 }

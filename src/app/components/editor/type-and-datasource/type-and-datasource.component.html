@@ -22,6 +22,7 @@
     <!-- Data source -->
     <label>Data source</label>
     <dsw-input
+        [required]="invalid.includes('datasource')"
         [(ngModel)]="model.dataSource"
         chooseButton="true"
         (keydown.enter)="onDatasourceChanged()"

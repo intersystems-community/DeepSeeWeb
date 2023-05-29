@@ -64,18 +64,19 @@
 
 
 <!-- Editor widget actions -->
-<!--<ng-container *ngIf="widget.edKey || widget.oldWidget">
-    &lt;!&ndash; Delete widget &ndash;&gt;
+<ng-container *ngIf="widget?.edKey || widget?.oldWidget">
+    <!-- Delete widget -->
     <button
         title="Delete widget"
+        (click)="deleteWidgetClick()"
     >
         <img src="assets/img/icons/icon-close.svg">
         <label>Delete widget</label>
     </button>
-</ng-container>-->
+</ng-container>
 
 <!-- Base widget actions -->
-<ng-container *ngIf="!widget.edKey && !widget.oldWidget">
+<ng-container *ngIf="!widget?.edKey && !widget?.oldWidget">
     <!-- Custom Buttons -->
     <button
         *ngFor="let btn of typeDesc?.headerButtons"

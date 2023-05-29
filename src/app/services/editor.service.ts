@@ -6,6 +6,9 @@ import {ModalService} from "./modal.service";
 import {SidebarService} from "./sidebar.service";
 import {BehaviorSubject} from "rxjs";
 import {BroadcastService} from "./broadcast.service";
+import {TypeAndDatasourceComponent} from "../components/editor/type-and-datasource/type-and-datasource.component";
+import {ErrorService} from "./error.service";
+import {WidgetEditorComponent} from "../components/editor/widget-editor/widget-editor.component";
 
 export interface IWidgetListItem {
     label: string;
@@ -27,11 +30,13 @@ export class EditorService {
     onEditedWidgetChanged = new EventEmitter<IEditedWidgetChangedEvent>();
     onSave = new EventEmitter<IEditedWidgetChangedEvent>();
     onUnsavedChanged = new BehaviorSubject<boolean>(false);
+    onDeleteWidget = new EventEmitter<Partial<IWidgetInfo>>();
 
     constructor(private dbs: DashboardService,
                 private ms: ModalService,
                 private sbs: SidebarService,
                 private bs: BroadcastService,
+                private es: ErrorService,
                 private ds: DataService) {
     }
 
@@ -67,6 +72,10 @@ export class EditorService {
     }
 
     save(widget: Partial<IWidgetInfo>) {
+        if (!this.validate(widget)) {
+            return;
+        };
+        this.dbs.generateDisplayInfo(widget);
         this.ds.saveWidget(widget.dashboard, widget, widget?.oldWidget?.name)
             .then(d => {
                 this.dbs.saveWidgetPositionAndSize(widget as IWidgetInfo);
@@ -105,5 +114,69 @@ export class EditorService {
             this.ms.show(`Data source "${w.dataSource}" not found.`);
             console.error(e);
         }*/
+    }
+
+    private askForWidgetDeletion(widget: IWidgetInfo, okCallback: () => void) {
+        this.ms.show({
+            message: `Do you really want do delete widget "${widget.name}"?`,
+            buttons: [
+                {
+                    label: 'No',
+                    autoClose: true
+                },
+                {
+                    label: 'Yes',
+                    default: true,
+                    autoClose: true,
+                    click: okCallback
+                }
+            ]
+        });
+    }
+
+    deleteWidget(widget: IWidgetInfo) {
+        const del = () => {
+            this.onDeleteWidget.emit(widget);
+            this.sbs.showComponent(null);
+        };
+
+        this.askForWidgetDeletion(widget, () => {
+            if (widget.oldWidget) {
+                this.ds.deleteWidget(widget.dashboard, widget.oldWidget.name)
+                    .then(() => {
+                        del();
+                    });
+            } else {
+                del();
+            }
+        });
+    }
+
+    private validate(widget: Partial<IWidgetInfo>) {
+        if (!widget.name) {
+            this.es.show('Please enter widget name', true);
+            this.sbs.showComponent({component: WidgetEditorComponent, single: true, inputs: {
+                    invalid: ['name']
+                }});
+            return;
+        }
+        if (!widget.dataSource && !widget.dataLink) {
+            this.es.show('Please choose "Data source" or "Reference to"', true);
+            this.navigateDataSourceAndType(widget, ['datasource']);
+            return;
+        }
+
+        return true;
+    }
+
+    navigateDataSourceAndType(widget: Partial<IWidgetInfo>, invalidControls: string[] = []) {
+        this.sbs.showComponent({
+            component: TypeAndDatasourceComponent,
+            single: true,
+            inputs: {
+                model: widget,
+                invalid: invalidControls
+            }
+        });
     }
 }

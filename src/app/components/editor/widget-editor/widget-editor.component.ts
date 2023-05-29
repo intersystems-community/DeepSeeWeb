@@ -17,6 +17,7 @@ import {ModalService} from "../../../services/modal.service";
 })
 export class WidgetEditorComponent implements OnInit, OnDestroy {
     @Input() widget: IWidgetInfo = null;
+    @Input() invalid: string[] = [];
     model: Partial<IWidgetInfo> = {
         edKey: 'ed' + new Date().getTime(),
 
@@ -95,20 +96,19 @@ export class WidgetEditorComponent implements OnInit, OnDestroy {
 
     private initializeNewWidget() {
         const count = this.dbs.getWidgets().filter(w => w.type !== dsw.const.emptyWidgetClass).length + 1;
-        this.model.name = `Widget ${count}`;
+        this.model.name = `Widget${count}`;
         this.eds.onNewWidget.emit(this.model);
     }
 
     onTypeAndDataSourceClick() {
-        this.sbs.showComponent({
-            component: TypeAndDatasourceComponent,
-            inputs: {
-                model: this.model
-            }
-        });
+        this.eds.navigateDataSourceAndType(this.model);
     }
 
     updateWidget() {
         this.eds.updateEditedWidget({widget: this.model});
+    }
+
+    deleteWidgetClick() {
+        this.eds.deleteWidget(this.model as IWidgetInfo);
     }
 }
