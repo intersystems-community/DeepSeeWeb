@@ -495,6 +495,7 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
      */
     addSeries(data, chart?: Highcharts.Chart, conf?: Highcharts.Options, redraw = false) {
         const c = chart || this.chart;
+        const index = (this.chart || this.chartConfig).series.length;
         if (data && data.data && data.data.length !== 0) {
             let isEmpty = true;
             let exists = false;
@@ -525,10 +526,25 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
 
         // Check series type from widget
         if (this.widget?.seriesTypes) {
-            const st = this.widget?.seriesTypes[(this.chart || this.chartConfig).series.length];
+            const st = this.widget?.seriesTypes[index];
             if (st) {
                 data.type = st;
             }
+        }
+
+        // Check for marker type
+        if (this.override.markerShapes) {
+            let marker = this.override.markerShapes.split(',')[index];
+            if (!marker) {
+                return;
+            }
+            switch (marker) {
+                case 'up': marker = 'triangle'; break;
+                case 'down': marker = 'triangle-down'; break;
+            }
+            data.marker = {
+                symbol: marker
+            };
         }
 
         // Check series type from override
@@ -747,7 +763,7 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
         if (d && d.Info) {
             this.dataInfo = d.Info;
         }
-
+        this.sortTuplesBasedOnLabels(data);
         this.setupAxisMinMax(data.Data);
 
         this.chartConfig.series = [];
@@ -770,8 +786,12 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
                 for (let c = 0; c < len; c++) {
                     const tempData = [];
                     for (let g = 0; g < data.Cols[1].tuples.length; g++) {
+                        let oIdx = data.Cols[1].tuples[g].originalIndex;
+                        if (oIdx === undefined) {
+                            oIdx = g;
+                        }
                         tempData.push({
-                            y: +data.Data[data.Cols[0].tuples.length * len * g + t * len + c],
+                            y: +data.Data[data.Cols[0].tuples.length * len * oIdx + t * len + c],
                             cube: data.Info.cubeName,
                             drilldown: true,
                             path: data.Cols[1].tuples[g].path,
@@ -806,11 +826,14 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
                         continue;
                     }
                 }
-
+                let oIdx = data.Cols[0].tuples[j].originalIndex;
+                if (oIdx === undefined) {
+                    oIdx = j;
+                }
                 const tempData = [];
                 for (i = 0; i < data.Cols[1].tuples.length; i++) {
                     tempData.push({
-                        y: +data.Data[i * data.Cols[0].tuples.length + j],
+                        y: +data.Data[i * data.Cols[0].tuples.length + oIdx],
                         drilldown: true,
                         cube: data.Info.cubeName,
                         path: data.Cols[1].tuples[i].path,
@@ -1562,5 +1585,73 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
 
     protected onLegendItemOut(e: any) {
 
+    }
+
+    /*private sortSeries() {
+        const legend = this.widget.overrides?.find(o => o._type === 'chartLegend');
+        if (!legend) {
+            return;
+        }
+
+        const labels = legend.legendLabels?.split(',');
+        if (!labels) {
+            return;
+        }
+
+        if (this.chart?.series?.length) {
+            // Chart already exists sort series in chart
+            this.sortSeriesArray(this.chart.series, labels);
+            //this.char
+        } else {
+            // Chart not exists sort series in config
+            this.sortSeriesArray(this.chartConfig.series, labels);
+
+        }
+    }*/
+
+    private sortTuplesArray(tuples: any[], labels: string[]) {
+        // Create a map to store the indices of each label
+        const indexMap = new Map();
+        labels.forEach((title, index) => {
+            indexMap.set(title, index);
+        });
+        tuples.forEach((t, idx) => {
+           t.originalIndex = idx;
+        });
+        tuples.sort((a, b) => {
+            const indexA = indexMap.get(a.dimension);
+            const indexB = indexMap.get(b.dimension);
+
+            // Check if both elements have corresponding names in the labels array
+            if (indexA !== undefined && indexB !== undefined) {
+                return indexA - indexB;
+            } else if (indexA !== undefined) {
+                return -1;
+            } else if (indexB !== undefined) {
+                return 1;
+            }
+
+            return 0;
+        });
+
+        console.log(tuples.map(s => s.dimension));
+    }
+
+    private sortTuplesBasedOnLabels(data: any) {
+        if (!data.Cols[0].tuples?.length) {
+            return;
+        }
+
+        const legend = this.widget.overrides?.find(o => o._type === 'chartLegend');
+        if (!legend) {
+            return;
+        }
+
+        const labels = legend.legendLabels?.split(',');
+        if (!labels) {
+            return;
+        }
+
+        this.sortTuplesArray(data.Cols[0].tuples, labels);
     }
 }

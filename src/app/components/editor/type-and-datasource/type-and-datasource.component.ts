@@ -33,7 +33,7 @@ export class TypeAndDatasourceComponent implements OnInit, OnDestroy {
         WIDGET_TYPES.pieChart,
         WIDGET_TYPES.pieChart3D,
         WIDGET_TYPES.donutChart,
-        WIDGET_TYPES.donutChart3d,
+        WIDGET_TYPES.donutChart3D,
         WIDGET_TYPES.treeMapChart,
         WIDGET_TYPES.bullseyeChart,
         WIDGET_TYPES.timeChart,

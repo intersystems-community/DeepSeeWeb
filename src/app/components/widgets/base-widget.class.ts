@@ -87,6 +87,8 @@ export interface IWidgetOverride {
     seriesYAxes?: string;
     _type: string;
     columns?: any[];
+    legendLabels?: string;
+    markerShapes?: string;
 }
 
 export type IAddonType = 'custom' | 'chart' | 'map';
@@ -822,7 +824,11 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         if (col.length === 0) {
             return;
         }
-        const idx = data.Cols[0].tuples.indexOf(col[0]);
+        let idx = data.Cols[0].tuples.indexOf(col[0]);
+        const oIdx = data.Cols[0].tuples[idx].originalIndex;
+        if (oIdx !== undefined) {
+            idx = oIdx;
+        }
         let v = data.Data[dataIndex + idx];
         if (fmt) {
             v = this.formatNumber(v, fmt);
