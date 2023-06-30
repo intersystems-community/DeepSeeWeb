@@ -1,5 +1,8 @@
+#### 3.1.96
+* fixed issue with chats without `override` (blank widgets)
+
 #### 3.1.95
-* added support for labels order (`overrides.chartLegend.legendLabels`) for base charts (#383)
+* added support for labels order (`overrides.chartLegend.legendLabels`) for base charts (#383, #385)
 * added marker option support for charts (#383)
 
 #### 3.1.94
