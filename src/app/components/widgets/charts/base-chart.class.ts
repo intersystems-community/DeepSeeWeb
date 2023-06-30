@@ -533,8 +533,8 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
         }
 
         // Check for marker type
-        if (this.override.markerShapes) {
-            let marker = this.override.markerShapes.split(',')[index];
+        if (this.override?.markerShapes) {
+            let marker = this.override?.markerShapes.split(',')[index];
             if (!marker) {
                 return;
             }
