@@ -1,3 +1,6 @@
+#### 3.1.97
+* fixed navigation to ZEN(#381)
+
 #### 3.1.96
 * fixed issue with chats without `override` (blank widgets)
 
