@@ -331,7 +331,9 @@ export class DashboardScreenComponent extends DashboardEditingClass implements O
             let item: any = {
                 idx: i,
                 cols: 2,
-                rows: 2,
+                // Don't use predefined height for empty widget
+                // It will be calculated during fitEmptyWidget() call
+                rows: result.widgets[i].type?.toLowerCase() === dsw.const.emptyWidgetClass ? undefined : 2,
                 x: (i * 2) % this.tilesOptions.maxCols,
                 y: Math.floor(i / 6) * 2,
                 title: result.widgets[i].title,
