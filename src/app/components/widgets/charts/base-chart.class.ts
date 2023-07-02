@@ -1633,8 +1633,6 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
 
             return 0;
         });
-
-        console.log(tuples.map(s => s.dimension));
     }
 
     private sortTuplesBasedOnLabels(data: any) {

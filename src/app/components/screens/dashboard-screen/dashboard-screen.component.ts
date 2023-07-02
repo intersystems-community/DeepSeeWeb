@@ -690,10 +690,6 @@ export class DashboardScreenComponent extends DashboardEditingClass implements O
         }
     }
 
-    checkItems() {
-        console.log('CD!');
-    }
-
     /**
      * Shows sub menu element
      * @param sub
@@ -941,6 +937,9 @@ export class DashboardScreenComponent extends DashboardEditingClass implements O
         };
 
         this.tilesOptions.itemChangeCallback = (item: GridsterItem, itemComponent: GridsterItemComponentInterface) => {
+            if (this.isLoading) {
+                return;
+            }
             this.dbs.saveWidgetPositionAndSize(item as IWidgetInfo);
         };
     }
