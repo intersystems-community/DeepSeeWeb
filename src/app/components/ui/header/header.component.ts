@@ -198,7 +198,7 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
         const folder = this.storage.serverSettings.DefaultApp || ('/csp/' + CURRENT_NAMESPACE);
         const dashboard = this.path[this.path.length - 1].url.split('/').slice(1).join('/');
         const prefix = location.pathname.split('/').slice(0, -2).join('/') || '';
-        const url = folder + prefix + '/_DeepSee.UserPortal.DashboardViewer.zen?DASHBOARD=' + encodeURIComponent(decodeURIComponent(dashboard));
+        const url = prefix + folder + '/_DeepSee.UserPortal.DashboardViewer.zen?DASHBOARD=' + encodeURIComponent(decodeURIComponent(dashboard));
         window.open(url);
     }
 
