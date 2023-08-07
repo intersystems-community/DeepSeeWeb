@@ -1,3 +1,6 @@
+#### 3.2.0
+* added support for default multiple filters on widget
+
 #### 3.1.99
 * fixed issue with filters panel position and size when opening the dashboard for the first time
 
