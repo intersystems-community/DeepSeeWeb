@@ -1,5 +1,8 @@
+#### 3.1.99
+* fixed issue with filters panel position and size when opening the dashboard for the first time
+
 #### 3.1.98
-* fixed issue with filters panel position and size when opening dashboard the first time
+* fixed issue with filters panel position and size when opening the dashboard for the first time
 
 #### 3.1.97
 * fixed navigation to ZEN (#381)
