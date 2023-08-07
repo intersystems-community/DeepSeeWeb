@@ -52,6 +52,16 @@ export class FilterService {
                 flt.values = [];
             }
 
+            // Check for multiple filter in value
+            if (flt.value && flt.value?.charAt(0) === '{') {
+                flt.value = flt.value.slice(1, -1);
+                const paths = flt.value.split(',');
+                flt.value = flt.value.replace(/,/g, '|');
+                flt.values.forEach(v => {
+                    v.checked = paths.includes(v.path);
+                });
+            }
+
             // Check for valueList
             if (flt.valueList && flt.displayList) {
                 const vals = flt.valueList.split(',');
