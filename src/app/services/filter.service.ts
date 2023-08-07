@@ -57,9 +57,6 @@ export class FilterService {
                 flt.value = flt.value.slice(1, -1);
                 const paths = flt.value.split(',');
                 flt.value = flt.value.replace(/,/g, '|');
-                flt.values.forEach(v => {
-                    v.checked = paths.includes(v.path);
-                });
             }
 
             // Check for valueList
@@ -342,16 +339,18 @@ export class FilterService {
             value = value.substr(0, value.length - 5);
         }
         flt.value = value;
+        const values = flt.value.split('|');
+        const names = [];
         for (let i = 0; i < flt.values.length; i++) {
-            if (flt.values[i].path === value) {
+            if (flt.values[i].path === value || (values.length > 1 && values.includes(flt.values[i].path))) {
                 flt.values[i].checked = true;
                 flt.values[i].default = true;
                 flt.defaultExclude = isExclude;
                 flt.isExclude = isExclude;
-                return flt.values[i].name;
+                names.push(flt.values[i].name);
             }
         }
-        return '';
+        return names.join(',');
     }
 
     /**
