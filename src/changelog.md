@@ -1,3 +1,7 @@
+#### 3.2.2
+* fixed issues with filter URLs on shared dashboard (interval filters/multiple filters)
+* added support for wrong escaped dashboard links. when "=" character has been escaped, but it shouldn't
+
 #### 3.2.1
 * fixed issue with default multiple filter text
 

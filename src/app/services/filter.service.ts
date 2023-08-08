@@ -166,9 +166,17 @@ export class FilterService {
 
 
     loadFiltersFromUrl() {
-        const param = this.route.snapshot.queryParamMap.get('FILTERS');
+        let param = this.route.snapshot.queryParamMap.get('FILTERS');
         if (!param) {
-            return;
+            // Workaround for invalid escaped links where "=" char is escaped. Requested by Shvarov
+            const p = Object.keys(this.route.snapshot.queryParams)[0];
+            if (!p) {
+                return;
+            }
+            param = p.split('FILTERS=')[1];
+            if (!param) {
+                return;
+            }
         }
         const params = param.split(';');
         let widgetName = null;
@@ -190,10 +198,15 @@ export class FilterService {
         } else {
             flt = this.items.slice();
         }
-        flt.forEach(f => {
+        flt.forEach((f, idx) => {
             const urlFilters = filters.split('~');
             for (let i = 0; i < urlFilters.length; i++) {
-                const s = decodeURIComponent(urlFilters[i]);
+                let s = decodeURIComponent(urlFilters[i]);
+                // Workaround for invalid urls with ending '='. Requested by Shvarov
+                if (s.charAt(s.length - 1) === '=') {
+                    s = s.slice(0, -1);
+                }
+
                 // Check filter path
                 if (s.indexOf('{') !== -1) {
                     // Many values
@@ -204,17 +217,28 @@ export class FilterService {
                     // &[30 to 59]|&[60+]|"
                     const values = s.match(/\{([^)]+)\}/)[1].split(',');
                     f.value = values.join('|');
-                    f.valueDisplay = values.map(v => v.replace('&[', '').replace(']', '')).join(',');
                 } else {
-                    // One value
+                    // Check for path
                     const path = s.split('.&')[0];
                     if (path !== f.targetProperty) {
                         continue;
                     }
-                    f.value = '&' + s.split('.&')[1];
-                    f.valueDisplay = this.findDisplayText(f);
+
+                    // Check for interval
+                    if (s.indexOf(':') !== -1) {
+                     const parts = s.split(':');
+                     // const path = parts[0].split('.&')[0];
+                     const from = parts[0].split('.').pop();
+                     const to = parts[1];
+                     f.fromIdx = f.values.findIndex(el => el.path === from);
+                     f.toIdx = f.values.findIndex(el => el.path === to);
+                     f.isInterval = true;
+                    } else {
+                        f.value = '&' + s.split('.&')[1];
+                    }
                 }
             }
+            f.valueDisplay = this.findDisplayText(f);
         });
     }
 
