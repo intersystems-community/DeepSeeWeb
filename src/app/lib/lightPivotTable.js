@@ -3901,7 +3901,8 @@ PivotView.prototype.renderRawData = function (data) {
     };
 
     // top left header setup
-    header.textContent = info.leftHeaderColumnsNumber ? rawData[0][0].value : "";
+    // Request by Shvarov, make top left cell empty (DSW repo #391)
+    header.textContent = '';
     if (rawData[0][0].style && !LISTING) header.setAttribute("style", rawData[0][0].style);
     if (this.tablesStack.length > 1 && !this.controller.CONFIG["hideButtons"]) {
         header.className += "back ";

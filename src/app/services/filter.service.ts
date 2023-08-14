@@ -166,6 +166,18 @@ export class FilterService {
 
 
     loadFiltersFromUrl() {
+        /*
+           let query = window.location.hash.split('?')[1];
+        query = query.replace(/&\.%5B/g, '%26.%5B');
+        query = query.replace(/&\.\[/g, '%26.%5B');
+        const p = query.split('&');
+        let param = '';
+        p.forEach(q => {
+            if (q.split('=')[0].toLowerCase() === 'filters') {
+                param = q.split('=')[1];
+            };
+        });
+         */
         let param = this.route.snapshot.queryParamMap.get('FILTERS');
         if (!param) {
             // Workaround for invalid escaped links where "=" char is escaped. Requested by Shvarov

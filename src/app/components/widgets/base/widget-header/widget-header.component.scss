@@ -41,7 +41,6 @@
 
     & > .drag-handle {
         position: absolute;
-        position: absolute;
         left: -20px;
         right: -20px;
         bottom: 0;
@@ -114,6 +113,10 @@
     display: flex;
     justify-content: center;
     align-items: center;
+
+    &.no-drag {
+        cursor: default;
+    }
 
     // Disable drag when widget is expanded to fullscreen
     &.expanded {

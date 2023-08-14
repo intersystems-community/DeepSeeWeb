@@ -25,7 +25,7 @@
 
 <div class="divider"></div>
 
-<div class="drag-handle" [class.expanded]="widget?.isExpanded" (dblclick)="onHeaderDoubleClick()"></div>
+<div class="drag-handle" [class.no-drag]="noDrag" [class.expanded]="widget?.isExpanded" (dblclick)="onHeaderDoubleClick()"></div>
 
 <!--<span class="right-side">-->
 

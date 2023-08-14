@@ -111,6 +111,7 @@ export class DashboardScreenComponent extends DashboardEditingClass implements O
     constructor(@Inject(Injector) protected inj: Injector) {
         super(inj);
 
+        this.checkRestrictions();
         this.hs.resetSearch();
         this.hs.hideMobileFilterButton();
 
@@ -976,5 +977,14 @@ export class DashboardScreenComponent extends DashboardEditingClass implements O
         this.tilesOptions.resizable = {
             enabled: false
         };
+    }
+
+    private checkRestrictions() {
+        if (this.route.snapshot.queryParamMap.get('nodrag') === '1') {
+            this.tilesOptions.draggable.enabled = false;
+        }
+        if (this.route.snapshot.queryParamMap.get('noresize') === '1') {
+            this.tilesOptions.resizable.enabled = false;
+        }
     }
 }

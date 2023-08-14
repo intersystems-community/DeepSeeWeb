@@ -28,6 +28,7 @@ export class WidgetHeaderComponent implements OnInit, OnDestroy {
     hasFilters = false;
     filtersTooltip = '';
     private subFiltersChanged: Subscription;
+    noDrag = false;
 
     constructor(private ss: StorageService,
                 private us: UtilService,
@@ -38,6 +39,7 @@ export class WidgetHeaderComponent implements OnInit, OnDestroy {
                 private hs: HeaderService,
                 private eds: EditorService,
                 private route: ActivatedRoute) {
+        this.noDrag = this.route.snapshot.queryParamMap.get('nodrag') === '1';
     }
 
     ngOnInit() {
