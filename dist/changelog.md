@@ -1,5 +1,9 @@
+#### 3.2.3
+* added support for dragging and resizing restrictions for widgets by URL parameters: `nodrag=1` and `noresize=1` (#392)
+* pivot top left cell now empty (#391)
+
 #### 3.2.2
-* fixed issues with filter URLs on shared dashboard (interval filters/multiple filters)
+* fixed issues with filter URLs on the shared dashboard (interval filters/multiple filters)
 * added support for wrong escaped dashboard links. when "=" character has been escaped, but it shouldn't
 
 #### 3.2.1
