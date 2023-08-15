@@ -1,3 +1,6 @@
+#### 3.2.4
+* added workaround for invalid filter urls with `&` character
+
 #### 3.2.3
 * added support for dragging and resizing restrictions for widgets by URL parameters: `nodrag=1` and `noresize=1` (#392)
 * pivot top left cell now empty (#391)
