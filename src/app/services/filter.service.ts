@@ -167,8 +167,11 @@ export class FilterService {
 
     loadFiltersFromUrl() {
         let query = window.location.hash.split('?')[1];
-        query = query.replace(/&\.%5B/g, '%26.%5B');
-        query = query.replace(/&\.\[/g, '%26.%5B');
+        if (!query) {
+            return;
+        }
+        query = query.replace(/\.&%5B/g, '.%26%5B');
+        query = query.replace(/\.&\[/g, '.%26%5B');
         const p = query.split('&');
         let param = '';
         p.forEach(q => {
@@ -210,7 +213,7 @@ export class FilterService {
             flt = this.items.slice();
         }
         flt.forEach((f, idx) => {
-            const urlFilters = filters.split('~');
+            const urlFilters = decodeURIComponent(filters).split('~');
             for (let i = 0; i < urlFilters.length; i++) {
                 let s = decodeURIComponent(urlFilters[i]);
                 // Workaround for invalid urls with ending '='. Requested by Shvarov
