@@ -44,3 +44,18 @@ textarea {
 button {
     width: 100%;
 }
+
+input {
+    min-width: 16px;
+    width: 16px;
+    display: inline-block;
+    margin: 0;
+    margin-right: 4px;
+    vertical-align: bottom
+}
+
+label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: normal;
+}

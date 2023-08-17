@@ -1,3 +1,8 @@
+#### 3.2.6
+* added workaround for invalid filter urls with `=&` characters
+* added option to encode filters as base64 string when sharing dashboard
+* fixed issue with invisible share button when opening the dashboard with filters 
+
 #### 3.2.5 
 * added workaround for invalid filter urls with `&` character
 * fixed issue with dashboard loading without filters 

@@ -173,7 +173,7 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
      * @param path
      */
     private initSearch(path: string[]) {
-        this.isSearch = !path[path.length - 1]?.endsWith('.dashboard');
+        this.isSearch = !path[path.length - 1]?.split('?')[0]?.endsWith('.dashboard');
     }
 
     /**

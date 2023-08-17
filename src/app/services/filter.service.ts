@@ -164,6 +164,13 @@ export class FilterService {
         return encodeURIComponent(f.join(seporator));
     }
 
+    private isBase64(str: string) {
+        try {
+            return btoa(atob(str)) === str;
+        } catch (e) {
+            return false;
+        }
+    }
 
     loadFiltersFromUrl() {
         let query = window.location.hash.split('?')[1];
@@ -171,7 +178,9 @@ export class FilterService {
             return;
         }
         query = query.replace(/\.&%5B/g, '.%26%5B');
+        query = query.replace(/\.=&%5B/g, '.%26%5B');
         query = query.replace(/\.&\[/g, '.%26%5B');
+        query = query.replace(/\.=&\[/g, '.%26%5B');
         const p = query.split('&');
         let param = '';
         p.forEach(q => {
@@ -180,6 +189,9 @@ export class FilterService {
             };
         });
 
+        if (this.isBase64(param)) {
+            param = atob(param);
+        }
         //let param = this.route.snapshot.queryParamMap.get('FILTERS');
         if (!param) {
             // Workaround for invalid escaped links where "=" char is escaped. Requested by Shvarov
