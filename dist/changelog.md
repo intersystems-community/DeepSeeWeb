@@ -1,3 +1,7 @@
+#### 3.2.5 
+* added workaround for invalid filter urls with `&` character
+* fixed issue with dashboard loading without filters 
+
 #### 3.2.4
 * added workaround for invalid filter urls with `&` character
 
