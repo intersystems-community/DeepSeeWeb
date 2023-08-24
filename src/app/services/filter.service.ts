@@ -99,6 +99,9 @@ export class FilterService {
                 flt.label = flt.label.replace(/(\/\*([^*]|[\r\n]|(\*+([^*\/]|[\r\n])))*\*+\/)|(\/\/.*)/g, '');
             }
 
+            if (this.route.snapshot.queryParamMap.get('nofilters') === '1') {
+                flt.value = '';
+            }
             flt.valueDisplay = this.findDisplayText(flt);
         }
 
@@ -117,8 +120,8 @@ export class FilterService {
      * Returns whole share ulr for filters on dashboard
      */
     public getFiltersShareUrl() {
-        let url = window.location.href;
-        url = this.removeParameterFromUrl(url, 'FILTERS');
+        let url = window.location.href.split('?')[0];
+        // url = this.removeParameterFromUrl(url, 'FILTERS');
         const part = url.split('#')[1];
         const fltUrl = this.getFiltersUrlString();
         const flt = 'FILTERS=TARGET:*;FILTER:' + fltUrl;
@@ -173,12 +176,18 @@ export class FilterService {
     }
 
     loadFiltersFromUrl() {
+        if (this.route.snapshot.queryParamMap.get('nofilters') === '1') {
+            return;
+        }
+
         let query = window.location.hash.split('?')[1];
         if (!query) {
             return;
         }
         query = query.replace(/\.&%5B/g, '.%26%5B');
         query = query.replace(/\.=&%5B/g, '.%26%5B');
+        query = query.replace(/\.%7B=&%5B/g, '.%7B%26%5B');
+        query = query.replace(/\,=&%5B/g, ',%26%5B');
         query = query.replace(/\.&\[/g, '.%26%5B');
         query = query.replace(/\.=&\[/g, '.%26%5B');
         const p = query.split('&');
@@ -272,6 +281,9 @@ export class FilterService {
      * Load saved filter values from settings
      */
     private loadFiltersFromSettings() {
+        if (this.route.snapshot.queryParamMap.get('nofilters') === '1') {
+            return;
+        }
         // Don't Load filters for shared widget
         if (this.us.isEmbedded()) {
             return;

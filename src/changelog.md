@@ -1,7 +1,13 @@
+#### 3.2.7
+* added url parameter to prevent applying of default filters: `nofilters=1`
+* added options to share menu: "Deny widget resizing", "Deny widget moving", "Ignore filters"
+* added workaround for invalid filter urls with `.{=&` & `,=&[` characters
+* fixed url generation for shared dashboard if navigated to an invalid dsw link
+ 
 #### 3.2.6
 * added workaround for invalid filter urls with `=&` characters
 * added option to encode filters as base64 string when sharing dashboard
-* fixed issue with invisible share button when opening the dashboard with filters 
+* fixed issue with the invisible share button when opening the dashboard with filters 
 
 #### 3.2.5 
 * added workaround for invalid filter urls with `&` character
