@@ -1,3 +1,6 @@
+#### 3.2.8
+* added workaround for invalid filter base64 urls with `%3D` at the end
+
 #### 3.2.7
 * added url parameter to prevent applying of default filters: `nofilters=1`
 * added options to share menu: "Deny widget resizing", "Deny widget moving", "Ignore filters"
