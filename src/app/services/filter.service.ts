@@ -198,9 +198,15 @@ export class FilterService {
             };
         });
 
-        if (this.isBase64(param)) {
-            param = atob(param);
-        }
+        try {
+            if (this.isBase64(decodeURIComponent(param))) {
+                param = decodeURIComponent(param);
+                if (param.charAt(param.length - 1) === '=') {
+                    param = param.slice(0, -1);
+                }
+                param = atob(param);
+            }
+        } catch (e) {}
         //let param = this.route.snapshot.queryParamMap.get('FILTERS');
         if (!param) {
             // Workaround for invalid escaped links where "=" char is escaped. Requested by Shvarov
