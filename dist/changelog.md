@@ -1,3 +1,6 @@
+#### 3.2.9
+* changed locale of date picker to "en"
+
 #### 3.2.8
 * added workaround for invalid filter base64 urls with `%3D` at the end
 
