@@ -10,6 +10,7 @@ import {
     SimpleChanges
 } from "@angular/core";
 import AirDatepicker from 'air-datepicker';
+import localeEn from 'air-datepicker/locale/en';
 
 export interface IDatepickerSelectEvent {
     date: Date | Date[];
@@ -40,6 +41,7 @@ export class DatePickerComponent implements OnInit, AfterViewInit {
             inline: this.inline,
             range: this.range,
             toggleSelected: false,
+            locale: localeEn,
             onSelect: ((date, formattedDate, datepicker) => {
                 if (this.ignoreSelectEvent) {
                     return;

@@ -1,6 +1,6 @@
 {
   "name": "deep-see-web",
-  "version": "3.2.8",
+  "version": "3.2.9",
   "scripts": {
     "ng": "ng",
     "start": "ng serve --proxy-config=proxy.conf.json --port 4007",
