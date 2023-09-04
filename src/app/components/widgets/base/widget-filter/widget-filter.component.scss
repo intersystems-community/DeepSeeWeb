@@ -11,7 +11,7 @@
     //border-bottom: 1px solid var(--cl-header-border);
     flex-wrap: wrap;
     margin-bottom: 5px;
-    &.col-1, &.col-2, &.col-3 {
+    &.col-1, &.col-2, &.col-3, &.col-4, &.col-5, &.col-6 {
         display: grid;
         gap: 10px;
         & > span {
@@ -27,6 +27,15 @@
     }
     &.col-3 {
         grid-template-columns: 1fr 1fr 1fr;
+    }
+    &.col-4 {
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+    }
+    &.col-5 {
+        grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    }
+    &.col-6 {
+        grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
     }
 }
 

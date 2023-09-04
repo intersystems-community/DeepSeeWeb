@@ -31,16 +31,34 @@
 
 <!-- Empty widget buttons -->
 <ng-container *ngIf="isEmptyWidget()">
+    <!-- Display 6 columns  button -->
+    <button class="only-desktop" (click)="onClick('by6columns')" [title]="'by6columns' | i18n"
+            [class.active]="widget?.viewSize === 5">
+        <img src="assets/img/icons/view-6columns.svg">
+    </button>
+
+    <!-- Display 5 columns  button -->
+    <button class="only-desktop" (click)="onClick('by5columns')" [title]="'by5columns' | i18n"
+            [class.active]="widget?.viewSize === 4">
+        <img src="assets/img/icons/view-5columns.svg">
+    </button>
+
+    <!-- Display 4 columns  button -->
+    <button class="only-desktop" (click)="onClick('by4columns')" [title]="'by4columns' | i18n"
+            [class.active]="widget?.viewSize === 3">
+        <img src="assets/img/icons/view-4columns.svg">
+    </button>
+
     <!-- Display 3 columns  button -->
     <button class="only-desktop" (click)="onClick('by3columns')" [title]="'by3columns' | i18n"
             [class.active]="widget?.viewSize === 2">
-        <img src="assets/img/icons/view-3colums.svg">
+        <img src="assets/img/icons/view-3columns.svg">
     </button>
 
     <!-- Display 2 columns  button -->
     <button class="only-desktop" (click)="onClick('by2columns')" [title]="'by2columns' | i18n"
             [class.active]="widget?.viewSize === 1">
-        <img src="assets/img/icons/view-2colums.svg">
+        <img src="assets/img/icons/view-2columns.svg">
     </button>
 
     <!-- Display as rows button -->

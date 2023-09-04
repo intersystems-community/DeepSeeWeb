@@ -8,6 +8,7 @@ import {dsw} from "../../../../environments/dsw";
 import {DashboardService} from "../../../services/dashboard.service";
 import {DateFilterComponent} from "../date-filter/date-filter.component";
 import {DatePipe} from "@angular/common";
+import {UtilService} from "../../../services/util.service";
 
 @Component({
     selector: 'dsw-filter-popup',
@@ -40,6 +41,7 @@ export class FilterPopupComponent implements OnInit, AfterViewInit {
                 private dbs: DashboardService,
                 private fs: FilterService,
                 private es: ErrorService,
+                private us: UtilService,
                 @Inject(LOCALE_ID) private locale: string) {
         this.datePipe = new DatePipe(locale);
         const settings = this.ss.getAppSettings();
@@ -414,10 +416,14 @@ export class FilterPopupComponent implements OnInit, AfterViewInit {
         if (!value) {
             return;
         }
-        let values = value.split('|').map(v => new Date(v.replace('&[', '').replace(']', '')));
+        let values = value.split('|').map(v => this.createDate(v));
       /*  if (values[0] === values[1]) {
             values = values.splice(-1);
         }*/
         this.dateFilter.setDateRange(values[0], values[1]);
+    }
+
+    private createDate(v: string) {
+        return this.us.toDate(v.replace('&[', '').replace(']', ''));
     }
 }

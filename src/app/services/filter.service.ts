@@ -69,6 +69,13 @@ export class FilterService {
                 }
             }
 
+            // Check for interval
+            if (flt.value?.indexOf(':') !== -1) {
+                if (flt.isDate) {
+                    this.initDateFilter(flt);
+                }
+            }
+
             flt.targetArray = [];
             if ((flt.target !== '*') && (flt.target !== '')) {
                 flt.targetArray = flt.target.split(',').concat(['emptyWidget']);
@@ -248,6 +255,18 @@ export class FilterService {
                     s = s.slice(0, -1);
                 }
 
+                // Check for date
+                if (f.isDate) {
+                    // Check for path
+                    const parts = s.split('.&');
+                    const path = parts[0];
+                    if (path !== f.targetProperty) {
+                        continue;
+                    }
+                    f.value = '&' + parts[1];
+                    this.initDateFilter(f);
+                }
+
                 // Check filter path
                 if (s.indexOf('{') !== -1) {
                     // Many values
@@ -406,6 +425,13 @@ export class FilterService {
         if (isExclude) {
             value = value.substr(0, value.length - 5);
         }
+
+        if (flt.isDate) {
+            return this.findDateText(flt);
+        }
+        /*if (flt.isDate) {
+            flt.valueDisplay = parts[0] + ':' + parts[1];
+        }*/
         flt.value = value;
         const values = flt.value.split('|');
         const names = [];
@@ -653,5 +679,33 @@ export class FilterService {
                 _saved: true
             });
         });
+    }
+
+    private initDateFilter(flt: any) {
+        flt.isInterval = true;
+        flt.value = flt.value.replace(':', '|');
+        const parts = flt.value.split('|');
+        if (!flt.values) {
+            flt.value = [];
+        }
+        flt.values.forEach(v => v.checked = false);
+        flt.fromIdx = flt.values.findIndex(fi => fi.path === parts[0]);
+        if (flt.fromIdx === -1) {
+            flt.values.push({path: parts[0]});
+            flt.fromIdx = flt.values.length - 1;
+        }
+        flt.values[flt.fromIdx].checked = true;
+
+        flt.toIdx = flt.values.findIndex(fi => fi.path === parts[1]);
+        if (flt.toIdx === -1) {
+            flt.values.push({path: parts[1]});
+            flt.toIdx = flt.values.length - 1;
+        }
+        flt.values[flt.toIdx].checked = true;
+    }
+
+    private findDateText(flt) {
+        const value = flt.value || '';
+        return value.split('|').map(v => v.replace('&[', '').replace(']', '')).join(':');
     }
 }

@@ -54,6 +54,18 @@ export class WidgetFilterComponent implements OnInit {
         return this.widget?.viewSize === 2;
     }
 
+    @HostBinding('class.col-4') get colCount4() {
+        return this.widget?.viewSize === 3;
+    }
+
+    @HostBinding('class.col-5') get colCount5() {
+        return this.widget?.viewSize === 4;
+    }
+
+    @HostBinding('class.col-6') get colCount6() {
+        return this.widget?.viewSize === 5;
+    }
+
     @HostBinding('class.col-1') get colCount1(): boolean {
         return this.widget?.viewSize === 0;
     }

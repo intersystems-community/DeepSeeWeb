@@ -27,6 +27,9 @@ export class EmptyWidgetComponent extends BaseWidget implements OnInit {
             case 'byRows': this.setViewSize(0); break;
             case 'by2columns': this.setViewSize(1); break;
             case 'by3columns': this.setViewSize(2); break;
+            case 'by4columns': this.setViewSize(3); break;
+            case 'by5columns': this.setViewSize(4); break;
+            case 'by6columns': this.setViewSize(5); break;
         }
     }
 

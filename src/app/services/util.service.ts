@@ -119,4 +119,22 @@ export class UtilService {
             }
         }
     }
+
+    toDate(date: string) {
+        let d;
+        if (date.toLowerCase().startsWith('now')) {
+            const m = date.match(/([-+]?\d+)/);
+            let daysDelta = 0;
+            if (m && m[0]) {
+                daysDelta = parseInt(m[0], 10);
+            }
+            d = new Date();
+            if (daysDelta) {
+                d.setDate(d.getDate() + daysDelta);
+            }
+        } else {
+            d = new Date(date);
+        }
+        return d;
+    }
 }

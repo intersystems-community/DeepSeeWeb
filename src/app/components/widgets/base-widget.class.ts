@@ -1877,7 +1877,8 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
 
     dateToHorolog(date: string) {
         const start = new Date('12/31/1840Z');
-        const d = new Date(date);
+        const d = this.us.toDate(date);
+
         const diff = d.getTime() - start.getTime();
         return Math.ceil(diff / (1000 * 3600 * 24));
     }
