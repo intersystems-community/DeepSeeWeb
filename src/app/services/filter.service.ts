@@ -53,10 +53,10 @@ export class FilterService {
             }
 
             // Check for multiple filter in value
-            if (flt.value && flt.value?.charAt(0) === '{') {
-                flt.value = flt.value.slice(1, -1);
-                const paths = flt.value.split(',');
-                flt.value = flt.value.replace(/,/g, '|');
+            if (flt.value && flt.value?.toString().charAt(0) === '{') {
+                flt.value = flt.value.toString().slice(1, -1);
+                const paths = flt.value.toString().split(',');
+                flt.value = flt.value.toString().replace(/,/g, '|');
             }
 
             // Check for valueList
@@ -338,7 +338,7 @@ export class FilterService {
                         exists.toIdx = flt.toIdx;
                         if (exists.isDate) {
                             exists.valueDisplay = flt.valueDisplay;
-                            exists.values = flt.value.split('|').map(v => {
+                            exists.values = flt.value.toString().split('|').map(v => {
                                 return {
                                     path: v,
                                     checked: true
@@ -364,7 +364,7 @@ export class FilterService {
                         }
 
                         if (!exists.valueDisplay) {
-                            exists.valueDisplay = flt.value.split('|').map(el => {
+                            exists.valueDisplay = flt.value.toString().split('|').map(el => {
                                 const isNot = el.indexOf('.%NOT') !== -1;
                                 if (isNot) {
                                     el = el.replace('.%NOT', '');
@@ -420,10 +420,10 @@ export class FilterService {
         let value = flt.value;
         let isExclude = false;
         if (typeof value === 'string') {
-            isExclude = value.toUpperCase().endsWith('.%NOT');
+            isExclude = value.toString().toUpperCase().endsWith('.%NOT');
         }
         if (isExclude) {
-            value = value.substr(0, value.length - 5);
+            value = value.toString().substr(0, value.toString().length - 5);
         }
 
         if (flt.isDate) {
@@ -433,7 +433,7 @@ export class FilterService {
             flt.valueDisplay = parts[0] + ':' + parts[1];
         }*/
         flt.value = value;
-        const values = flt.value.split('|');
+        const values = flt.value.toString().split('|');
         const names = [];
         for (let i = 0; i < flt.values.length; i++) {
             if (flt.values[i].path === value || (values.length > 1 && values.includes(flt.values[i].path))) {
@@ -683,8 +683,8 @@ export class FilterService {
 
     private initDateFilter(flt: any) {
         flt.isInterval = true;
-        flt.value = flt.value.replace(':', '|');
-        const parts = flt.value.split('|');
+        flt.value = flt.value.toString().replace(':', '|');
+        const parts = flt.value.toString().split('|');
         if (!flt.values) {
             flt.value = [];
         }
@@ -706,6 +706,6 @@ export class FilterService {
 
     private findDateText(flt) {
         const value = flt.value || '';
-        return value.split('|').map(v => v.replace('&[', '').replace(']', '')).join(':');
+        return value.toString().split('|').map(v => v.replace('&[', '').replace(']', '')).join(':');
     }
 }
