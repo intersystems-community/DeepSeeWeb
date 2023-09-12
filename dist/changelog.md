@@ -1,3 +1,8 @@
+#### 3.2.10
+* added display by 4/5/6 columns for filter widget (#400)
+* added support for filter url parameter for date filters (#398)
+* added support for "NOW"/"NOW-x" as date string for both calendar and filters (#398)
+
 #### 3.2.9
 * changed locale of date picker to "en"
 
