@@ -1,5 +1,8 @@
+#### 3.2.12
+* fixed issue with filter default values. when the value is a number instead of a string
+
 #### 3.2.11
-* fixed issue with filter default values. when value is number instead of string
+* fixed issue with filter default values. when the value is a number instead of a string
 
 #### 3.2.10
 * added display by 4/5/6 columns for filter widget (#400)
@@ -13,6 +16,8 @@
 * added workaround for invalid filter base64 urls with `%3D` at the end
 
 #### 3.2.7
+* * added url parameter to prevent applying of default filters: `nofilters=12
+* 
 * added url parameter to prevent applying of default filters: `nofilters=1`
 * added options to share menu: "Deny widget resizing", "Deny widget moving", "Ignore filters"
 * added workaround for invalid filter urls with `.{=&` & `,=&[` characters
