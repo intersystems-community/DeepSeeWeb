@@ -1,3 +1,6 @@
+#### 3.2.11
+* fixed issue with filter default values. when value is number instead of string
+
 #### 3.2.10
 * added display by 4/5/6 columns for filter widget (#400)
 * added support for filter url parameter for date filters (#398)
