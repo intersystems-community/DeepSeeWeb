@@ -597,7 +597,12 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         if (!this.widget.dataProperties) {
             return;
         }
-        return this.widget.dataProperties.find(pr => pr.dataValue === dataValue);
+        const dv = dataValue.split('/');
+        return this.widget.dataProperties.find(pr => {
+            const p = pr.dataValue?.toString().split('/');
+            return dv.some(d => p.includes(d));
+            //  pr.dataValue === dataValue;
+        });
     }
 
     getDataPropValue(name: string): string | undefined {
