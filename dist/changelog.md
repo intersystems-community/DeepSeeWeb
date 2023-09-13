@@ -1,3 +1,6 @@
+#### 3.2.13
+* temporary fix for dataProperties filtering when axis contains children
+
 #### 3.2.12
 * fixed issue with filter default values. when the value is a number instead of a string
 
