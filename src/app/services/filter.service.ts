@@ -70,7 +70,7 @@ export class FilterService {
             }
 
             // Check for interval
-            if (flt.value?.indexOf(':') !== -1) {
+            if (flt.value?.toString().indexOf(':') !== -1) {
                 if (flt.isDate) {
                     this.initDateFilter(flt);
                 }
