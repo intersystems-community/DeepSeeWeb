@@ -2291,7 +2291,12 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
             return;
         }
         data.Cols[0].tuples = data?.Cols[0]?.tuples.filter((t, idx) => {
-            const exists = this.widget.dataProperties.some(p => p.dataValue === t.dimension);
+            const dim = t.dimension.toString().split('/');
+            const exists = this.widget.dataProperties.some(p => {
+                //p.dataValue === t.dimension
+                const dv = p.dataValue.toString().split('/');
+                return dv.some(v => dim.includes(v));
+            });
             if (!exists) {
                 indices.push(idx);
             }
