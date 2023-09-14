@@ -69,7 +69,7 @@ export class ScorecardWidgetComponent extends BaseWidget implements OnInit, OnDe
 
         this.originalData = data.Data;
         this.columns = data.Cols[0].tuples;
-        this.rows = data.Cols[1].tuples;
+        this.rows = data.Cols[1]?.tuples || [{}];
 
         this.prepareData(data.Data);
         this.cd.detectChanges();
@@ -219,8 +219,10 @@ export class ScorecardWidgetComponent extends BaseWidget implements OnInit, OnDe
 
     private getColumnIndex(dimension: string): number {
         const colIdx = this.columns.findIndex(c => {
+
             if (c.dimension) {
-                return c.dimension === dimension;
+                const d = dimension.split('/');
+                return d.includes(c.dimension);
             }
             const regExp = /^Properties\(\"([^)]+)\"\)/;
             const matches = regExp.exec(c.valueID);
