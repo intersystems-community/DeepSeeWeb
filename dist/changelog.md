@@ -1,3 +1,6 @@
+#### 3.2.16
+* added `Accept-Language: en-US` to all requests 
+
 #### 3.2.15
 * temporary fix for scorecard columns filtering when axis contains children
 
