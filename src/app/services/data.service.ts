@@ -60,15 +60,18 @@ export class DataService {
 
     public dashboardList = new Map<string, string>();
 
-    private withCredentialsHeaders = {withCredentials: true};
-    private withoutCredentialsHeaders = {};
+    private withCredentialsHeaders = {withCredentials: true, headers: new HttpHeaders({'Accept-Language': 'en-US' })};
+    private withoutCredentialsHeaders = {
+        headers: new HttpHeaders({'Accept-Language': 'en-US' })
+    };
     private withCredentialsTimeoutHeaders = {
         withCredentials: true,
-        headers: new HttpHeaders({timeout: dsw.const.timeout.toString()})
+        headers: new HttpHeaders({timeout: dsw.const.timeout.toString(), 'Accept-Language': 'en-US' })
     };
     private withoutCredentialsTimeoutHeaders = {
         headers: new HttpHeaders({
-            timeout: dsw.const.timeout.toString()
+            timeout: dsw.const.timeout.toString(),
+            'Accept-Language': 'en-US'
         })
     };
     public username = '';
