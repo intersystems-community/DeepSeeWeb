@@ -1,3 +1,6 @@
+#### 3.2.15
+* temporary fix for scorecard columns filtering when axis contains children
+
 #### 3.2.14
 * temporary fix for dataProperties filtering when axis contains children
 
