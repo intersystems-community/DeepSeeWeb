@@ -73,6 +73,21 @@ export class FilterService {
             if (flt.value?.toString().indexOf(':') !== -1) {
                 if (flt.isDate) {
                     this.initDateFilter(flt);
+                } else {
+                    const parts = flt.value?.toString().split(':');
+                    flt.fromIdx = flt.values?.findIndex(f => f.path === parts[0]);
+                    flt.toIdx = flt.values?.findIndex(f => f.path === parts[1]);
+                    if (flt.fromIdx === -1) {
+                        flt.values.push({path: parts[0], name: parts[0].replace('&[', '').replace(']', '')});
+                        flt.fromIdx = flt.values.length - 1;
+                    }
+                    flt.values[flt.fromIdx].checked = true;
+                    if (flt.toIdx === -1) {
+                        flt.values.push({path: parts[1], name: parts[1].replace('&[', '').replace(']', '')});
+                        flt.toIdx = flt.values.length - 1;
+                    }
+                    flt.values[flt.toIdx].checked = true;
+                    flt.isInterval = true;
                 }
             }
 
