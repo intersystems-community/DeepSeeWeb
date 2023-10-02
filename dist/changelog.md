@@ -1,5 +1,8 @@
+#### 3.2.17
+* added support for range filters with `NOW` keyword for all widgets (#403)
+
 #### 3.2.16
-* added `Accept-Language: en-US` to all requests 
+* added `Accept-Language: en-US` to all requests (#404)
 
 #### 3.2.15
 * temporary fix for scorecard columns filtering when axis contains children
