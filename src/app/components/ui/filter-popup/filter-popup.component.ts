@@ -97,7 +97,7 @@ export class FilterPopupComponent implements OnInit, AfterViewInit {
 
         // Check for related filters
         if (!filter.isDate && this.isRelatedFilters/* && Filters.filtersChanged*/) {
-            this.requestRelatedFilters();
+            this.requestRelatedFilters(filter);
         } else {
             this.prepareFilters();
         }
@@ -110,7 +110,7 @@ export class FilterPopupComponent implements OnInit, AfterViewInit {
     ngOnInit() {
     }
 
-    requestRelatedFilters() {
+    requestRelatedFilters(initiator?: any) {
         const ds = this.getDataSource();
         this.prepareFilters();
         if (!ds) {
@@ -136,7 +136,7 @@ export class FilterPopupComponent implements OnInit, AfterViewInit {
         activeFilters = activeFilters.map(f => ({Filter: f.targetProperty, Value: f.Value}));
 
         const isValuesExists = !!filters.find(f => f.targetProperty === this.model?.filter?.targetProperty)?.values?.filter(v => !v._saved)?.length;
-        if (isValuesExists) {
+        if (!isValuesExists) {
             return;
         }
 
@@ -310,7 +310,7 @@ export class FilterPopupComponent implements OnInit, AfterViewInit {
 
         // Path current filter modifications(selected state, etc.) to newly received values
         let oldFilters = this.model.filter.values.slice();
-        const toAdd = [];
+        const newFilters = [];
         filter.children.forEach(f => {
             let o = oldFilters.find(flt => {
                 if (flt?.path === f?.path) {
@@ -323,13 +323,17 @@ export class FilterPopupComponent implements OnInit, AfterViewInit {
             });
             if (o) {
                 Object.assign(f, o);
-            } else {
+            }/* else {
                 toAdd.push(f);
-            }
+            }*/
+            newFilters.push(f);
         });
 
         // Update model values
-        this.model.filter.values.push(...toAdd); // filter.children;
+        if (newFilters.length) {
+            this.model.filter.values = [...newFilters];
+        }
+        // this.model.filter.values.push(...toAdd); // filter.children;
 
         // Prepare filter values
         //this.prepareFilters();

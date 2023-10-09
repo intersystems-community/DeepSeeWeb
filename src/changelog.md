@@ -1,3 +1,6 @@
+#### 3.2.18
+* fixed support of related filters, only works if enabled in application settings (#388)
+
 #### 3.2.17
 * added support for range filters with `NOW` keyword for all widgets (#403)
 
