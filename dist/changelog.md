@@ -1,3 +1,6 @@
+#### 3.2.19
+* fixed percentage formatting for pie/donut/treemap charts. now no needed to name data property as `percentageFormat`, dsw will automatically find it depending on data value binding
+
 #### 3.2.18
 * fixed support of related filters, only works if enabled in application settings (#388)
 
