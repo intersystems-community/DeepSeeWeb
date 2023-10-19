@@ -46,7 +46,7 @@ export class TreeMapComponent extends BaseChartClass implements OnInit {
                             // if (_this.widget['btn.ShowPercents'] && _this.totalSum) {
                             if ( _this.totalSum) {
                                 let percent = (this.point.value / _this.totalSum * 100);
-                                percent = _this.formatNumber(percent, _this.getDataPropValue('percentageFormat') || '#.##');
+                                percent = _this.formatNumber(percent, _this.getDataPropByDataValue(this.series?.userOptions?.dimension)?.format || '#.##');
                                 return `${this.point.caption}<br>${percent}%`;
                             } else {
                                 // const v = _this.formatNumber(this.point.value, '');
@@ -138,6 +138,7 @@ export class TreeMapComponent extends BaseChartClass implements OnInit {
                 name: '',
                 layoutAlgorithm: 'squarified',
                 caption: cap,
+                dimension: data.Cols[0].tuples[0].dimension,
                 format: fmt,
                 // layoutAlgorithm: 'strip',
                 dataLabels: {

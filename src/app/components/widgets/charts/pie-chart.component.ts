@@ -83,7 +83,7 @@ export class PieChartComponent extends BaseChartClass implements OnInit {
                                 name = '';
                             }
 
-                            let percent = _this.formatNumber(this.point.percentage, _this.getDataPropValue('percentageFormat') || '#.##') + '%';
+                            let percent = _this.formatNumber(this.point.percentage, _this.getDataPropByDataValue(this.series?.userOptions?.name)?.format || '#.##') + '%';
                             if (!_this.widget['btn.ShowPercents']) {
                                 percent = '';
                             }
