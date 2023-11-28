@@ -1367,9 +1367,18 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         }
 
         for (i = 0; i < drills.length; i++) {
-            if (drills[i].path) {
-                mdx += ' %FILTER ' + drills[i].path;
-            }
+          /*  if (Array.isArray(drills[i].path)) {
+                drills[i].path.forEach(p => {
+                    if (!p) {
+                        return;
+                    }
+                    mdx += ' %FILTER ' + p;
+                });
+            } else {*/
+                if (drills[i].path) {
+                    mdx += ' %FILTER ' + drills[i].path;
+                }
+            //}
         }
 
 

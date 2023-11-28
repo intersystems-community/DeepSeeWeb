@@ -972,9 +972,10 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
                                     }
 
                                     const seriesPath = se.userOptions.path;
-                                    const path = [aData[dIdx].path];
+                                    let path = aData[dIdx].path;
                                     if (seriesPath) {
-                                        path.push(seriesPath);
+                                        path = seriesPath;
+                                        //path.push(seriesPath);
                                     }
 
                                     this.bs.broadcast('contextmenu', {
@@ -993,23 +994,44 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
                             });
                         });
 
-                        // @ts-ignore
-                        _this.chart?.xAxis[0]?.labelGroup?.element?.childNodes?.forEach((el, idx) => {
-                            const onClick = () => {
-                                const aData = _this._currentData?.Cols[1]?.tuples;
-                                if (!aData || !aData[idx]) {
+                        // Bind label click for pie chart
+                        if (_this.chartConfig.chart.type === 'pie') {
+                            _this.chart?.legend?.allItems.forEach(item => {
+                                const el = (item as any).dataLabel?.element;
+                                if (!el) {
                                     return;
                                 }
 
-                                _this.showLoading();
-                                _this.doDrillOnly(aData[idx].path, aData[idx].caption || aData[idx].title, aData[idx].caption || aData[idx].title)
-                                    .finally(() => {
-                                        _this.hideLoading();
-                                    });
-                            };
-                            el.addEventListener('click', onClick);
-                            this.axisLabelListeners.push({event: 'click', element: el, func: onClick});
-                        });
+                                const onClick = () => {
+                                    _this.showLoading();
+                                    _this.doDrillOnly((item.options as any).path, item.name.toString(), item.name.toString())
+                                        .finally(() => {
+                                            _this.hideLoading();
+                                        });
+                                };
+                                el.addEventListener('click', onClick);
+                                this.axisLabelListeners.push({event: 'click', element: el, func: onClick});
+                            });
+                        } else {
+
+                            // @ts-ignore
+                            _this.chart?.xAxis[0]?.labelGroup?.element?.childNodes?.forEach((el, idx) => {
+                                const onClick = () => {
+                                    const aData = _this._currentData?.Cols[1]?.tuples;
+                                    if (!aData || !aData[idx]) {
+                                        return;
+                                    }
+
+                                    _this.showLoading();
+                                    _this.doDrillOnly(aData[idx].path, aData[idx].caption || aData[idx].title, aData[idx].caption || aData[idx].title)
+                                        .finally(() => {
+                                            _this.hideLoading();
+                                        });
+                                };
+                                el.addEventListener('click', onClick);
+                                this.axisLabelListeners.push({event: 'click', element: el, func: onClick});
+                            });
+                        }
                     }
                 }
             },
