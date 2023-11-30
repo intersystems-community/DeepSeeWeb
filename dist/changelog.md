@@ -1,3 +1,6 @@
+#### 3.2.21
+* added `autodrill=1` parameter in url to make automatic drilldown if only one data item received
+
 #### 3.2.20
 * fixed issue with drilldown on pie chart(was not implemented). added drill down by label click for pie chart
 * fixed issue for drilling from context menu
