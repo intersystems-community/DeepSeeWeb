@@ -1,3 +1,7 @@
+#### 3.2.20
+* fixed issue with drilldown on pie chart(was not implemented). added drill down by label click for pie chart
+* fixed issue for drilling from context menu
+
 #### 3.2.19
 * fixed percentage formatting for pie/donut/treemap charts. now no needed to name data property as `percentageFormat`, dsw will automatically find it depending on data value binding
 
