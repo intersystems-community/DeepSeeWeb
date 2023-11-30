@@ -745,9 +745,11 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
      */
     async parseData(d) {
         const data = d;
-        /*if (await this.checkForAutoDrill(d)) {
-            return;
-        }*/
+        if (this.route.snapshot.queryParamMap.get('autodrill') === '1') {
+            if (await this.checkForAutoDrill(d)) {
+                return;
+            }
+        }
         let i;
         const currentAxis = 0;
         // Add non exists axis as count
