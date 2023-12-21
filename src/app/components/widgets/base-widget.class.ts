@@ -1138,6 +1138,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
                         this.widget.isDrillthrough = true;
                         this.widget.backButton = true;
                         this.widget.pivotData = data2;
+                        this._currentData = data2;
                         this.displayAsPivot(ddMdx);
                     })
                     .catch(e => {

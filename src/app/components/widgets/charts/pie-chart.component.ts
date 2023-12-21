@@ -110,12 +110,12 @@ export class PieChartComponent extends BaseChartClass implements OnInit {
                     point: {
                         events: {
                             legendItemClick: function() {
-                                const title = this.title;
+                                const path = this.path;
                                 const isVisible = this.visible;
 
                                 _this.chart.series.forEach(s => {
                                     s.data.forEach((point: any) => {
-                                        if (point.title === title) {
+                                        if (point.path === path) {
                                             if (point !== this) {
                                                 point.update({
                                                     visible: !isVisible
@@ -262,5 +262,12 @@ export class PieChartComponent extends BaseChartClass implements OnInit {
             });
         }
         this.chartConfig.plotOptions.series.point.events.mouseOut.call(e);
+    }
+
+    async parseData(data) {
+        const d = await super.parseData(data);
+        // TODO: temporary workaround. check after updating lib
+        this.toggleLegend(this.widget.isLegend);
+        return d;
     }
 }

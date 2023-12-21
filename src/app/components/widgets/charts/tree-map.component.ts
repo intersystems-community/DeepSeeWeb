@@ -146,7 +146,9 @@ export class TreeMapComponent extends BaseChartClass implements OnInit {
                 }
             }, undefined, undefined, true);
         }
-        //this.updateChart(true);
+
+        // TODO: temporary workaround. check after updating lib
+        this.toggleLegend(this.widget.isLegend);
     }
 
     setType(type) {

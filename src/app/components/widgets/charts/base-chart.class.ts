@@ -913,9 +913,7 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
             legend: {
                 enabled: this.widget.isLegend,
                 align: 'left',
-                itemStyle: {
-                    color: this.tc.hcTextColor
-                }
+                ...(this.tc.hcTextColor ? ({itemStyle : { color: this.tc.hcTextColor }}) : {})
             },
             navigation: {
                 buttonOptions: {
