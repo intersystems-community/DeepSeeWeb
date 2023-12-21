@@ -1,3 +1,8 @@
+#### 3.2.22
+* fixed treemap legend saving state (#409)
+* fixed issue with hiding series by clicking legend item on pie chart (#410)
+* fixed issue for bar chart drilldown for inline widgets (#411)
+
 #### 3.2.21
 * added `autodrill=1` parameter in url to make automatic drilldown if only one data item received
 
