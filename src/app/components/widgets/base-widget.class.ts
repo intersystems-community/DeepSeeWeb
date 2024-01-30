@@ -1188,6 +1188,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
                     this.retrieveData(data);
                     this.updateLocationDrillParameters();
                     this.parent?.header?.cd.detectChanges();
+                    this._currentData = data;
                     if (autoDrillSuccess) {
                         autoDrillSuccess();
                     }

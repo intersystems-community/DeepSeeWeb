@@ -111,11 +111,12 @@ export class PieChartComponent extends BaseChartClass implements OnInit {
                         events: {
                             legendItemClick: function() {
                                 const path = this.path;
+                                const name = this.name;
                                 const isVisible = this.visible;
 
                                 _this.chart.series.forEach(s => {
                                     s.data.forEach((point: any) => {
-                                        if (point.path === path) {
+                                        if ((path && (point.path === path)) || (name && (point.name === name))) {
                                             if (point !== this) {
                                                 point.update({
                                                     visible: !isVisible
