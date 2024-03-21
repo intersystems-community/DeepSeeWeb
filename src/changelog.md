@@ -1,3 +1,6 @@
+#### 3.2.24
+* MDX with cross joins now correctly displayed in line/area/bar/column charts (#417)
+
 #### 3.2.23
 * fixed issue with hiding series by clicking legend item on donut chart (#413)
 * fixed issue for bar chart drilldown for inline widgets (#411)

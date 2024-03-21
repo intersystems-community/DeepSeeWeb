@@ -769,9 +769,18 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
         this.setupAxisMinMax(data.Data);
 
         this.chartConfig.series = [];
-        (this.chartConfig.xAxis as Highcharts.XAxisOptions).categories = [];
+        const xAxis = this.chartConfig.xAxis as Highcharts.XAxisOptions;
+        xAxis.categories = [];
         for (i = 0; i < data.Cols[1].tuples.length; i++) {
-            (this.chartConfig.xAxis as Highcharts.XAxisOptions).categories.push(data.Cols[1].tuples[i].caption.toString());
+            const caption = data.Cols[1].tuples[i].caption.toString();
+            const children = data.Cols[1].tuples[i].children;
+            if (children?.length) {
+                children.forEach(c => {
+                    xAxis.categories.push(caption + '/' + c.caption.toString());
+                });
+            } else {
+                xAxis.categories.push(caption);
+            }
         }
         const tempData = [];
         let hasChildren = false;
@@ -822,7 +831,6 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
             }
         } else {
             for (let j = 0; j < data.Cols[0].tuples.length; j++) {
-
                 if (colCountControl) {
                     if (j >= colCountControl.value) {
                         continue;
@@ -834,15 +842,33 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
                 }
                 const tempData = [];
                 for (i = 0; i < data.Cols[1].tuples.length; i++) {
-                    tempData.push({
-                        y: +data.Data[i * data.Cols[0].tuples.length + oIdx],
-                        drilldown: true,
-                        cube: data.Info.cubeName,
-                        path: data.Cols[1].tuples[i].path,
-                        name: data.Cols[1].tuples[i].caption,
-                        title: data.Cols[1].tuples[i].title
-                    });
+                    const t = data.Cols[1].tuples[i];
+                    const children = t.children;
+                    if (children?.length) {
+                        const lenY = data.Cols[0].tuples.length - 1;
+                        const lenX = data.Cols[1].tuples.length - 1;
+                        for (let h = 0; h < children.length; h++) {
+                            tempData.push({
+                                y: +data.Data[oIdx * lenY + h * lenX + i * lenX * (children.length)],
+                                drilldown: true,
+                                cube: data.Info.cubeName,
+                                path: t.path,
+                                name: t.caption + '/' + children[h].caption.toString(),
+                                title: t.title
+                            });
+                        }
+                    } else {
+                        tempData.push({
+                            y: +data.Data[i * data.Cols[0].tuples.length + oIdx],
+                            drilldown: true,
+                            cube: data.Info.cubeName,
+                            path: data.Cols[1].tuples[i].path,
+                            name: data.Cols[1].tuples[i].caption,
+                            title: data.Cols[1].tuples[i].title
+                        });
+                    }
                 }
+
                 this.fixData(tempData);
                 let name = this.i18n.get('count');
                 let format = '';
@@ -1018,6 +1044,10 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
                             _this.chart?.xAxis[0]?.labelGroup?.element?.childNodes?.forEach((el, idx) => {
                                 const onClick = () => {
                                     const aData = _this._currentData?.Cols[1]?.tuples;
+                                    const children = _this._currentData?.Cols[1]?.tuples[0]?.children;
+                                    if (children?.length) {
+                                        idx = Math.floor(idx / children?.length);
+                                    }
                                     if (!aData || !aData[idx]) {
                                         return;
                                     }
