@@ -26,7 +26,7 @@ export class HiLowChartComponent extends BaseChartClass implements OnInit {
                 }
             },
             tooltip: {
-                formatter: function() {
+                formatter: function(this: any) {
                     // TODO: Lang support
                     const cap1 = this.series.userOptions.caption1 || 'Minimum';
                     const cap2 = this.series.userOptions.caption2 || 'Maximum';
@@ -50,14 +50,14 @@ export class HiLowChartComponent extends BaseChartClass implements OnInit {
         this.us.mergeRecursive(this.chartConfig, ex);
     }
 
-    async parseData(data) {
+    async parseData(data: any) {
         const xAxis = this.chartConfig.xAxis as Highcharts.XAxisOptions;
         xAxis.categories = [];
         for (let i = 0; i < data.Cols[1].tuples.length; i++) {
             xAxis.categories.push(data.Cols[1].tuples[i].caption.toString());
         }
         this.chartConfig.series = [];
-        const tempData = [];
+        const tempData: any[] = [];
 
         if (data.Cols[0].tuples[0].children) {
             // TODO: lang support

@@ -28,14 +28,14 @@ export class BullseyeChartComponent extends BaseChartClass implements OnInit {
                         enabled: true,
                         color: '#000000',
                         connectorColor: '#000000',
-                        formatter: function() {
+                        formatter: function(this: any) {
                             return '<b>' + this.point.name + '</b>: ' + this.series.options.size;
                         }
                     }
                 }
             },
             tooltip: {
-                formatter: function() {
+                formatter: function(this: any) {
                     return this.key + ': <b>' + this.y + '</b><br/>';
                 }
             }
@@ -44,7 +44,7 @@ export class BullseyeChartComponent extends BaseChartClass implements OnInit {
     }
 
     async parseData(data) {
-        const values = [];
+        const values: any[] = [];
 
         this.clearSeries();
         let maxValue =  Math.max.apply(null, data.Data);

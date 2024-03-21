@@ -1,5 +1,5 @@
 import {AfterViewInit, Component, ElementRef, HostBinding, Input, OnInit, ViewChildren} from '@angular/core';
-import {BaseWidget, IWidgetInfo} from '../base-widget.class';
+import {BaseWidget, IWidgetDataProperties, IWidgetInfo} from '../base-widget.class';
 import * as numeral from 'numeral';
 import {dsw} from '../../../../environments/dsw';
 
@@ -17,8 +17,8 @@ interface ITextWidgetData {
     styleUrls: ['./wtext.component.scss']
 })
 export class WTextComponent extends BaseWidget implements OnInit, AfterViewInit {
-    @ViewChildren('images') images: ElementRef[];
-    @Input() widget: IWidgetInfo;
+    @ViewChildren('images') images: ElementRef[] = [];
+    @Input() widget: IWidgetInfo = {} as IWidgetInfo;
 
     @HostBinding('style.flex-direction')
     get flexDirection() {
@@ -57,6 +57,7 @@ export class WTextComponent extends BaseWidget implements OnInit, AfterViewInit 
                 return this.widget.dataProperties[k];
             }
         }
+        return;
     }
 
     adjustSize() {
@@ -87,12 +88,12 @@ export class WTextComponent extends BaseWidget implements OnInit, AfterViewInit 
         this.hideLoading();
         if (result) {
             for (let i = 0; i < result.Cols[0].tuples.length; i++) {
-                let dProp = null;
+                let dProp: IWidgetDataProperties|null = null;
                 if (this.widget.dataProperties) {
-                    dProp = this.getDataPropByDataValue(result.Cols[0].tuples[i].dimension);
-                    if (!dProp) {
-                        continue;
-                    }
+                    dProp = this.getDataPropByDataValue(result.Cols[0].tuples[i].dimension) ?? null;
+                }
+                if (!dProp) {
+                    continue;
                 }
                 // Format value
                 const v = this.getDataValue(i, result, dProp);
@@ -105,9 +106,10 @@ export class WTextComponent extends BaseWidget implements OnInit, AfterViewInit 
                 // Change font color, if widget is displayed on tile
                 let color = 'var(--cl-text-widget-font)'; // getComputedStyle(document.documentElement).getPropertyValue('--cl-text-widget-font');
                 if (this.widget.tile) {
-                    color = window.getComputedStyle(
-                        document.querySelector('.' + dsw.const.fontColors[this.widget.tile.fontColor])
-                    ).getPropertyValue('color');
+                    const el = document.querySelector('.' + dsw.const.fontColors[this.widget.tile.fontColor]);
+                    if (el) {
+                        color = window.getComputedStyle(el).getPropertyValue('color');
+                    }
                 }
 
                 let caption = result.Cols[0].tuples[i].caption;
@@ -132,8 +134,8 @@ export class WTextComponent extends BaseWidget implements OnInit, AfterViewInit 
                 } else {
                     let valueColor = color;
                     if (prop) {
-                        const lower = prop.thresholdLower;
-                        const upper = prop.thresholdUpper;
+                        const lower = parseFloat(prop.thresholdLower.toString());
+                        const upper = parseFloat(prop.thresholdUpper.toString());
                         const o = prop.override;
 
                         if (o.normalStyle) {
@@ -142,7 +144,7 @@ export class WTextComponent extends BaseWidget implements OnInit, AfterViewInit 
                                 valueColor = css.fill;
                             };
                         }
-                        if ((lower !== undefined) && (lower !== '') && (this.getNumber(v) < lower)) {
+                        if ((lower !== undefined) && (!isNaN(lower)) && (this.getNumber(v) < lower)) {
                             let col = this.widget.properties?.lowRangeColor;
 
                             if (o.lowStyle) {
@@ -154,7 +156,7 @@ export class WTextComponent extends BaseWidget implements OnInit, AfterViewInit 
                                 valueColor = col;
                             }
                         }
-                        if ((upper !== undefined) && (upper !== '') && (this.getNumber(v) > upper)) {
+                        if ((upper !== undefined) && (!isNaN(upper)) && (this.getNumber(v) > upper)) {
                             let col = this.widget.properties?.highRangeColor;
 
                             if (o.highStyle) {

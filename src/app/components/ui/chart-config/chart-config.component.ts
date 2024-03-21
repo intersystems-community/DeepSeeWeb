@@ -30,13 +30,13 @@ export interface IChartConfigAppearance {
     styleUrls: ['./../../editor/editor-styles.scss', './chart-config.component.scss']
 })
 export class ChartConfigComponent implements OnInit, OnDestroy {
-    @Input() chart: Chart;
-    @Input() widgetSettings: any;
-    @Input() onSave: () => void;
-    @Input() appearance: IChartConfigAppearance;
-    @Input() onUpdate: (themeColors: IThemeColors) => void;
+    @Input() chart!: Chart;
+    @Input() widgetSettings!: any;
+    @Input() onSave?: () => void;
+    @Input() appearance!: IChartConfigAppearance;
+    @Input() onUpdate?: (themeColors: IThemeColors) => void;
 
-    private key: string;
+    private key = '';
     private isApplied = false;
     private isChanged = false;
 
@@ -50,8 +50,8 @@ export class ChartConfigComponent implements OnInit, OnDestroy {
         } as IThemeColors
     };
 
-    // Store original colors to be able make cancel
-    private originalColors: IThemeColors;
+    // Store original colors to be able to make cancel
+    private originalColors!: IThemeColors;
     private globalOriginalColors: any;
 
     constructor(private sbs: SidebarService,
@@ -157,7 +157,7 @@ export class ChartConfigComponent implements OnInit, OnDestroy {
      * @param err
      */
     byIndex(idx: number, err: IError) {
-        return idx;
+        return idx as number;
     }
 
     /**
@@ -183,10 +183,10 @@ export class ChartConfigComponent implements OnInit, OnDestroy {
     private getDefaultColors(): IThemeColors {
         const opt = Highcharts.getOptions();
         return {
-            hcColors: opt.colors.slice() as string[],
-            hcBackground: opt.chart.backgroundColor as string,
+            hcColors: opt.colors?.slice() as string[] || '',
+            hcBackground: opt.chart?.backgroundColor as string || '',
             hcTextColor: (opt as any).labels.style.color,
-            hcBorderColor: null, // opt.plotOptions.bar.borderColor as string,
+            hcBorderColor: '', // opt.plotOptions.bar.borderColor as string,
             hcLineColor: '#e6e6e6' // ((this.chart as any).colorAxis as ColorAxisOptions).minorGridLineColor as string
         };
     }

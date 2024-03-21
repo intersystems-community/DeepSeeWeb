@@ -53,18 +53,18 @@ export class DashboardEditingClass implements OnDestroy {
     protected route: ActivatedRoute;
 
     // Private
-    private subOnNewWidget: Subscription;
-    private subOnEditedWidgetChanged: Subscription;
-    private scrollToNewWidgetTimeout = 0;
-    private subCancelEditing: Subscription;
-    private subOnSaveWidget: Subscription;
-    private subOnDeleteWidget: Subscription;
+    private subOnNewWidget?: Subscription;
+    private subOnEditedWidgetChanged?: Subscription;
+    private scrollToNewWidgetTimeout?: ReturnType<typeof setTimeout>;
+    private subCancelEditing?: Subscription;
+    private subOnSaveWidget?: Subscription;
+    private subOnDeleteWidget?: Subscription;
 
     // Public
-    @ViewChild('gridster') gridster: GridsterComponent;
-    @ViewChildren('widgets') widgets: QueryList<WidgetComponent>;
+    @ViewChild('gridster') gridster!: GridsterComponent;
+    @ViewChildren('widgets') widgets!: QueryList<WidgetComponent>;
     list: IWidgetInfo[] = [];
-    editedWidget: IWidgetInfo = null;
+    editedWidget?: IWidgetInfo;
 
 
     constructor(@Inject(Injector) protected inj: Injector) {
@@ -88,7 +88,10 @@ export class DashboardEditingClass implements OnDestroy {
         this.route = this.inj.get(ActivatedRoute);
     }
 
-    protected getWidgetByInfo(info: IWidgetInfo): WidgetComponent {
+    protected getWidgetByInfo(info?: IWidgetInfo) {
+        if (!info) {
+            return;
+        }
         return this.widgets.find((w) => w.widget === info);
     }
 
@@ -115,11 +118,13 @@ export class DashboardEditingClass implements OnDestroy {
         }
 
         const w = this.getWidgetByInfo(this.editedWidget);
-        w.header.cd.detectChanges();
-        w.cd.detectChanges();
+        if (w) {
+            w.header?.cd.detectChanges();
+            w.cd.detectChanges();
 
-        if (e.refreshData) {
-            w.requestData();
+            if (e.refreshData) {
+                w.requestData();
+            }
         }
 
         this.detectChanges();
@@ -145,8 +150,10 @@ export class DashboardEditingClass implements OnDestroy {
     }
 
     private onSaveWidget() {
-        delete this.editedWidget.edKey;
-        this.editedWidget = null;
+        if (this.editedWidget) {
+            this.editedWidget.edKey = '';
+        }
+        this.editedWidget = undefined;
 
         this.detectChanges();
     }
@@ -164,8 +171,8 @@ export class DashboardEditingClass implements OnDestroy {
             this.list[idx] = this.editedWidget;
 
             this.cd.detectChanges();
-            delete this.editedWidget.edKey;
-            this.editedWidget = null;
+            this.editedWidget.edKey = '';
+            this.editedWidget = undefined;
 
             this.detectChanges();
             return;
@@ -174,7 +181,7 @@ export class DashboardEditingClass implements OnDestroy {
                 this.list.splice(idx, 1);
             }
         }
-        this.editedWidget = null;
+        this.editedWidget = undefined;
         this.detectChanges();
     }
 
@@ -191,11 +198,11 @@ export class DashboardEditingClass implements OnDestroy {
 
     ngOnDestroy() {
         clearTimeout(this.scrollToNewWidgetTimeout);
-        this.subOnNewWidget.unsubscribe();
-        this.subOnEditedWidgetChanged.unsubscribe();
-        this.subCancelEditing.unsubscribe();
-        this.subOnSaveWidget.unsubscribe();
-        this.subOnDeleteWidget.unsubscribe();
+        this.subOnNewWidget?.unsubscribe();
+        this.subOnEditedWidgetChanged?.unsubscribe();
+        this.subCancelEditing?.unsubscribe();
+        this.subOnSaveWidget?.unsubscribe();
+        this.subOnDeleteWidget?.unsubscribe();
     }
 
     private detectChanges() {
@@ -208,7 +215,7 @@ export class DashboardEditingClass implements OnDestroy {
     }
 
     private deleteWidget(w: IWidgetInfo) {
-        this.editedWidget = null;
+        this.editedWidget = undefined;
         const idx = this.list.indexOf(w);
         if (idx !== -1) {
             this.list.splice(idx, 1);

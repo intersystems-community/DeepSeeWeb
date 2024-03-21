@@ -13,15 +13,14 @@ export class ShareDashboardComponent implements OnInit, OnChanges, OnDestroy {
     @Input() btnTitle = 'Copy link';
     @Input() shareUrl = '';
     @Input() isSmall = false;
-    onCopy = () => {};
     isCopied = false;
-    timeout = 0;
+    timeout?: ReturnType<typeof setTimeout>;
     asBase64 = false;
     denyResize = false;
     denyMove = false;
     preventFilters = false;
-
     url = '';
+    onCopy = () => {};
 
     constructor(private us: UtilService,
                 private ss: StorageService) {

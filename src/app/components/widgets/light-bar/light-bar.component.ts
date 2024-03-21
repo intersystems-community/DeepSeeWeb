@@ -14,7 +14,7 @@ interface ILightbarData extends IMeterWidgetData {
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class WLightBarComponent extends WMeterComponent {
-    @Input() widget: IWidgetInfo;
+    @Input() widget: IWidgetInfo = {} as IWidgetInfo;
     data: ILightbarData[] = [];
     dots = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 

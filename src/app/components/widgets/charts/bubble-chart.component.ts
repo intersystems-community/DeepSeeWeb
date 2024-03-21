@@ -45,7 +45,7 @@ export class BubbleChartComponent extends BaseChartClass implements OnInit {
                 }
             },
             tooltip: {
-                formatter: function () {
+                formatter: function (this: any) {
                     const fmt1 = this.series.userOptions.format1;
                     const fmt2 = this.series.userOptions.format2;
                     const fmt3 = this.series.userOptions.format3;
@@ -56,8 +56,11 @@ export class BubbleChartComponent extends BaseChartClass implements OnInit {
                     if (fmt2) { v2 = numeral(v2).format(fmt2); }
                     if (fmt3) { v3 = numeral(v3).format(fmt3); }
                     const thirdTitle = _this.thirdTitle || 'radius';
+
                     return this.series.name + '<br/>' +
+                        // @ts-ignore
                         (_this.chartConfig.xAxis as XAxisOptions).title.text + ':<b>' + v1 + '</b><br/>' +
+                        // @ts-ignore
                         (_this.chartConfig.yAxis as YAxisOptions).title.text + ':<b>' + v2 + '</b>' +
                         (v3 ? ('<br>' + thirdTitle + ': <b>' + v3.toString() + '</b>') : '');
                 }
@@ -111,9 +114,11 @@ export class BubbleChartComponent extends BaseChartClass implements OnInit {
         this.clearSeries();
 
         if (data.Cols[0].tuples.length >= 1) {
+            // @ts-ignore
             (this.chartConfig.xAxis as XAxisOptions).title.text = data.Cols[0].tuples[0].caption;
         }
         if (data.Cols[0].tuples.length >= 2) {
+            // @ts-ignore
             (this.chartConfig.yAxis as YAxisOptions).title.text = data.Cols[0].tuples[1].caption;
         }
         if (data.Cols[0].tuples.length >= 3) {

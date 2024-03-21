@@ -16,7 +16,10 @@ export class UtilService {
     //     });
     // }
 
-    removeExt(fileName: string) {
+    removeExt(fileName?: string) {
+        if (!fileName) {
+            return '';
+        }
         const a = fileName.split('.');
         if (a.length === 1) {
             return fileName;
@@ -38,7 +41,7 @@ export class UtilService {
                 return true;
             }
         }
-        return this.route.snapshot.queryParams?.embed === '1';
+        return this.route.snapshot.queryParams['embed'] === '1';
     }
 
     isPreventContextMenu() {

@@ -31,7 +31,7 @@ interface IHomeModel {
     widgetList: any[];
     fontColors: string[];
     icons: string[];
-    edItem: ITileInfo;
+    edItem?: ITileInfo;
 }
 
 @Component({
@@ -40,14 +40,14 @@ interface IHomeModel {
     styleUrls: ['./folder-screen.component.scss']
 })
 export class FolderScreenComponent implements OnInit, OnDestroy {
-    @ViewChildren('widgets', {read: WidgetComponent}) widgets: QueryList<WidgetComponent>;
-    @ViewChild('gridster', {read: ElementRef, static: true}) gridster: ElementRef;
-    @ViewChild('gridster', {static: true}) gridsterComp: GridsterComponent;
+    @ViewChildren('widgets', {read: WidgetComponent}) widgets!: QueryList<WidgetComponent>;
+    @ViewChild('gridster', {read: ElementRef, static: true}) gridster!: ElementRef;
+    @ViewChild('gridster', {static: true}) gridsterComp!: GridsterComponent;
     private settings: any;
     private folder = '';
     private subOnTilesChanged;
 
-    itemDescs = [];
+    itemDescs: any[] = [];
 
     isResizing = false;
     model: IHomeModel;
@@ -66,13 +66,13 @@ export class FolderScreenComponent implements OnInit, OnDestroy {
         }
     };
 
-    public data$: Observable<any>;
-    private subSidebarAnimEnd: Subscription;
-    private subEditDashboard: Subscription;
+    public data$?: Observable<any>;
+    private subSidebarAnimEnd?: Subscription;
+    private subEditDashboard?: Subscription;
     private isLoading = false;
     isSpinner = true;
 
-    private subAnimation: Subscription;
+    private subAnimation?: Subscription;
 
     constructor(private st: StorageService,
                 private route: ActivatedRoute,
@@ -95,8 +95,7 @@ export class FolderScreenComponent implements OnInit, OnDestroy {
             tiles: [],
             widgetList: [],
             fontColors: dsw.const.fontColors,
-            icons: dsw.const.icons,
-            edItem: null
+            icons: dsw.const.icons
         };
 
 
@@ -156,7 +155,9 @@ export class FolderScreenComponent implements OnInit, OnDestroy {
 
         // Sidebar animation end tracking for resize gridster
         this.subSidebarAnimEnd = this.ss.onAnimEnd.subscribe(() => {
-            this.tilesOptions.api.resize();
+            if ( this.tilesOptions?.api?.resize) {
+                this.tilesOptions.api.resize();
+            }
         });
 
         // Toggles editing mode for sashboard
@@ -173,9 +174,9 @@ export class FolderScreenComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy() {
-        this.subAnimation.unsubscribe();
-        this.subSidebarAnimEnd.unsubscribe();
-        this.subEditDashboard.unsubscribe();
+        this.subAnimation?.unsubscribe();
+        this.subSidebarAnimEnd?.unsubscribe();
+        this.subEditDashboard?.unsubscribe();
     }
 
     /**
@@ -190,9 +191,15 @@ export class FolderScreenComponent implements OnInit, OnDestroy {
      */
     enableEditing() {
         this.model.edItem = this.model.tiles[0];
-        this.tilesOptions.draggable.enabled = true;
-        this.tilesOptions.resizable.enabled = true;
-        this.tilesOptions.api.optionsChanged();
+        if (this.tilesOptions?.draggable) {
+            this.tilesOptions.draggable.enabled = true;
+        }
+        if (this.tilesOptions?.resizable) {
+            this.tilesOptions.resizable.enabled = true;
+        }
+        if (this.tilesOptions?.api?.optionsChanged) {
+            this.tilesOptions.api.optionsChanged();
+        }
         this.ss.showComponent({
             component: HomeEditorComponent,
             single: true,
@@ -208,10 +215,17 @@ export class FolderScreenComponent implements OnInit, OnDestroy {
      * Disables editing
      */
     disableEditing() {
-        this.tilesOptions.draggable.enabled = false;
-        this.tilesOptions.resizable.enabled = false;
-        this.tilesOptions.api.optionsChanged();
-        this.model.edItem = null;
+        if (this.tilesOptions?.draggable) {
+            this.tilesOptions.draggable.enabled = false;
+        }
+        if (this.tilesOptions?.resizable) {
+            this.tilesOptions.resizable.enabled = false;
+        }
+        if (this.tilesOptions?.api?.optionsChanged) {
+            this.tilesOptions.api.optionsChanged();
+        }
+
+        this.model.edItem = undefined;
     }
 
     /**
@@ -291,7 +305,7 @@ export class FolderScreenComponent implements OnInit, OnDestroy {
      * @returns {Function} Callback function
      */
     createDataCallback(widget) {
-        return function(data) {
+        return function(this: any, data: any) {
             this.retriveWidgetData(data, widget);
         };
     }
@@ -317,7 +331,7 @@ export class FolderScreenComponent implements OnInit, OnDestroy {
             }
 
             // Get list of folders on current level
-            const folderList = [];
+            const folderList: any[] = [];
             tiles.forEach(d => {
                 if (d.fullPath.toLowerCase().startsWith(this.folder.toLowerCase() + '/')) {
                     d.path = d.fullPath.slice(this.folder.length !== 0 ? (this.folder.length + 1) : 0, d.fullPath.length);
@@ -427,9 +441,9 @@ export class FolderScreenComponent implements OnInit, OnDestroy {
      */
     private subscribeForGridsterResize() {
         // Subscribe for gridster resize animation. Needed to adjust widget sizes
-        this.subAnimation = fromEvent(this.gridster.nativeElement, 'transitionend')
+        this.subAnimation = fromEvent<TransitionEvent>(this.gridster.nativeElement, 'transitionend')
             .pipe(debounceTime(100))
-            .subscribe((e: TransitionEvent) => {
+            .subscribe(e => {
                 if (!this.widgets || (e.propertyName !== 'width' && e.propertyName !== 'height')) { return; }
                 this.widgets.toArray().forEach(w => {
                     if (!w.component) { return; }

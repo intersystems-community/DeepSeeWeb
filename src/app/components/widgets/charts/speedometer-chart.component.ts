@@ -19,7 +19,7 @@ import * as Highcharts from 'highcharts/highstock';
     `]
 })
 export class SpeedometerChartComponent extends BaseChartClass implements OnInit {
-    @ViewChildren('charts') chartsEl: QueryList<ElementRef>;
+    @ViewChildren('charts') chartsEl?: QueryList<ElementRef>;
     confs: Highcharts.Options[] = [];
     private charts: Highcharts.Chart[] = [];
 
@@ -49,7 +49,7 @@ export class SpeedometerChartComponent extends BaseChartClass implements OnInit 
                 series: {
                     dataLabels: {
                         enabled: true,
-                        formatter: function(){
+                        formatter: function(this: any){
                             let v = this.point.y;
                             const fmt = this.series.userOptions.format || '#.##';
                             if (fmt) {
@@ -107,7 +107,7 @@ export class SpeedometerChartComponent extends BaseChartClass implements OnInit 
             tickColor: '#666'
         };
 
-        if (this.chartConfig.chart.type === 'solidgauge') {
+        if (this.chartConfig.chart?.type === 'solidgauge') {
            ex.pane = {
                 center: ['50%', '85%'],
                 size: '140%',
@@ -130,10 +130,12 @@ export class SpeedometerChartComponent extends BaseChartClass implements OnInit 
     }
 
     createChart() {
-        const els = this.chartsEl.toArray().map(e => e.nativeElement);
+        const els = this.chartsEl?.toArray().map(e => e.nativeElement);
         this.charts = [];
         this.confs.forEach((conf, idx) => {
-            conf.chart.renderTo = els[idx];
+            if (conf.chart) {
+                conf.chart.renderTo = els?.[idx];
+            }
             this.charts.push(Highcharts.chart(conf));
         });
     }
@@ -184,7 +186,10 @@ export class SpeedometerChartComponent extends BaseChartClass implements OnInit 
                     caption = dp.label;
                 }
                 this.confs.push(this.us.mergeRecursive({}, this.chartConfig));
-                this.confs[this.confs.length - 1].title.text = caption;
+                const c= this.confs[this.confs.length - 1];
+                if (c.title) {
+                    c.title.text = caption;
+                }
             }
             this.cd.markForCheck();
             this.cd.detectChanges();

@@ -12,7 +12,7 @@ declare const LightPivotTable: any;
 })
 export class WPivotComponent extends BaseWidget implements OnInit, AfterViewInit, OnDestroy {
     private _oldMdx = '';
-    @Input() widget: IWidgetInfo;
+    @Input() widget: IWidgetInfo = {} as IWidgetInfo;
     isSpinner = false;
 
     ngAfterViewInit() {
@@ -81,7 +81,7 @@ export class WPivotComponent extends BaseWidget implements OnInit, AfterViewInit
 
     doDrillUp() {
         if (this.widget.isDrillthrough && this.restoreWidgetType) {
-            this.widget.isDrillthrough = null;
+            this.widget.isDrillthrough = false;
             this.restoreWidgetType();
             if (this.widget.kpitype) {
                 this.requestData();
@@ -112,8 +112,7 @@ export class WPivotComponent extends BaseWidget implements OnInit, AfterViewInit
             }
             const flt = [{name: pathX, value: cellData.value}, {name: pathY, value: val}];
 
-            this._requestKPIData(flt)
-                .then(() => {
+            this._requestKPIData(flt)?.then(() => {
                     this.widget.isDrillthrough = true;
                     this.widget.backButton = true;
                     this.parent.cd.detectChanges();
@@ -158,7 +157,7 @@ export class WPivotComponent extends BaseWidget implements OnInit, AfterViewInit
             if (this.lpt.isListing()) {
                 delete this.lpt.CONFIG.initialData;
                 if (newMdx.toLowerCase().substr(0, 12) !== 'drillthrough') {
-                    newMdx = this.getDrillthroughMdx(newMdx);
+                    newMdx = this.getDrillthroughMdx(newMdx) || '';
                 }
             }
             if (newMdx === '') {

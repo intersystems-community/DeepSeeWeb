@@ -32,10 +32,10 @@ export const SIDEBAR_TOGGLE_ANIMATION = trigger(
 export class SidebarComponent implements OnInit, OnDestroy {
 
     @ViewChild('container', {read: ViewContainerRef, static: true})
-    container: ViewContainerRef;
+    container!: ViewContainerRef;
 
-    private component: ComponentRef<any>;
-    private subSidebarToggle: Subscription;
+    private component?: ComponentRef<any>;
+    private subSidebarToggle?: Subscription;
 
     constructor(private ss: SidebarService,
                 private r2: Renderer2,
@@ -43,7 +43,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        this.subSidebarToggle = this.ss.sidebarToggle.subscribe((info: ISidebarInfo) => {
+        this.subSidebarToggle = this.ss.sidebarToggle.subscribe(info => {
             if (info === null) {
                 return;
             }
@@ -79,7 +79,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy() {
-        this.subSidebarToggle.unsubscribe();
+        this.subSidebarToggle?.unsubscribe();
     }
 
     /**
@@ -100,7 +100,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
             return;
         }
         this.component.destroy();
-        this.component = null;
+        this.component = undefined;
     }
 
 }

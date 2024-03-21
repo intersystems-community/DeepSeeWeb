@@ -1,4 +1,4 @@
-import pkg from '../../package.json';
+import version from './../../package.json';
 
 export const dsw = {
     // TODO: add type for addons
@@ -17,7 +17,7 @@ export const dsw = {
         icons: ['', 'back-1.svg', 'folder-1.svg', 'widget-1.svg', 'dashboard-1.svg', 'widget-2.svg', 'widget-3.svg', 'widget-4.svg'],
 
         timeout: 60000,
-        ver: pkg.version,
+        ver: version,
         emptyWidgetClass: 'MDX2JSON.EmptyPortlet'.toLowerCase()
     }
 };

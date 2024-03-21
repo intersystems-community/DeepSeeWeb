@@ -35,35 +35,35 @@ import {ShareDashboardComponent} from "../../../ui/share-dashboard/share-dashboa
 })
 export class WidgetComponent implements OnInit, OnDestroy, AfterViewInit {
     @ViewChild('container', {read: ViewContainerRef, static: true})
-    container: ViewContainerRef;
+    container?: ViewContainerRef;
 
     @ViewChild('header', {static: true})
-    header: WidgetHeaderComponent;
+    header?: WidgetHeaderComponent;
 
     @ViewChild('filters', {static: true})
-    filters: WidgetHeaderComponent;
+    filters?: WidgetHeaderComponent;
 
-    model = {
+    model: {error: string, filters: any} = {
         error: '',
         filters: null
     };
-    @Input() widget: IWidgetInfo;
+    @Input() widget: IWidgetInfo = {} as IWidgetInfo;
 
-    typeDesc: IWidgetType;
+    typeDesc?: IWidgetType;
 
-    private componentRef: ComponentRef<BaseWidget>;
-    public component: BaseWidget;
+    private componentRef?: ComponentRef<BaseWidget>;
+    public component?: BaseWidget;
     hasDatasourceChoser = false;
     hasActions = false;
     isHeader = true;
 
-    private subFilter: Subscription;
-    private subUpdateFilterText: Subscription;
-    private subFilterAll: Subscription;
-    private subRefresh: Subscription;
-    private subCopyMdx: Subscription;
-    private subShare: Subscription;
-    private subChangeType: Subscription;
+    private subFilter?: Subscription;
+    private subUpdateFilterText?: Subscription;
+    private subFilterAll?: Subscription;
+    private subRefresh?: Subscription;
+    private subCopyMdx?: Subscription;
+    private subShare?: Subscription;
+    private subChangeType?: Subscription;
 
     constructor(private fs: FilterService,
                 private ds: DataService,
@@ -92,7 +92,7 @@ export class WidgetComponent implements OnInit, OnDestroy, AfterViewInit {
         if (this.component) {
             this.component.onHeaderButton(bt);
         }
-        this.header.cd.detectChanges();
+        this.header?.cd.detectChanges();
     }
 
     ngOnInit() {
@@ -102,7 +102,7 @@ export class WidgetComponent implements OnInit, OnDestroy, AfterViewInit {
         // Get datasource from params for shared widget
         if (this.widget.shared) {
             const ds = this.route.snapshot.queryParamMap.get('datasource');
-            if (ds) {
+            if (ds && this.component) {
                 // this.widget.dataSource = ds;
                 this.component.customDataSource = ds;
             }
@@ -110,13 +110,13 @@ export class WidgetComponent implements OnInit, OnDestroy, AfterViewInit {
 
         // Set dills for shared widget
         const drills = this.route.snapshot.queryParamMap.get('drilldown');
-        if (drills) {
+        if (drills && this.component && this.widget) {
             this.component.drills = decodeURIComponent(drills).split('~').map(d => {
                 return {path: d, name: d};
             });
-            this.widget.backButton = !!this.component.drills.length;
+            this.widget.backButton = !!this.component?.drills.length;
             this.widget.title = this.component.getDrillTitle(this.component.drills[this.component.drills.length - 1]);
-            this.header.cd.detectChanges();
+            this.header?.cd.detectChanges();
         }
 
         this.model.filters = this.fs.getWidgetModelFilters(this.widget.name);
@@ -152,7 +152,7 @@ export class WidgetComponent implements OnInit, OnDestroy, AfterViewInit {
         this.widget.pvItems = [];
         const isEmptyWidget = this.widget.type === 'mdx2json.emptyportlet';
 
-        let items = [];
+        let items: any[] = [];
         if (!this.vs.isExists()) {
             return;
         }
@@ -241,8 +241,10 @@ export class WidgetComponent implements OnInit, OnDestroy, AfterViewInit {
                 this.model.filters[i].text = flt.values[flt.fromIdx].name + ':' + flt.values[flt.toIdx].name;
                 continue;
             }
-            // ((flt.isExclude === true && flt.valueDisplay) ? (this.i18n.get('not') + ' ') : '')
-            this.model.filters[i].text = flt.valueDisplay;
+            // ((flt.isExclude === true && flt.valueDisplay) ? (this.i18n.get('not') + ' ') : '')\
+            if (this.model.filters) {
+                this.model.filters[i].text = flt.valueDisplay;
+            }
         }
         this.cd.detectChanges();
     }
@@ -252,8 +254,8 @@ export class WidgetComponent implements OnInit, OnDestroy, AfterViewInit {
      * @param {number} idx Index of filter to get
      * @returns {object} Widget filter
      */
-    getFilter(idx) {
-        return this.fs.getFilter(this.model.filters[idx].idx);
+    getFilter(idx: any) {
+        return this.fs.getFilter((this.model.filters as any)?.[idx].idx);
     }
 
 
@@ -264,7 +266,7 @@ export class WidgetComponent implements OnInit, OnDestroy, AfterViewInit {
      */
     changeType(t: string) {
         this.widget.type = t;
-        if (this.component.chart) {
+        if (this.component?.chart) {
             (this.component as BaseChartClass).setType(t);
         }
     }
@@ -330,7 +332,7 @@ export class WidgetComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     share() {
-        const c = this.component.chart;
+        const c = this.component?.chart;
 
         let url = this.fs.getFiltersShareUrl();
         const part = url.split('#')[1];
@@ -366,7 +368,7 @@ export class WidgetComponent implements OnInit, OnDestroy, AfterViewInit {
         }
 
         // Append drills
-        const drills = this.component.getDrillsAsParameter();
+        const drills = this.component?.getDrillsAsParameter();
         if (drills) {
             url += '&drilldown=' + drills;
         }
@@ -470,7 +472,7 @@ export class WidgetComponent implements OnInit, OnDestroy, AfterViewInit {
             this.component.widget = this.widget;
             this.component.model = this.model;
             this.component.parent = this;
-            this.component.createWidgetComponent = (type: string) => {
+            this.component.createWidgetComponent = (type: string = '') => {
                 this.createWidgetComponent(type);
             };
             // this.component.header = this.header;

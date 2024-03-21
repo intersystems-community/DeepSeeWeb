@@ -5,8 +5,8 @@ import {Injectable} from '@angular/core';
 })
 export class VariablesService {
 
-    items = [];
-    widgets = [];
+    items: any[] = [];
+    widgets: any[] = [];
 
     constructor() {
     }
@@ -21,7 +21,7 @@ export class VariablesService {
             return;
         }
         for (let i = 0; i < result.widgets.length; i++) {
-            const w = result.widgets[i];
+            const w: any = result.widgets[i];
             this.widgets.push(w);
             for (let j = 0; j < w.controls.length; j++) {
                 if (w.controls[j].action.toLowerCase() === 'applyvariable') {

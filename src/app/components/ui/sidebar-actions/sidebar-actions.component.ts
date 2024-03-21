@@ -24,7 +24,7 @@ export class SidebarActionsComponent implements OnInit, OnDestroy {
     @Output() apply = new EventEmitter();
 
     isWidgetEditorWarningVisible = false;
-    private subOnUnsavedChanged: Subscription;
+    private subOnUnsavedChanged?: Subscription;
 
     constructor(private sbs: SidebarService,
                 private eds: EditorService,
@@ -46,6 +46,6 @@ export class SidebarActionsComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy() {
-        this.subOnUnsavedChanged.unsubscribe();
+        this.subOnUnsavedChanged?.unsubscribe();
     }
 }

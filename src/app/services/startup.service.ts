@@ -112,17 +112,17 @@ export class StartupService {
                     console.log(`Can't load addons: ${e}`);
                     res();
                 })
-                .then((addons: any[]) => {
+                .then((addons: any) => {
                     // Folr dev purposes, replace addons with devAddons if set in localstorage
                     if (localStorage.devAddons) {
                         addons = JSON.parse(localStorage.devAddons);
                     }
-                    const promises = [];
+                    const promises: any[] = [];
                     if (addons && addons.length) {
-                        dsw.addons = [...addons];
+                        dsw.addons = [...addons] as any;
                         for (let i = 0; i < dsw.addons.length; i++) {
-                            const name = dsw.addons[i].split('/').pop().replace('.js', '');
-                            promises.push(this.loadAddon(dsw.addons[i], name));
+                            const name = (dsw.addons[i] as string).split('/').pop()?.replace('.js', '');
+                            promises.push(this.loadAddon(dsw.addons[i], name || '') as any);
                         }
                     }
                     Promise.all(promises).finally(() => res());
@@ -135,24 +135,32 @@ export class StartupService {
         //     this.onGridsterItemChange.emit({item, itemComponent});
         // };
         GridsterConfigService.displayGrid = DisplayGrid.None;
-        GridsterConfigService.draggable.dragHandleClass = '.drag-handle';
-        GridsterConfigService.resizable.handles = {
-            s: false,
-            e: false,
-            n: false,
-            w: false,
-            se: true,
-            ne: false,
-            sw: false,
-            nw: false
-        };
+        if (GridsterConfigService.draggable) {
+            GridsterConfigService.draggable.dragHandleClass = '.drag-handle';
+        }
+        if (GridsterConfigService.resizable) {
+            GridsterConfigService.resizable.handles = {
+                s: false,
+                e: false,
+                n: false,
+                w: false,
+                se: true,
+                ne: false,
+                sw: false,
+                nw: false
+            };
+        }
         GridsterConfigService.gridType = 'scrollVertical';
         GridsterConfigService.minCols = 12;
         GridsterConfigService.maxCols = 12;
         GridsterConfigService.floating = true;
         GridsterConfigService.pushItems = true;
-        GridsterConfigService.resizable.enabled = false;
-        GridsterConfigService.draggable.enabled = false;
+        if (GridsterConfigService.resizable) {
+            GridsterConfigService.resizable.enabled = false;
+        }
+        if (GridsterConfigService.draggable) {
+            GridsterConfigService.draggable.enabled = false;
+        }
         GridsterConfigService.margin = 5;
         // GridsterConfigService.isMobile = dsw.mobile; // stacks the grid items if true;
         GridsterConfigService.mobileBreakPoint = 576;
@@ -161,8 +169,8 @@ export class StartupService {
             //gridsterConfig.mobileModeEnabled = true;
         }*/
         // Check for shared widget screen and disable mobile breakpoint
-        if (window.location.href.split('#').pop().indexOf('widget=') !== -1) {
-            GridsterConfigService.mobileBreakPoint = 0;
+        if (window.location.href.split('#').pop()?.indexOf('widget=') !== -1) {
+            GridsterConfigService['mobileBreakPoint'] = 0;
         }
     }
 

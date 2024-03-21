@@ -20,8 +20,8 @@ export class AppComponent implements OnInit {
     title = 'DeepSeeWeb';
     isSidebar = false;
 
-    @ViewChild('sidebar') sidebar: SidebarComponent;
-    errors: IError[];
+    @ViewChild('sidebar') sidebar!: SidebarComponent;
+    errors: IError[] = [];
 
     constructor(public sbs: SidebarService,
                 public hs: HeaderService,

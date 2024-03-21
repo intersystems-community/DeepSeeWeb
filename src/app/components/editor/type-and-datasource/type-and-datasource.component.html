@@ -1,5 +1,5 @@
 <dsw-sidebar-actions
-    isWidgetEditorWarning="true"
+    [isWidgetEditorWarning]="true"
     [isBack]="true"
     (apply)="onSave()"
 >
@@ -24,7 +24,7 @@
     <dsw-input
         [required]="invalid.includes('datasource')"
         [(ngModel)]="model.dataSource"
-        chooseButton="true"
+        [chooseButton]="true"
         (keydown.enter)="onDatasourceChanged()"
         (choose)="onSelectDataSource()"
     ></dsw-input>

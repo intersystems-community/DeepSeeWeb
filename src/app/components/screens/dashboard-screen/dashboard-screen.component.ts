@@ -51,22 +51,22 @@ interface ITouchInfo {
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DashboardScreenComponent extends DashboardEditingClass implements OnInit, OnDestroy, AfterViewInit {
-    @ViewChild('ctxMenu') ctxMenu: ElementRef;
+    @ViewChild('ctxMenu') ctxMenu!: ElementRef;
 
     private settings: any;
-    private readonly sharedWidget: string;
+    private readonly sharedWidget: string = '';
     private readonly subReset: Subscription;
-    private subCtxClose: Subscription;
+    private subCtxClose?: Subscription;
     private subContextMenu: Subscription;
     private subMobileFilterDialog: Subscription;
-    private touchInfo: ITouchInfo;
+    private touchInfo?: ITouchInfo;
     private path = '';
     page = 0;
 
     model = {
         items: []
     };
-    ctxItem: IWidgetInfo = null;
+    ctxItem?: IWidgetInfo;
     contexMenuData: IContextMenuData = {
         canDrill: false,
         canDrillthrough: false
@@ -89,13 +89,13 @@ export class DashboardScreenComponent extends DashboardEditingClass implements O
     isMobile = false;
     isLoading = true;
     itemsInitialized = 0;
-    mobileFilter: IWidgetInfo;
+    mobileFilter?: IWidgetInfo;
     isMobileFilterVisible = false;
 
-    private subSettingsChanged: Subscription;
+    private subSettingsChanged?: Subscription;
     private subOnSidebarAnim: Subscription;
-    private subParamsChange: Subscription;
-    private onLoadingTimeout = 0;
+    private subParamsChange?: Subscription;
+    private onLoadingTimeout?: ReturnType<typeof setTimeout>;
 
     trackByName = (index: number, w: IWidgetInfo) => {
         const nameKey = this.path + '-' + w.name.toString();
@@ -115,7 +115,7 @@ export class DashboardScreenComponent extends DashboardEditingClass implements O
         this.hs.resetSearch();
         this.hs.hideMobileFilterButton();
 
-        this.sharedWidget = this.route.snapshot.queryParamMap.get('widget');
+        this.sharedWidget = this.route.snapshot.queryParamMap.get('widget') ?? '';
 
         this.subscribeForGridsterEvents();
         this.loadSettings();
@@ -166,7 +166,7 @@ export class DashboardScreenComponent extends DashboardEditingClass implements O
         super.ngOnDestroy();
         clearTimeout(this.onLoadingTimeout);
         window.onafterprint = null;
-        this.subParamsChange.unsubscribe();
+        this.subParamsChange?.unsubscribe();
         this.subOnSidebarAnim.unsubscribe();
         this.subContextMenu.unsubscribe();
         this.subMobileFilterDialog.unsubscribe();
@@ -194,7 +194,7 @@ export class DashboardScreenComponent extends DashboardEditingClass implements O
      * Hides context menu
      */
     hideContextMenu() {
-        this.ctxItem = null;
+        this.ctxItem = undefined;
         this.r2.setStyle(this.ctxMenu.nativeElement, 'visibility', 'hidden');
     }
 
@@ -335,7 +335,7 @@ export class DashboardScreenComponent extends DashboardEditingClass implements O
                 // Don't use predefined height for empty widget
                 // It will be calculated during fitEmptyWidget() call
                 rows: result.widgets[i].type?.toLowerCase() === dsw.const.emptyWidgetClass ? undefined : 2,
-                x: (i * 2) % this.tilesOptions.maxCols,
+                x: (i * 2) % (this.tilesOptions.maxCols || 1),
                 y: Math.floor(i / 6) * 2,
                 title: result.widgets[i].title,
                 toolbar: true,
@@ -358,7 +358,7 @@ export class DashboardScreenComponent extends DashboardEditingClass implements O
                 item.y = result.widgets[i].displayInfo.leftRow * tr;
                 item.cols = (result.widgets[i].displayInfo.colWidth || 1) * tc;
                 item.rows = (result.widgets[i].displayInfo.rowHeight || 2);
-                if (item.cols > this.tilesOptions.maxCols) {
+                if (this.tilesOptions.maxCols !== undefined && (item.cols > this.tilesOptions.maxCols)) {
                     item.cols = this.tilesOptions.maxCols;
                 }
             }
@@ -431,7 +431,7 @@ export class DashboardScreenComponent extends DashboardEditingClass implements O
      * Send message to refresh all dependent widgets
      */
     broadcastDependents() {
-        const brodcasted = [];
+        const brodcasted: any[] = [];
         for (let i = 0; i < this.list.length; i++) {
             if (this.list[i].dependents.length !== 0) {
                 const item = this.list[i];
@@ -552,10 +552,10 @@ export class DashboardScreenComponent extends DashboardEditingClass implements O
             if (this.subCtxClose) {
                 this.subCtxClose.unsubscribe();
             }
-            this.subCtxClose = fromEvent(document, 'mousedown').subscribe((e: MouseEvent) => {
-                this.subCtxClose.unsubscribe();
+            this.subCtxClose = fromEvent(document, 'mousedown').subscribe(e => {
+                this.subCtxClose?.unsubscribe();
                 const el = e.target as HTMLElement;
-                if (el.parentElement.classList.contains('ctx-menu')) {
+                if (el.parentElement?.classList.contains('ctx-menu')) {
                     return;
                 }
                 this.hideContextMenu();
@@ -571,11 +571,11 @@ export class DashboardScreenComponent extends DashboardEditingClass implements O
      * @param type
      */
     exportWidget(type: string) {
-        const comp = this.getWidgetByInfo(this.ctxItem).component;
+        const comp = this.getWidgetByInfo(this.ctxItem)?.component;
         const opt = {
             sourceWidth: Math.floor(window.screen.width / 2),
             sourceHeight: Math.floor(window.screen.height / 2),
-            filename: this.ctxItem.tile || 'chart',
+            filename: this.ctxItem?.tile || 'chart',
             type: 'image/svg+xml'
         } as ExportingOptions;
 
@@ -603,7 +603,7 @@ export class DashboardScreenComponent extends DashboardEditingClass implements O
                     mdx = lpt._dataSourcesStack[lpt._dataSourcesStack.length - 1].BASIC_MDX + lpt.dataSource.FILTERS;
                 }
                 const folder = this.ss.serverSettings.DefaultApp || ('/csp/' + CURRENT_NAMESPACE);
-                const url = folder + '/_DeepSee.UI.MDXExcel.zen?MDX=' + encodeURIComponent(mdx);
+                const url = folder + '/_DeepSee.UI.MDXExcel.zen?MDX=' + encodeURIComponent(mdx || '');
                 window.open(url, '_blank');
                 this.hideContextMenu();
                 return;
@@ -614,16 +614,16 @@ export class DashboardScreenComponent extends DashboardEditingClass implements O
                 return;
             }
         }
-        if (this.ctxItem.isChart) {
-            comp.chart.exportChart(opt, null);
+        if (this.ctxItem?.isChart) {
+            comp?.chart.exportChart(opt, {});
         }
         this.hideContextMenu();
     }
 
     private exportToCsv() {
-        const comp = this.getWidgetByInfo(this.ctxItem).component;
-        const d = comp._currentData;
-        if (!comp.lpt && !d) {
+        const comp = this.getWidgetByInfo(this.ctxItem)?.component;
+        const d = comp?._currentData;
+        if (!comp || !comp.lpt || !d) {
             return;
         }
         let cats, ser, data;
@@ -670,7 +670,7 @@ export class DashboardScreenComponent extends DashboardEditingClass implements O
         }
         // }
 
-        const filename = (this.ctxItem.title || 'data') + '.csv';
+        const filename = (this.ctxItem?.title || 'data') + '.csv';
         const blob = new Blob([csvFile], {type: 'text/csv;charset=utf-8;'});
         // @ts-ignore
         if (navigator.msSaveBlob) { // IE 10+
@@ -723,7 +723,7 @@ export class DashboardScreenComponent extends DashboardEditingClass implements O
             // Check if in horizontal bounds of screen
             if (b.left + b.width > window.innerWidth) {
                 // Adjust X offset, if not
-                ox = b.width + sub.parentElement.getBoundingClientRect().width + 2;
+                ox = b.width + (sub.parentElement?.getBoundingClientRect()?.width || 0) + 2;
             }
 
             this.r2.setStyle(sub, 'transform', `translateX(${-ox}px) translateY(${-oy}px)`);
@@ -749,6 +749,9 @@ export class DashboardScreenComponent extends DashboardEditingClass implements O
             return;
         }
         const ti = this.touchInfo;
+        if (!ti) {
+            return;
+        }
         ti.endTime = performance.now();
         ti.ex = e.changedTouches[0].screenX;
         ti.ey = e.changedTouches[0].screenY;
@@ -780,7 +783,7 @@ export class DashboardScreenComponent extends DashboardEditingClass implements O
             comp.adjustSize();
             return;
         }
-        if (comp instanceof BaseChartClass && comp.chartConfig.chart.type !== 'treemap') {
+        if (comp instanceof BaseChartClass && comp.chartConfig.chart?.type !== 'treemap') {
             comp.updateChart(true, false);
             // comp.onResize();
             return;
@@ -788,7 +791,7 @@ export class DashboardScreenComponent extends DashboardEditingClass implements O
     }
 
     ctxDrill() {
-        this.bs.broadcast('drilldown:' + this.ctxItem.name, {
+        this.bs.broadcast('drilldown:' + (this.ctxItem?.name || ''), {
             path: this.contexMenuData.drillPath,
             title: this.contexMenuData.drillTitle
         });
@@ -796,7 +799,7 @@ export class DashboardScreenComponent extends DashboardEditingClass implements O
     }
 
     ctxDrillthrough() {
-        this.bs.broadcast('drillthrough:' + this.ctxItem.name, {
+        this.bs.broadcast('drillthrough:' + (this.ctxItem?.name || ''), {
             path: this.contexMenuData.drillPath,
             title: this.contexMenuData.drillTitle
         });
@@ -804,7 +807,7 @@ export class DashboardScreenComponent extends DashboardEditingClass implements O
     }
 
     private fitEmptyWidget() {
-        let empty = null;
+        let empty: any;
         let maxx = 0;
         let maxy = 0;
         this.list.forEach(wi => {
@@ -827,8 +830,8 @@ export class DashboardScreenComponent extends DashboardEditingClass implements O
         empty.rows = maxy || 2;
     }
 
-    gotoKPIPage(w: IWidgetInfo) {
-        if (!w.kpiclass) {
+    gotoKPIPage(w?: IWidgetInfo) {
+        if (!w?.kpiclass) {
             return;
         }
         const folder = this.ss.serverSettings.DefaultApp || '/csp/' + CURRENT_NAMESPACE;
@@ -836,8 +839,8 @@ export class DashboardScreenComponent extends DashboardEditingClass implements O
         window.open(url, '_blank');
     }
 
-    gotoAnalyzer(w: IWidgetInfo) {
-        if (!w.dataSource) {
+    gotoAnalyzer(w?: IWidgetInfo) {
+        if (!w?.dataSource) {
             return;
         }
         const folder = this.ss.serverSettings.DefaultApp || '/csp/' + CURRENT_NAMESPACE;
@@ -892,7 +895,7 @@ export class DashboardScreenComponent extends DashboardEditingClass implements O
         if (this.editedWidget && this.editedWidget !== this.ctxItem) {
             this.sbs.showComponent(null);
         }
-        if (this.ctxItem.isExpanded) {
+        if (this.ctxItem?.isExpanded) {
             const w = this.getWidgetByInfo(this.ctxItem);
             w?.header?.onClick('expand');
         }
@@ -931,13 +934,15 @@ export class DashboardScreenComponent extends DashboardEditingClass implements O
             this.onWidgetSizeChanged(item);
         };
 
-        this.tilesOptions.draggable.start = () => {
-            this.cd.detach();
-        };
+        if (this.tilesOptions.draggable) {
+            this.tilesOptions.draggable.start = () => {
+                this.cd.detach();
+            };
 
-        this.tilesOptions.draggable.stop = () => {
-            this.cd.reattach();
-        };
+            this.tilesOptions.draggable.stop = () => {
+                this.cd.reattach();
+            };
+        }
 
         this.tilesOptions.itemChangeCallback = (item: GridsterItem, itemComponent: GridsterItemComponentInterface) => {
             if (this.isLoading) {
@@ -980,10 +985,10 @@ export class DashboardScreenComponent extends DashboardEditingClass implements O
     }
 
     private checkRestrictions() {
-        if (this.route.snapshot.queryParamMap.get('nodrag') === '1') {
+        if (this.route.snapshot.queryParamMap.get('nodrag') === '1' && this.tilesOptions?.draggable) {
             this.tilesOptions.draggable.enabled = false;
         }
-        if (this.route.snapshot.queryParamMap.get('noresize') === '1') {
+        if (this.route.snapshot.queryParamMap.get('noresize') === '1' && this.tilesOptions?.resizable) {
             this.tilesOptions.resizable.enabled = false;
         }
     }

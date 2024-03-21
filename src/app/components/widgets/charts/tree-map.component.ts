@@ -41,7 +41,7 @@ export class TreeMapComponent extends BaseChartClass implements OnInit {
                     dataLabels: {
                         enabled: true,
                         // useHTML: true,
-                        formatter() {
+                        formatter(this: any) {
                             // Define custom label formatter
                             // if (_this.widget['btn.ShowPercents'] && _this.totalSum) {
                             if ( _this.totalSum) {
@@ -58,7 +58,7 @@ export class TreeMapComponent extends BaseChartClass implements OnInit {
                 }
             },
             tooltip: {
-                formatter() {
+                formatter(this: any) {
                     const cap = this.series.userOptions.caption;
                     const fmt = this.series.userOptions.format;
                     let v = this.point.value;
@@ -94,7 +94,7 @@ export class TreeMapComponent extends BaseChartClass implements OnInit {
         }
 
         // this.chartConfig.series = [];
-        let tempData = [];
+        let tempData: any[] = [];
         if (!data.Cols[0].tuples.length) { return; }
 
         if (data.Cols[0].tuples[0].children) {

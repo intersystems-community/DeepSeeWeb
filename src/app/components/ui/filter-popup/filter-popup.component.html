@@ -32,7 +32,7 @@
     <div *ngIf="model.isInterval" class="interval-container">
         <div>
             <label>{{'from' | i18n}}</label>
-            <select [(ngModel)]="model.from" [ngModelOptions]="">
+            <select [(ngModel)]="model.from">
                 <option *ngFor="let v of model.values" [ngValue]="v.path">{{v.name}}</option>
             </select>
         </div>

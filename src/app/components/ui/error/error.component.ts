@@ -36,7 +36,7 @@ export const ERROR_TOGGLE_LEFT_ANIMATION = trigger(
 })
 export class ErrorComponent implements OnInit, AfterViewInit {
 
-    @Input() error: IError;
+    @Input() error!: IError;
     private height = 32;
 
     constructor(private es: ErrorService,

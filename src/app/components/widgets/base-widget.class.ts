@@ -173,7 +173,7 @@ export interface IWidgetInfo {
 
     // Pivot
     pvItems: any[];
-    pivotMdx: string;
+    pivotMdx?: string;
     pivotData: any;
     displayAsPivot: (mdx: string) => void;
 
@@ -266,23 +266,23 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
     // private subOnHeaderButton: Subscription;
 
     // Services
-    protected el: ElementRef = null;
-    protected us: UtilService = null;
-    protected vs: VariablesService = null;
-    protected ss: StorageService = null;
-    protected ds: DataService = null;
-    protected fs: FilterService = null;
-    protected wts: WidgetTypeService = null;
-    protected dbs: DashboardService = null;
-    protected cfr: ComponentFactoryResolver = null;
-    protected ns: NamespaceService = null;
-    protected route: ActivatedRoute = null;
-    public i18n: I18nService = null;
-    public bs: BroadcastService = null;
-    protected san: DomSanitizer = null;
-    protected sbs: SidebarService = null;
-    protected cd: ChangeDetectorRef = null;
-    protected zone: NgZone = null;
+    protected el: ElementRef;
+    protected us: UtilService;
+    protected vs: VariablesService;
+    protected ss: StorageService;
+    protected ds: DataService;
+    protected fs: FilterService;
+    protected wts: WidgetTypeService;
+    protected dbs: DashboardService;
+    protected cfr: ComponentFactoryResolver;
+    protected ns: NamespaceService;
+    protected route: ActivatedRoute;
+    public i18n: I18nService;
+    public bs: BroadcastService;
+    protected san: DomSanitizer;
+    protected sbs: SidebarService;
+    protected cd: ChangeDetectorRef;
+    protected zone: NgZone;
 
     /*constructor(@Inject(ElementRef) protected el: ElementRef,
                 @Inject(UtilService) protected us: UtilService,
@@ -324,29 +324,29 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         this.zone = this.inj.get(NgZone);
     }
 
-    dataInfo = null;
+    dataInfo: any;
 
     public model: any = {};
     // Parent angular component on which widget is created
-    parent: WidgetComponent;
+    parent!: WidgetComponent;
 
     // Widget data
-    public widget: IWidgetInfo;
+    public widget!: IWidgetInfo;
 
     // Loading spinner, do now use directly
     // use showLoading(), hideLoading() instead
     public isSpinner = true;
-    drills = [];
+    drills: any[] = [];
     protected drillFilter = '';
-    protected drillFilterDrills = [];
-    protected pivotVariables = null;
+    protected drillFilterDrills: string[] = [];
+    protected pivotVariables: any = null;
 
     tc: any;
     protected widgetsSettings: any;
 
     // Array of widget names that shall be filtered during drill down
-    drillFilterWidgets = null;
-    _currentData = null;
+    drillFilterWidgets: any[]|null = null;
+    _currentData: any;
 
     _kpiData = null;
 
@@ -357,36 +357,36 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
     public lpt;
 
     // For chart
-    public chart: Highcharts.Chart;
+    public chart!: Highcharts.Chart;
     protected customColSpec = '';
     protected customRowSpec = '';
     customDataSource = '';
-    protected pivotData = null;
+    protected pivotData: any = null;
     protected linkedMdx = '';
-    protected liveUpdateInterval = null;
+    protected liveUpdateInterval: any;
     protected canDoDrillthrough = false;
 
     protected firstRun = true;
     protected chartConfig: any;
 
-    private subLinkedMdx: Subscription;
-    private subRefreshDepenend: Subscription;
-    private subDrillFilter: Subscription;
-    private subDrillFilterAll: Subscription;
-    private subDrilldown: Subscription;
-    private subDrillthrough: Subscription;
-    private subPivotVar: Subscription;
-    private subPivotVarAll: Subscription;
-    private subDataSourcechange: Subscription;
-    private subColSpec: Subscription;
-    private subColSpecAll: Subscription;
+    private subLinkedMdx?: Subscription;
+    private subRefreshDepenend?: Subscription;
+    private subDrillFilter?: Subscription;
+    private subDrillFilterAll?: Subscription;
+    private subDrilldown?: Subscription;
+    private subDrillthrough?: Subscription;
+    private subPivotVar?: Subscription;
+    private subPivotVarAll?: Subscription;
+    private subDataSourcechange?: Subscription;
+    private subColSpec?: Subscription;
+    private subColSpecAll?: Subscription;
     private hasDatasourceChoser = false;
-    protected override: IWidgetOverride = null;
+    protected override?: IWidgetOverride;
     protected baseType = '';
 
     private oneItemDrillApplied = false;
 
-    createWidgetComponent: (type?: string) => void;
+    createWidgetComponent!: (type?: string) => void;
     protected onInit = () => {
     }
 
@@ -610,6 +610,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         if (prop && prop.dataValue !== null && prop.dataValue !== undefined) {
             return prop.dataValue.toString();
         }
+        return;
     }
 
     protected getFormat(index: number, mdxResult: any, prop: IWidgetDataProperties) {
@@ -636,7 +637,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         return v;
     }
 
-    private getOverride(): IWidgetOverride {
+    private getOverride(): IWidgetOverride|undefined {
         let t = this.baseType;
         if (t === 'lineChartMarkers') {
             t = 'lineChart';
@@ -693,7 +694,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         if (!isEmptyWidget && (!this.widget.controls || this.widget.controls.length === 0)) {
             return;
         }
-        let choosers = [];
+        let choosers: any[] = [];
         if (this.widget.controls) {
             // Get all choosers that not placed on dashboard location
             choosers = this.widget.controls.filter(filterChoosers).filter(c => c.location !== 'dashboard');
@@ -719,7 +720,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         for (let i = 0; i < choosers.length; i++) {
             const list = choosers[i].valueList;
             const display = choosers[i].displayList;
-            let listData = null;
+            let listData: any = null;
             let prop = choosers[i].targetProperty;
             if (!prop) {
                 if (!list || !display) {
@@ -739,7 +740,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
                     prop = prop.slice(0, -5);
                 }
             }
-            const item = {
+            const item: any = {
                 action: choosers[i].action,
                 label: choosers[i].label || this.i18n.get('dataSource'),
                 dsSelected: choosers[i].value,
@@ -749,7 +750,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
                 field: 'select'
             };
             this.widget.dsItems.push(item);
-            let data = null;
+            let data: any = null;
             if (prop) {
                 data = await this.ds.getTermList(prop);
             } else {
@@ -777,7 +778,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
                 if (this.customDataSource) {
                     selIdx = item.values.findIndex(v => v === this.customDataSource);
                 } else {
-                    selIdx = item.values.findIndex(v => v.split('/').pop() === item.dsSelected);
+                    selIdx = item.values.findIndex((v: string) => v.split('/').pop() === item.dsSelected);
                 }
                 if (selIdx === -1) {
                     item.dsSelected = item.labels[0];
@@ -956,7 +957,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
             if (this.lpt.getSelectedRows().length) {
                 const d = this.lpt.dataController.getData();
                 const rows = this.lpt.getSelectedRows();
-                const values = [];
+                const values: any[] = [];
                 for (let j = 0; j < rows.length; j++) {
                     const id = d.dataArray[(rows[j] - 1) * d.columnProps.length];
                     values.push(id);
@@ -1127,7 +1128,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
                 if (!this.canDoDrillthrough) {
                     return;
                 }
-                const ddMdx = this.getDrillthroughMdx(mdx);
+                const ddMdx = this.getDrillthroughMdx(mdx) || '';
 
                 this.ds.execMDX(ddMdx)
                     // .error(this._onRequestError)
@@ -1226,7 +1227,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
 
             this.showLoading();
 
-            const ddMdx = this.getDrillthroughMdx(mdx);
+            const ddMdx = this.getDrillthroughMdx(mdx) || '';
 
             this.ds.execMDX(ddMdx)
                 // .error(this._onRequestError)
@@ -1584,15 +1585,15 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
     convertKPIToMDXData(d, isDrillthrough = false) {
         const orig = d;
         d = d.Result;
-        const res = {Info: {cubeName: orig.Info.KpiName}, Cols: [], Data: []};
+        const res: any = {Info: {cubeName: orig.Info.KpiName}, Cols: [], Data: []};
         let i, j;
-        const cats = [];
+        const cats: any[] = [];
         for (i = 0; i < d.Properties.length; i++) {
             cats.push({caption: d.Properties[i].caption || d.Properties[i].name, dimension: d.Properties[i].name});
         }
         res.Cols.push({tuples: cats});
 
-        const ser = [];
+        const ser: any[] = [];
         for (i = 0; i < d.Series.length; i++) {
             for (j = 0; j < d.Properties.length; j++) {
                 res.Data.push(d.Series[i][d.Properties[j].name]);
@@ -1857,7 +1858,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
             return mdx;
         }
         const params = querySettings.split(';');
-        let widgetName = null;
+        let widgetName = '';
         let filters = '';
         for (let i = 0; i < params.length; i++) {
             const parts = params[i].split(':');
@@ -1877,9 +1878,9 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
                 if (s.indexOf('{') !== -1) {
                     // Many values
                     const path = s.substring(0, s.indexOf('{')).replace('%NOT ', '');
-                    const values = s.match(/\{([^)]+)\}/)[1].split(',');
+                    const values = s.match(/\{([^)]+)\}/)?.[1].split(',');
                     mdx += ' %FILTER %OR({';
-                    mdx += values.map(v => path + v + (isExclude ? '.%NOT' : '')).join(',');
+                    mdx += values?.map(v => path + v + (isExclude ? '.%NOT' : '')).join(',') || '';
                     mdx += '})';
                 } else {
                     // One value
@@ -2086,7 +2087,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
      */
     displayAsPivot(customMdx?: string) {
         if (this.widget.type === 'pivot') {
-            this.widget.isDrillthrough = null;
+            this.widget.isDrillthrough = false;
             this.restoreWidgetType();
         } else {
             this.widget.pivotMdx = customMdx || this.getMDX();
@@ -2239,7 +2240,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         }
 
         const m = mdx.match(/ON 0,(.*)ON 1/);
-        let part = m[1];
+        let part = m?.[1];
         if (!part) {
             return mdx;
         }
@@ -2301,7 +2302,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         if (!data?.Cols[0]?.tuples?.length) {
             return;
         }
-        const indices = [];
+        const indices: any[] = [];
         const colCount = data.Cols[0]?.tuples?.length || 0;
         if (!colCount) {
             return;

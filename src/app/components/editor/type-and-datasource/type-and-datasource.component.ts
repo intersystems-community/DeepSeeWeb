@@ -13,7 +13,7 @@ import {EditorService, IWidgetListItem} from "../../../services/editor.service";
     styleUrls: ['./../editor-styles.scss', './type-and-datasource.component.scss'],
 })
 export class TypeAndDatasourceComponent implements OnInit, OnDestroy {
-    @Input() model: IWidgetInfo = null;
+    @Input() model?: IWidgetInfo;
     @Input() invalid: string[] = [];
     widgetList: IWidgetListItem[] = [];
     widgetTypes = [
@@ -49,8 +49,8 @@ export class TypeAndDatasourceComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        this.widgetList = this.eds.getWidgetsList([this.model?.name]);
-        this.type = WIDGET_TYPES[this.model?.type?.toLowerCase()];
+        this.widgetList = this.eds.getWidgetsList([this.model?.name ?? '']);
+        this.type = WIDGET_TYPES[this.model?.type?.toLowerCase() ?? ''];
     }
 
     onSelectDataSource() {
@@ -66,7 +66,9 @@ export class TypeAndDatasourceComponent implements OnInit, OnDestroy {
             minHeight: true,
             outputs: {
                 select: (ds: IDataSourceInfo) => {
-                    this.model.dataSource = ds.value + '.' + ds.type;
+                    if (this.model) {
+                        this.model.dataSource = ds.value + '.' + ds.type;
+                    }
                     this.onDatasourceChanged();
                 }
             }
@@ -78,24 +80,37 @@ export class TypeAndDatasourceComponent implements OnInit, OnDestroy {
     }
 
     onTypeChange() {
-        if (this.model) {
-            this.model.type = Object.entries(WIDGET_TYPES).find(el => el[1] === this.type)[0];
+        if (!this.model) {
+            return;
         }
+        this.model.type = Object.entries(WIDGET_TYPES).find(el => el[1] === this.type)?.[0] || '';
         this.eds.updateEditedWidget({widget: this.model, reCreate: true});
     }
 
     onDatasourceChanged() {
+        if (!this.model) {
+            return;
+        }
         this.eds.generateWidgetMdx(this.model)
             .then(() => {
+                if (!this.model) {
+                    return;
+                }
                 this.eds.updateEditedWidget({widget: this.model, refreshData: true});
             });
     }
 
     onLinkChange() {
+        if (!this.model) {
+            return;
+        }
         this.eds.updateEditedWidget({widget: this.model, reCreate: true});
     }
 
     onSave() {
+        if (!this.model) {
+            return;
+        }
         this.eds.save(this.model);
     }
 }

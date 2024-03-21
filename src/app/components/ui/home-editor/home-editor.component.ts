@@ -24,12 +24,12 @@ import {Subscription} from 'rxjs';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HomeEditorComponent implements OnInit, OnDestroy {
-    @Input() tiles: ITileInfo[];
+    @Input() tiles: ITileInfo[] = [];
     // @Input() tile: ITileInfo;
-    @Input() folder: string;
+    @Input() folder = '';
 
     model: any;
-    private originalTiles: string;
+    private originalTiles = '';
 
     set tile(value: ITileInfo) {
         const needRefresh = value !== this._tile;
@@ -43,8 +43,8 @@ export class HomeEditorComponent implements OnInit, OnDestroy {
         return this._tile;
     }
 
-    private _tile: ITileInfo;
-    private subRouteChange: Subscription;
+    private _tile!: ITileInfo;
+    private subRouteChange?: Subscription;
 
     constructor(private ds: DataService,
                 private ms: MenuService,
@@ -76,7 +76,7 @@ export class HomeEditorComponent implements OnInit, OnDestroy {
 
     ngOnDestroy() {
         this.ms.onEditDashboard.emit(false);
-        this.subRouteChange.unsubscribe();
+        this.subRouteChange?.unsubscribe();
     }
 
     // ngOnChanges(changes: SimpleChanges) {

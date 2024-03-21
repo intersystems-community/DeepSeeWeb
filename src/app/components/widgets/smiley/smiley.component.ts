@@ -10,7 +10,7 @@ import {WMeterComponent} from '../base/meter-widget.class';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class WSmileyComponent extends WMeterComponent {
-    @Input() widget: IWidgetInfo;
+    @Input() widget: IWidgetInfo = {} as IWidgetInfo;;
 
     @HostBinding('style.grid-template-columns')
     get gridColumns() {

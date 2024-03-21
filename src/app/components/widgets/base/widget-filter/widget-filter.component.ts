@@ -25,10 +25,10 @@ import {BroadcastService} from '../../../../services/broadcast.service';
 })
 export class WidgetFilterComponent implements OnInit {
     @ViewChild('filterPopup', {read: ViewContainerRef, static: true})
-    filterPopup: ViewContainerRef;
+    filterPopup!: ViewContainerRef;
 
-    @Input() widget: IWidgetInfo;
-    @Input() filters: any[];
+    @Input() widget!: IWidgetInfo;
+    @Input() filters: any[] = [];
 
     @Output() onVariable = new EventEmitter<any>();
     @Output() onDataSource = new EventEmitter<any>();
@@ -123,7 +123,7 @@ export class WidgetFilterComponent implements OnInit {
                 position: 'absolute',
                 left: x + 'px',
                 top: y + 'px',
-                height: isMobile ? `${height}px` : undefined
+                height: isMobile ? `${height}px` : 'auto'
             },
             onComponentInit: (c: FilterPopupComponent) => {
                 c.initialize(this.widget, flt, this.widget.dataSource);

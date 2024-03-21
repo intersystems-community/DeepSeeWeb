@@ -27,7 +27,7 @@ export class DatePickerComponent implements OnInit, AfterViewInit {
     @Input() inline = false;
     @Input() range = false;
     @Output() select = new EventEmitter<IDatepickerSelectEvent>();
-    dp: AirDatepicker;
+    dp!: AirDatepicker;
     private ignoreSelectEvent = false;
 
     constructor(private el: ElementRef) {

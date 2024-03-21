@@ -31,7 +31,7 @@ export class FuelGaugeChartComponent extends SpeedometerChartComponent implement
                 }
             },
             tooltip: {
-                formatter: function () {
+                formatter: function (this: any) {
                     let v = this.point.y;
                     const fmt = this.series.userOptions.format;
                     if (fmt) { v = numeral(v).format(fmt); }

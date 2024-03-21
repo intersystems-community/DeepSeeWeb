@@ -32,12 +32,12 @@ interface IPathNav {
     styleUrls: ['./header.component.scss']
 })
 export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
-    @ViewChild('inpSearch') inpSearch: SearchInputComponent;
+    @ViewChild('inpSearch') inpSearch!: SearchInputComponent;
 
-    private subTitle: Subscription;
+    private subTitle?: Subscription;
     // private subShareDashboard: Subscription;
-    private subGotoDSZ: Subscription;
-    private subToggleMobileFilter: Subscription;
+    private subGotoDSZ?: Subscription;
+    private subToggleMobileFilter?: Subscription;
     private subOnSearchReset: Subscription;
     private pathSegments: IPathNav[] = [];
 
@@ -110,10 +110,10 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
 
     ngOnDestroy() {
         this.subOnSearchReset.unsubscribe();
-        this.subToggleMobileFilter.unsubscribe();
+        this.subToggleMobileFilter?.unsubscribe();
         // this.subShareDashboard.unsubscribe();
-        this.subGotoDSZ.unsubscribe();
-        this.subTitle.unsubscribe();
+        this.subGotoDSZ?.unsubscribe();
+        this.subTitle?.unsubscribe();
     }
 
     ngAfterViewInit() {
@@ -196,9 +196,9 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
      */
     gotoZenDeepSee() {
         const folder = this.storage.serverSettings.DefaultApp || ('/csp/' + CURRENT_NAMESPACE);
-        const dashboard = this.path[this.path.length - 1].url.split('/').slice(1).join('/');
+        const dashboard = this.path[this.path.length - 1]?.url?.split('/').slice(1).join('/');
         const prefix = location.pathname.split('/').slice(0, -2).join('/') || '';
-        const url = prefix + folder + '/_DeepSee.UserPortal.DashboardViewer.zen?DASHBOARD=' + encodeURIComponent(decodeURIComponent(dashboard));
+        const url = prefix + folder + '/_DeepSee.UserPortal.DashboardViewer.zen?DASHBOARD=' + encodeURIComponent(decodeURIComponent(dashboard || ''));
         window.open(url);
     }
 

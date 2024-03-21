@@ -26,7 +26,7 @@ export class DashboardService {
     private allWidgets: IWidgetInfo[] = [];
 
     current = new BehaviorSubject<string>('');
-    dashboard = new BehaviorSubject<IDashboard>(null);
+    dashboard = new BehaviorSubject<IDashboard|null>(null);
 
     constructor(private ss: StorageService) {
     }
@@ -93,10 +93,10 @@ export class DashboardService {
         }
 
         const info: IWidgetDisplayInfo = {
-            topCol: Math.floor(widget.x / tc),
-            leftRow: Math.floor(widget.y / tr),
-            colWidth:  Math.floor(widget.cols / tc),
-            rowHeight:  Math.floor(widget.rows),
+            topCol: Math.floor((widget.x || 0) / tc),
+            leftRow: Math.floor((widget.y || 0) / tr),
+            colWidth:  Math.floor((widget.cols || 1) / tc),
+            rowHeight:  Math.floor(widget.rows || 1),
         };
 
         widget.displayInfo = info;

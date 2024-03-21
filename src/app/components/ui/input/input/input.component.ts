@@ -14,7 +14,7 @@ import {ControlValueAccessor, NG_VALUE_ACCESSOR} from "@angular/forms";
     ]
 })
 export class InputComponent implements ControlValueAccessor {
-    @Input() model: string;
+    @Input() model = '';
     @Input() type = 'text';
     @Input() required = false;
     @HostBinding('class.choose')

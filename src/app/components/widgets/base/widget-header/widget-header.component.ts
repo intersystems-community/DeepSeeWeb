@@ -18,16 +18,16 @@ import {EditorService} from "../../../../services/editor.service";
     styleUrls: ['./widget-header.component.scss']
 })
 export class WidgetHeaderComponent implements OnInit, OnDestroy {
-    @Input() typeDesc: IWidgetType;
+    @Input() typeDesc?: IWidgetType;
     @Output() onButtonClick = new EventEmitter<IButtonToggle>();
     @Output() onBack = new EventEmitter();
     @Output() onResetClickFilter = new EventEmitter();
 
-    widget: IWidgetInfo;
+    widget!: IWidgetInfo;
     private widgetsSettings: any;
     hasFilters = false;
     filtersTooltip = '';
-    private subFiltersChanged: Subscription;
+    private subFiltersChanged?: Subscription;
     noDrag = false;
 
     constructor(private ss: StorageService,
@@ -149,7 +149,7 @@ export class WidgetHeaderComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy() {
-        this.subFiltersChanged.unsubscribe();
+        this.subFiltersChanged?.unsubscribe();
     }
 
     onHeaderDoubleClick() {

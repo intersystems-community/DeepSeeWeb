@@ -76,6 +76,10 @@ export class EditorService {
             return;
         };
         this.dbs.generateDisplayInfo(widget);
+        if (!widget.dashboard) {
+            console.error('no dashboard specified in widget:', widget);
+            return;
+        }
         this.ds.saveWidget(widget.dashboard, widget, widget?.oldWidget?.name)
             .then(d => {
                 this.dbs.saveWidgetPositionAndSize(widget as IWidgetInfo);
@@ -100,7 +104,7 @@ export class EditorService {
 
        // try {
             const parts = w.dataSource.split('.');
-            const ext = parts.pop().toLowerCase();
+            const ext = parts.pop()?.toLowerCase();
             if (ext === 'kpi') {
                 w.kpiclass = parts.join('.');
                 w.kpitype = 'sql';

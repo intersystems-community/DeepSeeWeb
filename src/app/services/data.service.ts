@@ -127,7 +127,7 @@ export class DataService {
         // Get cached result for namespace if exists
         const key = CURRENT_NAMESPACE.toLowerCase();
         if (this.dashboardList.has(key)) {
-            return of(JSON.parse(this.dashboardList.get(key)));
+            return of(JSON.parse(this.dashboardList.get(key) || '{}'));
         }
         // Else return from REST
         return this.http.post(

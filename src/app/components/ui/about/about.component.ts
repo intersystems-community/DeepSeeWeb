@@ -9,13 +9,13 @@ import * as markdownit from 'markdown-it';
     styleUrls: ['./about.component.scss']
 })
 export class AboutComponent {
-    changelog: SafeHtml;
+    changelog?: SafeHtml;
 
     constructor(private ds: DataService,
                 private san: DomSanitizer) {
         this.ds.getFile('changelog.md')
             .then(html => {
                 this.changelog = markdownit({html: true}).render(html);
-            })
+            });
     }
 }

@@ -21,7 +21,7 @@ export class SidebarService {
     private stack: ISidebarInfo[] = [];
 
     // Toggle sidebar, set "component" to class to create dynamic component. Set null to hide sidebar
-    sidebarToggle = new BehaviorSubject<ISidebarInfo>(null);
+    sidebarToggle = new BehaviorSubject<ISidebarInfo|null>(null);
 
     // Triggers before sidebar animation starts
     onAnimStart = new EventEmitter();
@@ -43,7 +43,7 @@ export class SidebarService {
         }
     }
 
-    showComponent(info: ISidebarInfo) {
+    showComponent(info?: ISidebarInfo|null) {
         if (!info) {
             this.resetComponentStack();
         }
@@ -51,8 +51,10 @@ export class SidebarService {
         if (info?.single) {
             const exists = this.stack.find(el => el.component === info?.component);
             if (exists) {
-                this.updateComponentProperties(exists.compRef, info);
-                if (exists.compRef.instance.cd) {
+                if (exists.compRef) {
+                    this.updateComponentProperties(exists.compRef, info);
+                }
+                if (exists?.compRef?.instance.cd) {
                     exists.compRef.instance.cd.markForCheck();
                     exists.compRef.instance.cd.detectChanges();
                 }
@@ -63,7 +65,9 @@ export class SidebarService {
         if (info?.component) {
             this.stack.push(info);
         }
-        this.sidebarToggle.next(info);
+        if (info) {
+            this.sidebarToggle.next(info);
+        }
     }
 
     private resetComponentStack() {

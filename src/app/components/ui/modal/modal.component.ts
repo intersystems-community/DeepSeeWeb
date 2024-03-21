@@ -19,17 +19,17 @@ import {Subscription} from "rxjs";
 })
 export class ModalComponent implements OnInit, OnDestroy {
     @ViewChild('dynamicComponent', {read: ViewContainerRef, static: true})
-    dynComponent: ViewContainerRef;
+    dynComponent!: ViewContainerRef;
 
-    @Input() data: IModal;
+    @Input() data!: IModal;
 
-    compRef: ComponentRef<any>;
+    compRef?: ComponentRef<any>;
     component: any;
     search = new EventEmitter<string>();
     private subscriptions: Subscription[] = [];
 
     @HostBinding('class.no-backdrop') get noBackdrop(): boolean {
-        return this.data.hideBackdrop;
+        return !!this.data.hideBackdrop;
     }
 
     constructor(private ms: ModalService,
@@ -68,7 +68,7 @@ export class ModalComponent implements OnInit, OnDestroy {
     }
 
     getPath(e: MouseEvent): HTMLElement[] {
-        const path = [];
+        const path: any[] = [];
         let currentElem = e.target;
         while (currentElem) {
             path.push(currentElem);
@@ -173,7 +173,7 @@ export class ModalComponent implements OnInit, OnDestroy {
             if (!(e instanceof EventEmitter)) {
                 return;
             }
-            this.subscriptions.push(e.subscribe((...args) => this.data.outputs[o](...args)));
+            this.subscriptions.push(e.subscribe((...args) => this.data.outputs?.[o](...args)));
         }
     }
 

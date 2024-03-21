@@ -17,7 +17,7 @@ declare var cordova: any;
 })
 export class LoginScreenComponent implements OnInit {
     public model: any;
-    private startTime: number;
+    private startTime = -1;
 
     constructor(private ds: DataService,
                 private i18n: I18nService,
@@ -119,7 +119,7 @@ export class LoginScreenComponent implements OnInit {
         } catch (ex) {
             console.error(ex);
         }
-        const srv = servers[idx];
+        const srv: any = servers[idx];
         if (!srv) {
             return;
         }
@@ -134,7 +134,7 @@ export class LoginScreenComponent implements OnInit {
      */
     saveServer() {
         const name = prompt('Please enter server name', this.model.server);
-        let servers = [];
+        let servers: any[] = [];
         try {
             servers = JSON.parse(localStorage.serverList || '[]');
         } catch (ex) {
@@ -195,7 +195,7 @@ export class LoginScreenComponent implements OnInit {
         const s = this.getMobileUrl();
         this.startTime = new Date().getTime();
         this.ds
-            .signIn(this.model.login, this.model.password, this.model.namespace, (dsw.mobile && !dsw.desktop) ? s : undefined)
+            .signIn(this.model.login, this.model.password, this.model.namespace, (dsw.mobile && !dsw.desktop) ? s : '')
             .catch((r) => this.onError(r))
             .then((r) => this.onSuccess(r, this.model.namespace));
     }

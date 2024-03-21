@@ -57,9 +57,9 @@ export class StorageService {
      * Saves user settings to storage
      */
     saveUserSettings() {
-        const us = JSON.parse(this.storage.userSettings || '{}');
+        const us = JSON.parse(this.storage.getItem('userSettings') || '{}');
         us[CURRENT_NAMESPACE.toLocaleLowerCase()] = this.settings;
-        this.storage.userSettings = JSON.stringify(us);
+        this.storage.setItem('userSettings', JSON.stringify(us));
     }
 
     /**
@@ -84,8 +84,8 @@ export class StorageService {
 
         // Override settings by user settings
         let userSettings = null;
-        if (this.storage.userSettings) {
-            userSettings = JSON.parse(this.storage.userSettings)[CURRENT_NAMESPACE.toLocaleLowerCase()];
+        if (this.storage.getItem('userSettings')) {
+            userSettings = JSON.parse(this.storage.getItem('userSettings') || '{}')[CURRENT_NAMESPACE.toLocaleLowerCase()];
         }
         if (userSettings) {
             this.us.mergeRecursive(this.settings, userSettings);
@@ -108,13 +108,16 @@ export class StorageService {
         this.i18n.current = settings.language || 'en';
 
         // Get colors from theme
-        const cols = Highcharts.getOptions().colors;
+        const cols = Highcharts.getOptions().colors || [];
         for (let i = 1; i <= cols.length; i++) {
             // TODO: check working
-            const c = window.getComputedStyle(document.querySelector('.hc' + i.toString())).getPropertyValue('background-color');
-            // const c = $('.hc' + i.toString()).css('background-color').toLowerCase();
-            if (c !== 'rgba(0, 0, 0, 0)' && c !== 'transparent') {
-                cols[i - 1] = c;
+            const el = document.querySelector('.hc' + i.toString());
+            if (el) {
+                const c = window.getComputedStyle(el).getPropertyValue('background-color');
+                // const c = $('.hc' + i.toString()).css('background-color').toLowerCase();
+                if (c !== 'rgba(0, 0, 0, 0)' && c !== 'transparent') {
+                    cols[i - 1] = c;
+                }
             }
         }
 

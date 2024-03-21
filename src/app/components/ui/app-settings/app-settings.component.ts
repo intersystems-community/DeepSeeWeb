@@ -63,7 +63,7 @@ export class AppSettingsComponent implements OnInit {
         }
         const r = new FileReader();
         r.onload = (e: any) => {
-            const contents = JSON.parse(String.fromCharCode.apply(null, new Uint8Array(e.target.result)));
+            const contents = JSON.parse(String.fromCharCode.apply(null, new Uint8Array(e.target.result) as any));
             this.ss.setAllSettings(contents);
             this.ss.onSettingsChanged.emit(this.ss.getAppSettings());
             this.sbs.showComponent(null);

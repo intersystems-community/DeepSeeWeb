@@ -16,8 +16,8 @@ import {UtilService} from "../../../services/util.service";
     styleUrls: ['./filter-popup.component.scss']
 })
 export class FilterPopupComponent implements OnInit, AfterViewInit {
-    @ViewChild('dateFilter') dateFilter: DateFilterComponent;
-    model = {
+    @ViewChild('dateFilter') dateFilter!: DateFilterComponent;
+    model: any = {
         search: '',
         isLoading: false,
         filter: null,
@@ -30,7 +30,7 @@ export class FilterPopupComponent implements OnInit, AfterViewInit {
 
     };
     isRelatedFilters = false;
-    widget: IWidgetInfo;
+    widget!: IWidgetInfo;
     private datePipe: DatePipe;
     trackByIndex = (index: number, r: any) => index;
 
@@ -309,8 +309,8 @@ export class FilterPopupComponent implements OnInit, AfterViewInit {
         }
 
         // Path current filter modifications(selected state, etc.) to newly received values
-        let oldFilters = this.model.filter.values.slice();
-        const newFilters = [];
+        const oldFilters = this.model.filter.values.slice();
+        const newFilters: any[] = [];
         filter.children.forEach(f => {
             let o = oldFilters.find(flt => {
                 if (flt?.path === f?.path) {

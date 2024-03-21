@@ -22,12 +22,13 @@ export class ConfigResolver  {
                 private wt: WidgetTypeService) {
     }
 
-    checkEmbed(state: RouterStateSnapshot): boolean {
+    checkEmbed(state: RouterStateSnapshot) {
         const embedUrl = this.st.serverSettings?.Embed;
         if (embedUrl && state.url.split('?')[0] !== embedUrl) {
             void this.router.navigateByUrl(embedUrl);
             return true;
         }
+        return false;
     }
 
     resolve(

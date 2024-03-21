@@ -74,17 +74,24 @@ export class ThemeSettingsComponent implements OnDestroy {
     }
 
     private getAllCssVariables(): string[] {
+        // TODO: migrate to TS
+        // @ts-ignore
         return Array.from(document.styleSheets)
             .filter(
                 (sheet: any) =>
                     sheet.href === null || sheet.href.startsWith(window.location.origin)
             )
             .reduce(
+                // @ts-ignore
                 (acc, sheet) =>
+                    // @ts-ignore
                     (acc = [
                         ...acc,
+                        // @ts-ignore
                         ...Array.from(sheet.cssRules).reduce(
+                            // @ts-ignore
                             (def, rule: any) =>
+                                // @ts-ignore
                                 (def =
                                     rule.selectorText === ':root'
                                         ? [

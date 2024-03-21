@@ -22,25 +22,25 @@ import GeoJSON from 'ol/format/GeoJSON';
 export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy, AfterViewInit {
     private readonly CLUSTER_RANGE = 1;
 
-    private map: Map;
-    private markers = null;
-    private polys = null;
-    private iconStyle = null;
+    private map?: Map;
+    private markers: any;
+    private polys: any;
+    private iconStyle: any;
     // private popup = null;
     private isRGBColor = false;
-    private _selectedFeature = null;
-    private featureOverlay = null;
-    private mapData = null;
-    private hintTimeout = null;
+    private _selectedFeature: FeatureLike|null = null;
+    private featureOverlay: any|null = null;
+    private mapData: any|null = null;
+    private hintTimeout: any = null;
     @ViewChild('popup', {static: true}) popupEl;
 
     @ViewChild('tooltip', {static: true})
-    private tooltip: ElementRef;
+    private tooltip?: ElementRef;
 
-    private popupElement: HTMLElement = null;
+    private popupElement: HTMLElement|null = null;
     private hoverStyle;
     private polyStyle;
-    private polyData = null;
+    private polyData: any|null = null;
     private isGeoJSON = false;
     private onMessage;
 
@@ -78,9 +78,9 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
 
     applyStyle(e: any) {
         const {selector, style, value} = e;
-        const el = this.map.getTargetElement();
-        const target = el.querySelectorAll<HTMLElement>(selector);
-        target.forEach(t => {
+        const el = this.map?.getTargetElement();
+        const target = el && el.querySelectorAll<HTMLElement>(selector);
+        target?.forEach(t => {
             t.style[style] = value;
         });
     }
@@ -94,7 +94,7 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
             window.removeEventListener('message', this.onMessage);
         }
         this.tooltip?.nativeElement?.remove();
-        this.tooltip = null;
+        this.tooltip = undefined;
         super.ngOnDestroy();
     }
 
@@ -155,7 +155,7 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
     showTooltip(txt, x, y) {
         if (this.hintTimeout) clearTimeout(this.hintTimeout);
         this.hintTimeout = setTimeout(() => {
-            let el = this.tooltip.nativeElement as HTMLElement;
+            let el = this.tooltip?.nativeElement as HTMLElement;
             const styles = this.getDataPropValue('tooltipStyles');
             if (styles) {
                 const st = JSON.parse(styles);
@@ -181,15 +181,21 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
         }
 
 
-        this.popupElement.style.visibility = 'hidden';
+        if (this.popupElement) {
+            this.popupElement.style.visibility = 'hidden';
+        }
         setTimeout(() => {
-            this.popupElement.style.visibility = 'visible';
-            this.map.render();
+            if (this.popupElement) {
+                this.popupElement.style.visibility = 'visible';
+            }
+            this.map?.render();
         }, 0);
     }
 
     hidePopup() {
-        this.popupElement.style.visibility = 'hidden';
+        if (this.popupElement) {
+            this.popupElement.style.visibility = 'hidden';
+        }
     }
 
     /**
@@ -208,7 +214,7 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
         this.hideTooltip();
         this.rejectTooltipCreation();
         if (this.widget.type === 'pivot') {
-            this.widget.isDrillthrough = null;
+            this.widget.isDrillthrough = false;
             this.restoreWidgetType();
         } else {
             this.widget.pivotMdx = customMdx || this.getMDX();
@@ -394,8 +400,8 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
         }
 
         if (this.drills.length === 0 && (!isNaN(lat) && !isNaN(lon) && !isNaN(zoom)) && (lat !== undefined && lon !== undefined && zoom !== undefined)) {
-            this.map.getView().setCenter(transform([lon, lat], 'EPSG:4326', 'EPSG:900913'));
-            this.map.getView().setZoom(zoom);
+            this.map?.getView().setCenter(transform([lon, lat], 'EPSG:4326', 'EPSG:900913'));
+            this.map?.getView().setZoom(zoom);
         } else {
             if (Math.abs(min[0] - max[0]) < 0.00000001 && Math.abs(min[1] - max[1]) < 0.00000001) {
                 return;
@@ -405,8 +411,8 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
             //console.log([p1[0], p1[1], p2[0], p2[1]]);
             //console.log(this.map.getSize());
             // TODO: check remove FitOptions
-            this.map.getView().fit([p1[0], p1[1], p2[0], p2[1]], this.map.getSize() as FitOptions);
-            /*this.map.getView().fit([p1[0], p1[1], p2[0], p2[1]], this.map.getSize(),
+            this.map?.getView().fit([p1[0], p1[1], p2[0], p2[1]], this.map?.getSize() as FitOptions);
+            /*this.map?.getView().fit([p1[0], p1[1], p2[0], p2[1]], this.map?.getSize(),
                 {
                     padding: [10, 10, 10, 10],
                     constrainResolution: true,
@@ -415,13 +421,13 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
         }
 
         if (this.getDataPropValue('fixMaxZoom') === '1') {
-            this.map.getView().setMaxZoom(this.map.getView().getZoom());
+            this.map?.getView().setMaxZoom(this.map?.getView().getZoom() || 1);
         }
         if (this.getDataPropValue('fixMinZoom') === '1') {
-            this.map.getView().setMinZoom(this.map.getView().getZoom());
+            this.map?.getView().setMinZoom(this.map?.getView().getZoom() || 1);
         }
         if (this.getDataPropValue('maxZoom')) {
-            this.map.getView().setMaxZoom(parseFloat(this.getDataPropValue('maxZoom')));
+            this.map?.getView().setMaxZoom(parseFloat(this.getDataPropValue('maxZoom') || '1'));
         }
     }
 
@@ -434,7 +440,7 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
         if (!this.polyData || !this.map || !this.mapData) {
             return;
         }
-        let features = [];
+        let features: any[] = [];
         l = this.mapData.Cols[0].tuples.length;
         let minV = Number.MAX_VALUE;
         let maxV = Number.MIN_VALUE;
@@ -501,7 +507,7 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
             }
 
             // parts = this.polyData[pkey].split(';');
-            let polys = [];
+            let polys: any[] = [];
             count++;
 
             const dataLabels = this.getDataPropValue('dataLabels');
@@ -514,7 +520,7 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
             } else {
 
                 for (k = 0; k < parts.length; k++) {
-                    let poly = [];
+                    let poly: any[] = [];
                     if (!parts[k]) {
                         continue;
                     }
@@ -523,7 +529,7 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
                         coords = coords.split(' ');
                     }
 
-                    let polyCoords = [];
+                    let polyCoords: any[] = [];
                     for (i in coords) {
                         if (!coords[i]) {
                             continue;
@@ -568,7 +574,7 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
                     poly.push(polyCoords);
 
                     if (poly.length > 300) {
-                        let tmp = [];
+                        let tmp: any[] = [];
                         for (i = 0; i < poly.length; i += 2) {
                             tmp.push(poly[i]);
                         }
@@ -665,7 +671,7 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
     retrieveData(result) {
         // TODO: fix this later
         setTimeout(() => {
-            this.map.updateSize();
+            this.map?.updateSize();
         }, 0);
 
         if (result.Error) {
@@ -688,7 +694,7 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
         if (result && this.map) {
             let size = result.Cols[0].tuples.length;
             let k = 0;
-            let features = [];
+            let features: any[] = [];
             let latitudeProperty = 'latitude';
             if (this.widget.properties && this.widget.properties.latitudeProperty) {
                 latitudeProperty = this.widget.properties.latitudeProperty;
@@ -732,8 +738,8 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
                 let point = new Point([lat, lon]);
                 point.transform('EPSG:4326', 'EPSG:900913');
 
-                let labels = [];
-                let values = [];
+                let labels: string[] = [];
+                let values: number[] = [];
                 for (let j = 2; j < result.Cols[0].tuples.length; j++) {
                     labels.push(result.Cols[0].tuples[j].caption);
                     values.push(result.Data[k + j]);
@@ -847,9 +853,10 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
             style: this.polyStyle
         });
         vectorLayer.setZIndex(1);
-        this.map.addLayer(vectorLayer);
+        this.map?.addLayer(vectorLayer);
 
         // Setup clustering
+        // @ts-ignore
         this.markers = new SourceVector({
             features: []
         });
@@ -876,12 +883,14 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
 
 
         // Create layer for markers
-        vectorLayer = new Vector({
-            source: this.markers,
-            style: this.iconStyle
-        });
-        vectorLayer.setZIndex(100);
-        this.map.addLayer(vectorLayer);
+        if (this.markers) {
+            vectorLayer = new Vector({
+                source: this.markers,
+                style: this.iconStyle
+            });
+            vectorLayer.setZIndex(100);
+            this.map?.addLayer(vectorLayer);
+        }
 
 
         // Create popup
@@ -893,8 +902,8 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
         } as any); // TODO: remove any
         this.map.addOverlay(this.popup);*/
 
-        this.map.on('click', (e) => this.onMapClick(e));
-        this.map.on('pointermove', (e) => this.onPointerMove(e));
+        this.map?.on('click', (e) => this.onMapClick(e));
+        this.map?.on('pointermove', (e) => this.onPointerMove(e));
     }
 
     onPointerMove(e) {
@@ -907,7 +916,7 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
         this.hideTooltip();
 
 
-        let feature = this.map.forEachFeatureAtPixel(e.pixel, (feature, layer) => {
+        let feature = this.map?.forEachFeatureAtPixel(e.pixel, (feature, layer) => {
             return feature;
         });
         if (feature) {
@@ -942,13 +951,15 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
             this.hideTooltip();
             return;
         }
-        let pixel = this.map.getEventPixel(e.originalEvent);
-        let hit = this.map.hasFeatureAtPixel(pixel);
-        (this.map.getTarget() as HTMLElement).style.cursor = hit ? 'pointer' : '';
+        const pixel = this.map?.getEventPixel(e.originalEvent);
+        if (pixel) {
+            const hit = this.map?.hasFeatureAtPixel(pixel);
+            (this.map?.getTarget() as HTMLElement).style.cursor = hit ? 'pointer' : '';
+        }
 
-        this.featureOverlay.getSource().clear();
+        this.featureOverlay?.getSource().clear();
         if (feature) {
-            this.featureOverlay.getSource().addFeature(feature);
+            this.featureOverlay?.getSource().addFeature(feature);
         }
     }
 
@@ -956,7 +967,7 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
         if (!this.mapData) {
             return;
         }
-        let res = [];
+        let res: any[] = [];
         let item = this.mapData.Cols[1].tuples.filter((el) => {
             return el.caption === name;
         });
@@ -974,7 +985,7 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
         }
         tooltip = tooltip[0];
         let tooltipIdx = this.mapData.Cols[0].tuples.indexOf(tooltip);
-        res.push({label: '', value: this.mapData.Data[idx * l + tooltipIdx].split(':')[1] || ''});
+        res.push({label: '', value: this.mapData?.Data[idx * l + tooltipIdx].split(':')[1] || ''});
         return res;
     }
 
@@ -985,7 +996,7 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
                 return;
             }
         }
-        let feature = this.map.forEachFeatureAtPixel(evt.pixel,
+        let feature = this.map?.forEachFeatureAtPixel(evt.pixel,
             (feature, layer) => {
                 return feature;
             });
@@ -1007,8 +1018,8 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
         }
 
         const showPopup = (feature) => {
-            let dataIdx = feature.get('dataIdx');
-            let title, content;
+            let dataIdx: number = feature.get('dataIdx');
+            let title: string, content;
             let contentProp = 'PopupValue';
             let fmt = '';
             const prop = this.getDataProp('popupProperty');
@@ -1021,20 +1032,20 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
                 content += contentProp + ': ';
                 content += this.getDataByColumnName(this.mapData, contentProp, dataIdx, fmt);
             } else {
-                content = this.mapData.Cols[1].tuples[Math.floor(dataIdx / this.mapData.Cols[0].tuples.length)].caption ||
-                    this.mapData.Cols[1].tuples[Math.floor(dataIdx / this.mapData.Cols[0].tuples.length)].desc || '';
+                content = this.mapData?.Cols[1].tuples[Math.floor(dataIdx / this.mapData?.Cols[0].tuples.length)].caption ||
+                    this.mapData?.Cols[1].tuples[Math.floor(dataIdx / this.mapData?.Cols[0].tuples.length)].desc || '';
             }
             if (!content) {
                 content = '<b>' + (feature.get('name') || feature.values_.title) + '</b><br/>';
-                if (this.mapData.Cols[0].tuples.length) {
-                    for (let i = 0; i < this.mapData.Cols[0].tuples.length; i++) {
-                        const caption = this.mapData.Cols[0].tuples[i].caption;
+                if (this.mapData?.Cols[0].tuples.length) {
+                    for (let i = 0; i < this.mapData?.Cols[0].tuples.length; i++) {
+                        const caption = this.mapData?.Cols[0].tuples[i].caption;
                         if (caption.toLowerCase() === 'latitude' || caption.toLowerCase() === 'longitude') {
                             continue;
                         }
                         const v = this.getDataByColumnName(this.mapData, caption, dataIdx);
                         content += `${caption}: <span style="opacity: 0.6">${v}</span>`;
-                        if (i !== this.mapData.Cols[0].tuples.length - 1) {
+                        if (i !== this.mapData?.Cols[0].tuples.length - 1) {
                             content += '<br/>';
                         }
                     }
@@ -1060,21 +1071,12 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
                 coord[0] += Math.floor((this.map.getCoordinateFromPixel(evt.pixel)[0] / 40075016.68) + 0.5) * 20037508.34 * 2;
             }*/
 
-            this.popupElement.style.left = evt.pixel[0] + 'px';
-            this.popupElement.style.top = (evt.pixel[1] - 10) + 'px';
-            // this.popup.setPosition(coord);
-
-            //this.doDrillFilter(feature.get("path"));
-
-            /*$(element).popover({
-             'placement': 'top',
-             'html': true,
-             'content': feature.get('name')
-             });*/
-            //$(element).popover('show');
-            this.popupElement.innerHTML = content;
+            if (this.popupElement) {
+                this.popupElement.style.left = evt.pixel[0] + 'px';
+                this.popupElement.style.top = (evt.pixel[1] - 10) + 'px';
+                this.popupElement.innerHTML = content;
+            }
             this.showPopup();
-
         }
     }
 
@@ -1090,14 +1092,14 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
 
     private getPartsByKey(pkey: string, coordsProperty = 'Key') {
         if (this.isGeoJSON) {
-            const feature = this.polyData.features.find(f => f.properties[coordsProperty] === pkey);
+            const feature = this.polyData?.features.find(f => f.properties[coordsProperty] === pkey);
             if (!feature) {
                 return;
             }
             return feature.geometry;
         } else {
-            if (this.polyData[pkey]) {
-                return this.polyData[pkey].split(';');
+            if (this.polyData?.[pkey]) {
+                return this.polyData[pkey]?.split(';');
             }
         }
     }

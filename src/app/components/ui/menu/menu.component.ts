@@ -25,7 +25,7 @@ export class MenuComponent implements OnInit, OnDestroy {
 
     public isHome = false;
     readonly version = dsw.const.ver;
-    private subOnRouteChange: Subscription;
+    private subOnRouteChange?: Subscription;
 
     constructor(private router: Router,
                 private route: ActivatedRoute,
@@ -47,7 +47,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy() {
-        this.subOnRouteChange.unsubscribe();
+        this.subOnRouteChange?.unsubscribe();
     }
 
     checkHome() {

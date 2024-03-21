@@ -15,7 +15,7 @@ interface IFilterOption {
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DateFilterComponent  {
-    @ViewChild('datePicker') datePicker: DatePickerComponent;
+    @ViewChild('datePicker') datePicker!: DatePickerComponent;
 
     filters: IFilterOption[] = [
         {
@@ -103,7 +103,7 @@ export class DateFilterComponent  {
 
     setFilter(f: IFilterOption, idx: number) {
         this.curFilter = idx;
-        if (this.datePicker) {
+        if (this.datePicker && f.dateFrom) {
             this.datePicker.setDateRange(f.dateFrom, f.dateTo);
         }
     }
@@ -127,9 +127,9 @@ export class DateFilterComponent  {
         this.datePicker.setDateRange(from, to);
         const idx = this.filters.findIndex(f => {
             if (to) {
-                return f.dateFrom.toDateString() === from.toDateString() && f.dateTo.toDateString() === to.toDateString();
+                return f.dateFrom?.toDateString() === from.toDateString() && f.dateTo?.toDateString() === to.toDateString();
             } else {
-                return f.dateFrom.toDateString() === from.toDateString();
+                return f.dateFrom?.toDateString() === from.toDateString();
             }
         });
         if (idx !== -1) {

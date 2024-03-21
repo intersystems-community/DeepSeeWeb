@@ -18,7 +18,7 @@ export class FilterService {
     private dashboard = '';
     filtersChanged = false;
     isFiltersOnToolbarExists = false;
-    items = [];
+    items: any[] = [];
 
     onApplyFilter = new EventEmitter<any>();
     onFiltersChanged = new EventEmitter<void>();
@@ -163,7 +163,7 @@ export class FilterService {
      * @returns {string}
      */
     getFiltersUrlString(widgetName?: string, ignoreTargetAll = false, dot = '.', seporator = '~') {
-        const f = [];
+        const f: string[] = [];
         let widgetFilters = widgetName ? this.getAffectsFilters(widgetName) : this.items;
         if (ignoreTargetAll && widgetFilters) {
             widgetFilters  = widgetFilters.filter(f => f.target !== '*');
@@ -242,7 +242,7 @@ export class FilterService {
             }
         }
         const params = param.split(';');
-        let widgetName = null;
+        let widgetName: string|null = null;
         let filters = '';
         for (let i = 0; i < params.length; i++) {
             const parts = params[i].split(':');
@@ -255,13 +255,13 @@ export class FilterService {
             }
         }
         // Get affected filters
-        let flt = [];
+        let flt: any[] = [];
         if (widgetName !== '*') {
             flt = this.items.filter(f => f.targetArray.indexOf(widgetName) !== -1 || f.target === widgetName || f.target === '*');
         } else {
             flt = this.items.slice();
         }
-        flt.forEach((f, idx) => {
+        flt.forEach((f: any, idx) => {
             const urlFilters = decodeURIComponent(filters).split('~');
             for (let i = 0; i < urlFilters.length; i++) {
                 let s = decodeURIComponent(urlFilters[i]);
@@ -290,8 +290,8 @@ export class FilterService {
                         continue;
                     }
                     // &[30 to 59]|&[60+]|"
-                    const values = s.match(/\{([^)]+)\}/)[1].split(',');
-                    f.value = values.join('|');
+                    const values = s.match(/\{([^)]+)\}/)?.[1].split(',');
+                    f.value = values?.join('|');
                 } else {
                     // Check for path
                     const path = s.split('.&')[0];
@@ -401,7 +401,7 @@ export class FilterService {
     }
 
     getClickFilterTarget(widgetName: string) {
-        const widgets = [];
+        const widgets: any[] = [];
         for (let i = 0; i < this.items.length; i++) {
             const flt = this.items[i];
             if (flt.location !== 'click') {
@@ -449,7 +449,7 @@ export class FilterService {
         }*/
         flt.value = value;
         const values = flt.value.toString().split('|');
-        const names = [];
+        const names: string[] = [];
         for (let i = 0; i < flt.values.length; i++) {
             if (flt.values[i].path === value || (values.length > 1 && values.includes(flt.values[i].path))) {
                 flt.values[i].checked = true;
@@ -468,7 +468,7 @@ export class FilterService {
      * @returns {Array} Model filters
      */
     getWidgetModelFilters(widgetName) {
-        const res = [];
+        const res: any[] = [];
         for (let i = 0; i < this.items.length; i++) {
             if (this.items[i].type === 'hidden') {
                 continue;
@@ -499,7 +499,7 @@ export class FilterService {
      * @returns {Array} Filters used by widget
      */
     getWidgetFilters(widgetName) {
-        const res = [];
+        const res: any[] = [];
         for (let i = 0; i < this.items.length; i++) {
             if ((this.items[i].target === '*' || this.items[i].target === '') || (this.items[i].targetArray.indexOf(widgetName) !== -1)) {
                 res.push(this.items[i]);
@@ -576,7 +576,10 @@ export class FilterService {
         if (!this.us.isEmbedded()) {
             return;
         }
-        const idx = this.route.snapshot.queryParamMap.get('widget');
+        const idx = this.route.snapshot.queryParamMap.get('widget') || -1;
+        if (idx === -1) {
+            return;
+        }
         const widget = this.dbs.getAllWidgets()[parseInt(idx, 10)];
         const name = widget?.name;
         const filters = 'TARGET:*;FILTER:' + this.getFiltersUrlString(name, true);
@@ -619,14 +622,14 @@ export class FilterService {
 
         let i;
         let flt;
-        const active = [];
+        const active: any[] = [];
         for (i = 0; i < this.items.length; i++) {
             flt = this.items[i];
             if (flt.value !== '' || flt.isInterval) {
                 active.push(flt);
             }
         }
-        const res = active.map(e => {
+        const res = active.map((e: any) => {
             return {
                 targetProperty: e.targetProperty,
                 value: e.value,

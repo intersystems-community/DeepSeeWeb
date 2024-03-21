@@ -19,25 +19,25 @@ interface IScorecardColumn {
     styleUrls: ['./scorecard-widget.component.scss']
 })
 export class ScorecardWidgetComponent extends BaseWidget implements OnInit, OnDestroy {
-    @Input() widget: IWidgetInfo;
+    @Input() widget: IWidgetInfo = {} as IWidgetInfo;
 
     columns: any[] = [];
     rows: any[] = [];
     data: (string | number)[][] = [];
     targets: (string | number)[][] = [];
-    color: string;
-    props: IWidgetDataProperties[];
+    color = '';
+    props: IWidgetDataProperties[] = [];
 
     hasFooter = false;
-    footerValues = [];
+    footerValues: string[] = [];
     private totalByColumn: {[key: string]: number} = {};
 
-    private subColorsConfig: Subscription;
-    private originalData: any[];
+    private subColorsConfig?: Subscription;
+    private originalData: any[] = [];
 
     ngOnInit(): void {
         super.ngOnInit();
-        this.color = Highcharts.getOptions().colors[0] as string;
+        this.color = Highcharts.getOptions().colors?.[0] as string;
         if (this.tc && this.tc.hcColors) {
             this.color = this.tc.hcColors[0];
         }
@@ -53,7 +53,7 @@ export class ScorecardWidgetComponent extends BaseWidget implements OnInit, OnDe
     }
 
     ngOnDestroy() {
-        this.subColorsConfig.unsubscribe();
+        this.subColorsConfig?.unsubscribe();
         super.ngOnDestroy();
     }
 
@@ -226,14 +226,14 @@ export class ScorecardWidgetComponent extends BaseWidget implements OnInit, OnDe
             }
             const regExp = /^Properties\(\"([^)]+)\"\)/;
             const matches = regExp.exec(c.valueID);
-            return matches[1] === dimension;
+            return matches?.[1] === dimension;
         });
         return colIdx;
     }
 
     private prepareData(data: any[]) {
         // Calc min and max for all columns if needed
-        const extremes = [];
+        const extremes: any[] = [];
         for (let p = 0; p < this.props.length; p++) {
             let min;
             let max;
@@ -318,7 +318,7 @@ export class ScorecardWidgetComponent extends BaseWidget implements OnInit, OnDe
 
     private getSvgForTrendLine(prop: IWidgetDataProperties, data: string): string {
         const h = 30;
-        let values = [];
+        let values: number[] = [];
         if (typeof data === 'string') {
             values = data.split(',').map(v => {
                 if (!v) {
@@ -379,8 +379,8 @@ export class ScorecardWidgetComponent extends BaseWidget implements OnInit, OnDe
         if (!this.override) {
             return;
         }
-        const cols = this.override.columns.filter(c => c.showAs === 'sum%');
-        if (cols.length === 0) {
+        const cols = this.override.columns?.filter(c => c.showAs === 'sum%');
+        if (!cols?.length) {
             return;
         }
         cols.forEach(c => {

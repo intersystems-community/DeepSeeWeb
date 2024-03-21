@@ -14,8 +14,7 @@ export let CURRENT_NAMESPACE = '';
     providedIn: 'root'
 })
 export class NamespaceService {
-    private list: string [];
-    private readonly onNavEnd: Subscription;
+    private list: string[] = [];
 
     constructor(private ss: StorageService,
                 private router: Router,
@@ -65,9 +64,9 @@ export class NamespaceService {
 
     loadNamespaces() {
         try {
-            const ns = this.ss.storage.getItem(KEY_NAMESPACE);
+            const ns = this.ss.storage.getItem(KEY_NAMESPACE) || '';
             CURRENT_NAMESPACE = ns;
-            const list = this.ss.storage.getItem(KEY_NAMESPACES);
+            const list = this.ss.storage.getItem(KEY_NAMESPACES) || '[]';
             this.list = JSON.parse(list);
         } catch (e) {
             console.warn(`Can't parse namespace list from storage`);

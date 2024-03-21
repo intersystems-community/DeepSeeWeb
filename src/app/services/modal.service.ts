@@ -53,7 +53,7 @@ export class ModalService {
         if (!modal.buttons) {
             modal.buttons = JSON.parse(JSON.stringify(DEFAULT_BUTTONS));
 
-            if (okCallback) {
+            if (okCallback && modal.buttons) {
                 modal.buttons[0].click = okCallback;
             }
         }

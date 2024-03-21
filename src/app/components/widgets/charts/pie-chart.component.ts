@@ -66,7 +66,7 @@ export class PieChartComponent extends BaseChartClass implements OnInit {
                     cursor: 'pointer',
                     dataLabels: {
                         enabled: true,
-                        formatter: function() {
+                        formatter: function(this: any) {
                             const ov = _this.override;
                             /* jshint ignore:start */
                             const t: any = this;
@@ -96,7 +96,7 @@ export class PieChartComponent extends BaseChartClass implements OnInit {
                 },
                 series: {
                     dataLabels: {
-                        formatter: function() {
+                        formatter: function(this: any) {
                             /* jshint ignore:start */
                             const t = this;
                             /* jshint ignore:end */
@@ -109,7 +109,7 @@ export class PieChartComponent extends BaseChartClass implements OnInit {
                     },
                     point: {
                         events: {
-                            legendItemClick: function() {
+                            legendItemClick: function(this: any) {
                                 const path = this.path;
                                 const name = this.name;
                                 const isVisible = this.visible;
@@ -131,33 +131,33 @@ export class PieChartComponent extends BaseChartClass implements OnInit {
                                     });
                                 });
                             },
-                            mouseOut: function() {
-                                const relatedPoints = [];
+                            mouseOut: function(this: any) {
+                                const relatedPoints: any[] = [];
                                 const series = this.series;
                                 const pIndex = this.index;
 
-                                series.chart.series.forEach(s => {
+                                series.chart.series.forEach((s: any) => {
                                     if (s !== series) {
                                         relatedPoints.push(s.points[pIndex]);
                                     }
                                 });
 
-                                relatedPoints.forEach(p => {
+                                relatedPoints.forEach((p: any) => {
                                     p.setState('');
                                 });
                             },
-                            mouseOver: function() {
-                                const relatedPoints = [];
+                            mouseOver: function(this: any) {
+                                const relatedPoints: any[] = [];
                                 const series = this.series;
                                 const pIndex = this.index;
 
-                                series.chart.series.forEach(s => {
+                                series.chart.series.forEach((s: any) => {
                                     if (s !== series) {
                                         relatedPoints.push(s.points[pIndex]);
                                     }
                                 });
 
-                                relatedPoints.forEach(p => {
+                                relatedPoints.forEach((p: any) => {
                                     p.setState('hover');
                                 });
                             }
@@ -169,10 +169,11 @@ export class PieChartComponent extends BaseChartClass implements OnInit {
         };
         this.us.mergeRecursive(this.chartConfig, po);
 
-        if (!this.chartConfig.plotOptions.series.dataLabels) {
+        if (!this.chartConfig?.plotOptions?.series?.dataLabels) {
+            // @ts-ignore
             this.chartConfig.plotOptions.series.dataLabels = {};
         }
-        (this.chartConfig.plotOptions.pie.dataLabels as SeriesPieDataLabelsOptionsObject).enabled = this.isValuesVisible();
+        (this.chartConfig?.plotOptions?.pie?.dataLabels as SeriesPieDataLabelsOptionsObject).enabled = this.isValuesVisible();
         // (this.chartConfig.plotOptions.pie.dataLabels as SeriesPieDataLabelsOptionsObject).enabled = this.widget.isLegend;
         // this.chartConfig.plotOptions.series.dataLabels.enabled = this.widget.isLegend;
 
@@ -198,7 +199,7 @@ export class PieChartComponent extends BaseChartClass implements OnInit {
 
     onHeaderButton(bt: IButtonToggle) {
         if (bt.name === 'ShowValues' || bt.name === 'btn.ShowAnnotations' || bt.name === 'btn.ShowPercents') {
-            (this.chartConfig.plotOptions.pie.dataLabels as SeriesPieDataLabelsOptionsObject).enabled = this.isValuesVisible();
+            (this.chartConfig.plotOptions?.pie?.dataLabels as SeriesPieDataLabelsOptionsObject).enabled = this.isValuesVisible();
             this.updateChart(true);
 
             // Highcharts issue with doubled legend. Need legend refresh after hidding datalables
@@ -207,7 +208,7 @@ export class PieChartComponent extends BaseChartClass implements OnInit {
                     s.options.showInLegend = false;
                 }
             });
-            if (this.chart?.series.length > 1) {
+            if (this.chart?.series.length > 1 && this.chartConfig.legend) {
                 this.chart.legend.update(this.chartConfig.legend, true);
             }
         }
@@ -250,6 +251,7 @@ export class PieChartComponent extends BaseChartClass implements OnInit {
             });
         }
 
+        // @ts-ignore
         this.chartConfig.plotOptions.series.point.events.mouseOver.call(e);
     }
 
@@ -262,6 +264,7 @@ export class PieChartComponent extends BaseChartClass implements OnInit {
                 }
             });
         }
+        // @ts-ignore
         this.chartConfig.plotOptions.series.point.events.mouseOut.call(e);
     }
 

@@ -7,13 +7,13 @@ import {AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild} from '@a
 })
 export class TextAreaComponent implements AfterViewInit {
     @Input() value = '';
-    @ViewChild('input') input: ElementRef;
+    @ViewChild('input') input!: ElementRef;
 
     constructor() {
     }
 
     ngAfterViewInit(){
-        setTimeout(()=> {
+        setTimeout(() => {
             this.input.nativeElement.focus();
             this.input.nativeElement.select();
         });

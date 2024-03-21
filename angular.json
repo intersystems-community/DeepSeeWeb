@@ -20,7 +20,9 @@
                         "outputPath": "dist",
                         "index": "src/index.html",
                         "main": "src/main.ts",
-                        "polyfills": "src/polyfills.ts",
+                        "polyfills": [
+                            "zone.js"
+                        ],
                         "tsConfig": "tsconfig.app.json",
                         "aot": true,
                         "assets": [
@@ -109,21 +111,21 @@
                     "defaultConfiguration": "development",
                     "builder": "@angular-devkit/build-angular:dev-server",
                     "options": {
-                        "browserTarget": "DeepSeeWeb:build"
+                      "buildTarget": "DeepSeeWeb:build"
                     },
                     "configurations": {
                         "production": {
-                            "browserTarget": "DeepSeeWeb:build:production"
+                          "buildTarget": "DeepSeeWeb:build:production"
                         },
                         "development": {
-                            "browserTarget": "DeepSeeWeb:build:development"
+                          "buildTarget": "DeepSeeWeb:build:development"
                         }
                     }
                 },
                 "extract-i18n": {
                     "builder": "@angular-devkit/build-angular:extract-i18n",
                     "options": {
-                        "browserTarget": "DeepSeeWeb:build"
+                      "buildTarget": "DeepSeeWeb:build"
                     }
                 },
                 "test": {

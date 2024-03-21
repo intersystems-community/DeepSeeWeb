@@ -58,7 +58,7 @@ const btnPieChart: IHeaderButton[] = [
     }
 ];
 
-export const WIDGET_TYPES = {
+export const WIDGET_TYPES: {[t: string]: any} = {
     regular: {
         label: 'Scorecard chart',
         class: ScorecardWidgetComponent,
@@ -303,7 +303,7 @@ export class WidgetTypeService {
     }
 
     initialize() {
-        const addons = dsw.addons;
+        const addons: string[] = dsw.addons;
         if (addons) {
             if (addons && addons.length) {
                 for (let i = 0; i < addons.length; i++) {
@@ -358,7 +358,7 @@ export class WidgetTypeService {
      * @param {string} name Type name
      * @returns {object|undefined} Class constructor function
      */
-    getClass(name: string): Type<unknown> {
+    getClass(name: string): Type<any>|undefined {
         let key = name.toLowerCase();
         if (!WIDGET_TYPES[key]) {
             key = key.replace('dsw.addons.', '');
@@ -389,7 +389,6 @@ export class WidgetTypeService {
      * @returns {string|undefined} Type group
      */
     getType(name: string): string {
-        //let key = name.toLowerCase();
         let key = name;
         if (!WIDGET_TYPES[key]) {
             key = key.replace('dsw.addons.', '');

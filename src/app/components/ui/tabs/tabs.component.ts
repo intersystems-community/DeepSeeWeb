@@ -21,9 +21,9 @@ import {Subscription} from 'rxjs/internal/Subscription';
 const BTN_MORE_WIDTH = 37;
 
 export class DSWTab {
-  id: string;
-  text: string;
-  hidden?: boolean;
+  id = '';
+  text = '';
+  hidden? = false;
 }
 
 @Component({
@@ -33,17 +33,17 @@ export class DSWTab {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TabsComponent implements AfterViewInit, OnDestroy, OnChanges {
-  @ViewChildren('elements') elements: QueryList<ElementRef>;
+  @ViewChildren('elements') elements!: QueryList<ElementRef>;
   @Input() tabs: DSWTab[] = [];
-  @Input() currentTab: DSWTab;
+  @Input() currentTab?: DSWTab;
   @Input() useQuery = false;
   @Output() currentTabChange = new EventEmitter<DSWTab>();
 
   isMoreButtonVisible = false;
   isOpened = false;
 
-  private subResize: Subscription;
-  private subClick: Subscription;
+  private subResize?: Subscription;
+  private subClick?: Subscription;
 
   constructor(private el: ElementRef,
               private cd: ChangeDetectorRef,
@@ -51,11 +51,14 @@ export class TabsComponent implements AfterViewInit, OnDestroy, OnChanges {
   ) {
       this.zone.runOutsideAngular(() => {
         this.subClick = fromEvent(window, 'click')
-          .subscribe((e: MouseEvent) => {
+          .subscribe(e => {
             let p = e.target as HTMLElement;
             while (p) {
               if (p.classList.contains('btn-more')) {
                 return;
+              }
+              if (!p.parentElement) {
+                  break;
               }
               p = p.parentElement;
             }
@@ -95,7 +98,7 @@ export class TabsComponent implements AfterViewInit, OnDestroy, OnChanges {
     const t = changes['tabs'];
     if (t.previousValue !== t.currentValue || t.previousValue?.length !== t.currentValue?.length) {
       if (this.isArraysEqual(t.previousValue, t.currentValue)) {
-        return false;
+        return;
       }
       setTimeout(() => {
         this.recalcTabsVisibility();

@@ -30,7 +30,7 @@ export interface IDataSourceInfo {
 })
 export class DataSourceSelectorDialog implements OnInit, OnDestroy {
     @Output() select = new EventEmitter<IDataSourceInfo>();
-    @ViewChild('table') table: ElementRef;
+    @ViewChild('table') table!: ElementRef;
     $modal: any;
     isLoading = true;
     tabs: DSWTab[] = [
@@ -43,8 +43,8 @@ export class DataSourceSelectorDialog implements OnInit, OnDestroy {
     data: IDataSourceInfo[] = [];
     filteredData: IDataSourceInfo[] = [];
     selected: IDataSourceInfo[] = [];
-    private subSearch: Subscription;
-    private scrollTimeout: number;
+    private subSearch?: Subscription;
+    private scrollTimeout?: ReturnType<typeof setTimeout>;
 
     trackByIndex = (index: number, r: any) => index;
 
@@ -97,7 +97,7 @@ export class DataSourceSelectorDialog implements OnInit, OnDestroy {
 
     ngOnDestroy() {
         clearTimeout(this.scrollTimeout);
-        this.subSearch.unsubscribe();
+        this.subSearch?.unsubscribe();
     }
 
     private scrollToLast() {
@@ -127,7 +127,7 @@ export class DataSourceSelectorDialog implements OnInit, OnDestroy {
     }
 
     private filterItems(children: IDataSourceInfo[], term: string): boolean {
-        const toRemove = [];
+        const toRemove: any[] = [];
         children.forEach(c => {
             if (c.children?.length) {
                 if (this.filterItems(c.children, term)) {

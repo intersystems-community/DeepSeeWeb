@@ -16,7 +16,7 @@ import {ModalService} from "../../../services/modal.service";
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class WidgetEditorComponent implements OnInit, OnDestroy {
-    @Input() widget: IWidgetInfo = null;
+    @Input() widget?: IWidgetInfo;
     @Input() invalid: string[] = [];
     model: Partial<IWidgetInfo> = {
         edKey: 'ed' + new Date().getTime(),

@@ -24,6 +24,7 @@ export class TimeChartComponent extends BaseChartClass implements OnInit {
             let fmt;
             let val;
             /* jshint ignore:start */
+            // @ts-ignore
             const t = this;
             /* jshint ignore:end */
 
@@ -86,7 +87,7 @@ export class TimeChartComponent extends BaseChartClass implements OnInit {
         (this.chartConfig.yAxis as YAxisOptions).min = this.getMinValue(data.Data);
         //config.yAxis.max = ChartBase.getMaxValue(data.Data);
         this.clearSeries();
-        let tempData = [];
+        let tempData: any[] = [];
         //var minDate = Number.POSITIVE_INFINITY;
         //var maxDate = Number.NEGATIVE_INFINITY;
         let da;
@@ -232,7 +233,7 @@ export class TimeChartComponent extends BaseChartClass implements OnInit {
             let base = new Date(1840, 11, 31);
             const p = str.toString().split(",");
             d = parseInt(p[0]);
-            let t = null;
+            let t: number|undefined = undefined;
             if (p.length > 1) { t = parseInt(p[1]); }
             base = this.addDays(base, parseInt(d));
             if (t) base.setSeconds(t);

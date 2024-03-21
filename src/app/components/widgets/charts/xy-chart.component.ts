@@ -36,7 +36,7 @@ export class XyChartComponent extends BaseChartClass implements OnInit {
                 }
                 const yAxis = (_this.chartConfig.yAxis as YAxisOptions);
                 const xAxis = (_this.chartConfig.xAxis as XAxisOptions);
-                return yAxis.title.text + ':<b>' + v1 + '</b><br/>' + xAxis.title.text + ':<b>' + v2 + '</b>';
+                return yAxis.title?.text + ':<b>' + v1 + '</b><br/>' + xAxis.title?.text + ':<b>' + v2 + '</b>';
             }
         };
         this.updateChart();
@@ -47,15 +47,21 @@ export class XyChartComponent extends BaseChartClass implements OnInit {
         let fmt2 = '';
 
         if (data.Cols[0].tuples.length >= 1) {
-            (this.chartConfig.xAxis as YAxisOptions).title.text = data.Cols[0].tuples[0].caption;
+            const axis = (this.chartConfig.xAxis as YAxisOptions);
+            if (axis?.title) {
+                axis.title.text = data.Cols[0].tuples[0].caption;
+            }
             fmt1 = data.Cols[0].tuples[0].format;
         }
         if (data.Cols[0].tuples.length >= 2) {
-            (this.chartConfig.yAxis as XAxisOptions).title.text = data.Cols[0].tuples[1].caption;
+            const axis = (this.chartConfig.yAxis as XAxisOptions);
+            if (axis?.title !== undefined) {
+                axis.title.text = data.Cols[0]?.tuples[1]?.caption;
+            }
             fmt1 = data.Cols[0].tuples[1].format;
         }
         this.chartConfig.series = [];
-        const tempData = [];
+        const tempData: any[] = [];
 
         if (data.Cols[0].tuples[0].children) {
             this.showError('Data converter for this xy chart not implemented!');
@@ -70,7 +76,7 @@ export class XyChartComponent extends BaseChartClass implements OnInit {
                 fotmat2: fmt2
             });
 
-            (this.chartConfig.xAxis as XAxisOptions).tickInterval = Math.round((tempData[tempData.length - 1][0] - tempData[0][0]) / 10);
+            (this.chartConfig?.xAxis as XAxisOptions).tickInterval = Math.round((tempData[tempData.length - 1][0] - tempData[0][0]) / 10);
         }
         this.updateChart(true);
     }

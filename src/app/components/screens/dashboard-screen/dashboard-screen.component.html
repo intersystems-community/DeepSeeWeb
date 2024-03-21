@@ -24,7 +24,7 @@
     </div>
 
     <div class="tile mobile-filter" *ngIf="isMobileFilterVisible" [style.transform]="'translateX(calc(-100vw * ' +- page + '))'">
-        <dsw-widget [widget]="mobileFilter"></dsw-widget>
+        <dsw-widget [widget]="mobileFilter!"></dsw-widget>
     </div>
 </div>
 
