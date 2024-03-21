@@ -4,8 +4,7 @@ import {
     Directive,
     ElementRef,
     HostBinding,
-    Inject,
-    Injector,
+    inject,
     NgZone,
     OnDestroy,
     OnInit
@@ -253,36 +252,280 @@ export interface IKPIData {
     Result: IKPIDataResult;
 }
 
-@Directive()
-export abstract class BaseWidget implements OnInit, OnDestroy {
+@Directive({
+    standalone: true
+})
+export class BaseWidget {
+    /* el = inject(ElementRef);
+     us = inject(UtilService);
+     vs = inject(VariablesService);
+     ss = inject(StorageService);
+     ds = inject(DataService);
+     fs = inject(FilterService);
+     wts = inject(WidgetTypeService);
+     dbs = inject(DashboardService);
+     cfr = inject(ComponentFactoryResolver);
+     ns = inject(NamespaceService);
+     route = inject(ActivatedRoute);
+     i18n = inject(I18nService);
+     bs = inject(BroadcastService);
+     san = inject(DomSanitizer);
+     sbs = inject(SidebarService);
+     cd = inject(ChangeDetectorRef);
+     zone = inject(NgZone);*/
 
-    static CURRENT_ADDON_VERSION = 1;
-    protected preventColFilteringBasedOnDataProperties = false;
+    el!: any;
+    us!: any;
+    vs!: any;
+    ss!: any;
+    ds!: any;
+    fs!: any;
+    wts!: any;
+    dbs!: any;
+    cfr!: any;
+    ns!: any;
+    route!: any;
+    i18n!: any;
+    bs!: any;
+    san!: any;
+    sbs!: any;
+    cd!: any;
+    zone!: any;
 
-    @HostBinding('class.inline') get inline(): boolean {
-        return this.widget.inline;
+    dataInfo: any;
+
+    public model: any = {};
+    // Parent angular component on which widget is created
+    parent!: WidgetComponent;
+
+    // Widget data
+    public widget!: IWidgetInfo;
+
+    // Loading spinner, do now use directly
+    // use showLoading(), hideLoading() instead
+    public isSpinner = true;
+    drills: any[] = [];
+    tc: any;
+    // Array of widget names that shall be filtered during drill down
+    drillFilterWidgets: any[] | null = null;
+    _currentData: any;
+    _kpiData = null;
+    // For light pivot
+    public lpt;
+    // For chart
+    public chart!: Highcharts.Chart;
+    customDataSource = '';
+    createWidgetComponent!: (type?: string) => void;
+    protected drillFilter = '';
+    protected drillFilterDrills: string[] = [];
+    protected pivotVariables: any = null;
+    protected widgetsSettings: any;
+    // If widget on tile
+    protected tile = null;
+    protected customColSpec = '';
+    protected customRowSpec = '';
+    protected pivotData: any = null;
+    protected linkedMdx = '';
+    protected liveUpdateInterval: any;
+    protected canDoDrillthrough = false;
+    protected firstRun = true;
+    protected chartConfig: any;
+    protected override?: IWidgetOverride;
+    protected baseType = '';
+    private subLinkedMdx?: Subscription;
+    private subRefreshDepenend?: Subscription;
+    private subDrillFilter?: Subscription;
+    private subDrillFilterAll?: Subscription;
+    private subDrilldown?: Subscription;
+    private subDrillthrough?: Subscription;
+    private subPivotVar?: Subscription;
+    private subPivotVarAll?: Subscription;
+    private subDataSourcechange?: Subscription;
+    private subColSpec?: Subscription;
+    private subColSpecAll?: Subscription;
+    private hasDatasourceChoser = false;
+    private oneItemDrillApplied = false;
+
+    clearError() {
     }
 
-    // private subOnHeaderButton: Subscription;
+    broadcastDependents(s = '') {
 
+    }
+
+    getDrillthroughMdx(mdx: string) {
+        return '';
+    }
+
+    getMDX() {
+        return '';
+    }
+
+    requestData() {
+
+    }
+
+    doDrillFilter(path, drills) {
+
+    }
+
+    _requestKPIData(flt?): Promise<any> {
+        return Promise.resolve();
+    }
+
+    restoreWidgetType() {
+
+    }
+
+    showError(s = '') {
+
+    }
+
+    onResize() {
+
+    }
+
+    performAction(action) {
+
+    }
+
+    onDataSourceChange(item) {
+
+    }
+
+    onVariableChange(v) {
+    }
+
+    resetClickFilter() {
+
+    }
+
+    getDrillsAsParameter() {
+        return '';
+    }
+
+    destroy() {
+
+    }
+
+    getDrillTitle(drill?) {
+        return '';
+    }
+
+    displayAsPivot(a?) {
+
+    }
+
+    doDrillOnly(path?: string, name?: string, category?: string, noDrillCallback?: () => void, preventDrillFilter = false, autoDrillSuccess?: () => void, drillError?: (e) => void) {
+        return Promise.resolve();
+    }
+
+    doDrillthrough(a, b, c?) {
+        return Promise.resolve();
+    }
+
+    getDataValue(a?, b?, c?) {
+        return 0;
+    }
+
+    getDataPropValue(a?, b?, c?) {
+        return '';
+    }
+
+    showLoading() {
+
+    }
+
+    getDataPropByDataValue(dataValue: string): IWidgetDataProperties | undefined {
+        return;
+    }
+
+    hideLoading() {
+
+    }
+
+    async checkForAutoDrill(data?): Promise<boolean> {
+        return Promise.resolve(true);
+    }
+
+    changeWidgetType(a) {
+
+    }
+
+    getDataByColumnName(data, columnName, dataIndex, fmt = '') {
+        return [];
+    }
+
+    getDataProp(name: string): IWidgetDataProperties | undefined {
+        return;
+    }
+
+    doDrillUp(a?, b?, c?, d?) {
+
+    }
+
+    doDrill(a?, b?, c?, d?) {
+
+    }
+
+    retrieveData(d) {
+
+    }
+
+    onHeaderButton(bt: IButtonToggle) {
+
+    }
+
+    formatNumber(v, format) {
+        return '';
+    }
+
+    ngOnInit() {
+
+    }
+
+    ngOnDestroy() {
+
+    }
+
+    protected onInit = () => {
+    }
+}
+
+@Directive({
+    standalone: true
+})
+export class BaseWidget2 implements OnInit, OnDestroy {
+
+    static CURRENT_ADDON_VERSION = 1;
+    public i18n: I18nService;
+    public bs: BroadcastService;
+
+    // private subOnHeaderButton: Subscription;
+    dataInfo: any;
+    public model: any = {};
+    // Parent angular component on which widget is created
+    parent!: WidgetComponent;
+    // Widget data
+    public widget!: IWidgetInfo;
+    // use showLoading(), hideLoading() instead
+    public isSpinner = true;
+    drills: any[] = [];
+    tc: any;
+    // Array of widget names that shall be filtered during drill down
+    drillFilterWidgets: any[] | null = null;
+    _currentData: any;
+    _kpiData = null;
+    // For light pivot
+    public lpt;
+    // For chart
+    public chart!: Highcharts.Chart;
+    customDataSource = '';
+    createWidgetComponent!: (type?: string) => void;
+    protected preventColFilteringBasedOnDataProperties = false;
     // Services
     protected el: ElementRef;
     protected us: UtilService;
-    protected vs: VariablesService;
-    protected ss: StorageService;
-    protected ds: DataService;
-    protected fs: FilterService;
-    protected wts: WidgetTypeService;
-    protected dbs: DashboardService;
-    protected cfr: ComponentFactoryResolver;
-    protected ns: NamespaceService;
-    protected route: ActivatedRoute;
-    public i18n: I18nService;
-    public bs: BroadcastService;
-    protected san: DomSanitizer;
-    protected sbs: SidebarService;
-    protected cd: ChangeDetectorRef;
-    protected zone: NgZone;
 
     /*constructor(@Inject(ElementRef) protected el: ElementRef,
                 @Inject(UtilService) protected us: UtilService,
@@ -302,73 +545,37 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
                 @Inject(ChangeDetectorRef) protected cd: ChangeDetectorRef,
                 @Inject(NgZone) protected zone: NgZone) {
     }*/
-
-    constructor(@Inject(Injector) protected inj: Injector) {
-        // Inject services
-        this.el = this.inj.get(ElementRef);
-        this.us = this.inj.get(UtilService);
-        this.vs = this.inj.get(VariablesService);
-        this.ss = this.inj.get(StorageService);
-        this.ds = this.inj.get(DataService);
-        this.fs = this.inj.get(FilterService);
-        this.wts = this.inj.get(WidgetTypeService);
-        this.dbs = this.inj.get(DashboardService);
-        this.cfr = this.inj.get(ComponentFactoryResolver);
-        this.ns = this.inj.get(NamespaceService);
-        this.route = this.inj.get(ActivatedRoute);
-        this.i18n = this.inj.get(I18nService);
-        this.bs = this.inj.get(BroadcastService);
-        this.san = this.inj.get(DomSanitizer);
-        this.sbs = this.inj.get(SidebarService);
-        this.cd = this.inj.get(ChangeDetectorRef);
-        this.zone = this.inj.get(NgZone);
-    }
-
-    dataInfo: any;
-
-    public model: any = {};
-    // Parent angular component on which widget is created
-    parent!: WidgetComponent;
-
-    // Widget data
-    public widget!: IWidgetInfo;
+    protected vs: VariablesService;
+    protected ss: StorageService;
+    protected ds: DataService;
+    protected fs: FilterService;
+    protected wts: WidgetTypeService;
 
     // Loading spinner, do now use directly
-    // use showLoading(), hideLoading() instead
-    public isSpinner = true;
-    drills: any[] = [];
+    protected dbs: DashboardService;
+    protected cfr: ComponentFactoryResolver;
+    protected ns: NamespaceService;
+    protected route: ActivatedRoute;
+    protected san: DomSanitizer;
+    protected sbs: SidebarService;
+    protected cd: ChangeDetectorRef;
+    protected zone: NgZone;
     protected drillFilter = '';
     protected drillFilterDrills: string[] = [];
     protected pivotVariables: any = null;
-
-    tc: any;
     protected widgetsSettings: any;
-
-    // Array of widget names that shall be filtered during drill down
-    drillFilterWidgets: any[]|null = null;
-    _currentData: any;
-
-    _kpiData = null;
-
     // If widget on tile
     protected tile = null;
-
-    // For light pivot
-    public lpt;
-
-    // For chart
-    public chart!: Highcharts.Chart;
     protected customColSpec = '';
     protected customRowSpec = '';
-    customDataSource = '';
     protected pivotData: any = null;
     protected linkedMdx = '';
     protected liveUpdateInterval: any;
     protected canDoDrillthrough = false;
-
     protected firstRun = true;
     protected chartConfig: any;
-
+    protected override?: IWidgetOverride;
+    protected baseType = '';
     private subLinkedMdx?: Subscription;
     private subRefreshDepenend?: Subscription;
     private subDrillFilter?: Subscription;
@@ -381,13 +588,31 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
     private subColSpec?: Subscription;
     private subColSpecAll?: Subscription;
     private hasDatasourceChoser = false;
-    protected override?: IWidgetOverride;
-    protected baseType = '';
-
     private oneItemDrillApplied = false;
 
-    createWidgetComponent!: (type?: string) => void;
-    protected onInit = () => {
+    constructor() {
+        // Inject services
+        this.el = inject(ElementRef);
+        this.us = inject(UtilService);
+        this.vs = inject(VariablesService);
+        this.ss = inject(StorageService);
+        this.ds = inject(DataService);
+        this.fs = inject(FilterService);
+        this.wts = inject(WidgetTypeService);
+        this.dbs = inject(DashboardService);
+        this.cfr = inject(ComponentFactoryResolver);
+        this.ns = inject(NamespaceService);
+        this.route = inject(ActivatedRoute);
+        this.i18n = inject(I18nService);
+        this.bs = inject(BroadcastService);
+        this.san = inject(DomSanitizer);
+        this.sbs = inject(SidebarService);
+        this.cd = inject(ChangeDetectorRef);
+        this.zone = inject(NgZone);
+    }
+
+    @HostBinding('class.inline') get inline(): boolean {
+        return this.widget.inline;
     }
 
     ngOnInit() {
@@ -510,9 +735,9 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
 
                 // When setting link for edited widget, refresh target
                 // to be sure that edited widget will receive mdx
-               /* if (this.widget.edKey) {
-                    this.bs.broadcast('refresh:' + this.widget.dataLink);
-                }*/
+                /* if (this.widget.edKey) {
+                     this.bs.broadcast('refresh:' + this.widget.dataLink);
+                 }*/
             }
         }
         if (this.hasDependents()) {
@@ -572,6 +797,13 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         this.destroy();
     }
 
+    getDataProp(name: string): IWidgetDataProperties | undefined {
+        if (!this.widget.dataProperties) {
+            return;
+        }
+        return this.widget.dataProperties.find(pr => pr.name === name);
+    }
+
     /* protected parseOverridesForDataProperties() {
         if (!this.widget.dataProperties?.length) {
             return;
@@ -585,13 +817,6 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
             }
         });
     } */
-
-    getDataProp(name: string): IWidgetDataProperties | undefined {
-        if (!this.widget.dataProperties) {
-            return;
-        }
-        return this.widget.dataProperties.find(pr => pr.name === name);
-    }
 
     getDataPropByDataValue(dataValue: string): IWidgetDataProperties | undefined {
         if (!this.widget.dataProperties) {
@@ -611,41 +836,6 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
             return prop.dataValue.toString();
         }
         return;
-    }
-
-    protected getFormat(index: number, mdxResult: any, prop: IWidgetDataProperties) {
-        let fmt = '';
-        if (this.widget?.format) {
-            fmt = this.widget.format;
-        }
-        if (mdxResult.Cols[0].tuples[index].format) {
-            fmt = mdxResult.Cols[0].tuples[index].format;
-        }
-        if (prop?.format) {
-            fmt = prop?.format;
-        }
-        return fmt;
-    }
-
-    protected getDataValue(index: number, mdxResult: any, prop: IWidgetDataProperties) {
-        // Format value
-        let v = mdxResult.Data[index];
-        const fmt = this.getFormat(index, mdxResult, prop);
-        if (fmt) {
-            v = numeral(v).format(fmt);
-        }
-        return v;
-    }
-
-    private getOverride(): IWidgetOverride|undefined {
-        let t = this.baseType;
-        if (t === 'lineChartMarkers') {
-            t = 'lineChart';
-        }
-        if (t === 'regular') {
-            t = 'scoreCard';
-        }
-        return this.widget?.overrides?.find(o => o._type === t);
     }
 
     /**
@@ -675,7 +865,6 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         this.widget.acItems = actions;
         // Filters.isFiltersOnToolbarExists = true;
     }
-
 
     /**
      * Will setup datasource chooser. If widget has control chooseDataSource
@@ -798,23 +987,6 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         this.bs.broadcast(`updatePivotVar:${target}`);
     }
 
-    // toggleButton(name) {
-    //     this.widget[name] = !this.widget[name];
-    //     const widgetsSettings = this.ss.getWidgetsSettings(this.widget.dashboard);
-    //     if (!widgetsSettings[this.widget.name]) {
-    //         widgetsSettings[this.widget.name] = {};
-    //     }
-    //     widgetsSettings[this.widget.name][name] = this.widget[name];
-    //     this.ss.setWidgetsSettings(widgetsSettings, this.widget.dashboard);
-    // }
-
-    //  toggleExpanded() {
-    //     this.toggleButton('isExpanded');
-    //     if (this.expandWidget) {
-    //         this.expandWidget();
-    //     }
-    // }
-
     /**
      * Callback for pivot variable changes
      */
@@ -868,6 +1040,23 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
             });
         }
     }
+
+    // toggleButton(name) {
+    //     this.widget[name] = !this.widget[name];
+    //     const widgetsSettings = this.ss.getWidgetsSettings(this.widget.dashboard);
+    //     if (!widgetsSettings[this.widget.name]) {
+    //         widgetsSettings[this.widget.name] = {};
+    //     }
+    //     widgetsSettings[this.widget.name][name] = this.widget[name];
+    //     this.ss.setWidgetsSettings(widgetsSettings, this.widget.dashboard);
+    // }
+
+    //  toggleExpanded() {
+    //     this.toggleButton('isExpanded');
+    //     if (this.expandWidget) {
+    //         this.expandWidget();
+    //     }
+    // }
 
     doDrillFilter(path, drills) {
         if (!this.drillFilterWidgets || !this.drillFilterWidgets.length) {
@@ -1015,7 +1204,6 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
             !data.Data || data.Data.length === 0 || data.Data[0] === '@NOPROPERTY';
     }
 
-
     /**
      * Back button click handler
      */
@@ -1043,7 +1231,6 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         this.widget.type = newType;
         this.createWidgetComponent();
     }
-
 
     getDrillthroughMdx(mdx: string) {
         let m = mdx.toLowerCase();
@@ -1370,17 +1557,17 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         }
 
         for (i = 0; i < drills.length; i++) {
-          /*  if (Array.isArray(drills[i].path)) {
-                drills[i].path.forEach(p => {
-                    if (!p) {
-                        return;
-                    }
-                    mdx += ' %FILTER ' + p;
-                });
-            } else {*/
-                if (drills[i].path) {
-                    mdx += ' %FILTER ' + drills[i].path;
-                }
+            /*  if (Array.isArray(drills[i].path)) {
+                  drills[i].path.forEach(p => {
+                      if (!p) {
+                          return;
+                      }
+                      mdx += ' %FILTER ' + p;
+                  });
+              } else {*/
+            if (drills[i].path) {
+                mdx += ' %FILTER ' + drills[i].path;
+            }
             //}
         }
 
@@ -1488,7 +1675,6 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         this.bs.broadcast('setColSpec:' + target, colSpec);
     }
 
-
     /**
      * Event handler for datasource list intem change
      * @param item
@@ -1515,7 +1701,6 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
                 break;
         }
     }
-
 
     /**
      * Callback for $on(":refreshDependents"). Sends refresh broadcast to all dependent widgets
@@ -1562,7 +1747,6 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         }
         return this.widget.dependents.length !== 0;
     }
-
 
     requestPivotData() {
         const ds = this.customDataSource || this.widget.dataSource;
@@ -1651,30 +1835,6 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
     }
 
     public onResize() {
-    }
-
-    protected _requestKPIData(drillthroughFilter?) {
-        const ds = this.customDataSource || this.widget.dataSource;
-        if (!ds) {
-            return;
-        }
-        const filters = this.fs.getWidgetFilters(this.widget.name)?.filter(f => !!f.value).map(f => {
-            const values = (f.value.toString()).split('|');
-            return values.map(v => {
-                return {
-                    name: f.targetProperty,
-                    value: v
-                };
-            });
-        }).flat();
-        if (drillthroughFilter) {
-            filters.push(...drillthroughFilter);
-        }
-        this.showLoading();
-        return this.ds.getKPIData(ds, filters, !!drillthroughFilter).then(data => this._retriveKPI(data, !!drillthroughFilter))
-            .finally(() => {
-                this.hideLoading();
-            });
     }
 
     /**
@@ -2056,7 +2216,6 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         return this.applyDrill(mdx);
     }
 
-
     /**
      * Called before widget was destroyed
      */
@@ -2119,6 +2278,121 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         return res;
     }
 
+    getDrillsAsParameter(): string {
+        const drills = this.drills;
+        if (drills?.length) {
+            return encodeURIComponent(drills.map(d => d.path).join('~'));
+        }
+        return '';
+    }
+
+    protected onInit = () => {
+    }
+
+    protected getFormat(index: number, mdxResult: any, prop: IWidgetDataProperties) {
+        let fmt = '';
+        if (this.widget?.format) {
+            fmt = this.widget.format;
+        }
+        if (mdxResult.Cols[0].tuples[index].format) {
+            fmt = mdxResult.Cols[0].tuples[index].format;
+        }
+        if (prop?.format) {
+            fmt = prop?.format;
+        }
+        return fmt;
+    }
+
+    protected getDataValue(index: number, mdxResult: any, prop: IWidgetDataProperties) {
+        // Format value
+        let v = mdxResult.Data[index];
+        const fmt = this.getFormat(index, mdxResult, prop);
+        if (fmt) {
+            v = numeral(v).format(fmt);
+        }
+        return v;
+    }
+
+    protected _requestKPIData(drillthroughFilter?) {
+        const ds = this.customDataSource || this.widget.dataSource;
+        if (!ds) {
+            return;
+        }
+        const filters = this.fs.getWidgetFilters(this.widget.name)?.filter(f => !!f.value).map(f => {
+            const values = (f.value.toString()).split('|');
+            return values.map(v => {
+                return {
+                    name: f.targetProperty,
+                    value: v
+                };
+            });
+        }).flat();
+        if (drillthroughFilter) {
+            filters.push(...drillthroughFilter);
+        }
+        this.showLoading();
+        return this.ds.getKPIData(ds, filters, !!drillthroughFilter).then(data => this._retriveKPI(data, !!drillthroughFilter))
+            .finally(() => {
+                this.hideLoading();
+            });
+    }
+
+    protected removeColsThatNotExistInDataProperties(data: any) {
+        if (this.preventColFilteringBasedOnDataProperties) {
+            return;
+        }
+        if (!this.widget.dataProperties?.length) {
+            return;
+        }
+        if (!data?.Cols[0]?.tuples?.length) {
+            return;
+        }
+        const indices: any[] = [];
+        const colCount = data.Cols[0]?.tuples?.length || 0;
+        if (!colCount) {
+            return;
+        }
+        data.Cols[0].tuples = data?.Cols[0]?.tuples.filter((t, idx) => {
+            const dim = t.dimension.toString().split('/');
+            const exists = this.widget.dataProperties.some(p => {
+                //p.dataValue === t.dimension
+                const dv = p.dataValue.toString().split('/');
+                return dv.some(v => dim.includes(v));
+            });
+            if (!exists) {
+                indices.push(idx);
+            }
+            return exists;
+        });
+        data.Data = data.Data?.filter((d, idx) => {
+            return !indices.some(i => idx % colCount === i);
+        });
+    }
+
+    /* replaceUrlParam(url: string, paramName: string, paramValue: string)
+     {
+         if (paramValue === null) {
+             paramValue = '';
+         }
+         const pattern = new RegExp('\\b(' + paramName + '=).*?(&|#|$)');
+         if (url.search(pattern) >= 0) {
+             return url.replace(pattern, '$1' + paramValue + '$2');
+         }
+         url = url.replace(/[?#]$/, '');
+         return url + (url.indexOf('?') > 0 ? '&' : '?') + paramName + '=' + paramValue;
+     }*/
+
+    private getOverride(): IWidgetOverride | undefined {
+        let t = this.baseType;
+        if (t === 'lineChartMarkers') {
+            t = 'lineChart';
+        }
+        if (t === 'regular') {
+            t = 'scoreCard';
+        }
+        return this.widget?.overrides?.find(o => o._type === t);
+    }
+
     /**
      * Updates "drilldown" parameter in URL for shared widget after drilldown.drillup
      */
@@ -2155,27 +2429,6 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         } catch (e) {
             console.error(e);
         }
-    }
-
-    /* replaceUrlParam(url: string, paramName: string, paramValue: string)
-     {
-         if (paramValue === null) {
-             paramValue = '';
-         }
-         const pattern = new RegExp('\\b(' + paramName + '=).*?(&|#|$)');
-         if (url.search(pattern) >= 0) {
-             return url.replace(pattern, '$1' + paramValue + '$2');
-         }
-         url = url.replace(/[?#]$/, '');
-         return url + (url.indexOf('?') > 0 ? '&' : '?') + paramName + '=' + paramValue;
-     }*/
-
-    getDrillsAsParameter(): string {
-        const drills = this.drills;
-        if (drills?.length) {
-            return encodeURIComponent(drills.map(d => d.path).join('~'));
-        }
-        return '';
     }
 
     private updateDatasourceParameterInURL() {
@@ -2289,38 +2542,6 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
             if (c.thresholdUpper) {
                 prop.thresholdUpper = c.thresholdUpper;
             }
-        });
-    }
-
-    protected removeColsThatNotExistInDataProperties(data: any) {
-        if (this.preventColFilteringBasedOnDataProperties) {
-            return;
-        }
-        if (!this.widget.dataProperties?.length) {
-            return;
-        }
-        if (!data?.Cols[0]?.tuples?.length) {
-            return;
-        }
-        const indices: any[] = [];
-        const colCount = data.Cols[0]?.tuples?.length || 0;
-        if (!colCount) {
-            return;
-        }
-        data.Cols[0].tuples = data?.Cols[0]?.tuples.filter((t, idx) => {
-            const dim = t.dimension.toString().split('/');
-            const exists = this.widget.dataProperties.some(p => {
-                //p.dataValue === t.dimension
-                const dv = p.dataValue.toString().split('/');
-                return dv.some(v => dim.includes(v));
-            });
-            if (!exists) {
-                indices.push(idx);
-            }
-            return exists;
-        });
-        data.Data = data.Data?.filter((d, idx) => {
-            return !indices.some(i => idx % colCount === i);
         });
     }
 }

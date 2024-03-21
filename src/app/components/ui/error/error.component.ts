@@ -32,7 +32,8 @@ export const ERROR_TOGGLE_LEFT_ANIMATION = trigger(
 @Component({
     selector: 'dsw-error',
     templateUrl: './error.component.html',
-    styleUrls: ['./error.component.scss']
+    styleUrls: ['./error.component.scss'],
+    standalone: true
 })
 export class ErrorComponent implements OnInit, AfterViewInit {
 

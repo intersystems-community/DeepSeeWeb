@@ -11,7 +11,7 @@ import {
 } from '@angular/core';
 import {StorageService} from '../../../services/storage.service';
 import {dsw} from '../../../../environments/dsw';
-import {GridsterComponent, GridsterConfig} from 'angular-gridster2';
+import { GridsterComponent, GridsterConfig, GridsterItemComponent } from 'angular-gridster2';
 import {ActivatedRoute, Router} from '@angular/router';
 import {DataService, ITileInfo} from '../../../services/data.service';
 import {HomeEditorComponent} from '../../ui/home-editor/home-editor.component';
@@ -25,6 +25,7 @@ import {WidgetComponent} from '../../widgets/base/widget/widget.component';
 import {ErrorService} from '../../../services/error.service';
 import {I18nService} from '../../../services/i18n.service';
 import {FilterService} from '../../../services/filter.service';
+import { NgFor, NgIf, AsyncPipe } from '@angular/common';
 
 interface IHomeModel {
     tiles: ITileInfo[];
@@ -37,7 +38,9 @@ interface IHomeModel {
 @Component({
     selector: 'dsw-folder-screen',
     templateUrl: './folder-screen.component.html',
-    styleUrls: ['./folder-screen.component.scss']
+    styleUrls: ['./folder-screen.component.scss'],
+    standalone: true,
+    imports: [GridsterComponent, NgFor, GridsterItemComponent, NgIf, WidgetComponent, AsyncPipe]
 })
 export class FolderScreenComponent implements OnInit, OnDestroy {
     @ViewChildren('widgets', {read: WidgetComponent}) widgets!: QueryList<WidgetComponent>;

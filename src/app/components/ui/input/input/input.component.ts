@@ -1,5 +1,6 @@
 import {Component, EventEmitter, forwardRef, HostBinding, Input, Output} from '@angular/core';
-import {ControlValueAccessor, NG_VALUE_ACCESSOR} from "@angular/forms";
+import { ControlValueAccessor, NG_VALUE_ACCESSOR, FormsModule } from "@angular/forms";
+import { NgIf } from '@angular/common';
 
 @Component({
     selector: 'dsw-input',
@@ -11,7 +12,9 @@ import {ControlValueAccessor, NG_VALUE_ACCESSOR} from "@angular/forms";
             useExisting: forwardRef(() => InputComponent),
             multi: true
         }
-    ]
+    ],
+    standalone: true,
+    imports: [FormsModule, NgIf]
 })
 export class InputComponent implements ControlValueAccessor {
     @Input() model = '';

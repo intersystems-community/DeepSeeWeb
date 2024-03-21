@@ -14,12 +14,17 @@ import {DataService} from '../../../services/data.service';
 import {MenuSettingsComponent} from './menu-settings/menu-settings.component';
 import {CURRENT_NAMESPACE} from '../../../services/namespace.service';
 import {TextAreaComponent} from '../text-area/text-area.component';
+import { I18nPipe } from '../../../services/i18n.service';
+import { NgIf } from '@angular/common';
 
 @Component({
     selector: 'dsw-menu',
     templateUrl: './menu.component.html',
     styleUrls: ['./menu.component.scss']
     //changeDetection: ChangeDetectionStrategy.OnPush
+    ,
+    standalone: true,
+    imports: [NgIf, I18nPipe]
 })
 export class MenuComponent implements OnInit, OnDestroy {
 

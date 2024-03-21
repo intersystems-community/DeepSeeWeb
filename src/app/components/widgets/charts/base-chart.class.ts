@@ -1165,7 +1165,7 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
                             const t = this;
                             /* jshint ignore:end */
                             const fmt = ov?.valueLabelFormat || (t.series.options as any).format;
-                            let val = t.y;
+                            let val: null|number|undefined|string = t.y;
 
                             val = _this.formatNumber(val, fmt);
                             return val;

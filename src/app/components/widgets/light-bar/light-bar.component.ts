@@ -2,6 +2,7 @@ import {ChangeDetectionStrategy, Component, HostBinding, Input} from '@angular/c
 import {IWidgetInfo} from '../base-widget.class';
 import {IMeterWidgetData, WMeterComponent} from '../base/meter-widget.class';
 import IsNull from "ol/format/filter/IsNull";
+import { NgFor } from '@angular/common';
 
 interface ILightbarData extends IMeterWidgetData {
     progress: number;
@@ -11,7 +12,9 @@ interface ILightbarData extends IMeterWidgetData {
     selector: 'dsw-light-bar',
     templateUrl: './light-bar.component.html',
     styleUrls: ['./light-bar.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: true,
+    imports: [NgFor]
 })
 export class WLightBarComponent extends WMeterComponent {
     @Input() widget: IWidgetInfo = {} as IWidgetInfo;

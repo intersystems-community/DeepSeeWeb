@@ -17,6 +17,8 @@ import {
 import {fromEvent} from 'rxjs/internal/observable/fromEvent';
 import {debounceTime} from 'rxjs/internal/operators/debounceTime';
 import {Subscription} from 'rxjs/internal/Subscription';
+import { RouterLink } from '@angular/router';
+import { NgFor, NgIf } from '@angular/common';
 
 const BTN_MORE_WIDTH = 37;
 
@@ -27,10 +29,12 @@ export class DSWTab {
 }
 
 @Component({
-  selector: 'dsw-tabs',
-  templateUrl: './tabs.component.html',
-  styleUrls: ['./tabs.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'dsw-tabs',
+    templateUrl: './tabs.component.html',
+    styleUrls: ['./tabs.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: true,
+    imports: [NgFor, NgIf, RouterLink]
 })
 export class TabsComponent implements AfterViewInit, OnDestroy, OnChanges {
   @ViewChildren('elements') elements!: QueryList<ElementRef>;

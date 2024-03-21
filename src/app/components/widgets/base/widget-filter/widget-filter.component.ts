@@ -17,11 +17,15 @@ import {FilterService} from '../../../../services/filter.service';
 import {ModalService} from '../../../../services/modal.service';
 import {UtilService} from '../../../../services/util.service';
 import {BroadcastService} from '../../../../services/broadcast.service';
+import { FormsModule } from '@angular/forms';
+import { NgFor, NgIf } from '@angular/common';
 
 @Component({
     selector: 'dsw-widget-filter',
     templateUrl: './widget-filter.component.html',
-    styleUrls: ['./widget-filter.component.scss']
+    styleUrls: ['./widget-filter.component.scss'],
+    standalone: true,
+    imports: [NgFor, FormsModule, NgIf]
 })
 export class WidgetFilterComponent implements OnInit {
     @ViewChild('filterPopup', {read: ViewContainerRef, static: true})

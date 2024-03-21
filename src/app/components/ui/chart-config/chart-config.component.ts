@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, Input, OnDestroy, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, forwardRef, Input, OnDestroy, OnInit} from '@angular/core';
 import {SidebarService} from '../../../services/sidebar.service';
 import {Chart, ColorAxisOptions, PlotSeriesDataLabelsOptions} from 'highcharts';
 import {StorageService} from '../../../services/storage.service';
@@ -7,6 +7,10 @@ import {IError} from '../../../services/error.service';
 import {Subscription} from 'rxjs';
 import {skip} from 'rxjs/operators';
 import {BroadcastService} from '../../../services/broadcast.service';
+import { I18nPipe } from '../../../services/i18n.service';
+import { ColorPickerModule } from 'ngx-color-picker';
+import { NgFor } from '@angular/common';
+import { SidebarActionsComponent } from '../sidebar-actions/sidebar-actions.component';
 
 export interface IThemeColors {
     hcColors: string[];
@@ -27,7 +31,9 @@ export interface IChartConfigAppearance {
 @Component({
     selector: 'dsw-chart-config',
     templateUrl: './chart-config.component.html',
-    styleUrls: ['./../../editor/editor-styles.scss', './chart-config.component.scss']
+    styleUrls: ['./../../editor/editor-styles.scss', './chart-config.component.scss'],
+    standalone: true,
+    imports: [forwardRef(() => SidebarActionsComponent), NgFor, ColorPickerModule, I18nPipe]
 })
 export class ChartConfigComponent implements OnInit, OnDestroy {
     @Input() chart!: Chart;

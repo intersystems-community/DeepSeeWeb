@@ -6,7 +6,8 @@ import * as Highcharts from "highcharts/highstock";
 
 @Component({
     selector: 'dsw-line-chart',
-    template: ''
+    template: '',
+    standalone: true
 })
 export class PieChartComponent extends BaseChartClass implements OnInit {
 

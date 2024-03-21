@@ -8,12 +8,18 @@ import {TypeAndDatasourceComponent} from "../type-and-datasource/type-and-dataso
 import {IDataSourceInfo} from "../datasource-selector-dialog/datasource-selector-dialog";
 import {EditorService} from "../../../services/editor.service";
 import {ModalService} from "../../../services/modal.service";
+import { NgIf } from "@angular/common";
+import { FormsModule } from "@angular/forms";
+import { InputComponent } from "../../ui/input/input/input.component";
+import { SidebarActionsComponent } from "../../ui/sidebar-actions/sidebar-actions.component";
 
 @Component({
     selector: 'dsw-widget-editor',
     templateUrl: './widget-editor.component.html',
     styleUrls: ['./../editor-styles.scss', './widget-editor.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: true,
+    imports: [SidebarActionsComponent, InputComponent, FormsModule, NgIf]
 })
 export class WidgetEditorComponent implements OnInit, OnDestroy {
     @Input() widget?: IWidgetInfo;

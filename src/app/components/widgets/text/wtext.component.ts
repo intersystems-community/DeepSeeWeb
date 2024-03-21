@@ -2,6 +2,7 @@ import {AfterViewInit, Component, ElementRef, HostBinding, Input, OnInit, ViewCh
 import {BaseWidget, IWidgetDataProperties, IWidgetInfo} from '../base-widget.class';
 import * as numeral from 'numeral';
 import {dsw} from '../../../../environments/dsw';
+import { NgFor } from '@angular/common';
 
 interface ITextWidgetData {
     label: string;
@@ -14,7 +15,9 @@ interface ITextWidgetData {
 @Component({
     selector: 'dsw-wtext',
     templateUrl: './wtext.component.html',
-    styleUrls: ['./wtext.component.scss']
+    styleUrls: ['./wtext.component.scss'],
+    standalone: true,
+    imports: [NgFor]
 })
 export class WTextComponent extends BaseWidget implements OnInit, AfterViewInit {
     @ViewChildren('images') images: ElementRef[] = [];
@@ -177,7 +180,7 @@ export class WTextComponent extends BaseWidget implements OnInit, AfterViewInit 
                         color,
                         valueColor,
                         dimension: result.Cols[0].tuples[i].dimension
-                    } as ITextWidgetData);
+                    } as unknown as ITextWidgetData);
                 }
             }
         }

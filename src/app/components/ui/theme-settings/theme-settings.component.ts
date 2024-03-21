@@ -2,6 +2,11 @@ import {ChangeDetectorRef, Component, OnDestroy} from '@angular/core';
 import {SidebarService} from '../../../services/sidebar.service';
 import {dsw} from '../../../../environments/dsw';
 import {StorageService} from '../../../services/storage.service';
+import { ColorPickerModule } from 'ngx-color-picker';
+import { NgFor, NgIf } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { NgSelectModule } from '@ng-select/ng-select';
+import { SidebarActionsComponent } from '../sidebar-actions/sidebar-actions.component';
 
 interface ICssVariable {
     name: string;
@@ -13,7 +18,9 @@ interface ICssVariable {
     selector: 'dsw-theme-settings',
     templateUrl: './theme-settings.component.html',
     // TODO: refactor home-editor
-    styleUrls: ['./../../editor/editor-styles.scss', './theme-settings.component.scss']
+    styleUrls: ['./../../editor/editor-styles.scss', './theme-settings.component.scss'],
+    standalone: true,
+    imports: [SidebarActionsComponent, NgSelectModule, FormsModule, NgFor, NgIf, ColorPickerModule]
 })
 export class ThemeSettingsComponent implements OnDestroy {
 

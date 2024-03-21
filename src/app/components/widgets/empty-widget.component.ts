@@ -6,6 +6,7 @@ import {IButtonToggle} from '../../services/widget.service';
 @Component({
     selector: 'dsw-empty-widget',
     template: '',
+    standalone: true,
 })
 export class EmptyWidgetComponent extends BaseWidget implements OnInit {
     isSpinner = false;

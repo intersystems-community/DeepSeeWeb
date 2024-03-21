@@ -1,4 +1,4 @@
-@import "/src/scss/breakpoints";
+@import "breakpoints";
 
 :host{
     display: flex;
@@ -6,7 +6,7 @@
     height: 100%;
     align-items: center;
     justify-content: center;
-    background: url('^assets/img/bg.jpg');
+    background: url('./../../../../assets/img/bg.jpg');
     background-size: cover;
 
    /* @include sm {

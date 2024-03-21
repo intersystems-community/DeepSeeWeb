@@ -3,7 +3,8 @@ import {BaseChartClass} from './base-chart.class';
 
 @Component({
     selector: 'dsw-column-chart',
-    template: ''
+    template: '',
+    standalone: true
 })
 export class ColumnChartComponent extends BaseChartClass implements OnInit {
 

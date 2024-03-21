@@ -7,13 +7,18 @@ import {DataService} from '../../../services/data.service';
 import {dsw} from "../../../../environments/dsw";
 import {DashboardService} from "../../../services/dashboard.service";
 import {DateFilterComponent} from "../date-filter/date-filter.component";
-import {DatePipe} from "@angular/common";
+import { DatePipe, NgIf, NgFor } from "@angular/common";
 import {UtilService} from "../../../services/util.service";
+import { I18nPipe } from '../../../services/i18n.service';
+import { AutoFocusDirective } from '../../../directives/auto-focus.directive';
+import { FormsModule } from '@angular/forms';
 
 @Component({
     selector: 'dsw-filter-popup',
     templateUrl: './filter-popup.component.html',
-    styleUrls: ['./filter-popup.component.scss']
+    styleUrls: ['./filter-popup.component.scss'],
+    standalone: true,
+    imports: [NgIf, FormsModule, AutoFocusDirective, NgFor, DateFilterComponent, I18nPipe]
 })
 export class FilterPopupComponent implements OnInit, AfterViewInit {
     @ViewChild('dateFilter') dateFilter!: DateFilterComponent;

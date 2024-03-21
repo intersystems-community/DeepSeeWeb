@@ -6,7 +6,8 @@ import {XAxisOptions} from "highcharts";
 
 @Component({
     selector: 'dsw-tree-map',
-    template: ''
+    template: '',
+    standalone: true
 })
 export class TreeMapComponent extends BaseChartClass implements OnInit {
     private isPercent = true;
@@ -45,7 +46,7 @@ export class TreeMapComponent extends BaseChartClass implements OnInit {
                             // Define custom label formatter
                             // if (_this.widget['btn.ShowPercents'] && _this.totalSum) {
                             if ( _this.totalSum) {
-                                let percent = (this.point.value / _this.totalSum * 100);
+                                let percent: number|string = (this.point.value / _this.totalSum * 100);
                                 percent = _this.formatNumber(percent, _this.getDataPropByDataValue(this.series?.userOptions?.dimension)?.format || '#.##');
                                 return `${this.point.caption}<br>${percent}%`;
                             } else {

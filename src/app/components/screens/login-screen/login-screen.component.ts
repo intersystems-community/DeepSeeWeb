@@ -1,19 +1,25 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {DataService} from '../../../services/data.service';
-import {I18nService} from '../../../services/i18n.service';
+import { I18nService, I18nPipe } from '../../../services/i18n.service';
 import {dsw} from '../../../../environments/dsw';
 import {ActivatedRoute, Router} from '@angular/router';
 import {HeaderService} from '../../../services/header.service';
 import {SidebarService} from '../../../services/sidebar.service';
 import {CURRENT_NAMESPACE, NamespaceService} from '../../../services/namespace.service';
 import {StorageService} from "../../../services/storage.service";
+import { NgIf } from '@angular/common';
+import { FocusNextDirective } from '../../../directives/focus-next.directive';
+import { AutoFocusDirective } from '../../../directives/auto-focus.directive';
+import { FormsModule } from '@angular/forms';
 
 declare var cordova: any;
 
 @Component({
     selector: 'app-login-screen',
     templateUrl: './login-screen.component.html',
-    styleUrls: ['./login-screen.component.scss']
+    styleUrls: ['./login-screen.component.scss'],
+    standalone: true,
+    imports: [FormsModule, AutoFocusDirective, FocusNextDirective, NgIf, I18nPipe]
 })
 export class LoginScreenComponent implements OnInit {
     public model: any;

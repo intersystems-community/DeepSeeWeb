@@ -5,12 +5,17 @@ import {UtilService} from '../../../services/util.service';
 import {CURRENT_NAMESPACE} from '../../../services/namespace.service';
 import {DEFAULT_COL_COUNT} from '../../screens/dashboard-screen/dashboard-screen.component';
 import {ModalService} from '../../../services/modal.service';
-import {I18nService} from '../../../services/i18n.service';
+import { I18nService, I18nPipe } from '../../../services/i18n.service';
+import { FormsModule } from '@angular/forms';
+import { InputComponent } from '../input/input/input.component';
+import { SidebarActionsComponent } from '../sidebar-actions/sidebar-actions.component';
 
 @Component({
     selector: 'dsw-app-settings',
     templateUrl: './app-settings.component.html',
-    styleUrls: ['./../../editor/editor-styles.scss', './app-settings.component.scss']
+    styleUrls: ['./../../editor/editor-styles.scss', './app-settings.component.scss'],
+    standalone: true,
+    imports: [SidebarActionsComponent, InputComponent, FormsModule, I18nPipe]
 })
 export class AppSettingsComponent implements OnInit {
     model: any;

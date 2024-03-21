@@ -1,13 +1,16 @@
 import {ChangeDetectionStrategy, Component, HostBinding, Input} from '@angular/core';
 import {IWidgetInfo} from '../base-widget.class';
 import {WMeterComponent} from '../base/meter-widget.class';
+import { NgFor } from '@angular/common';
 
 
 @Component({
     selector: 'dsw-wsmiley',
     templateUrl: './smiley.component.html',
     styleUrls: ['./smiley.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: true,
+    imports: [NgFor]
 })
 export class WSmileyComponent extends WMeterComponent {
     @Input() widget: IWidgetInfo = {} as IWidgetInfo;;

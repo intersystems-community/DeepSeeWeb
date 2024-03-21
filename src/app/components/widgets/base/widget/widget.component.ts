@@ -27,11 +27,15 @@ import {TextAreaComponent} from '../../../ui/text-area/text-area.component';
 import {BaseChartClass} from '../../charts/base-chart.class';
 import {ActivatedRoute} from '@angular/router';
 import {ShareDashboardComponent} from "../../../ui/share-dashboard/share-dashboard/share-dashboard.component";
+import { NgIf } from '@angular/common';
+import { WidgetFilterComponent } from '../widget-filter/widget-filter.component';
 
 @Component({
     selector: 'dsw-widget',
     templateUrl: './widget.component.html',
-    styleUrls: ['./widget.component.scss']
+    styleUrls: ['./widget.component.scss'],
+    standalone: true,
+    imports: [WidgetHeaderComponent, WidgetFilterComponent, NgIf]
 })
 export class WidgetComponent implements OnInit, OnDestroy, AfterViewInit {
     @ViewChild('container', {read: ViewContainerRef, static: true})

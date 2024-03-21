@@ -11,11 +11,16 @@ import {
 } from '@angular/core';
 import {IModal, IModalButton, ModalService} from '../../../services/modal.service';
 import {Subscription} from "rxjs";
+import { FormsModule } from '@angular/forms';
+import { SearchInputComponent } from '../search/search-input/search-input.component';
+import { NgIf, NgFor } from '@angular/common';
 
 @Component({
     selector: 'dsw-modal',
     templateUrl: './modal.component.html',
-    styleUrls: ['./modal.component.scss']
+    styleUrls: ['./modal.component.scss'],
+    standalone: true,
+    imports: [NgIf, SearchInputComponent, FormsModule, NgFor]
 })
 export class ModalComponent implements OnInit, OnDestroy {
     @ViewChild('dynamicComponent', {read: ViewContainerRef, static: true})

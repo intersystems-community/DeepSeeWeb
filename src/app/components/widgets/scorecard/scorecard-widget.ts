@@ -6,6 +6,7 @@ import * as Highcharts from 'highcharts/highstock';
 import {Subscription} from 'rxjs';
 import {IButtonToggle} from '../../../services/widget.service';
 import {ChartConfigComponent} from '../../ui/chart-config/chart-config.component';
+import { NgFor, NgSwitch, NgSwitchCase, NgSwitchDefault, NgIf } from '@angular/common';
 
 interface IScorecardColumn {
     caption: string;
@@ -16,7 +17,9 @@ interface IScorecardColumn {
 @Component({
     selector: 'dsw-scorecard',
     templateUrl: './scorecard-widget.component.html',
-    styleUrls: ['./scorecard-widget.component.scss']
+    styleUrls: ['./scorecard-widget.component.scss'],
+    standalone: true,
+    imports: [NgFor, NgSwitch, NgSwitchCase, NgSwitchDefault, NgIf]
 })
 export class ScorecardWidgetComponent extends BaseWidget implements OnInit, OnDestroy {
     @Input() widget: IWidgetInfo = {} as IWidgetInfo;

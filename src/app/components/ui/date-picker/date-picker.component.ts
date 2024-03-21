@@ -21,7 +21,8 @@ export interface IDatepickerSelectEvent {
 @Component({
     selector: 'dsw-date-picker',
     templateUrl: './date-picker.component.html',
-    styleUrls: ['./date-picker.component.scss']
+    styleUrls: ['./date-picker.component.scss'],
+    standalone: true
 })
 export class DatePickerComponent implements OnInit, AfterViewInit {
     @Input() inline = false;

@@ -1,6 +1,6 @@
 <!-- Title -->
 <span class="title-text">
-    {{widget?.title}}
+    {{widget.title}}
     <img
         *ngIf="hasFilters"
         class="btn-filters"
@@ -11,13 +11,13 @@
 
 <!--<span class="left-side">-->
 <!-- Back button -->
-<button class="btn-with-text" *ngIf="widget?.backButton" (click)="onBackClick()">
+<button class="btn-with-text" *ngIf="widget.backButton" (click)="onBackClick()">
     <img src="assets/img/icons/chevron_left-black-18dp.svg">
     <label>{{'back' | i18n}}</label>
 </button>
 
 <!-- Reset click filter -->
-<button class="btn-with-text" *ngIf="widget?.clickFilterActive" (click)="onResetClickFilterHandler()">
+<button class="btn-with-text" *ngIf="widget.clickFilterActive" (click)="onResetClickFilterHandler()">
     <img src="assets/img/icons/close-black-18dp.svg">
     <label>{{'resetClickFilter' | i18n}}</label>
 </button>
@@ -25,7 +25,7 @@
 
 <div class="divider"></div>
 
-<div class="drag-handle" [class.no-drag]="noDrag" [class.expanded]="widget?.isExpanded" (dblclick)="onHeaderDoubleClick()"></div>
+<div class="drag-handle" [class.no-drag]="noDrag" [class.expanded]="widget.isExpanded" (dblclick)="onHeaderDoubleClick()"></div>
 
 <!--<span class="right-side">-->
 
@@ -33,37 +33,37 @@
 <ng-container *ngIf="isEmptyWidget()">
     <!-- Display 6 columns  button -->
     <button class="only-desktop" (click)="onClick('by6columns')" [title]="'by6columns' | i18n"
-            [class.active]="widget?.viewSize === 5">
+            [class.active]="widget.viewSize === 5">
         <img src="assets/img/icons/view-6columns.svg">
     </button>
 
     <!-- Display 5 columns  button -->
     <button class="only-desktop" (click)="onClick('by5columns')" [title]="'by5columns' | i18n"
-            [class.active]="widget?.viewSize === 4">
+            [class.active]="widget.viewSize === 4">
         <img src="assets/img/icons/view-5columns.svg">
     </button>
 
     <!-- Display 4 columns  button -->
     <button class="only-desktop" (click)="onClick('by4columns')" [title]="'by4columns' | i18n"
-            [class.active]="widget?.viewSize === 3">
+            [class.active]="widget.viewSize === 3">
         <img src="assets/img/icons/view-4columns.svg">
     </button>
 
     <!-- Display 3 columns  button -->
     <button class="only-desktop" (click)="onClick('by3columns')" [title]="'by3columns' | i18n"
-            [class.active]="widget?.viewSize === 2">
+            [class.active]="widget.viewSize === 2">
         <img src="assets/img/icons/view-3columns.svg">
     </button>
 
     <!-- Display 2 columns  button -->
     <button class="only-desktop" (click)="onClick('by2columns')" [title]="'by2columns' | i18n"
-            [class.active]="widget?.viewSize === 1">
+            [class.active]="widget.viewSize === 1">
         <img src="assets/img/icons/view-2columns.svg">
     </button>
 
     <!-- Display as rows button -->
     <button class="only-desktop" (click)="onClick('byRows')" [title]="'byRows' | i18n"
-            [class.active]="widget?.viewSize === 0">
+            [class.active]="widget.viewSize === 0">
         <img src="assets/img/icons/view-list.svg">
     </button>
 
@@ -82,7 +82,7 @@
 
 
 <!-- Editor widget actions -->
-<ng-container *ngIf="widget?.edKey || widget?.oldWidget">
+<ng-container *ngIf="widget.edKey || widget.oldWidget">
     <!-- Delete widget -->
     <button
         title="Delete widget"
@@ -94,7 +94,7 @@
 </ng-container>
 
 <!-- Base widget actions -->
-<ng-container *ngIf="!widget?.edKey && !widget?.oldWidget">
+<ng-container *ngIf="!widget.edKey && !widget.oldWidget">
     <!-- Custom Buttons -->
     <button
         *ngFor="let btn of typeDesc?.headerButtons"
@@ -107,8 +107,8 @@
     </button>
 
     <!-- Toggle legend -->
-    <button *ngIf="!typeDesc?.disableLegend && (widget?.isChart && !widget.noToggleLegend)" (click)="onClick('isLegend')"
-            [class.active]="widget?.isLegend"
+    <button *ngIf="!typeDesc?.disableLegend && (widget.isChart && !widget.noToggleLegend)" (click)="onClick('isLegend')"
+            [class.active]="widget.isLegend"
             title="{{'showLegend' | i18n}}">
         <!--        <i class="fa fa-info"></i>-->
         <img src="assets/img/icons/legend-toggle.svg">
@@ -116,16 +116,16 @@
     </button>
 
     <!-- Show values -->
-    <button *ngIf="widget?.isBtnValues" (click)="onClick('showValues')"
-            [class.active]="widget?.showValues" title="{{'showValues' | i18n}}">
+    <button *ngIf="widget.isBtnValues" (click)="onClick('showValues')"
+            [class.active]="widget.showValues" title="{{'showValues' | i18n}}">
         <!--        <i>v</i>-->
         <img src="assets/img/icons/format-list-numbered.svg">
         <label>Values</label>
     </button>
 
     <!-- Top records -->
-    <button *ngIf="widget?.isChart" (click)="onClick('isTop')"
-            [class.active]="widget?.isTop" title="{{'showTop' | i18n}}">
+    <button *ngIf="widget.isChart" (click)="onClick('isTop')"
+            [class.active]="widget.isTop" title="{{'showTop' | i18n}}">
         <!--        <i class="fa fa-star"></i>-->
         <img src="assets/img/icons/top-records.svg">
         <label>Top</label>
@@ -133,23 +133,23 @@
 
 
     <!-- Show zero -->
-    <button *ngIf="widget?.isBtnZero" (click)="onClick('showZero')"
-            [class.active]="widget?.showZero" title="{{'showZero' | i18n}}">
+    <button *ngIf="widget.isBtnZero" (click)="onClick('showZero')"
+            [class.active]="widget.showZero" title="{{'showZero' | i18n}}">
         <!--        <i class="fa">0</i>-->
         <img src="assets/img/icons/exposure-zero.svg">
         <label>Zero</label>
     </button>
 
     <!-- Display as pivot -->
-    <button *ngIf="widget?.isChart || widget?.isMap || widget?.type === 'regular' || widget?.oldType === 'regular'" (click)="onClick('displayAsPivot')"
-            [class.active]="widget?.type === 'pivot'" title="{{'showPivot' | i18n}}">
+    <button *ngIf="widget.isChart || widget.isMap || widget.type === 'regular' || widget.oldType === 'regular'" (click)="onClick('displayAsPivot')"
+            [class.active]="widget.type === 'pivot'" title="{{'showPivot' | i18n}}">
         <!--        <i class="fa fa-table"></i>-->
         <img src="assets/img/icons/table.svg">
         <label>Pivot</label>
     </button>
 
     <!-- Chart settings -->
-    <button *ngIf="widget?.isChart || widget?.type === 'regular'" title="{{'changeColors' | i18n}}"
+    <button *ngIf="widget.isChart || widget.type === 'regular'" title="{{'changeColors' | i18n}}"
             (click)="onClick('chartConfig')">
         <img src="assets/img/icons/palette-icon.svg">
         <label>Colors</label>
@@ -157,8 +157,8 @@
 
 
     <!-- Fullscreen button -->
-    <button (click)="onClick('expand')" class="only-desktop" [class.active]="widget?.isExpanded"
-            [title]="'fullscreen' | i18n" [hidden]="isEmptyWidget() || !widget?.isSupported" *ngIf="!widget?.shared">
+    <button (click)="onClick('expand')" class="only-desktop" [class.active]="widget.isExpanded"
+            [title]="'fullscreen' | i18n" [hidden]="isEmptyWidget() || !widget.isSupported" *ngIf="!widget.shared">
         <img src="assets/img/icons/full-screen.svg">
     </button>
 </ng-container>

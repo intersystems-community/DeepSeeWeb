@@ -3,7 +3,8 @@ import {BaseChartClass} from './base-chart.class';
 
 @Component({
     selector: 'dsw-area-chart',
-    template: ''
+    template: '',
+    standalone: true
 })
 export class BullseyeChartComponent extends BaseChartClass implements OnInit {
 

@@ -2,19 +2,34 @@ import {Component, OnInit, ViewChild} from '@angular/core';
 import {SIDEBAR_TOGGLE_ANIMATION, SidebarComponent} from './components/ui/sidebar/sidebar.component';
 import {SidebarService} from './services/sidebar.service';
 import {ErrorService, IError} from './services/error.service';
-import {ERROR_TOGGLE_ANIMATION, ERROR_TOGGLE_LEFT_ANIMATION} from './components/ui/error/error.component';
+import { ERROR_TOGGLE_ANIMATION, ERROR_TOGGLE_LEFT_ANIMATION, ErrorComponent } from './components/ui/error/error.component';
 import {HeaderService} from './services/header.service';
 import {ModalService} from './services/modal.service';
-import {NavigationStart, Router, RouterEvent} from '@angular/router';
+import { NavigationStart, Router, RouterEvent, RouterOutlet } from '@angular/router';
 import {DataSourceSelectorDialog} from "./components/editor/datasource-selector-dialog/datasource-selector-dialog";
 import {WidgetEditorComponent} from "./components/editor/widget-editor/widget-editor.component";
 import {TypeAndDatasourceComponent} from "./components/editor/type-and-datasource/type-and-datasource.component";
+import { ModalComponent } from './components/ui/modal/modal.component';
+import { HeaderComponent } from './components/ui/header/header.component';
+import { NgIf, NgFor, NgClass, AsyncPipe } from '@angular/common';
 
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss'],
     animations: [SIDEBAR_TOGGLE_ANIMATION, ERROR_TOGGLE_ANIMATION, ERROR_TOGGLE_LEFT_ANIMATION],
+    standalone: true,
+    imports: [
+        NgIf,
+        HeaderComponent,
+        SidebarComponent,
+        RouterOutlet,
+        NgFor,
+        ModalComponent,
+        NgClass,
+        ErrorComponent,
+        AsyncPipe,
+    ],
 })
 export class AppComponent implements OnInit {
     title = 'DeepSeeWeb';

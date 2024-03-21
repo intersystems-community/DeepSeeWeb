@@ -2,7 +2,8 @@ import {AfterViewInit, Directive, ElementRef} from '@angular/core';
 import {UtilService} from '../services/util.service';
 
 @Directive({
-  selector: '[dswAutoFocus]'
+    selector: '[dswAutoFocus]',
+    standalone: true
 })
 export class AutoFocusDirective implements AfterViewInit {
 

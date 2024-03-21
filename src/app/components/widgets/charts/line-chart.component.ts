@@ -2,8 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import {BaseChartClass} from './base-chart.class';
 
 @Component({
-  selector: 'dsw-line-chart',
-  template: ''
+    selector: 'dsw-line-chart',
+    template: '',
+    standalone: true
 })
 export class LineChartComponent extends BaseChartClass implements OnInit {
 

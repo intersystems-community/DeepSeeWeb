@@ -1,7 +1,8 @@
 import {AfterViewInit, Attribute, Directive, ElementRef, Input, OnDestroy, OnInit} from '@angular/core';
 
 @Directive({
-    selector: '[tooltip]'
+    selector: '[tooltip]',
+    standalone: true
 })
 export class TooltipDirective implements AfterViewInit, OnDestroy {
     @Input('tooltip') tooltip = '';

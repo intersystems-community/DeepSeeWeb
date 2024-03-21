@@ -7,9 +7,10 @@ import {
     OnInit,
     Output, ViewChild
 } from "@angular/core";
-import {DSWTab} from "../../ui/tabs/tabs.component";
+import { DSWTab, TabsComponent } from "../../ui/tabs/tabs.component";
 import {DataService} from "../../../services/data.service";
 import {Subscription} from "rxjs";
+import { NgFor, NgIf, NgTemplateOutlet } from "@angular/common";
 
 export type DataSourceType = 'kpi' | 'pivot' | 'worksheet' | 'metric';
 
@@ -26,7 +27,9 @@ export interface IDataSourceInfo {
     selector: 'dsw-ds-sel-dialog',
     templateUrl: './datasource-selector-dialog.html',
     styleUrls: ['./datasource-selector-dialog.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: true,
+    imports: [TabsComponent, NgFor, NgIf, NgTemplateOutlet]
 })
 export class DataSourceSelectorDialog implements OnInit, OnDestroy {
     @Output() select = new EventEmitter<IDataSourceInfo>();

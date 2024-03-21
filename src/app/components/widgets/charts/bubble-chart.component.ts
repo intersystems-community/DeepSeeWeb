@@ -5,7 +5,8 @@ import {XAxisOptions, YAxisOptions} from 'highcharts';
 
 @Component({
     selector: 'dsw-bubble-chart',
-    template: ''
+    template: '',
+    standalone: true
 })
 export class BubbleChartComponent extends BaseChartClass implements OnInit {
     private thirdTitle = '';

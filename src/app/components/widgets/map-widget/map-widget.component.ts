@@ -17,7 +17,8 @@ import GeoJSON from 'ol/format/GeoJSON';
 @Component({
     selector: 'dsw-map-widget',
     templateUrl: './map-widget.component.html',
-    styleUrls: ['./map-widget.component.scss']
+    styleUrls: ['./map-widget.component.scss'],
+    standalone: true
 })
 export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy, AfterViewInit {
     private readonly CLUSTER_RANGE = 1;

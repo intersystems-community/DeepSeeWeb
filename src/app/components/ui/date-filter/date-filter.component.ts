@@ -1,5 +1,6 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ViewChild} from "@angular/core";
 import {DatePickerComponent, IDatepickerSelectEvent} from "../date-picker/date-picker.component";
+import { NgFor } from "@angular/common";
 
 interface IFilterOption {
     label: string;
@@ -12,7 +13,9 @@ interface IFilterOption {
     selector: 'dsw-date-filter',
     templateUrl: './date-filter.component.html',
     styleUrls: ['./date-filter.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: true,
+    imports: [NgFor, DatePickerComponent]
 })
 export class DateFilterComponent  {
     @ViewChild('datePicker') datePicker!: DatePickerComponent;

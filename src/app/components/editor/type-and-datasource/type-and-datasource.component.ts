@@ -6,11 +6,24 @@ import {DataSourceSelectorDialog, IDataSourceInfo} from "../datasource-selector-
 import {DashboardService} from "../../../services/dashboard.service";
 import {WIDGET_TYPES} from "../../../services/widget-type.service";
 import {EditorService, IWidgetListItem} from "../../../services/editor.service";
+import { InputComponent } from "../../ui/input/input/input.component";
+import { FormsModule } from "@angular/forms";
+import { NgSelectModule } from "@ng-select/ng-select";
+import { NgIf } from "@angular/common";
+import { SidebarActionsComponent } from "../../ui/sidebar-actions/sidebar-actions.component";
 
 @Component({
     selector: 'dsw-type-and-ds',
     templateUrl: './type-and-datasource.component.html',
     styleUrls: ['./../editor-styles.scss', './type-and-datasource.component.scss'],
+    standalone: true,
+    imports: [
+        SidebarActionsComponent,
+        NgIf,
+        NgSelectModule,
+        FormsModule,
+        InputComponent,
+    ],
 })
 export class TypeAndDatasourceComponent implements OnInit, OnDestroy {
     @Input() model?: IWidgetInfo;

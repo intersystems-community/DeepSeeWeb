@@ -5,7 +5,8 @@ import {XAxisOptions, YAxisOptions} from 'highcharts';
 
 @Component({
     selector: 'dsw-line-chart',
-    template: ''
+    template: '',
+    standalone: true
 })
 export class XyChartComponent extends BaseChartClass implements OnInit {
 

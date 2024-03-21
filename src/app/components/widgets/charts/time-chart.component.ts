@@ -5,7 +5,8 @@ import {YAxisOptions} from 'highcharts';
 
 @Component({
     selector: 'dsw-line-chart',
-    template: ''
+    template: '',
+    standalone: true
 })
 export class TimeChartComponent extends BaseChartClass implements OnInit {
 

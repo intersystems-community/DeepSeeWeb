@@ -26,7 +26,7 @@ import {DashboardService} from './dashboard.service';
 import {I18nService} from './i18n.service';
 import {BroadcastService} from './broadcast.service';
 import {SidebarService} from './sidebar.service';
-import {AppModule} from '../app.module';
+
 
 @Injectable({
     providedIn: 'root'
@@ -209,8 +209,7 @@ export class StartupService {
                         '../app/services/broadcast.service': { BroadcastService },
                         '../app/services/sidebar.service': { SidebarService },
                         '../app/components/widgets/base-widget.class': { BaseWidget },
-                        '../app/components/widgets/charts/base-chart.class': { BaseChartClass },
-                        '../app/app.module': { AppModule }
+                        '../app/components/widgets/charts/base-chart.class': { BaseChartClass }
                     };
 
                     // Replace require
@@ -226,6 +225,7 @@ export class StartupService {
 
                     // Eval addon script file
                     // tslint:disable-next-line:no-eval
+                    // @ts-ignore
                     eval(file);
 
                     // Find component in exports

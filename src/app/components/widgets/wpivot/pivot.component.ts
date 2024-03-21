@@ -4,16 +4,27 @@ import {BaseWidget, IWidgetInfo} from '../base-widget.class';
 import {CURRENT_NAMESPACE} from '../../../services/namespace.service';
 
 declare const LightPivotTable: any;
+const t = BaseWidget;
+console.log('gerge1');
+console.log(t);
+console.log('gerge2');
 
 @Component({
     selector: 'dsw-pivot',
     templateUrl: './pivot.component.html',
-    styleUrls: ['./pivot.component.scss']
+    styleUrls: ['./pivot.component.scss'],
+    imports: [BaseWidget],
+    standalone: true
 })
-export class WPivotComponent extends BaseWidget implements OnInit, AfterViewInit, OnDestroy {
+export class WPivotComponent extends BaseWidget {
     private _oldMdx = '';
     @Input() widget: IWidgetInfo = {} as IWidgetInfo;
     isSpinner = false;
+
+    constructor() {
+        super();
+    }
+
 
     ngAfterViewInit() {
         this.createPivotTable();

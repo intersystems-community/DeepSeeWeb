@@ -27,7 +27,8 @@ export const SIDEBAR_TOGGLE_ANIMATION = trigger(
 @Component({
     selector: 'dsw-sidebar',
     templateUrl: './sidebar.component.html',
-    styleUrls: ['./sidebar.component.scss']
+    styleUrls: ['./sidebar.component.scss'],
+    standalone: true
 })
 export class SidebarComponent implements OnInit, OnDestroy {
 

@@ -5,16 +5,19 @@ import {HeaderService} from '../../../services/header.service';
 import {filter, map, tap} from 'rxjs/operators';
 import {merge, Observable, of, Subscription} from 'rxjs';
 import {MenuService} from '../../../services/menu.service';
-import {ActivatedRoute, NavigationEnd, Router} from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router, RouterLink } from '@angular/router';
 import {UtilService} from '../../../services/util.service';
 import {StorageService} from '../../../services/storage.service';
 import {CURRENT_NAMESPACE} from '../../../services/namespace.service';
 import {ModalService} from '../../../services/modal.service';
 import {FilterService} from '../../../services/filter.service';
 import {DataService} from "../../../services/data.service";
-import {I18nService} from "../../../services/i18n.service";
+import { I18nService, I18nPipe } from "../../../services/i18n.service";
 import {WidgetEditorComponent} from "../../editor/widget-editor/widget-editor.component";
 import {SearchInputComponent} from "../search/search-input/search-input.component";
+import { FormsModule } from '@angular/forms';
+import { ShareDashboardComponent } from '../share-dashboard/share-dashboard/share-dashboard.component';
+import { NgIf, NgFor, AsyncPipe } from '@angular/common';
 
 /**
  * Breadcrumb
@@ -29,7 +32,9 @@ interface IPathNav {
 @Component({
     selector: 'dsw-header',
     templateUrl: './header.component.html',
-    styleUrls: ['./header.component.scss']
+    styleUrls: ['./header.component.scss'],
+    standalone: true,
+    imports: [NgIf, NgFor, RouterLink, ShareDashboardComponent, SearchInputComponent, FormsModule, AsyncPipe, I18nPipe]
 })
 export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
     @ViewChild('inpSearch') inpSearch!: SearchInputComponent;

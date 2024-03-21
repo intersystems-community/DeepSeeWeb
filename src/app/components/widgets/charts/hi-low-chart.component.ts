@@ -5,7 +5,8 @@ import * as Highcharts from 'highcharts/highstock';
 
 @Component({
     selector: 'dsw-hi-low-chart',
-    template: ''
+    template: '',
+    standalone: true
 })
 export class HiLowChartComponent extends BaseChartClass implements OnInit {
 

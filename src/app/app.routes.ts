@@ -1,13 +1,11 @@
-import {NgModule} from '@angular/core';
-import {RouterModule, Routes} from '@angular/router';
+import {Routes} from '@angular/router';
 import {LoginScreenComponent} from './components/screens/login-screen/login-screen.component';
-import {FolderScreenComponent} from './components/screens/folder-screen/folder-screen.component';
 import {MainScreenComponent} from './components/screens/main-screen/main-screen.component';
 import {NamespaceService} from './services/namespace.service';
 import {ConfigResolver} from './services/config-resolver';
 
 
-const routes: Routes = [
+export const routes: Routes = [
     {path: '', component: LoginScreenComponent, resolve: {model: NamespaceService}},
     {path: 'login', component: LoginScreenComponent},
     {
@@ -22,10 +20,3 @@ const routes: Routes = [
         ]
     },
 ];
-
-@NgModule({
-    imports: [RouterModule.forRoot(routes, {useHash: true})],
-    exports: [RouterModule]
-})
-export class AppRoutingModule {
-}

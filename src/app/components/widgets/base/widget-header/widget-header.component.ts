@@ -11,11 +11,16 @@ import {HeaderService} from '../../../../services/header.service';
 import {FilterService} from "../../../../services/filter.service";
 import {Subscription} from "rxjs";
 import {EditorService} from "../../../../services/editor.service";
+import { I18nPipe } from '../../../../services/i18n.service';
+import { TooltipDirective } from '../../../../directives/tooltip.directive';
+import { NgIf, NgFor } from '@angular/common';
 
 @Component({
     selector: 'dsw-widget-header',
     templateUrl: './widget-header.component.html',
-    styleUrls: ['./widget-header.component.scss']
+    styleUrls: ['./widget-header.component.scss'],
+    standalone: true,
+    imports: [NgIf, TooltipDirective, NgFor, I18nPipe]
 })
 export class WidgetHeaderComponent implements OnInit, OnDestroy {
     @Input() typeDesc?: IWidgetType;

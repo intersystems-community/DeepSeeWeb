@@ -2,11 +2,14 @@ import {Component, OnInit} from '@angular/core';
 import {I18nService} from '../../../services/i18n.service';
 import {SidebarService} from '../../../services/sidebar.service';
 import {StorageService} from '../../../services/storage.service';
+import { NgFor } from '@angular/common';
 
 @Component({
     selector: 'dsw-language-selector',
     templateUrl: './language-selector.component.html',
-    styleUrls: ['./../menu/menu.component.scss']
+    styleUrls: ['./../menu/menu.component.scss'],
+    standalone: true,
+    imports: [NgFor]
 })
 export class LanguageSelectorComponent {
 

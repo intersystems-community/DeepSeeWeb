@@ -10,7 +10,7 @@ import {
     OnInit,
     ViewChild
 } from '@angular/core';
-import {GridsterConfig, GridsterItem, GridsterItemComponentInterface, GridType} from 'angular-gridster2';
+import { GridsterConfig, GridsterItem, GridsterItemComponentInterface, GridType, GridsterComponent, GridsterItemComponent } from 'angular-gridster2';
 import {dsw} from '../../../../environments/dsw';
 import {combineLatest, fromEvent, Subscription} from 'rxjs';
 import {IWidgetInfo} from '../../widgets/base-widget.class';
@@ -20,6 +20,9 @@ import {WTextComponent} from '../../widgets/text/wtext.component';
 import {BaseChartClass} from '../../widgets/charts/base-chart.class';
 import {DashboardEditingClass} from './dashboard-editing.class';
 import {WidgetEditorComponent} from '../../editor/widget-editor/widget-editor.component';
+import { I18nPipe } from '../../../services/i18n.service';
+import { WidgetComponent } from '../../widgets/base/widget/widget.component';
+import { NgIf, NgFor } from '@angular/common';
 
 const SWIPE_TIME_THRESHOLD = 200;
 const SWIPE_PIXELS_Y_THRESHOLD = 100;
@@ -48,7 +51,9 @@ interface ITouchInfo {
     selector: 'dsw-dashboard-screen',
     templateUrl: './dashboard-screen.component.html',
     styleUrls: ['./dashboard-screen.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: true,
+    imports: [NgIf, GridsterComponent, NgFor, GridsterItemComponent, WidgetComponent, I18nPipe]
 })
 export class DashboardScreenComponent extends DashboardEditingClass implements OnInit, OnDestroy, AfterViewInit {
     @ViewChild('ctxMenu') ctxMenu!: ElementRef;

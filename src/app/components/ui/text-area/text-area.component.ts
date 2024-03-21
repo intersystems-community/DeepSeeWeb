@@ -1,9 +1,12 @@
 import {AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
+import { FormsModule } from '@angular/forms';
 
 @Component({
     selector: 'dsw-text-area',
     templateUrl: './text-area.component.html',
-    styleUrls: ['./text-area.component.scss']
+    styleUrls: ['./text-area.component.scss'],
+    standalone: true,
+    imports: [FormsModule]
 })
 export class TextAreaComponent implements AfterViewInit {
     @Input() value = '';

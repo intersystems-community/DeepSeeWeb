@@ -8,7 +8,10 @@ const SUPPORTED = {
 };
 
 // Pipe for translation
-@Pipe({name: 'i18n'})
+@Pipe({
+    name: 'i18n',
+    standalone: true
+})
 export class I18nPipe implements PipeTransform {
     constructor(private i18n: I18nService) {}
     transform(value: string): string {

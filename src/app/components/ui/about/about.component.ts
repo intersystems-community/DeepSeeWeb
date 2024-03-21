@@ -6,7 +6,8 @@ import * as markdownit from 'markdown-it';
 @Component({
     selector: 'dsw-about',
     templateUrl: './about.component.html',
-    styleUrls: ['./about.component.scss']
+    styleUrls: ['./about.component.scss'],
+    standalone: true
 })
 export class AboutComponent {
     changelog?: SafeHtml;

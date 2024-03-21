@@ -1,7 +1,8 @@
 import {Directive, ElementRef, HostListener} from '@angular/core';
 
 @Directive({
-    selector: '[dswFocusNext]'
+    selector: '[dswFocusNext]',
+    standalone: true
 })
 export class FocusNextDirective {
 

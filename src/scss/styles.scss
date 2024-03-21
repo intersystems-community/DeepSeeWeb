@@ -1,4 +1,4 @@
-@import "~ol/ol.css";
+@import "ol/ol.css";
 @import "variables";
 @import "fonts";
 @import "gridster";
@@ -100,7 +100,7 @@ input[type=checkbox], input[type=radio] {
         transform-origin: center;
         transform: scale(0);
         transition: 120ms transform ease-in-out;
-        background-image: url('^assets/img/icons/checkbox.svg');
+        background-image: url('../assets/img/icons/checkbox.svg');
         display: block;
         background-repeat: no-repeat;
         position: absolute;

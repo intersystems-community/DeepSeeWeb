@@ -6,7 +6,8 @@ import {SpeedometerChartComponent} from './speedometer-chart.component';
 
 
 @Component({
-    template: ''
+    template: '',
+    standalone: true
 })
 export class FuelGaugeChartComponent extends SpeedometerChartComponent implements OnInit {
 

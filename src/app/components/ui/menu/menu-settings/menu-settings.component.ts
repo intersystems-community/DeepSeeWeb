@@ -7,7 +7,8 @@ import {ChartConfigComponent} from '../../chart-config/chart-config.component';
 @Component({
     selector: 'dsw-menu-settings',
     templateUrl: './menu-settings.component.html',
-    styleUrls: ['./../menu.component.scss']
+    styleUrls: ['./../menu.component.scss'],
+    standalone: true
 })
 export class MenuSettingsComponent implements OnInit {
 

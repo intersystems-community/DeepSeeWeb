@@ -1,12 +1,15 @@
 import {ChangeDetectionStrategy, Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges} from '@angular/core';
-import {UtilService} from "../../../../services/util.service";
-import {StorageService} from "../../../../services/storage.service";
+import {UtilService} from '../../../../services/util.service';
+import {StorageService} from '../../../../services/storage.service';
+import {FormsModule} from '@angular/forms';
 
 @Component({
     selector: 'dsw-share-dashboard',
     templateUrl: './share-dashboard.component.html',
     styleUrls: ['./share-dashboard.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: true,
+    imports: [FormsModule]
 })
 export class ShareDashboardComponent implements OnInit, OnChanges, OnDestroy {
     @Input() title = 'Share dashboard';
@@ -20,7 +23,6 @@ export class ShareDashboardComponent implements OnInit, OnChanges, OnDestroy {
     denyMove = false;
     preventFilters = false;
     url = '';
-    onCopy = () => {};
 
     constructor(private us: UtilService,
                 private ss: StorageService) {
@@ -30,12 +32,15 @@ export class ShareDashboardComponent implements OnInit, OnChanges, OnDestroy {
         this.preventFilters = this.ss.storage.getItem('dsw-share-format-preventFilters') === '1';
     }
 
+    onCopy = () => {
+    }
+
     ngOnInit() {
         this.convertLink();
     }
 
     ngOnChanges(changes: SimpleChanges) {
-        if (changes['shareUrl'].previousValue !== changes['shareUrl'].currentValue) {
+        if (changes.shareUrl.previousValue !== changes.shareUrl.currentValue) {
             this.convertLink();
         }
     }

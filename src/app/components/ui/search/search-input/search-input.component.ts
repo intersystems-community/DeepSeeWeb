@@ -9,21 +9,23 @@ import {
     Output,
     ViewChild
 } from '@angular/core';
-import {ControlValueAccessor, FormControl, NG_VALUE_ACCESSOR} from "@angular/forms";
+import { ControlValueAccessor, FormControl, NG_VALUE_ACCESSOR, FormsModule } from "@angular/forms";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 import {fromEvent, Subscription} from "rxjs";
 
 @Component({
-  selector: 'dsw-search-input',
-  templateUrl: './search-input.component.html',
-  styleUrls: ['./search-input.component.scss'],
+    selector: 'dsw-search-input',
+    templateUrl: './search-input.component.html',
+    styleUrls: ['./search-input.component.scss'],
     providers: [
         {
             provide: NG_VALUE_ACCESSOR,
             useExisting: forwardRef(() => SearchInputComponent),
             multi: true
         }
-    ]
+    ],
+    standalone: true,
+    imports: [FormsModule]
 })
 export class SearchInputComponent implements ControlValueAccessor, OnInit, OnDestroy {
     @ViewChild('inp', {static: true}) inp!: ElementRef;

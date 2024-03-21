@@ -228,7 +228,7 @@ $row-height: 22px;
     width: 14px;
     height: 14px;
     margin-right: 20px;
-    background-image: url("^assets/img/icons/burger-menu-gray.svg");
+    background-image: url("./../assets/img/icons/burger-menu-gray.svg");
     &:before {
         display: none;
     }
@@ -240,14 +240,14 @@ $row-height: 22px;
     width: 16px;
     height: 16px;
     border: none;
-    background-image: url("^assets/img/icons/icon-copy.svg");
+    background-image: url("./../assets/img/icons/icon-copy.svg");
     margin-right: 10px;
     &:before, &:after {
         display: none;
     }
     &:hover {
         background: transparent;
-        background-image: url("^assets/img/icons/icon-copy.svg");
+        background-image: url("./../assets/img/icons/icon-copy.svg");
     }
 }
 

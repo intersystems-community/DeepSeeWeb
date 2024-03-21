@@ -3,6 +3,7 @@ import {BaseChartClass} from './base-chart.class';
 import * as numeral from 'numeral';
 import {YAxisOptions} from 'highcharts';
 import * as Highcharts from 'highcharts/highstock';
+import { NgFor } from '@angular/common';
 
 
 @Component({
@@ -16,7 +17,9 @@ import * as Highcharts from 'highcharts/highstock';
         div {
             flex: 1 1 100%;
         }
-    `]
+    `],
+    standalone: true,
+    imports: [NgFor]
 })
 export class SpeedometerChartComponent extends BaseChartClass implements OnInit {
     @ViewChildren('charts') chartsEl?: QueryList<ElementRef>;
