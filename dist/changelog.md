@@ -1,3 +1,5 @@
+#### 4.0.0
+
 #### 3.2.24
 * MDX with cross joins now correctly displayed in line/area/bar/column charts (#417)
 
