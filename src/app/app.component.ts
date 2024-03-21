@@ -37,7 +37,7 @@ export class AppComponent implements OnInit {
 
     ngOnInit() {
         // Hide sidebar on any route change
-        this.router.events.subscribe((e: RouterEvent) => {
+        this.router.events.subscribe(e => {
             if (e instanceof NavigationStart) {
                 this.sbs.showComponent(null);
             }

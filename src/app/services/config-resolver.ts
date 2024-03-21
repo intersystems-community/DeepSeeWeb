@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {ActivatedRoute, ActivatedRouteSnapshot, Resolve, Router, RouterStateSnapshot} from '@angular/router';
+import { ActivatedRoute, ActivatedRouteSnapshot, Router, RouterStateSnapshot } from '@angular/router';
 import {Observable} from 'rxjs';
 import {dsw} from '../../environments/dsw';
 import {DataService} from './data.service';
@@ -8,7 +8,7 @@ import {WidgetTypeService} from './widget-type.service';
 import {CURRENT_NAMESPACE, NamespaceService} from './namespace.service';
 
 @Injectable()
-export class ConfigResolver implements Resolve<any> {
+export class ConfigResolver  {
     private model = {};
     private isLoaded = false;
 

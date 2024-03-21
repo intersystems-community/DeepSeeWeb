@@ -63,7 +63,7 @@ export class HomeEditorComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         // Cancel editing on any navigation
-        this.subRouteChange = this.router.events.subscribe((e: RouterEvent) => {
+        this.subRouteChange = this.router.events.subscribe(e => {
             if (e instanceof NavigationStart) {
                 this.onCancelEditing();
             }
