@@ -17,7 +17,7 @@ export interface IWidgetDrill {
 export interface IWidgetEvent {
     type: WidgetEventType;
     index: string;
-    widget: IWidgetInfo;
+    widget: IWidgetDesc;
     drills?: IWidgetDrill[];
     filters?: string;
     datasource?: string;
@@ -101,7 +101,7 @@ export interface IWidgetDataProperties {
 }
 
 // Widget info object
-export interface IWidgetInfo {
+export interface IWidgetDesc {
     // Gridster parameters
     x: number;
     y: number;
@@ -194,7 +194,7 @@ export interface IWidgetInfo {
     // editor
     referenceTo?: string;
     edKey: string; // needed to recreate widget by generating new key, so angular will create new using trackBy
-    oldWidget?: IWidgetInfo;
+    oldWidget?: IWidgetDesc;
 }
 
 export interface IKPIDataInfo {
@@ -220,4 +220,9 @@ export interface IKPIDataResult {
 export interface IKPIData {
     Info: IKPIDataInfo;
     Result: IKPIDataResult;
+}
+
+export interface IWidgetModel {
+  error?: string;
+  filters?: any;
 }

@@ -17,7 +17,7 @@ import {ModalService} from '../../../../services/modal.service';
 import {UtilService} from '../../../../services/util.service';
 import {BroadcastService} from '../../../../services/broadcast.service';
 import { FormsModule } from '@angular/forms';
-import {IWidgetInfo} from "../../../../services/dsw.types";
+import {IWidgetDesc} from "../../../../services/dsw.types";
 
 
 @Component({
@@ -31,7 +31,7 @@ export class WidgetFilterComponent implements OnInit {
     @ViewChild('filterPopup', {read: ViewContainerRef, static: true})
     filterPopup!: ViewContainerRef;
 
-    @Input() widget!: IWidgetInfo;
+    @Input() widget!: IWidgetDesc;
     @Input() filters: any[] = [];
 
     @Output() onVariable = new EventEmitter<any>();
@@ -148,5 +148,9 @@ export class WidgetFilterComponent implements OnInit {
             ctrl._value = value;
         }
         this.bs.broadcast('refresh:' + this.widget.name);
+    }
+
+    detectChanges() {
+      this.cd.detectChanges();
     }
 }

@@ -58,9 +58,10 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
 
   private subPrint?: Subscription;
   private subColorsConfig?: Subscription;
-
+  private subChartType?: Subscription;
   private axisLabelListeners: IAxisLabelListener[] = [];
   private seriesVisibility: boolean[] = [];
+
 
   ngOnInit() {
     super.ngOnInit();
@@ -73,6 +74,10 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
     if (this.override?.seriesTypes) {
       this.seriesTypes = this.override?.seriesTypes.split(',');
     }
+
+    this.subChartType = this.bs.subscribe('setChartType:' + this.widget.name, (type) => {
+      this.setChartType(type);
+    });
 
     this.subPrint = this.bs.subscribe('print:' + this.widget.name, () => {
       if (this.chart) {
@@ -138,16 +143,6 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
     while (c.series.length > 0) {
       c.series[0].remove(false);
     }
-  }
-
-  destroy() {
-    if (this.subColorsConfig) {
-      this.subColorsConfig.unsubscribe();
-    }
-    if (this.subPrint) {
-      this.subPrint.unsubscribe();
-    }
-    super.destroy();
   }
 
   onHeaderButton(bt: IButtonToggle) {
@@ -595,11 +590,10 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
    * Set chart type
    * @param {string} type Chart type
    */
-  setType(type) {
+  setChartType(type) {
     // @ts-ignore
     delete this.chart.options.plotOptions.series.stacking;
     const oldType = this.chartConfig.chart?.type;
-    let doubleRefresh = false;
     if (type === 'barchartstacked') {
       type = 'bar';
       // @ts-ignore
@@ -1061,6 +1055,8 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
   }
 
   ngOnDestroy() {
+    this.subPrint?.unsubscribe();
+    this.subChartType?.unsubscribe();
     this.removeAxisListeners();
     super.ngOnDestroy();
   }

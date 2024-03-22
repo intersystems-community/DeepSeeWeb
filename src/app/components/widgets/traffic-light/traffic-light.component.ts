@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, HostBinding, Input} from '@angular/core';
 import {WMeterComponent} from '../base/meter-widget.class';
-import {IWidgetInfo} from "../../../services/dsw.types";
+import {IWidgetDesc} from "../../../services/dsw.types";
 
 
 
@@ -13,7 +13,7 @@ import {IWidgetInfo} from "../../../services/dsw.types";
     imports: []
 })
 export class WTrafficLightComponent extends WMeterComponent {
-    @Input() widget: IWidgetInfo = {} as IWidgetInfo;
+    @Input() widget: IWidgetDesc = {} as IWidgetDesc;
 
     @HostBinding('style.grid-template-columns')
     get gridColumns() {

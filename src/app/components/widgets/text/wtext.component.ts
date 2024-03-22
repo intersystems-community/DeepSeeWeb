@@ -1,7 +1,7 @@
 import {AfterViewInit, Component, ElementRef, HostBinding, Input, OnInit, ViewChildren} from '@angular/core';
 import {BaseWidget} from '../base-widget.class';
 import {dsw} from '../../../../environments/dsw';
-import {IWidgetDataProperties, IWidgetInfo} from '../../../services/dsw.types';
+import {IWidgetDataProperties, IWidgetDesc} from '../../../services/dsw.types';
 
 
 interface ITextWidgetData {
@@ -21,7 +21,7 @@ interface ITextWidgetData {
 })
 export class WTextComponent extends BaseWidget implements OnInit, AfterViewInit {
     @ViewChildren('images') images: ElementRef[] = [];
-    @Input() widget: IWidgetInfo = {} as IWidgetInfo;
+    @Input() widget: IWidgetDesc = {} as IWidgetDesc;
 
     @HostBinding('style.flex-direction')
     get flexDirection() {

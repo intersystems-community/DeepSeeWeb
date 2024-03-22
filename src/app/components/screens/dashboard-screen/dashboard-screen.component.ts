@@ -28,7 +28,7 @@ import {BaseChartClass} from '../../widgets/charts/base-chart.class';
 import {DashboardEditingClass} from './dashboard-editing.class';
 import {I18nPipe} from '../../../services/i18n.service';
 import {WidgetComponent} from '../../widgets/base/widget/widget.component';
-import {IWidgetInfo} from "../../../services/dsw.types";
+import {IWidgetDesc} from "../../../services/dsw.types";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 
@@ -69,7 +69,7 @@ export class DashboardScreenComponent extends DashboardEditingClass implements O
   model = {
     items: []
   };
-  ctxItem?: IWidgetInfo;
+  ctxItem?: IWidgetDesc;
   contextMenuData?: IContextMenuData = {
     canDrill: false,
     canDrillthrough: false
@@ -97,7 +97,7 @@ export class DashboardScreenComponent extends DashboardEditingClass implements O
   isMobile = false;
   isLoading = true;
   itemsInitialized = 0;
-  mobileFilter?: IWidgetInfo;
+  mobileFilter?: IWidgetDesc;
   isMobileFilterVisible = false;
   private settings: any;
   private readonly sharedWidget: string = '';
@@ -144,7 +144,7 @@ export class DashboardScreenComponent extends DashboardEditingClass implements O
     });
   }
 
-  trackByName = (index: number, w: IWidgetInfo) => {
+  trackByName = (index: number, w: IWidgetDesc) => {
     const nameKey = this.path + '-' + w.name.toString();
     if (w === this.editedWidget) {
       // For edited widget use a key,
@@ -196,11 +196,11 @@ export class DashboardScreenComponent extends DashboardEditingClass implements O
    * Sets widget type. Widget to change: this.ctxItem
    * @param {string} type Widget type
    */
-  setType(type: string) {
+  setChartType(type: string) {
     if (!this.ctxItem) {
       return;
     }
-    this.bs.broadcast('setType:' + this.ctxItem.name, type);
+    this.bs.broadcast('setChartType:' + this.ctxItem.name, type);
     this.hideContextMenu();
   }
 
@@ -328,6 +328,7 @@ export class DashboardScreenComponent extends DashboardEditingClass implements O
       // $rootScope.$broadcast('menu:changeTitle', result.info.title);
     }
     this.list = [];
+    // result.widgets = [result.widgets[0]];
     this.dbs.setWidgets(this.list);
     this.dbs.setAllWidgets(result.widgets);
     for (i = 0; i < result.widgets.length; i++) {
@@ -530,7 +531,7 @@ export class DashboardScreenComponent extends DashboardEditingClass implements O
    * @param item
    * @param e
    */
-  showContextMenu(item: IWidgetInfo, e: MouseEvent, ctxData?) {
+  showContextMenu(item: IWidgetDesc, e: MouseEvent, ctxData?) {
     if (item === this.editedWidget) {
       return;
     }
@@ -753,7 +754,7 @@ export class DashboardScreenComponent extends DashboardEditingClass implements O
     this.hideContextMenu();
   }
 
-  gotoKPIPage(w?: IWidgetInfo) {
+  gotoKPIPage(w?: IWidgetDesc) {
     if (!w?.kpiclass) {
       return;
     }
@@ -762,7 +763,7 @@ export class DashboardScreenComponent extends DashboardEditingClass implements O
     window.open(url, '_blank');
   }
 
-  gotoAnalyzer(w?: IWidgetInfo) {
+  gotoAnalyzer(w?: IWidgetDesc) {
     if (!w?.dataSource) {
       return;
     }
@@ -972,7 +973,7 @@ export class DashboardScreenComponent extends DashboardEditingClass implements O
       if (this.isLoading) {
         return;
       }
-      this.dbs.saveWidgetPositionAndSize(item as IWidgetInfo);
+      this.dbs.saveWidgetPositionAndSize(item as IWidgetDesc);
     };
   }
 

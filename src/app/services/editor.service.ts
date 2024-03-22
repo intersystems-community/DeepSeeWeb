@@ -7,7 +7,7 @@ import {BehaviorSubject} from "rxjs";
 import {BroadcastService} from "./broadcast.service";
 import {TypeAndDatasourceComponent} from "../components/editor/type-and-datasource/type-and-datasource.component";
 import {ErrorService} from "./error.service";
-import {IWidgetInfo} from "./dsw.types";
+import {IWidgetDesc} from "./dsw.types";
 
 export interface IWidgetListItem {
     label: string;
@@ -15,7 +15,7 @@ export interface IWidgetListItem {
 }
 
 export interface IEditedWidgetChangedEvent {
-    widget: Partial<IWidgetInfo>;
+    widget: Partial<IWidgetDesc>;
     refreshData?: boolean;
     reCreate?: boolean;
 }
@@ -25,11 +25,11 @@ export interface IEditedWidgetChangedEvent {
 })
 export class EditorService {
     onCancelEditing = new EventEmitter<void>();
-    onNewWidget = new EventEmitter<Partial<IWidgetInfo>>();
+    onNewWidget = new EventEmitter<Partial<IWidgetDesc>>();
     onEditedWidgetChanged = new EventEmitter<IEditedWidgetChangedEvent>();
     onSave = new EventEmitter<IEditedWidgetChangedEvent>();
     onUnsavedChanged = new BehaviorSubject<boolean>(false);
-    onDeleteWidget = new EventEmitter<Partial<IWidgetInfo>>();
+    onDeleteWidget = new EventEmitter<Partial<IWidgetDesc>>();
 
     constructor(private dbs: DashboardService,
                 private ms: ModalService,
@@ -70,7 +70,7 @@ export class EditorService {
         this.resetSavedState();
     }
 
-    save(widget: Partial<IWidgetInfo>) {
+    save(widget: Partial<IWidgetDesc>) {
         if (!this.validate(widget)) {
             return;
         }
@@ -82,7 +82,7 @@ export class EditorService {
         }
         this.ds.saveWidget(widget.dashboard, widget, widget?.oldWidget?.name)
             .then(d => {
-                this.dbs.saveWidgetPositionAndSize(widget as IWidgetInfo);
+                this.dbs.saveWidgetPositionAndSize(widget as IWidgetDesc);
                 this.onSave.emit();
                 this.sbs.hide();
                 this.resetSavedState();
@@ -93,7 +93,7 @@ export class EditorService {
             });
     }
 
-    async generateWidgetMdx(w: Partial<IWidgetInfo>) {
+    async generateWidgetMdx(w: Partial<IWidgetDesc>) {
         w.mdx = '';
         w.kpiclass = '';
         w.kpitype = '';
@@ -120,7 +120,7 @@ export class EditorService {
          }*/
     }
 
-    deleteWidget(widget: IWidgetInfo) {
+    deleteWidget(widget: IWidgetDesc) {
         const del = () => {
             this.onDeleteWidget.emit(widget);
             this.sbs.hide();
@@ -138,7 +138,7 @@ export class EditorService {
         });
     }
 
-    navigateDataSourceAndType(widget: Partial<IWidgetInfo>, invalidControls: string[] = []) {
+    navigateDataSourceAndType(widget: Partial<IWidgetDesc>, invalidControls: string[] = []) {
         this.sbs.showComponent({
             component: import('./../components/editor/type-and-datasource/type-and-datasource.component'),
             single: true,
@@ -149,7 +149,7 @@ export class EditorService {
         });
     }
 
-    private askForWidgetDeletion(widget: IWidgetInfo, okCallback: () => void) {
+    private askForWidgetDeletion(widget: IWidgetDesc, okCallback: () => void) {
         this.ms.show({
             message: `Do you really want do delete widget "${widget.name}"?`,
             buttons: [
@@ -167,7 +167,7 @@ export class EditorService {
         });
     }
 
-    private validate(widget: Partial<IWidgetInfo>) {
+    private validate(widget: Partial<IWidgetDesc>) {
         if (!widget.name) {
             this.es.show('Please enter widget name', true);
             this.sbs.showComponent({

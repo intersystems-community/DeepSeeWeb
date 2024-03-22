@@ -3,7 +3,7 @@ import {BaseWidget} from '../base-widget.class';
 import Highcharts from 'highcharts/highstock';
 import {Subscription} from 'rxjs';
 import {IButtonToggle} from '../../../services/widget.service';
-import {IWidgetDataProperties, IWidgetInfo} from "../../../services/dsw.types";
+import {IWidgetDataProperties, IWidgetDesc} from "../../../services/dsw.types";
 
 
 interface IScorecardColumn {
@@ -20,7 +20,7 @@ interface IScorecardColumn {
     imports: []
 })
 export class ScorecardWidgetComponent extends BaseWidget implements OnInit, OnDestroy {
-    @Input() widget: IWidgetInfo = {} as IWidgetInfo;
+    @Input() widget: IWidgetDesc = {} as IWidgetDesc;
 
     columns: any[] = [];
     rows: any[] = [];

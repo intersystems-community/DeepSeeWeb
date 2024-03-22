@@ -28,7 +28,6 @@ export class FilterService {
                 private us: UtilService,
                 private ss: StorageService,
                 private ds: DataService,
-                private ns: NamespaceService,
                 private bs: BroadcastService,
                 private dbs: DashboardService,
                 private i18n: I18nService) {

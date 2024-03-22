@@ -22,7 +22,7 @@ import {UtilService} from "../../../services/util.service";
 import {I18nPipe} from '../../../services/i18n.service';
 import {AutoFocusDirective} from '../../../directives/auto-focus.directive';
 import {FormsModule} from '@angular/forms';
-import {IWidgetInfo} from "../../../services/dsw.types";
+import {IWidgetDesc} from "../../../services/dsw.types";
 import {ModalComponent} from "../modal/modal.component";
 
 interface IFilterModel {
@@ -61,7 +61,7 @@ export class FilterPopupComponent implements OnInit, AfterViewInit {
   @Input()
   _modal?: ModalComponent;
   isRelatedFilters = false;
-  widget!: IWidgetInfo;
+  widget!: IWidgetDesc;
   private datePipe: DatePipe;
 
   constructor(private ss: StorageService,
@@ -120,7 +120,7 @@ export class FilterPopupComponent implements OnInit, AfterViewInit {
   }
 
 
-  initialize(widget: IWidgetInfo, filter: any, dataSource: string) {
+  initialize(widget: IWidgetDesc, filter: any, dataSource: string) {
     this.widget = widget;
     // this.source = filter;
     // this.dataSource = dataSource;

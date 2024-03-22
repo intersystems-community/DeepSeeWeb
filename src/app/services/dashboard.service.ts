@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {dsw} from "../../environments/dsw";
 import {BehaviorSubject} from "rxjs";
 import {StorageService} from "./storage.service";
-import {IWidgetDisplayInfo, IWidgetInfo} from "./dsw.types";
+import {IWidgetDisplayInfo, IWidgetDesc} from "./dsw.types";
 
 export interface IDashboardDisplayInfo {
     gridCols: number;
@@ -15,15 +15,15 @@ export interface IDashboard {
     displayInfo: IDashboardDisplayInfo;
     filters: any[];
     info: any;
-    widgets: IWidgetInfo[];
+    widgets: IWidgetDesc[];
 }
 
 @Injectable({
     providedIn: 'root'
 })
 export class DashboardService {
-    private widgets: IWidgetInfo[] = [];
-    private allWidgets: IWidgetInfo[] = [];
+    private widgets: IWidgetDesc[] = [];
+    private allWidgets: IWidgetDesc[] = [];
 
     current = new BehaviorSubject<string>('');
     dashboard = new BehaviorSubject<IDashboard|null>(null);
@@ -31,27 +31,27 @@ export class DashboardService {
     constructor(private ss: StorageService) {
     }
 
-    setWidgets(widgets: IWidgetInfo[]) {
+    setWidgets(widgets: IWidgetDesc[]) {
         this.widgets = widgets;
     }
 
-    getWidgets(): IWidgetInfo[] {
+    getWidgets(): IWidgetDesc[] {
         return this.widgets;
     }
 
-    getWidgetsWithoutEmpty(excludeNames: string[] = []): IWidgetInfo[] {
+    getWidgetsWithoutEmpty(excludeNames: string[] = []): IWidgetDesc[] {
         return this.widgets.filter(w => (w.type !== dsw.const.emptyWidgetClass && !excludeNames.includes(w.name)));
     }
 
-    setAllWidgets(widgets: IWidgetInfo[]) {
+    setAllWidgets(widgets: IWidgetDesc[]) {
         this.allWidgets = widgets;
     }
 
-    getAllWidgets(): IWidgetInfo[] {
+    getAllWidgets(): IWidgetDesc[] {
         return this.allWidgets;
     }
 
-    saveWidgetPositionAndSize(widget: IWidgetInfo) {
+    saveWidgetPositionAndSize(widget: IWidgetDesc) {
         const widgets = this.ss.getWidgetsSettings(widget.dashboard);
         const k = widget.name;
         if (!widgets[k]) {
@@ -74,7 +74,7 @@ export class DashboardService {
         this.ss.setWidgetsSettings(widgets, widget.dashboard);
     }
 
-    generateDisplayInfo(widget: Partial<IWidgetInfo>) {
+    generateDisplayInfo(widget: Partial<IWidgetDesc>) {
         // Only generate if not exist
         if (widget.displayInfo) {
             return;

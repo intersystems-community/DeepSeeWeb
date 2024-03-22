@@ -1,7 +1,7 @@
 <!-- Widget header -->
 <dsw-widget-header
   #header
-  [typeDesc]="typeDesc"
+  [typeDesc]="widgetType"
   [hidden]="widget.tile || !isHeader"
   (onButtonClick)="onHeaderButton($event)"
   (onBack)="onHeaderButtonBack()"
@@ -19,8 +19,10 @@
   (onAction)="onFilterAction($event)"
 ></dsw-widget-filter>
 
-<!-- Create dynamic widget component after this container -->
-<ng-template #container></ng-template>
+<!-- Dynamic widget component -->
+@if (widgetType && widgetType.class) {
+  <ng-container *ngComponentOutlet="widgetType.class; inputs: widgetInputs"></ng-container>
+}
 
 <!-- Error message -->
 @if (model.error) {
@@ -29,5 +31,5 @@
 
 <!-- Loading spinner -->
 <div class="spinner" [hidden]="model.error || !component?.isSpinner">
-  <img src="assets/img/spinner.svg">
+  <img ngSrc="assets/img/spinner.svg" height="100" width="100">
 </div>

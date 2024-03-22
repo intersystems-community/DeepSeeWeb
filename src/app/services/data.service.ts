@@ -7,7 +7,7 @@ import {catchError, tap} from 'rxjs/operators';
 import {ErrorService} from './error.service';
 import {CURRENT_NAMESPACE} from './namespace.service';
 
-import {IWidgetInfo} from "./dsw.types";
+import {IWidgetDesc} from "./dsw.types";
 
 export let MDX2JSON = 'MDX2JSON';
 export let NAMESPACE = 'MDX2JSON';
@@ -498,7 +498,7 @@ export class DataService {
         ));
     }
 
-    async saveWidget(dashboard: string, data: Partial<IWidgetInfo>, key?: string) {
+    async saveWidget(dashboard: string, data: Partial<IWidgetDesc>, key?: string) {
         return firstValueFrom<any>(this.http.post(
             this.url + 'saveWidget?Namespace=' + CURRENT_NAMESPACE,
             {key: key || '', Dashboard: dashboard, WidgetData: data},

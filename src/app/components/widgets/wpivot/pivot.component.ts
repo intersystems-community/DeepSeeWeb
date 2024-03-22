@@ -1,7 +1,7 @@
 import {Component, Input} from '@angular/core';
 import {BaseWidget} from '../base-widget.class';
 import {CURRENT_NAMESPACE} from '../../../services/namespace.service';
-import {IWidgetInfo} from '../../../services/dsw.types';
+import {IWidgetDesc} from '../../../services/dsw.types';
 
 declare const LightPivotTable: any;
 
@@ -12,7 +12,7 @@ declare const LightPivotTable: any;
     standalone: true
 })
 export class WPivotComponent extends BaseWidget {
-    @Input() widget: IWidgetInfo = {} as IWidgetInfo;
+    @Input() widget: IWidgetDesc = {} as IWidgetDesc;
     isSpinner = false;
     private _oldMdx = '';
 
@@ -26,7 +26,6 @@ export class WPivotComponent extends BaseWidget {
     }
 
     ngOnDestroy() {
-        // this.lpt.destroy();
         super.ngOnDestroy();
     }
 

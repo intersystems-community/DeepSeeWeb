@@ -1,64 +1,52 @@
 import {
   AfterViewInit,
+  ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
-  ComponentFactoryResolver,
-  ComponentRef,
   Input,
   OnDestroy,
   OnInit,
-  ViewChild,
-  ViewContainerRef
+  ViewChild
 } from '@angular/core';
 import {BaseWidget} from '../../base-widget.class';
 import {FilterService} from '../../../../services/filter.service';
 import {StorageService} from '../../../../services/storage.service';
-import {DataService} from '../../../../services/data.service';
 import {VariablesService} from '../../../../services/variables.service';
 import {I18nService} from '../../../../services/i18n.service';
 import {IWidgetType, WidgetTypeService} from '../../../../services/widget-type.service';
 import {IButtonToggle} from '../../../../services/widget.service';
 import {WidgetHeaderComponent} from '../widget-header/widget-header.component';
-import {NamespaceService} from '../../../../services/namespace.service';
 import {BroadcastService} from '../../../../services/broadcast.service';
 import {Subscription} from 'rxjs';
 import {ModalService} from '../../../../services/modal.service';
-import {BaseChartClass} from '../../charts/base-chart.class';
 import {ActivatedRoute} from '@angular/router';
-import {ShareDashboardComponent} from "../../../ui/share-dashboard/share-dashboard/share-dashboard.component";
-
+import {ShareDashboardComponent} from '../../../ui/share-dashboard/share-dashboard/share-dashboard.component';
 import {WidgetFilterComponent} from '../widget-filter/widget-filter.component';
-import {IWidgetInfo} from "../../../../services/dsw.types";
+import {IWidgetDesc, IWidgetModel} from '../../../../services/dsw.types';
+import {NgComponentOutlet, NgOptimizedImage} from '@angular/common';
 
 @Component({
   selector: 'dsw-widget',
   templateUrl: './widget.component.html',
   styleUrls: ['./widget.component.scss'],
   standalone: true,
-  imports: [WidgetHeaderComponent, WidgetFilterComponent]
+  imports: [WidgetHeaderComponent, WidgetFilterComponent, NgComponentOutlet, NgOptimizedImage],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class WidgetComponent implements OnInit, OnDestroy, AfterViewInit {
-  @ViewChild('container', {read: ViewContainerRef, static: true})
-  container?: ViewContainerRef;
-
-  @ViewChild('header', {static: true})
-  header?: WidgetHeaderComponent;
-
-  @ViewChild('filters', {static: true})
-  filters?: WidgetHeaderComponent;
-
-  model: { error: string, filters: any } = {
-    error: '',
-    filters: null
+  @ViewChild(NgComponentOutlet) ngComponentOutlet?: NgComponentOutlet;
+  @ViewChild('header', {static: true}) header!: WidgetHeaderComponent;
+  @ViewChild('filters', {static: true}) filters!: WidgetFilterComponent;
+  @Input() widget: IWidgetDesc = {} as IWidgetDesc;
+  widgetInputs?: Record<string, unknown>;
+  model: IWidgetModel = {
+    error: ''
   };
-  @Input() widget: IWidgetInfo = {} as IWidgetInfo;
-
-  typeDesc?: IWidgetType;
-  public component?: BaseWidget;
-  hasDatasourceChoser = false;
+  widgetType?: IWidgetType;
+  component?: BaseWidget;
+  hasDatasourceChooser = false;
   hasActions = false;
   isHeader = true;
-  private componentRef?: ComponentRef<BaseWidget>;
   private subFilter?: Subscription;
   private subUpdateFilterText?: Subscription;
   private subFilterAll?: Subscription;
@@ -68,82 +56,40 @@ export class WidgetComponent implements OnInit, OnDestroy, AfterViewInit {
   private subChangeType?: Subscription;
 
   constructor(private fs: FilterService,
-              private ds: DataService,
               private ss: StorageService,
               private vs: VariablesService,
               private i18n: I18nService,
               private wts: WidgetTypeService,
-              private ns: NamespaceService,
               private bs: BroadcastService,
               private ms: ModalService,
               public cd: ChangeDetectorRef,
-              private route: ActivatedRoute,
-              private cfr: ComponentFactoryResolver) {
+              private route: ActivatedRoute) {
     this.isHeader = this.route.snapshot.queryParamMap.get('noheader') !== '1';
   }
 
-  ngAfterViewInit() {
+  ngOnInit() {
+    this.updateComponent();
+    this.initFilters();
+    this.setupPivotVariables();
+    this.checkToolbarVisibility();
+    this.subscribeFilters();
+    this.subscribeActions();
+  }
 
+  ngAfterViewInit() {
+    // @ts-ignore
+    this.component = this.ngComponentOutlet?._componentRef?.instance;
+    this.initDataSourceFromParams();
+    this.initDrillsForSharedWidget();
   }
 
   onHeaderButton(bt: IButtonToggle) {
-    if (bt.name === 'displayAsPivot' && this.component) {
-      this.component.displayAsPivot();
+    if (bt.name === 'displayAsPivot') {
+      this.component?.displayAsPivot();
       return;
     }
-    if (this.component) {
-      this.component.onHeaderButton(bt);
-    }
+    this.component?.onHeaderButton(bt);
     this.header?.cd.detectChanges();
-  }
-
-  ngOnInit() {
-    // super.ngOnInit();
-    this.createWidgetComponent();
-
-    // Get datasource from params for shared widget
-    if (this.widget.shared) {
-      const ds = this.route.snapshot.queryParamMap.get('datasource');
-      if (ds && this.component) {
-        // this.widget.dataSource = ds;
-        this.component.customDataSource = ds;
-      }
-    }
-
-    // Set dills for shared widget
-    const drills = this.route.snapshot.queryParamMap.get('drilldown');
-    if (drills && this.component && this.widget) {
-      this.component.drills = decodeURIComponent(drills).split('~').map(d => {
-        return {path: d, name: d};
-      });
-      this.widget.backButton = !!this.component?.drills.length;
-      this.widget.title = this.component.getDrillTitle(this.component.drills[this.component.drills.length - 1]);
-      this.header?.cd.detectChanges();
-    }
-
-    this.model.filters = this.fs.getWidgetModelFilters(this.widget.name);
-    this.updateFiltersText();
-
-
-    this.setupPivotVariables();
-    if (this.model.filters.length === 0 && !this.hasDatasourceChoser && !this.hasActions && !this.widget.pvItems.length) {
-      this.hideToolbar();
-    }
-
-    // Filter subscriptions
-    this.subFilter = this.bs.subscribe('filter' + this.widget.name, flt => this.applyFilter(flt));
-    this.subUpdateFilterText = this.bs.subscribe('updateFilterText' + this.widget.name, flt => this.updateFilterText(flt));
-    this.subFilterAll = this.bs.subscribe('filterAll', flt => this.applyFilter(flt));
-
-    this.subRefresh = this.bs.subscribe('refresh:' + this.widget.name, () => this.requestData());
-    this.subCopyMdx = this.bs.subscribe(`copyMDX:${this.widget.name}`, () => this.copyMDX());
-    this.subShare = this.bs.subscribe(`share:${this.widget.name}`, () => this.share());
-    this.subChangeType = this.bs.subscribe('setType:' + this.widget.name, type => this.changeType(type));
-
-
-    // TODO: subscribe
-    // this.$on("refresh-all", () => {this.requestData();});
-    // this.$on("resetWidgets", resetWidget);
   }
 
   /**
@@ -178,30 +124,13 @@ export class WidgetComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnDestroy() {
-    if (this.subCopyMdx) {
-      this.subCopyMdx.unsubscribe();
-    }
-    if (this.subRefresh) {
-      this.subRefresh.unsubscribe();
-    }
-    if (this.subFilter) {
-      this.subFilter.unsubscribe();
-    }
-    if (this.subUpdateFilterText) {
-      this.subUpdateFilterText.unsubscribe();
-    }
-    if (this.subFilterAll) {
-      this.subFilterAll.unsubscribe();
-    }
-    if (this.subShare) {
-      this.subShare.unsubscribe();
-    }
-    if (this.subChangeType) {
-      this.subChangeType.unsubscribe();
-    }
-    if (this.component) {
-      this.component.destroy();
-    }
+    this.subCopyMdx?.unsubscribe();
+    this.subRefresh?.unsubscribe();
+    this.subFilter?.unsubscribe();
+    this.subUpdateFilterText?.unsubscribe();
+    this.subFilterAll?.unsubscribe();
+    this.subShare?.unsubscribe();
+    this.subChangeType?.unsubscribe();
   }
 
   /**
@@ -214,7 +143,7 @@ export class WidgetComponent implements OnInit, OnDestroy, AfterViewInit {
   /**
    * Display error message on widget holder
    */
-  showError(txt) {
+  showError(txt: string) {
     this.model.error = txt;
   }
 
@@ -259,7 +188,6 @@ export class WidgetComponent implements OnInit, OnDestroy, AfterViewInit {
     return this.fs.getFilter((this.model.filters as any)?.[idx].idx);
   }
 
-
   /**
    * Changes widget type. Callback for $on("setType")
    * @param {object} sc Scope
@@ -267,15 +195,13 @@ export class WidgetComponent implements OnInit, OnDestroy, AfterViewInit {
    */
   changeType(t: string) {
     this.widget.type = t;
-    if (this.component?.chart) {
-      (this.component as BaseChartClass).setType(t);
-    }
+    this.updateComponent();
   }
 
   /**
    * Reset widget position and size
    */
-  resetWidget() {
+  /*resetWidget() {
     const widgets = this.ss.getWidgetsSettings(this.widget.dashboard);
     const k = this.widget.name;
     const w = widgets[k];
@@ -287,7 +213,7 @@ export class WidgetComponent implements OnInit, OnDestroy, AfterViewInit {
     delete w.row;
     delete w.col;
     this.ss.setWidgetsSettings(widgets, this.widget.dashboard);
-  }
+  }*/
 
   copyMDX() {
     if (!this.component) {
@@ -314,7 +240,7 @@ export class WidgetComponent implements OnInit, OnDestroy, AfterViewInit {
         };
       }
     };
-    this.ms.show(copyModal);
+    void this.ms.show(copyModal);
   }
 
   /**
@@ -343,15 +269,16 @@ export class WidgetComponent implements OnInit, OnDestroy, AfterViewInit {
       url += '&widget=' + idx;
     }
 
-    let w, h;
+    //let w;
+    //let h;
     // if (this._elem && this._elem[0] && this._elem[0].offsetParent) {
     //     w = this._elem[0].offsetParent.offsetWidth;
     //     h = this._elem[0].offsetParent.offsetHeight;
     // }
     // TODO: set height here
-    if (h) {
+    /*if (h) {
       url += '&height=' + h;
-    }
+    }*/
 
     // Share button state
     url = this.appendShareState(url, 'isLegend');
@@ -361,7 +288,7 @@ export class WidgetComponent implements OnInit, OnDestroy, AfterViewInit {
 
     // Store hidden series
     if (c && c.series) {
-      const hidden = c.series.map((s, i) => ({v: s.visible, i: i})).filter(s => !s.v);
+      const hidden = c.series.map((s, i) => ({v: s.visible, i})).filter(s => !s.v);
       if (hidden.length) {
         url += '&hiddenSeries=' + hidden.map(s => s.i).join(',');
       }
@@ -374,10 +301,10 @@ export class WidgetComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     let html = '<iframe style="border: none" src="' + url + '" ';
-    if (w && h) {
+   /* if (w && h) {
       html = html + 'width="' + w + '" ';
       html = html + 'height="' + h + '" ';
-    }
+    }*/
     html += '></iframe>';
 
     const shareModal = {
@@ -399,15 +326,11 @@ export class WidgetComponent implements OnInit, OnDestroy, AfterViewInit {
         };
       }
     };
-    this.ms.show(shareModal);
-
+    void this.ms.show(shareModal);
   }
 
   requestData() {
-    if (!this.component) {
-      return;
-    }
-    this.component.requestData();
+    this.component?.requestData();
   }
 
   /**
@@ -416,7 +339,7 @@ export class WidgetComponent implements OnInit, OnDestroy, AfterViewInit {
   applyFilter(flt: any) {
     this.updateFiltersText();
     this.requestData();
-    //this.updateFiltersParameterInURL();
+    // this.updateFiltersParameterInURL();
   }
 
   /**
@@ -460,102 +383,109 @@ export class WidgetComponent implements OnInit, OnDestroy, AfterViewInit {
    * On header back button click event handler
    */
   onHeaderButtonBack() {
-    if (!this.component) {
-      return;
-    }
-    this.component.doDrillUp();
+    this.component?.doDrillUp();
   }
 
   /**
    * On header reset click filter button click event handler
    */
   onResetClickFilter() {
-    if (!this.component) {
-      return;
-    }
-    this.component.resetClickFilter();
+    this.component?.resetClickFilter();
   }
 
   /**
    * On filter variable change handler
    */
   onFilterVariable(v: any) {
-    if (!this.component) {
-      return;
-    }
-    this.component.onVariableChange(v);
+    this.component?.onVariableChange(v);
   }
 
   /**
    * On filter datasource changed handler
    */
   onFilterDatasource(item: any) {
-    if (!this.component) {
-      return;
-    }
-    this.component.onDataSourceChange(item);
+    this.component?.onDataSourceChange(item);
   }
 
   /**
    * On action handler
    */
   onFilterAction(action: string) {
-    if (!this.component) {
-      return;
-    }
-    this.component.performAction(action);
+    this.component?.performAction(action);
   }
 
   onFilter(idx: number) {
 
   }
 
-  protected setType(type: string) {
-
-  }
-
-  private createWidgetComponent(type?: string) {
-    if (!this.container) {
-      console.error(`Can't find container for widget: `, this.widget);
-      return;
-    }
-    this.destroyComponent();
-    this.container.clear();
-    this.typeDesc = this.wts.getDesc(type || this.widget.type);
-    const t = this.typeDesc?.class; // this.wts.getClass(type || this.widget.type);
+  updateComponent() {
+    this.widgetType = this.wts.getDesc(this.widget.type);
+    const t = this.widgetType?.class; // this.wts.getClass(type || this.widget.type);
     if (t) {
       this.widget.isSupported = true;
-
-      const factory = this.cfr.resolveComponentFactory<BaseWidget>(t as any);
-      // const factory = typeDef.factory as any;
-      this.componentRef = this.container.createComponent<BaseWidget>(factory);
-      this.component = this.componentRef.instance;
-      this.component.widget = this.widget;
-      this.component.model = this.model;
-      this.component.parent = this;
-      this.component.createWidgetComponent = (type: string = '') => {
-        this.createWidgetComponent(type);
-      };
-      // this.component.header = this.header;
+      this.widgetInputs = {widget: this.widget, model: this.model, parent: this};
       if (this.header) {
-        this.header.typeDesc = this.typeDesc;
+        this.header.typeDesc = this.widgetType ?? undefined;
         this.header.widget = this.widget;
         this.header.loadButtons();
       }
     } else {
+      this.widgetInputs = undefined;
       this.widget.isSupported = false;
       this.showError(this.i18n.get('errWidgetNotSupported') + ': ' + this.widget.type);
     }
   }
 
-  private destroyComponent() {
-    if (!this.componentRef) {
+  // Set dills for shared widget
+  private initDrillsForSharedWidget() {
+    const drills = this.route.snapshot.queryParamMap.get('drilldown') || '';
+    if (drills && this.component && this.widget) {
+      this.component.drills = decodeURIComponent(drills).split('~').map(d => {
+        return {path: d, name: d};
+      });
+      this.widget.backButton = !!this.component?.drills.length;
+      this.widget.title = this.component.getDrillTitle(this.component.drills[this.component.drills.length - 1]);
+      this.header?.cd.detectChanges();
+    }
+  }
+
+  // Get datasource from params for shared widget
+  private initDataSourceFromParams() {
+    if (!this.widget.shared) {
       return;
     }
-    this.componentRef.destroy();
+    const ds = this.route.snapshot.queryParamMap.get('datasource');
+    if (ds && this.component) {
+      // this.widget.dataSource = ds;
+      this.component.customDataSource = ds;
+    }
   }
 
   private updateFilterText(flt: any) {
     this.updateFiltersText();
+  }
+
+  private initFilters() {
+    this.model.filters = this.fs.getWidgetModelFilters(this.widget.name);
+    this.updateFiltersText();
+  }
+
+  private checkToolbarVisibility() {
+    if (this.model.filters.length === 0 && !this.hasDatasourceChooser && !this.hasActions && !this.widget.pvItems.length) {
+      this.hideToolbar();
+    }
+  }
+
+  private subscribeFilters() {
+    this.subFilter = this.bs.subscribe('filter' + this.widget.name, flt => this.applyFilter(flt));
+    this.subUpdateFilterText = this.bs.subscribe('updateFilterText' + this.widget.name, flt => this.updateFilterText(flt));
+    this.subFilterAll = this.bs.subscribe('filterAll', flt => this.applyFilter(flt));
+  }
+
+  private subscribeActions() {
+    this.subRefresh = this.bs.subscribe('refresh:' + this.widget.name, () => this.requestData());
+    this.subCopyMdx = this.bs.subscribe(`copyMDX:${this.widget.name}`, () => this.copyMDX());
+    this.subShare = this.bs.subscribe(`share:${this.widget.name}`, () => this.share());
+    this.subChangeType = this.bs.subscribe('setType:' + this.widget.name, type => this.changeType(type));
   }
 }

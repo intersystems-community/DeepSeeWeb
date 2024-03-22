@@ -9,7 +9,7 @@ import {ModalService} from "../../../services/modal.service";
 import {FormsModule} from "@angular/forms";
 import {InputComponent} from "../../ui/input/input/input.component";
 import {SidebarActionsComponent} from "../../ui/sidebar-actions/sidebar-actions.component";
-import {IWidgetInfo} from "../../../services/dsw.types";
+import {IWidgetDesc} from "../../../services/dsw.types";
 
 @Component({
   selector: 'dsw-widget-editor',
@@ -20,9 +20,9 @@ import {IWidgetInfo} from "../../../services/dsw.types";
   imports: [SidebarActionsComponent, InputComponent, FormsModule]
 })
 export class WidgetEditorComponent implements OnInit, OnDestroy {
-  @Input() widget?: IWidgetInfo;
+  @Input() widget?: IWidgetDesc;
   @Input() invalid: string[] = [];
-  model: Partial<IWidgetInfo> = {
+  model: Partial<IWidgetDesc> = {
     edKey: 'ed' + new Date().getTime(),
 
     dashboard: this.dbs.current.value,
@@ -100,7 +100,7 @@ export class WidgetEditorComponent implements OnInit, OnDestroy {
   }
 
   deleteWidgetClick() {
-    this.eds.deleteWidget(this.model as IWidgetInfo);
+    this.eds.deleteWidget(this.model as IWidgetDesc);
   }
 
   /**

@@ -84,26 +84,4 @@ export class SidebarComponent implements OnInit {
       // }
     });
   }
-
-  /**
-   * Removes dynamic component from sidebar
-   */
-  public removeComponent() {
-    if (!this.component) {
-      return;
-    }
-    this.component.destroy();
-    this.component = undefined;
-  }
-
-  /**
-   * Creates dynamic component on sidebar
-   */
-  private createComponent(info: ISidebarInfo) {
-    /*const factory = this.cfr.resolveComponentFactory(info.component);
-    this.component = this.container.createComponent(factory);
-    this.ss.updateComponentProperties(this.component, info);
-    return this.component;*/
-  }
-
 }

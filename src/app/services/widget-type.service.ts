@@ -32,7 +32,7 @@ export interface IHeaderButton {
 }
 
 export interface IWidgetType {
-    class?: Type<unknown>;
+    class: Type<any>;
     type: string;
     chart: string;
     allowShowAsPivot: boolean;

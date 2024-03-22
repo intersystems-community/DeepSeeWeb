@@ -9,7 +9,7 @@ import {FormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 
 import {SidebarActionsComponent} from "../../ui/sidebar-actions/sidebar-actions.component";
-import {IWidgetInfo} from "../../../services/dsw.types";
+import {IWidgetDesc} from "../../../services/dsw.types";
 
 @Component({
     selector: 'dsw-type-and-ds',
@@ -24,7 +24,7 @@ import {IWidgetInfo} from "../../../services/dsw.types";
     ],
 })
 export class TypeAndDatasourceComponent implements OnInit, OnDestroy {
-    @Input() model?: IWidgetInfo;
+    @Input() model?: IWidgetDesc;
     @Input() invalid: string[] = [];
     widgetList: IWidgetListItem[] = [];
     widgetTypes = [

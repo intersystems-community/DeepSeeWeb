@@ -36,9 +36,6 @@ export class BubbleChartComponent extends BaseChartClass implements OnInit {
             chart: {
                 zoomType: 'xy'
             },
-            legend: {
-                enabled: true
-            },
             xAxis: {
                 tickWidth: 10,
                 title: {

@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, HostBinding, Input} from '@angular/core';
 import {IMeterWidgetData, WMeterComponent} from '../base/meter-widget.class';
 import IsNull from "ol/format/filter/IsNull";
-import {IWidgetInfo} from "../../../services/dsw.types";
+import {IWidgetDesc} from "../../../services/dsw.types";
 
 
 interface ILightbarData extends IMeterWidgetData {
@@ -17,7 +17,7 @@ interface ILightbarData extends IMeterWidgetData {
     imports: []
 })
 export class WLightBarComponent extends WMeterComponent {
-    @Input() widget: IWidgetInfo = {} as IWidgetInfo;
+    @Input() widget: IWidgetDesc = {} as IWidgetDesc;
     data: ILightbarData[] = [];
     dots = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 

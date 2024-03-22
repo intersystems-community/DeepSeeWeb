@@ -26,7 +26,7 @@ import {MenuService} from "../../../services/menu.service";
 import {Subscription} from "rxjs";
 import {WidgetComponent} from "../../widgets/base/widget/widget.component";
 import {GridsterComponent} from "angular-gridster2";
-import {IWidgetInfo} from "../../../services/dsw.types";
+import {IWidgetDesc} from "../../../services/dsw.types";
 
 @Component({
     template: ''
@@ -63,8 +63,8 @@ export class DashboardEditingClass implements OnDestroy {
     // Public
     @ViewChild('gridster') gridster!: GridsterComponent;
     @ViewChildren('widgets') widgets!: QueryList<WidgetComponent>;
-    list: IWidgetInfo[] = [];
-    editedWidget?: IWidgetInfo;
+    list: IWidgetDesc[] = [];
+    editedWidget?: IWidgetDesc;
 
     constructor(@Inject(Injector) protected inj: Injector) {
         this.ds = this.inj.get(DataService);
@@ -87,7 +87,7 @@ export class DashboardEditingClass implements OnDestroy {
         this.route = this.inj.get(ActivatedRoute);
     }
 
-    protected getWidgetByInfo(info?: IWidgetInfo) {
+    protected getWidgetByInfo(info?: IWidgetDesc) {
         if (!info) {
             return;
         }
@@ -99,7 +99,7 @@ export class DashboardEditingClass implements OnDestroy {
         this.subOnEditedWidgetChanged = this.eds.onEditedWidgetChanged.subscribe(e => this.updateEditedWidget(e));
 
         // On add new widget
-        this.subOnNewWidget = this.eds.onNewWidget.subscribe(w => this.newWidget(w as IWidgetInfo));
+        this.subOnNewWidget = this.eds.onNewWidget.subscribe(w => this.newWidget(w as IWidgetDesc));
 
         // On save
         this.subOnSaveWidget = this.eds.onSave.subscribe(() => this.onSaveWidget());
@@ -108,12 +108,12 @@ export class DashboardEditingClass implements OnDestroy {
         this.subCancelEditing = this.eds.onCancelEditing.subscribe(() => this.cancelEditing());
 
         // On delete widget
-        this.subOnDeleteWidget = this.eds.onDeleteWidget.subscribe(w => this.deleteWidget(w as IWidgetInfo))
+        this.subOnDeleteWidget = this.eds.onDeleteWidget.subscribe(w => this.deleteWidget(w as IWidgetDesc))
     }
 
     private updateEditedWidget(e: IEditedWidgetChangedEvent) {
         if (!this.editedWidget) {
-           this.editedWidget = e.widget as IWidgetInfo;
+           this.editedWidget = e.widget as IWidgetDesc;
         }
 
         const w = this.getWidgetByInfo(this.editedWidget);
@@ -129,7 +129,7 @@ export class DashboardEditingClass implements OnDestroy {
         this.detectChanges();
     }
 
-    private newWidget(w: IWidgetInfo) {
+    private newWidget(w: IWidgetDesc) {
         const last = this.dbs.getWidgetsWithoutEmpty().pop();
         if (last) {
             w.cols = last.cols;
@@ -213,7 +213,7 @@ export class DashboardEditingClass implements OnDestroy {
         this.gridster.el.scrollTop = sY;
     }
 
-    private deleteWidget(w: IWidgetInfo) {
+    private deleteWidget(w: IWidgetDesc) {
         this.editedWidget = undefined;
         const idx = this.list.indexOf(w);
         if (idx !== -1) {
