@@ -1,53 +1,61 @@
 <dsw-sidebar-actions (cancel)="onCancelEditing()" (apply)="onSaveTiles()" >Edit dashboard</dsw-sidebar-actions>
 
 <div class="container">
-    <!-- Title -->
-    <label>{{'title' | i18n}}</label>
-    <dsw-input [(ngModel)]="tile.customTitle"></dsw-input>
+  <!-- Title -->
+  <label>{{'title' | i18n}}</label>
+  <dsw-input [(ngModel)]="tile.customTitle"></dsw-input>
 
-    <!-- Bg colors -->
-    <label>{{'bgColor' | i18n}}</label>
+  <!-- Bg colors -->
+  <label>{{'bgColor' | i18n}}</label>
+  @for (col of model.colors; track col; let idx = $index) {
     <div (click)='setTileColor(idx)'
-         [class.active]="tile.color == idx"
-         [class]="'color-rect ' + col"
-         *ngFor="let col of model.colors; let idx = index">
+      [class.active]="tile.color == idx"
+      [class]="'color-rect ' + col"
+      >
     </div>
+  }
 
-    <!-- Font colors -->
-    <label>{{'fntColor' | i18n}}</label>
+  <!-- Font colors -->
+  <label>{{'fntColor' | i18n}}</label>
+  @for (col of model.fontColors; track col; let idx = $index) {
     <div (click)='setFontColor(idx)'
-         [class.active]="tile.fontColor == idx"
-         [class]="'color-rect ' + col + ' ' + model.colors[tile.color]"
-         *ngFor="let col of model.fontColors; let idx = index">
-        <span [class]="col">A</span>
+      [class.active]="tile.fontColor == idx"
+      [class]="'color-rect ' + col + ' ' + model.colors[tile.color]"
+      >
+      <span [class]="col">A</span>
     </div>
+  }
 
-    <!-- Icons -->
-    <label>{{'icon' | i18n}}</label>
-    <div class="color-rect" *ngFor="let ico of model.icons; let idx = index" (click)='setIcon(idx)'
-         [class]="'cl' + tile.color + ' ' +  (tile.icon == idx ? 'active' : '')">
-        <img *ngIf="ico" [src]="'assets/img/widget-icons/' + ico">
-        <!--<svg viewBox="-10 -16 20 20" [class]="model.fontColors[tile.fontColor]">
-            <g>
-                <text text-anchor="middle" font-size="16px">{{ico}}</text>
-            </g>
-        </svg>-->
-    </div>
+  <!-- Icons -->
+  <label>{{'icon' | i18n}}</label>
+  @for (ico of model.icons; track ico; let idx = $index) {
+    <div class="color-rect" (click)='setIcon(idx)'
+      [class]="'cl' + tile.color + ' ' +  (tile.icon == idx ? 'active' : '')">
+      @if (ico) {
+        <img [src]="'assets/img/widget-icons/' + ico">
+      }
+      <!--<svg viewBox="-10 -16 20 20" [class]="model.fontColors[tile.fontColor]">
+      <g>
+        <text text-anchor="middle" font-size="16px">{{ico}}</text>
+      </g>
+    </svg>-->
+  </div>
+}
 
-    <!-- Widgets -->
-    <label>{{'widget' | i18n}}</label>
-    <ng-select
-        class="dsw"
-        [(ngModel)]="tile.widget"
-        bindValue="idx"
-        bindLabel="name"
-        [clearable]="false"
-        [items]="model.widgetList">
-    </ng-select>
+<!-- Widgets -->
+<label>{{'widget' | i18n}}</label>
+<ng-select
+  class="dsw"
+  [(ngModel)]="tile.widget"
+  bindValue="idx"
+  bindLabel="name"
+  [clearable]="false"
+  [items]="model.widgetList">
+</ng-select>
 
-    <!-- Hide title -->
-    <label>{{'hideTitle' | i18n}}
-        <input type="checkbox" [(ngModel)]="tile.hideTitle" blur-on-enter>
-    </label>
+<!-- Hide title -->
+<label>{{'hideTitle' | i18n}}
+  <input type="checkbox" [(ngModel)]="tile.hideTitle" blur-on-enter>
+</label>
 
 </div>

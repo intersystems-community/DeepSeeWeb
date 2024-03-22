@@ -1,5 +1,5 @@
 import {Component, Inject, Injector, OnInit} from '@angular/core';
-import * as  Highcharts from 'highcharts/highstock';
+import Highcharts from 'highcharts/highstock';
 /*import More from 'highcharts/highcharts-more';
 More(Highcharts);
 import Tree from 'highcharts/modules/treemap';
@@ -15,8 +15,8 @@ Map(Highcharts);*/
 
 // @ts-ignore
 // var worldMap: any = {}; // from "@highcharts/map-collection/custom/world.geo.json";
-import {IAddonInfo} from '../app/components/widgets/base-widget.class';
 import {BaseChartClass} from '../app/components/widgets/charts/base-chart.class';
+import {IAddonInfo} from "../app/services/dsw.types";
 
 @Component({
     template: '',

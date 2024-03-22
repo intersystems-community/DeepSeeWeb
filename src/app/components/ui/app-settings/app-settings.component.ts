@@ -39,12 +39,12 @@ export class AppSettingsComponent implements OnInit {
     }
 
     onCancel() {
-        this.sbs.showComponent(null);
+        this.sbs.hide();
     }
 
     onApply() {
         this.applySettrings();
-        this.sbs.showComponent(null);
+        this.sbs.hide();
     }
 
     private applySettrings() {
@@ -71,7 +71,7 @@ export class AppSettingsComponent implements OnInit {
             const contents = JSON.parse(String.fromCharCode.apply(null, new Uint8Array(e.target.result) as any));
             this.ss.setAllSettings(contents);
             this.ss.onSettingsChanged.emit(this.ss.getAppSettings());
-            this.sbs.showComponent(null);
+            this.sbs.hide();
             this.modal.show(this.i18n.get('settingsImported'), () => {
                 window.location.reload();
             });

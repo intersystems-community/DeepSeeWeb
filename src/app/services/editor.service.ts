@@ -1,6 +1,5 @@
 import {EventEmitter, Injectable} from '@angular/core';
 import {DashboardService} from "./dashboard.service";
-import {IWidgetInfo} from "../components/widgets/base-widget.class";
 import {DataService} from "./data.service";
 import {ModalService} from "./modal.service";
 import {SidebarService} from "./sidebar.service";
@@ -8,7 +7,7 @@ import {BehaviorSubject} from "rxjs";
 import {BroadcastService} from "./broadcast.service";
 import {TypeAndDatasourceComponent} from "../components/editor/type-and-datasource/type-and-datasource.component";
 import {ErrorService} from "./error.service";
-import {WidgetEditorComponent} from "../components/editor/widget-editor/widget-editor.component";
+import {IWidgetInfo} from "./dsw.types";
 
 export interface IWidgetListItem {
     label: string;
@@ -55,7 +54,7 @@ export class EditorService {
                 label: w.name + (w.title ? ` (${w.title})` : '')
             };
         });
-        return includeEmpty ? [{ label: '', name: ''}, ...list] : list;
+        return includeEmpty ? [{label: '', name: ''}, ...list] : list;
     }
 
     updateEditedWidget(event: IEditedWidgetChangedEvent) {
@@ -74,7 +73,8 @@ export class EditorService {
     save(widget: Partial<IWidgetInfo>) {
         if (!this.validate(widget)) {
             return;
-        };
+        }
+
         this.dbs.generateDisplayInfo(widget);
         if (!widget.dashboard) {
             console.error('no dashboard specified in widget:', widget);
@@ -84,7 +84,7 @@ export class EditorService {
             .then(d => {
                 this.dbs.saveWidgetPositionAndSize(widget as IWidgetInfo);
                 this.onSave.emit();
-                this.sbs.showComponent(null);
+                this.sbs.hide();
                 this.resetSavedState();
                 this.bs.broadcast('refresh-dashboard');
             })
@@ -102,22 +102,51 @@ export class EditorService {
             return;
         }
 
-       // try {
-            const parts = w.dataSource.split('.');
-            const ext = parts.pop()?.toLowerCase();
-            if (ext === 'kpi') {
-                w.kpiclass = parts.join('.');
-                w.kpitype = 'sql';
-            } else {
-                const ds: any = await this.ds.getPivotData(w.dataSource);
-                if (ds) {
-                    w.mdx = ds.mdx || '';
-                }
+        // try {
+        const parts = w.dataSource.split('.');
+        const ext = parts.pop()?.toLowerCase();
+        if (ext === 'kpi') {
+            w.kpiclass = parts.join('.');
+            w.kpitype = 'sql';
+        } else {
+            const ds: any = await this.ds.getPivotData(w.dataSource);
+            if (ds) {
+                w.mdx = ds.mdx || '';
             }
-       /* } catch (e) {
-            this.ms.show(`Data source "${w.dataSource}" not found.`);
-            console.error(e);
-        }*/
+        }
+        /* } catch (e) {
+             this.ms.show(`Data source "${w.dataSource}" not found.`);
+             console.error(e);
+         }*/
+    }
+
+    deleteWidget(widget: IWidgetInfo) {
+        const del = () => {
+            this.onDeleteWidget.emit(widget);
+            this.sbs.hide();
+        };
+
+        this.askForWidgetDeletion(widget, () => {
+            if (widget.oldWidget) {
+                this.ds.deleteWidget(widget.dashboard, widget.oldWidget.name)
+                    .then(() => {
+                        del();
+                    });
+            } else {
+                del();
+            }
+        });
+    }
+
+    navigateDataSourceAndType(widget: Partial<IWidgetInfo>, invalidControls: string[] = []) {
+        this.sbs.showComponent({
+            component: import('./../components/editor/type-and-datasource/type-and-datasource.component'),
+            single: true,
+            inputs: {
+                model: widget,
+                invalid: invalidControls
+            }
+        });
     }
 
     private askForWidgetDeletion(widget: IWidgetInfo, okCallback: () => void) {
@@ -138,30 +167,16 @@ export class EditorService {
         });
     }
 
-    deleteWidget(widget: IWidgetInfo) {
-        const del = () => {
-            this.onDeleteWidget.emit(widget);
-            this.sbs.showComponent(null);
-        };
-
-        this.askForWidgetDeletion(widget, () => {
-            if (widget.oldWidget) {
-                this.ds.deleteWidget(widget.dashboard, widget.oldWidget.name)
-                    .then(() => {
-                        del();
-                    });
-            } else {
-                del();
-            }
-        });
-    }
-
     private validate(widget: Partial<IWidgetInfo>) {
         if (!widget.name) {
             this.es.show('Please enter widget name', true);
-            this.sbs.showComponent({component: WidgetEditorComponent, single: true, inputs: {
+            this.sbs.showComponent({
+                component: import('./../components/editor/widget-editor/widget-editor.component'),
+                single: true,
+                inputs: {
                     invalid: ['name']
-                }});
+                }
+            });
             return;
         }
         if (!widget.dataSource && !widget.dataLink) {
@@ -171,16 +186,5 @@ export class EditorService {
         }
 
         return true;
-    }
-
-    navigateDataSourceAndType(widget: Partial<IWidgetInfo>, invalidControls: string[] = []) {
-        this.sbs.showComponent({
-            component: TypeAndDatasourceComponent,
-            single: true,
-            inputs: {
-                model: widget,
-                invalid: invalidControls
-            }
-        });
     }
 }

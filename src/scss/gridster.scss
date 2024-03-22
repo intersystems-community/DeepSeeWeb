@@ -7,13 +7,13 @@
 }
 
 //// Gridster without animation
-//gridster.no-anim .gridster-column,
-//gridster.no-anim .gridster-row,
-//gridster.no-anim gridster-item,
-//gridster.no-anim gridster-item.gridster-item-resizing,
-//gridster.no-anim gridster-item.gridster-item-moving {
-//    transition: unset !important;
-//}
+gridster.no-anim-g .gridster-column,
+gridster.no-anim-g .gridster-row,
+gridster.no-anim-g gridster-item,
+gridster.no-anim-g gridster-item.gridster-item-resizing,
+gridster.no-anim-g gridster-item.gridster-item-moving {
+    transition: unset !important;
+}
 
 gridster-item {
     transition-property: width, height, transform !important;

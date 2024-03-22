@@ -3,14 +3,14 @@ import {SidebarService} from '../../../services/sidebar.service';
 import {CURRENT_NAMESPACE, NamespaceService} from '../../../services/namespace.service';
 import {Router} from '@angular/router';
 import {DataService} from '../../../services/data.service';
-import { NgIf, NgFor } from '@angular/common';
+
 
 @Component({
     selector: 'dsw-namespace-selector',
     templateUrl: './namespace-selector.component.html',
     styleUrls: ['./../menu/menu.component.scss'],
     standalone: true,
-    imports: [NgIf, NgFor]
+    imports: []
 })
 export class NamespaceSelectorComponent {
 
@@ -38,7 +38,7 @@ export class NamespaceSelectorComponent {
     selectNamespace(ns: string) {
         this.ns.setCurrent(ns);
         void this.router.navigateByUrl(ns);
-        this.ss.showComponent(null);
+        this.ss.hide();
     }
 
     /**

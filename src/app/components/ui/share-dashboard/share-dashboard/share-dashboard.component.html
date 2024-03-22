@@ -1,9 +1,11 @@
 <div>
-    <p>{{title}}</p>
-    <textarea type="text" [value]="url" [class.small]="isSmall"></textarea>
+  <p>{{ title }}</p>
+  <textarea type="text" [value]="url" [class.small]="isSmall"></textarea>
+  @if (!hideOptions) {
     <label><input type="checkbox" [(ngModel)]="asBase64" (change)="onFormatChange()">Filters as Base64</label>
     <label><input type="checkbox" [(ngModel)]="denyResize" (change)="onFormatChange()">Deny widget resizing</label>
     <label><input type="checkbox" [(ngModel)]="denyMove" (change)="onFormatChange()">Deny widget moving</label>
     <label><input type="checkbox" [(ngModel)]="preventFilters" (change)="onFormatChange()">Ignore filters</label>
-    <button class="btn" (click)="onCopyClick()">{{isCopied ? 'Copied!' : btnTitle}}</button>
+  }
+  <button class="btn" (click)="onCopyClick()">{{ isCopied ? 'Copied!' : btnTitle }}</button>
 </div>

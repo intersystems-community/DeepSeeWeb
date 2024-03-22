@@ -3,7 +3,7 @@ import {DataService} from './data.service';
 import {dsw} from '../../environments/dsw';
 import {I18nService} from './i18n.service';
 import {ActivatedRoute} from '@angular/router';
-import * as Highcharts from 'highcharts';
+import Highcharts from 'highcharts';
 import {UtilService} from './util.service';
 import {CURRENT_NAMESPACE} from './namespace.service';
 

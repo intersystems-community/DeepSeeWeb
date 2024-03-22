@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {BaseChartClass} from './base-chart.class';
-import * as numeral from 'numeral';
+import numeral from 'numeral';
 import {YAxisOptions} from 'highcharts';
 import {SpeedometerChartComponent} from './speedometer-chart.component';
 

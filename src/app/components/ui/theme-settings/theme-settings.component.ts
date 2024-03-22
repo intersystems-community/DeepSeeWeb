@@ -3,7 +3,7 @@ import {SidebarService} from '../../../services/sidebar.service';
 import {dsw} from '../../../../environments/dsw';
 import {StorageService} from '../../../services/storage.service';
 import { ColorPickerModule } from 'ngx-color-picker';
-import { NgFor, NgIf } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { SidebarActionsComponent } from '../sidebar-actions/sidebar-actions.component';
@@ -20,7 +20,7 @@ interface ICssVariable {
     // TODO: refactor home-editor
     styleUrls: ['./../../editor/editor-styles.scss', './theme-settings.component.scss'],
     standalone: true,
-    imports: [SidebarActionsComponent, NgSelectModule, FormsModule, NgFor, NgIf, ColorPickerModule]
+    imports: [SidebarActionsComponent, NgSelectModule, FormsModule, ColorPickerModule]
 })
 export class ThemeSettingsComponent implements OnDestroy {
 
@@ -69,7 +69,7 @@ export class ThemeSettingsComponent implements OnDestroy {
     }
 
     onCancel() {
-        this.sbs.showComponent(null);
+        this.sbs.hide();
     }
 
     onApply() {
@@ -77,7 +77,7 @@ export class ThemeSettingsComponent implements OnDestroy {
         settings.theme = this.model.theme;
         this.ss.setAppSettings(settings);
         this.isApplied = true;
-        this.sbs.showComponent(null);
+        this.sbs.hide();
     }
 
     private getAllCssVariables(): string[] {

@@ -11,7 +11,8 @@ import {WidgetEditorComponent} from "./components/editor/widget-editor/widget-ed
 import {TypeAndDatasourceComponent} from "./components/editor/type-and-datasource/type-and-datasource.component";
 import { ModalComponent } from './components/ui/modal/modal.component';
 import { HeaderComponent } from './components/ui/header/header.component';
-import { NgIf, NgFor, NgClass, AsyncPipe } from '@angular/common';
+import { NgClass, AsyncPipe } from '@angular/common';
+import {MenuComponent} from "./components/ui/menu/menu.component";
 
 @Component({
     selector: 'app-root',
@@ -20,16 +21,14 @@ import { NgIf, NgFor, NgClass, AsyncPipe } from '@angular/common';
     animations: [SIDEBAR_TOGGLE_ANIMATION, ERROR_TOGGLE_ANIMATION, ERROR_TOGGLE_LEFT_ANIMATION],
     standalone: true,
     imports: [
-        NgIf,
-        HeaderComponent,
-        SidebarComponent,
-        RouterOutlet,
-        NgFor,
-        ModalComponent,
-        NgClass,
-        ErrorComponent,
-        AsyncPipe,
-    ],
+    HeaderComponent,
+    SidebarComponent,
+    RouterOutlet,
+    ModalComponent,
+    NgClass,
+    ErrorComponent,
+    AsyncPipe
+],
 })
 export class AppComponent implements OnInit {
     title = 'DeepSeeWeb';
@@ -45,16 +44,15 @@ export class AppComponent implements OnInit {
                 private router: Router) {
 
         /*setTimeout(() => {
-            this.sbs.showComponent({ component: WidgetEditorComponent, inputs: { }});
+            this.sbs.showComponent({ component: import('./components/ui/menu/menu.component'), inputs: { }});
         }, 400);*/
-
     }
 
     ngOnInit() {
         // Hide sidebar on any route change
         this.router.events.subscribe(e => {
             if (e instanceof NavigationStart) {
-                this.sbs.showComponent(null);
+                this.sbs.hide();
             }
         });
         this.sbs.sidebarToggle.subscribe(info => {

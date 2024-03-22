@@ -1,16 +1,15 @@
-import {ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit} from "@angular/core";
-import {animate, style, transition, trigger} from "@angular/animations";
-import {IWidgetInfo} from "../../widgets/base-widget.class";
+import {Component, Input, OnDestroy, OnInit} from "@angular/core";
 import {ModalService} from "../../../services/modal.service";
-import {DataSourceSelectorDialog, IDataSourceInfo} from "../datasource-selector-dialog/datasource-selector-dialog";
+import {IDataSourceInfo} from "../datasource-selector-dialog/datasource-selector-dialog";
 import {DashboardService} from "../../../services/dashboard.service";
 import {WIDGET_TYPES} from "../../../services/widget-type.service";
 import {EditorService, IWidgetListItem} from "../../../services/editor.service";
-import { InputComponent } from "../../ui/input/input/input.component";
-import { FormsModule } from "@angular/forms";
-import { NgSelectModule } from "@ng-select/ng-select";
-import { NgIf } from "@angular/common";
-import { SidebarActionsComponent } from "../../ui/sidebar-actions/sidebar-actions.component";
+import {InputComponent} from "../../ui/input/input/input.component";
+import {FormsModule} from "@angular/forms";
+import {NgSelectModule} from "@ng-select/ng-select";
+
+import {SidebarActionsComponent} from "../../ui/sidebar-actions/sidebar-actions.component";
+import {IWidgetInfo} from "../../../services/dsw.types";
 
 @Component({
     selector: 'dsw-type-and-ds',
@@ -19,10 +18,9 @@ import { SidebarActionsComponent } from "../../ui/sidebar-actions/sidebar-action
     standalone: true,
     imports: [
         SidebarActionsComponent,
-        NgIf,
         NgSelectModule,
         FormsModule,
-        InputComponent,
+        InputComponent
     ],
 })
 export class TypeAndDatasourceComponent implements OnInit, OnDestroy {
@@ -69,7 +67,7 @@ export class TypeAndDatasourceComponent implements OnInit, OnDestroy {
     onSelectDataSource() {
         this.ms.show({
             title: 'Choose data source',
-            component: DataSourceSelectorDialog,
+            component: import('./../datasource-selector-dialog/datasource-selector-dialog'),
             buttons: [{
                 label: 'Cancel',
                 autoClose: true

@@ -1,4 +1,5 @@
 import {BaseWidget} from '../base-widget.class';
+import {Component} from "@angular/core";
 
 export interface IMeterWidgetData {
     caption: string;
@@ -8,6 +9,10 @@ export interface IMeterWidgetData {
     max: number;
 }
 
+@Component({
+    template: '',
+    standalone: true
+})
 export class WMeterComponent extends BaseWidget {
     data: IMeterWidgetData[] = [];
 

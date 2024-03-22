@@ -1,25 +1,20 @@
-import {AfterViewInit, Component, Input, OnDestroy, OnInit} from '@angular/core';
-import {WidgetComponent} from '../base/widget/widget.component';
-import {BaseWidget, IWidgetInfo} from '../base-widget.class';
+import {Component, Input} from '@angular/core';
+import {BaseWidget} from '../base-widget.class';
 import {CURRENT_NAMESPACE} from '../../../services/namespace.service';
+import {IWidgetInfo} from '../../../services/dsw.types';
 
 declare const LightPivotTable: any;
-const t = BaseWidget;
-console.log('gerge1');
-console.log(t);
-console.log('gerge2');
 
 @Component({
     selector: 'dsw-pivot',
     templateUrl: './pivot.component.html',
     styleUrls: ['./pivot.component.scss'],
-    imports: [BaseWidget],
     standalone: true
 })
 export class WPivotComponent extends BaseWidget {
-    private _oldMdx = '';
     @Input() widget: IWidgetInfo = {} as IWidgetInfo;
     isSpinner = false;
+    private _oldMdx = '';
 
     constructor() {
         super();
@@ -124,10 +119,10 @@ export class WPivotComponent extends BaseWidget {
             const flt = [{name: pathX, value: cellData.value}, {name: pathY, value: val}];
 
             this._requestKPIData(flt)?.then(() => {
-                    this.widget.isDrillthrough = true;
-                    this.widget.backButton = true;
-                    this.parent.cd.detectChanges();
-                });
+                this.widget.isDrillthrough = true;
+                this.widget.backButton = true;
+                this.parent.cd.detectChanges();
+            });
             return false;
         }
         this._oldMdx = this.lpt.getActualMDX();
@@ -159,8 +154,8 @@ export class WPivotComponent extends BaseWidget {
     requestData() {
         const ds = this.customDataSource || this.widget.dataSource;
         if (this.widget.kpitype) {
-           this._requestKPIData();
-           return;
+            this._requestKPIData();
+            return;
         }
 
         if (this.lpt) {

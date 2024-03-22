@@ -1,16 +1,18 @@
 <!-- Cancel button -->
 <button (click)="onCloseClick()" [title]="'cancel' | i18n">
- <!--   <img class="ico" src="assets/img/icons/icon-close.svg">-->
-    {{isBack ? 'Back' : 'Close'}}
+  <!--   <img class="ico" src="assets/img/icons/icon-close.svg">-->
+  {{isBack ? 'Back' : 'Close'}}
 </button>
 <!-- Header text -->
 <label>
-    <div><ng-content></ng-content></div>
-    <div class="unsaved" *ngIf="(isWidgetEditorWarning && isWidgetEditorWarningVisible)">You have unsaved changes</div>
+  <div><ng-content></ng-content></div>
+  @if ((isWidgetEditorWarning && isWidgetEditorWarningVisible)) {
+    <div class="unsaved">You have unsaved changes</div>
+  }
 </label>
 <!-- Apply button -->
 <button (click)="apply.emit()" [title]="'save' | i18n" [class.warning]="(isWidgetEditorWarning && isWidgetEditorWarningVisible)">
-    <img src="assets/img/icons/icon-check.svg">
-    <!--<img class="ico img-accept" src="assets/img/icons/check.svg">-->
-    Save
+  <img src="assets/img/icons/icon-check.svg">
+  <!--<img class="ico img-accept" src="assets/img/icons/check.svg">-->
+  Save
 </button>

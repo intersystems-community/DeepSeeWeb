@@ -1,27 +1,30 @@
 <gridster #gridster [options]="tilesOptions" class="gridster" [class.no-anim]="isResizing">
+  @for (tile of data$ | async; track tile) {
     <gridster-item
-        *ngFor="let tile of data$ | async"
-        [class.selected]="model.edItem == tile"
-        [class.editing]="model.edItem "
-        [class]="'tile cl' + tile.color + ' ' + (tile.template ? 'tile-with-widget' : '')"
-        [item]="tile"
-        [style.backgroundImage]="'url(' + tile.Cover + ')'"
-        (click)="onItemClicked(tile)"
-    >
-        <!-- Inline widget -->
-        <dsw-widget #widgets *ngIf="itemDescs[tile.idx]" [widget]="itemDescs[tile.idx]" [class.transparent]="itemDescs[tile.idx].inline"></dsw-widget>
-
-        <!-- Icon -->
-        <div class="tile-icon" [hidden]="itemDescs[tile.idx]">
-            <img *ngIf="model.icons[tile.icon] as icon" [src]="'assets/img/widget-icons/' + icon">
-        </div>
-
-        <!-- Title -->
-        <label [hidden]="tile.hideTitle" [class]="model.fontColors[tile.fontColor]" [title]="tile.customTitle || tile.title">
-            <span>{{tile.customTitle || tile.title}}</span>
-            <!--<span>{{tile.fullPath}}</span>-->
-        </label>
+      [class.selected]="model.edItem == tile"
+      [class.editing]="model.edItem "
+      [class]="'tile cl' + tile.color + ' ' + (tile.template ? 'tile-with-widget' : '')"
+      [item]="tile"
+      [style.backgroundImage]="'url(' + tile.Cover + ')'"
+      (click)="onItemClicked(tile)"
+      >
+      <!-- Inline widget -->
+      @if (itemDescs[tile.idx]) {
+        <dsw-widget #widgets [widget]="itemDescs[tile.idx]" [class.transparent]="itemDescs[tile.idx].inline"></dsw-widget>
+      }
+      <!-- Icon -->
+      <div class="tile-icon" [hidden]="itemDescs[tile.idx]">
+        @if (model.icons[tile.icon]; as icon) {
+          <img [src]="'assets/img/widget-icons/' + icon">
+        }
+      </div>
+      <!-- Title -->
+      <label [hidden]="tile.hideTitle" [class]="model.fontColors[tile.fontColor]" [title]="tile.customTitle || tile.title">
+        <span>{{tile.customTitle || tile.title}}</span>
+        <!--<span>{{tile.fullPath}}</span>-->
+      </label>
     </gridster-item>
+  }
 </gridster>
 
 <img src="assets/img/spinner.svg" [hidden]="!isSpinner">

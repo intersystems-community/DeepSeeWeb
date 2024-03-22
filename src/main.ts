@@ -32,7 +32,7 @@ import {StartupService} from './app/services/startup.service';
 import {DataService} from './app/services/data.service';
 import {I18nService} from './app/services/i18n.service';
 import More from "highcharts/highcharts-more";
-import * as Highcharts from "highcharts/highstock";
+import Highcharts from "highcharts/highstock";
 import Tree from "highcharts/modules/treemap";
 import Heatmap from "highcharts/modules/heatmap";
 import SolidGauge from "highcharts/modules/solid-gauge";

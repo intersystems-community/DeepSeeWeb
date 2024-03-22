@@ -18,7 +18,7 @@ import {NavigationStart, Router, RouterEvent} from '@angular/router';
 import {Subscription} from 'rxjs';
 import { I18nPipe } from '../../../services/i18n.service';
 import { NgSelectModule } from '@ng-select/ng-select';
-import { NgFor, NgIf } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { InputComponent } from '../input/input/input.component';
 import { SidebarActionsComponent } from '../sidebar-actions/sidebar-actions.component';
@@ -29,7 +29,7 @@ import { SidebarActionsComponent } from '../sidebar-actions/sidebar-actions.comp
     styleUrls: ['./../../editor/editor-styles.scss', './../chart-config/chart-config.component.scss', './home-editor.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: true,
-    imports: [SidebarActionsComponent, InputComponent, FormsModule, NgFor, NgIf, NgSelectModule, I18nPipe]
+    imports: [SidebarActionsComponent, InputComponent, FormsModule, NgSelectModule, I18nPipe]
 })
 export class HomeEditorComponent implements OnInit, OnDestroy {
     @Input() tiles: ITileInfo[] = [];
@@ -235,6 +235,6 @@ export class HomeEditorComponent implements OnInit, OnDestroy {
      * Close sidebar and stop editing
      */
     close() {
-        this.sbs.showComponent(null);
+        this.sbs.hide();
     }
 }

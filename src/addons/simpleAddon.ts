@@ -1,8 +1,10 @@
 import {AfterViewInit, Component, ElementRef, Inject, Injector, OnInit, ViewChild} from '@angular/core';
-import {BaseWidget, IAddonInfo} from '../app/components/widgets/base-widget.class';
+import {BaseWidget} from '../app/components/widgets/base-widget.class';
+import {IAddonInfo} from "../app/services/dsw.types";
 
 @Component({
     selector: 'dsw-simple-addon',
+    standalone: true,
     template: `
         <h2>Hello, this is simple addon component</h2>
         <button (click)="requestData()">Refresh</button>

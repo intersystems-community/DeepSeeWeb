@@ -19,14 +19,14 @@ export class MenuSettingsComponent implements OnInit {
     }
 
     showThemeSettings() {
-        this.sbs.showComponent({component: ThemeSettingsComponent});
+        this.sbs.showComponent({component: import('./../../theme-settings/theme-settings.component')});
     }
 
     showAppSettings() {
-        this.sbs.showComponent({component: AppSettingsComponent});
+        this.sbs.showComponent({component: import('./../../app-settings/app-settings.component')});
     }
 
     showChartsSettings() {
-        this.sbs.showComponent({component: ChartConfigComponent});
+        this.sbs.showComponent({component: import('./../../../ui/chart-config/chart-config.component')});
     }
 }

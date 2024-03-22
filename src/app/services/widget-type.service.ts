@@ -10,7 +10,6 @@ import {BubbleChartComponent} from '../components/widgets/charts/bubble-chart.co
 import {LineChartComponent} from '../components/widgets/charts/line-chart.component';
 import {HiLowChartComponent} from '../components/widgets/charts/hi-low-chart.component';
 import {SpeedometerChartComponent} from '../components/widgets/charts/speedometer-chart.component';
-import {FuelGaugeChartComponent} from '../components/widgets/charts/fuel-gauge-chart.component';
 import {AreaChartComponent} from '../components/widgets/charts/area-chart.component';
 import {BullseyeChartComponent} from '../components/widgets/charts/bullseye-chart.component';
 import {PieChartComponent} from '../components/widgets/charts/pie-chart.component';
@@ -58,7 +57,7 @@ const btnPieChart: IHeaderButton[] = [
     }
 ];
 
-export const WIDGET_TYPES: {[t: string]: any} = {
+export const WIDGET_TYPES: { [t: string]: any } = {
     regular: {
         label: 'Scorecard chart',
         class: ScorecardWidgetComponent,
@@ -358,7 +357,7 @@ export class WidgetTypeService {
      * @param {string} name Type name
      * @returns {object|undefined} Class constructor function
      */
-    getClass(name: string): Type<any>|undefined {
+    getClass(name: string): Type<any> | undefined {
         let key = name.toLowerCase();
         if (!WIDGET_TYPES[key]) {
             key = key.replace('dsw.addons.', '');

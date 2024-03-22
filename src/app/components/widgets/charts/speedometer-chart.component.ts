@@ -1,14 +1,14 @@
 import {Component, ElementRef, OnInit, QueryList, ViewChildren} from '@angular/core';
 import {BaseChartClass} from './base-chart.class';
-import * as numeral from 'numeral';
+import numeral from 'numeral';
 import {YAxisOptions} from 'highcharts';
-import * as Highcharts from 'highcharts/highstock';
-import { NgFor } from '@angular/common';
+import Highcharts from 'highcharts/highstock';
+
 
 
 @Component({
     selector: 'dsw-speedometer-chart',
-    template: '<div #charts *ngFor="let c of confs"></div>',
+    template: '@for (c of confs; track c) {<div #charts></div>}',
     styles: [`
         :host {
             display: flex;
@@ -19,7 +19,7 @@ import { NgFor } from '@angular/common';
         }
     `],
     standalone: true,
-    imports: [NgFor]
+    imports: []
 })
 export class SpeedometerChartComponent extends BaseChartClass implements OnInit {
     @ViewChildren('charts') chartsEl?: QueryList<ElementRef>;

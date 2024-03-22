@@ -1,8 +1,8 @@
 import {Injectable} from '@angular/core';
-import {IWidgetDisplayInfo, IWidgetInfo} from '../components/widgets/base-widget.class';
 import {dsw} from "../../environments/dsw";
 import {BehaviorSubject} from "rxjs";
 import {StorageService} from "./storage.service";
+import {IWidgetDisplayInfo, IWidgetInfo} from "./dsw.types";
 
 export interface IDashboardDisplayInfo {
     gridCols: number;

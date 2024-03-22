@@ -1,9 +1,11 @@
 import {Component, Inject, Injector, OnDestroy, OnInit} from '@angular/core';
 import {Subscription} from 'rxjs';
 import {SafeResourceUrl, SafeUrl} from '@angular/platform-browser';
-import {BaseWidget, IAddonInfo} from "../app/components/widgets/base-widget.class";
+import {BaseWidget} from "../app/components/widgets/base-widget.class";
+import {IAddonInfo} from "../app/services/dsw.types";
 
 @Component({
+    standalone: true,
     template: `
         <iframe [src]="url" style="border: none; width:100%; height:100%; flex: 1 1 100%"></iframe>`
 })

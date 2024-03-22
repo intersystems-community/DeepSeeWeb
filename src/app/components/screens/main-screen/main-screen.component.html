@@ -1,2 +1,6 @@
-<dsw-folder-screen *ngIf="isFolder"></dsw-folder-screen>
-<dsw-dashboard-screen *ngIf="!isFolder"></dsw-dashboard-screen>
+@if (isFolder) {
+  <dsw-folder-screen></dsw-folder-screen>
+}
+@if (!isFolder) {
+  <dsw-dashboard-screen></dsw-dashboard-screen>
+}

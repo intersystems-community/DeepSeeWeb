@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {BaseChartClass} from './base-chart.class';
 import {SeriesPieDataLabelsOptionsObject} from 'highcharts';
 import {IButtonToggle} from '../../../services/widget.service';
-import * as Highcharts from "highcharts/highstock";
+import Highcharts from "highcharts/highstock";
 
 @Component({
     selector: 'dsw-line-chart',

@@ -1,16 +1,13 @@
 import {ChangeDetectorRef, Component, forwardRef, Input, OnDestroy, OnInit} from '@angular/core';
 import {SidebarService} from '../../../services/sidebar.service';
-import {Chart, ColorAxisOptions, PlotSeriesDataLabelsOptions} from 'highcharts';
+import {Chart} from 'highcharts';
 import {StorageService} from '../../../services/storage.service';
-import * as  Highcharts from 'highcharts/highstock';
+import Highcharts from 'highcharts/highstock';
 import {IError} from '../../../services/error.service';
-import {Subscription} from 'rxjs';
-import {skip} from 'rxjs/operators';
 import {BroadcastService} from '../../../services/broadcast.service';
-import { I18nPipe } from '../../../services/i18n.service';
-import { ColorPickerModule } from 'ngx-color-picker';
-import { NgFor } from '@angular/common';
-import { SidebarActionsComponent } from '../sidebar-actions/sidebar-actions.component';
+import {I18nPipe} from '../../../services/i18n.service';
+import {ColorPickerModule} from 'ngx-color-picker';
+import {SidebarActionsComponent} from '../sidebar-actions/sidebar-actions.component';
 
 export interface IThemeColors {
     hcColors: string[];
@@ -33,7 +30,7 @@ export interface IChartConfigAppearance {
     templateUrl: './chart-config.component.html',
     styleUrls: ['./../../editor/editor-styles.scss', './chart-config.component.scss'],
     standalone: true,
-    imports: [forwardRef(() => SidebarActionsComponent), NgFor, ColorPickerModule, I18nPipe]
+    imports: [forwardRef(() => SidebarActionsComponent), ColorPickerModule, I18nPipe]
 })
 export class ChartConfigComponent implements OnInit, OnDestroy {
     @Input() chart!: Chart;
@@ -41,11 +38,6 @@ export class ChartConfigComponent implements OnInit, OnDestroy {
     @Input() onSave?: () => void;
     @Input() appearance!: IChartConfigAppearance;
     @Input() onUpdate?: (themeColors: IThemeColors) => void;
-
-    private key = '';
-    private isApplied = false;
-    private isChanged = false;
-
     model = {
         themeColors: {
             hcColors: [],
@@ -55,7 +47,9 @@ export class ChartConfigComponent implements OnInit, OnDestroy {
             hcBorderColor: ''
         } as IThemeColors
     };
-
+    private key = '';
+    private isApplied = false;
+    private isChanged = false;
     // Store original colors to be able to make cancel
     private originalColors!: IThemeColors;
     private globalOriginalColors: any;
@@ -103,7 +97,7 @@ export class ChartConfigComponent implements OnInit, OnDestroy {
     }
 
     onCancel() {
-        this.sbs.showComponent(null);
+        this.sbs.hide();
     }
 
     onApply() {
@@ -120,7 +114,7 @@ export class ChartConfigComponent implements OnInit, OnDestroy {
             settings.themeColors[this.key] = this.model.themeColors;
             this.ss.setAppSettings(settings);
         }
-        this.sbs.showComponent(null);
+        this.sbs.hide();
     }
 
     update() {
@@ -167,6 +161,28 @@ export class ChartConfigComponent implements OnInit, OnDestroy {
     }
 
     /**
+     * Resets colors to default
+     */
+    resetToDefault() {
+        const tc = this.getDefaultColors();
+        this.model.themeColors.hcLineColor = tc.hcLineColor;
+        this.model.themeColors.hcBorderColor = tc.hcBorderColor;
+        this.model.themeColors.hcBackground = tc.hcBackground;
+        this.model.themeColors.hcTextColor = tc.hcTextColor;
+        this.model.themeColors.hcColors = tc.hcColors;
+        const colors = this.widgetSettings?.themeColors[this.key];
+        if (colors) {
+            this.widgetSettings.themeColors[this.key] = null;
+        }
+        if (this.onUpdate) {
+            this.onUpdate(tc);
+        } else {
+            this.bs.broadcast('charts:update-colors', tc);
+        }
+        this.isChanged = false;
+    }
+
+    /**
      * Restores original colors. Used by cancel button
      */
     private restoreColors() {
@@ -195,27 +211,5 @@ export class ChartConfigComponent implements OnInit, OnDestroy {
             hcBorderColor: '', // opt.plotOptions.bar.borderColor as string,
             hcLineColor: '#e6e6e6' // ((this.chart as any).colorAxis as ColorAxisOptions).minorGridLineColor as string
         };
-    }
-
-    /**
-     * Resets colors to default
-     */
-    resetToDefault() {
-        const tc = this.getDefaultColors();
-        this.model.themeColors.hcLineColor = tc.hcLineColor;
-        this.model.themeColors.hcBorderColor = tc.hcBorderColor;
-        this.model.themeColors.hcBackground = tc.hcBackground;
-        this.model.themeColors.hcTextColor = tc.hcTextColor;
-        this.model.themeColors.hcColors = tc.hcColors;
-        const colors = this.widgetSettings?.themeColors[this.key];
-        if (colors) {
-            this.widgetSettings.themeColors[this.key] = null;
-        }
-        if (this.onUpdate) {
-            this.onUpdate(tc);
-        } else {
-            this.bs.broadcast('charts:update-colors', tc);
-        }
-        this.isChanged = false;
     }
 }

@@ -1,5 +1,4 @@
 import {ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
-import {IWidgetInfo} from '../../base-widget.class';
 import {StorageService} from '../../../../services/storage.service';
 import {UtilService} from '../../../../services/util.service';
 import {ActivatedRoute} from '@angular/router';
@@ -13,14 +12,15 @@ import {Subscription} from "rxjs";
 import {EditorService} from "../../../../services/editor.service";
 import { I18nPipe } from '../../../../services/i18n.service';
 import { TooltipDirective } from '../../../../directives/tooltip.directive';
-import { NgIf, NgFor } from '@angular/common';
+import {IWidgetInfo} from "../../../../services/dsw.types";
+
 
 @Component({
     selector: 'dsw-widget-header',
     templateUrl: './widget-header.component.html',
     styleUrls: ['./widget-header.component.scss'],
     standalone: true,
-    imports: [NgIf, TooltipDirective, NgFor, I18nPipe]
+    imports: [TooltipDirective, I18nPipe]
 })
 export class WidgetHeaderComponent implements OnInit, OnDestroy {
     @Input() typeDesc?: IWidgetType;

@@ -11,21 +11,21 @@ import {
     ViewChild,
     ViewContainerRef
 } from '@angular/core';
-import {IWidgetInfo} from '../../base-widget.class';
 import {FilterPopupComponent} from '../../../ui/filter-popup/filter-popup.component';
 import {FilterService} from '../../../../services/filter.service';
 import {ModalService} from '../../../../services/modal.service';
 import {UtilService} from '../../../../services/util.service';
 import {BroadcastService} from '../../../../services/broadcast.service';
 import { FormsModule } from '@angular/forms';
-import { NgFor, NgIf } from '@angular/common';
+import {IWidgetInfo} from "../../../../services/dsw.types";
+
 
 @Component({
     selector: 'dsw-widget-filter',
     templateUrl: './widget-filter.component.html',
     styleUrls: ['./widget-filter.component.scss'],
     standalone: true,
-    imports: [NgFor, FormsModule, NgIf]
+    imports: [FormsModule]
 })
 export class WidgetFilterComponent implements OnInit {
     @ViewChild('filterPopup', {read: ViewContainerRef, static: true})
@@ -117,7 +117,7 @@ export class WidgetFilterComponent implements OnInit {
             height = window.document.body.offsetHeight - headerHeight - this.el.nativeElement.offsetHeight;
         }
         this.ms.show({
-            component: FilterPopupComponent,
+            component: import('./../../../ui/filter-popup/filter-popup.component'),
             hideBackdrop: true,
             closeByEsc: true,
             closeByBackdropClick: true,

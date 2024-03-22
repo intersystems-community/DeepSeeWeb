@@ -11,7 +11,7 @@ import {SidebarService} from "../../../services/sidebar.service";
 import {EditorService} from "../../../services/editor.service";
 import {Subscription} from "rxjs";
 import { I18nPipe } from '../../../services/i18n.service';
-import { NgIf } from '@angular/common';
+
 
 @Component({
     selector: 'dsw-sidebar-actions',
@@ -19,7 +19,7 @@ import { NgIf } from '@angular/common';
     styleUrls: ['./sidebar-actions.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: true,
-    imports: [NgIf, I18nPipe]
+    imports: [I18nPipe]
 })
 export class SidebarActionsComponent implements OnInit, OnDestroy {
     @Input() isBack = false;

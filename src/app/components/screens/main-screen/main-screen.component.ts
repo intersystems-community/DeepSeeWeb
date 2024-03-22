@@ -5,14 +5,14 @@ import {map, switchMap} from 'rxjs/operators';
 import {HeaderService} from '../../../services/header.service';
 import { DashboardScreenComponent } from '../dashboard-screen/dashboard-screen.component';
 import { FolderScreenComponent } from '../folder-screen/folder-screen.component';
-import { NgIf } from '@angular/common';
+
 
 @Component({
     selector: 'dsw-main-screen',
     templateUrl: './main-screen.component.html',
     styleUrls: ['./main-screen.component.scss'],
     standalone: true,
-    imports: [NgIf, FolderScreenComponent, DashboardScreenComponent]
+    imports: [FolderScreenComponent, DashboardScreenComponent]
 })
 export class MainScreenComponent implements OnInit, OnDestroy {
     isFolder = true;

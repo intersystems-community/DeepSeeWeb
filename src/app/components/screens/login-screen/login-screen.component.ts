@@ -7,7 +7,7 @@ import {HeaderService} from '../../../services/header.service';
 import {SidebarService} from '../../../services/sidebar.service';
 import {CURRENT_NAMESPACE, NamespaceService} from '../../../services/namespace.service';
 import {StorageService} from "../../../services/storage.service";
-import { NgIf } from '@angular/common';
+
 import { FocusNextDirective } from '../../../directives/focus-next.directive';
 import { AutoFocusDirective } from '../../../directives/auto-focus.directive';
 import { FormsModule } from '@angular/forms';
@@ -19,7 +19,7 @@ declare var cordova: any;
     templateUrl: './login-screen.component.html',
     styleUrls: ['./login-screen.component.scss'],
     standalone: true,
-    imports: [FormsModule, AutoFocusDirective, FocusNextDirective, NgIf, I18nPipe]
+    imports: [FormsModule, AutoFocusDirective, FocusNextDirective, I18nPipe]
 })
 export class LoginScreenComponent implements OnInit {
     public model: any;
@@ -34,7 +34,7 @@ export class LoginScreenComponent implements OnInit {
                 private route: ActivatedRoute,
                 private router: Router) {
         this.hs.visible$.next(false);
-        this.ss.showComponent(null);
+        this.ss.hide();
         delete sessionStorage.dashboarList;
         if (dsw.desktop) {
             delete localStorage.DSWMobileServer;

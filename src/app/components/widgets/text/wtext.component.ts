@@ -1,8 +1,8 @@
 import {AfterViewInit, Component, ElementRef, HostBinding, Input, OnInit, ViewChildren} from '@angular/core';
-import {BaseWidget, IWidgetDataProperties, IWidgetInfo} from '../base-widget.class';
-import * as numeral from 'numeral';
+import {BaseWidget} from '../base-widget.class';
 import {dsw} from '../../../../environments/dsw';
-import { NgFor } from '@angular/common';
+import {IWidgetDataProperties, IWidgetInfo} from '../../../services/dsw.types';
+
 
 interface ITextWidgetData {
     label: string;
@@ -17,7 +17,7 @@ interface ITextWidgetData {
     templateUrl: './wtext.component.html',
     styleUrls: ['./wtext.component.scss'],
     standalone: true,
-    imports: [NgFor]
+    imports: []
 })
 export class WTextComponent extends BaseWidget implements OnInit, AfterViewInit {
     @ViewChildren('images') images: ElementRef[] = [];
@@ -66,18 +66,18 @@ export class WTextComponent extends BaseWidget implements OnInit, AfterViewInit 
     adjustSize() {
         this.images.forEach(image => {
             const svg = image.nativeElement;
-           /* svg.style.position = 'fixed';
-            svg.style.left = '0px';
-            svg.style.top = '0px';*/
+            /* svg.style.position = 'fixed';
+             svg.style.left = '0px';
+             svg.style.top = '0px';*/
 
             const text = svg.firstChild;
             const bbox = text.getBBox();
             // const bbox = text.getClientRects()[0];
 
-          /*  delete svg.style.position;
-            delete svg.style.left;
-            delete svg.style.top;
-*/
+            /*  delete svg.style.position;
+              delete svg.style.left;
+              delete svg.style.top;
+  */
             svg.setAttribute('viewBox', [bbox.x, bbox.y, bbox.width, bbox.height].join(' '));
         });
     }
@@ -91,7 +91,7 @@ export class WTextComponent extends BaseWidget implements OnInit, AfterViewInit 
         this.hideLoading();
         if (result) {
             for (let i = 0; i < result.Cols[0].tuples.length; i++) {
-                let dProp: IWidgetDataProperties|null = null;
+                let dProp: IWidgetDataProperties | null = null;
                 if (this.widget.dataProperties) {
                     dProp = this.getDataPropByDataValue(result.Cols[0].tuples[i].dimension) ?? null;
                 }
@@ -145,7 +145,8 @@ export class WTextComponent extends BaseWidget implements OnInit, AfterViewInit 
                             const css = this.getCss(o.normalStyle);
                             if (css.fill) {
                                 valueColor = css.fill;
-                            };
+                            }
+
                         }
                         if ((lower !== undefined) && (!isNaN(lower)) && (this.getNumber(v) < lower)) {
                             let col = this.widget.properties?.lowRangeColor;
@@ -188,6 +189,10 @@ export class WTextComponent extends BaseWidget implements OnInit, AfterViewInit 
         setTimeout(() => this.adjustSize());
     }
 
+    onClick(item: ITextWidgetData) {
+        void this.doDrillthrough('', item.label);
+    }
+
     private getCss(css: string): any {
         const res = {};
         css.split(';')
@@ -199,14 +204,10 @@ export class WTextComponent extends BaseWidget implements OnInit, AfterViewInit 
         return res;
     }
 
-    private getNumber(v: string|number): number {
+    private getNumber(v: string | number): number {
         if (typeof v === 'string') {
             return parseFloat(v.replace(/,/g, '').replace(/ /g, ''));
         }
         return v;
-    }
-
-    onClick(item: ITextWidgetData) {
-        void this.doDrillthrough('', item.label);
     }
 }

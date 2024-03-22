@@ -1,57 +1,75 @@
 <table>
-    <thead>
+  <thead>
     <tr>
-        <!-- Header cells -->
-        <td *ngFor="let p of props" [class.plotbox-cell]="p.display === 'plotBox'">
-            <ng-container [ngSwitch]="p.display">
-
-                <!-- Plot box -->
-                <div *ngSwitchCase="'plotBox'" class="axis">
-                    <div class="label">{{p.rangeLower || '0'}}</div>
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                    <div class="label">{{p.rangeUpper || '0'}}</div>
-                </div>
-
-                <!-- Simple text -->
-                <div *ngSwitchDefault [class.align-left]="p.display === 'label'">
-                    {{p.label}}
-                </div>
-            </ng-container>
+      <!-- Header cells -->
+      @for (p of props; track p) {
+        <td [class.plotbox-cell]="p.display === 'plotBox'">
+          @switch (p.display) {
+            <!-- Plot box -->
+            @case ('plotBox') {
+              <div class="axis">
+                <div class="label">{{p.rangeLower || '0'}}</div>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <div class="label">{{p.rangeUpper || '0'}}</div>
+              </div>
+            }
+            <!-- Simple text -->
+            @default {
+              <div [class.align-left]="p.display === 'label'">
+                {{p.label}}
+              </div>
+            }
+          }
         </td>
+      }
     </tr>
-    </thead>
-    <tbody>
-    <tr *ngFor="let r of rows; let ridx = index">
+  </thead>
+  <tbody>
+    @for (r of rows; track r; let ridx = $index) {
+      <tr>
         <!--<td>{{ridx + 1}}</td>
         <td>{{r.caption}}</td>-->
-        <td *ngFor="let p of props; let pidx = index"
+        @for (p of props; track p; let pidx = $index) {
+          <td
             [style.width.%]="p.display === 'plotBox' ? 100 / props.length * 2 : null"
             [class.align-left]="p.display === 'label'"
             [class.align-center]="p.display === 'itemNo'"
-        >
-            <ng-container [ngSwitch]="p.display">
-                <div *ngSwitchCase="'trendLine'">
-                    <img [src]="data[ridx][pidx]">
+            >
+            @switch (p.display) {
+              @case ('trendLine') {
+                <div>
+                  <img [src]="data[ridx][pidx]">
                 </div>
-
-                <div *ngSwitchCase="'plotBox'" class="box" [style.background-color]="color"
-                     [style.width.%]="data[ridx][pidx]">
-                     <span class="target" *ngIf="targets[ridx][pidx]" [style.left.%]="targets[ridx][pidx]"></span>
+              }
+              @case ('plotBox') {
+                <div class="box" [style.background-color]="color"
+                  [style.width.%]="data[ridx][pidx]">
+                  @if (targets[ridx][pidx]) {
+                    <span class="target" [style.left.%]="targets[ridx][pidx]"></span>
+                  }
                 </div>
-
-                <div *ngSwitchDefault>
-                    {{data[ridx]? data[ridx][pidx] : ''}}
+              }
+              @default {
+                <div>
+                  {{data[ridx]? data[ridx][pidx] : ''}}
                 </div>
-            </ng-container>
-        </td>
-    </tr>
-    <tr *ngIf="hasFooter" class="footer">
-        <td *ngFor="let v of footerValues">
+              }
+            }
+          </td>
+        }
+      </tr>
+    }
+    @if (hasFooter) {
+      <tr class="footer">
+        @for (v of footerValues; track v) {
+          <td>
             {{v}}
-        </td>
-    </tr>
-    </tbody>
+          </td>
+        }
+      </tr>
+    }
+  </tbody>
 </table>

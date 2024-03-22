@@ -1,29 +1,35 @@
-<div
-  #elements
-  class="tab"
-  *ngFor="let tab of tabs; trackBy:trackByIdentity"
-  [class.hidden-offscreen]="tab.hidden"
-  (click)="tabClick(tab)"
-  [class.active]="currentTab === tab"
->
-    <!--[routerLink]="'.'"
-  [queryParams]="useQuery ? { tab: tab.id, edit: null } : null"
-  queryParamsHandling="merge"-->
-  {{tab.text}}
-</div>
-<div class="tab btn-more" *ngIf="isMoreButtonVisible" (click)="onOpenTabsClick($event)">
-  <img src="/assets/img/more-horiz.svg">
-</div>
-
-<div *ngIf="isOpened" class="dropdown">
+@for (tab of tabs; track trackByIdentity($index, tab)) {
   <div
-    *ngFor="let tab of hiddenTabs; trackBy:trackByIdentity"
+    #elements
+    class="tab"
+    [class.hidden-offscreen]="tab.hidden"
     (click)="tabClick(tab)"
     [class.active]="currentTab === tab"
-    [routerLink]="'./'"
-    [queryParams]="useQuery ? { tab: tab.id, edit: null } : undefined"
-    queryParamsHandling="merge"
-  >
+    >
+    <!--[routerLink]="'.'"
+    [queryParams]="useQuery ? { tab: tab.id, edit: null } : null"
+    queryParamsHandling="merge"-->
     {{tab.text}}
   </div>
-</div>
+}
+@if (isMoreButtonVisible) {
+  <div class="tab btn-more" (click)="onOpenTabsClick($event)">
+    <img src="/assets/img/more-horiz.svg">
+  </div>
+}
+
+@if (isOpened) {
+  <div class="dropdown">
+    @for (tab of hiddenTabs; track trackByIdentity($index, tab)) {
+      <div
+        (click)="tabClick(tab)"
+        [class.active]="currentTab === tab"
+        [routerLink]="'./'"
+        [queryParams]="useQuery ? { tab: tab.id, edit: null } : undefined"
+        queryParamsHandling="merge"
+        >
+        {{tab.text}}
+      </div>
+    }
+  </div>
+}

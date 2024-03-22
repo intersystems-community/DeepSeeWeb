@@ -1,5 +1,6 @@
 import {EventEmitter, Injectable} from '@angular/core';
-import {IWidgetInfo} from '../components/widgets/base-widget.class';
+
+import {IWidgetInfo} from "./dsw.types";
 
 export interface IButtonToggle {
     widget: IWidgetInfo;

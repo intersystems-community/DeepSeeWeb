@@ -7,7 +7,9 @@ import {StorageService} from './storage.service';
 import {WidgetTypeService} from './widget-type.service';
 import {CURRENT_NAMESPACE, NamespaceService} from './namespace.service';
 
-@Injectable()
+@Injectable({
+    providedIn: 'root'
+})
 export class ConfigResolver  {
     private model = {};
     private isLoaded = false;

@@ -1,15 +1,16 @@
-    <ul>
-        <li
-            *ngFor="let f of filters; let idx = index"
-            [class.selected]="curFilter === idx"
-            (click)="setFilter(f, idx)"
-        >{{f.label}}</li>
-    </ul>
+<ul>
+  @for (f of filters; track f; let idx = $index) {
+    <li
+      [class.selected]="curFilter === idx"
+      (click)="setFilter(f, idx)"
+    >{{f.label}}</li>
+  }
+</ul>
 
 <dsw-date-picker
-    #datePicker
-    [inline]="true"
-    [range]="true"
-    (select)="onSelect($event)"
->
+  #datePicker
+  [inline]="true"
+  [range]="true"
+  (select)="onSelect($event)"
+  >
 </dsw-date-picker>

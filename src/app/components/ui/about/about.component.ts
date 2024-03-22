@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
 import {DataService} from '../../../services/data.service';
 import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
-import * as markdownit from 'markdown-it';
+import markdownit from 'markdown-it';
 
 @Component({
     selector: 'dsw-about',

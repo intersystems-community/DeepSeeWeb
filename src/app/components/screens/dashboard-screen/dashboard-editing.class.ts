@@ -23,10 +23,10 @@ import {
 import {BroadcastService} from "../../../services/broadcast.service";
 import {EditorService, IEditedWidgetChangedEvent} from "../../../services/editor.service";
 import {MenuService} from "../../../services/menu.service";
-import {IWidgetInfo} from "../../widgets/base-widget.class";
 import {Subscription} from "rxjs";
 import {WidgetComponent} from "../../widgets/base/widget/widget.component";
 import {GridsterComponent} from "angular-gridster2";
+import {IWidgetInfo} from "../../../services/dsw.types";
 
 @Component({
     template: ''
@@ -65,7 +65,6 @@ export class DashboardEditingClass implements OnDestroy {
     @ViewChildren('widgets') widgets!: QueryList<WidgetComponent>;
     list: IWidgetInfo[] = [];
     editedWidget?: IWidgetInfo;
-
 
     constructor(@Inject(Injector) protected inj: Injector) {
         this.ds = this.inj.get(DataService);

@@ -6,7 +6,8 @@ import {firstValueFrom, Observable, of} from 'rxjs';
 import {catchError, tap} from 'rxjs/operators';
 import {ErrorService} from './error.service';
 import {CURRENT_NAMESPACE} from './namespace.service';
-import {IWidgetInfo} from "../components/widgets/base-widget.class";
+
+import {IWidgetInfo} from "./dsw.types";
 
 export let MDX2JSON = 'MDX2JSON';
 export let NAMESPACE = 'MDX2JSON';
@@ -489,7 +490,7 @@ export class DataService {
         ).toPromise();
     }
 
-    requestListOfDataSources(type: string) {
+    async requestListOfDataSources(type: string) {
         return firstValueFrom<any>(this.http.post(
             this.url + `DataSourceList/${type}?Namespace=` + CURRENT_NAMESPACE,
             {},

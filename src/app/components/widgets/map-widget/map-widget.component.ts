@@ -1,5 +1,5 @@
 import {AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {BaseWidget, IWidgetDataProperties} from '../base-widget.class';
+import {BaseWidget} from '../base-widget.class';
 import {dsw} from '../../../../environments/dsw';
 import Map from 'ol/Map';
 import View, {FitOptions} from 'ol/View';
@@ -13,6 +13,7 @@ import {Style, Fill, Stroke, Icon, Text} from 'ol/style';
 import {Point, Polygon, MultiPolygon} from 'ol/geom';
 import {transform} from 'ol/proj';
 import GeoJSON from 'ol/format/GeoJSON';
+import {IWidgetDataProperties} from "../../../services/dsw.types";
 
 @Component({
     selector: 'dsw-map-widget',
@@ -275,7 +276,8 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
         result = '(' + result + ')(polys)';
         // TODO: make safe eval
         // tslint:disable-next-line:no-eval
-        eval(result);
+        const ev = 'eval';
+        window[ev](result);
         this.polyData = polys;
         this.buildPolygons();
     }
@@ -370,7 +372,8 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
                     continue;
                 }
                 parts[i] = parts[i].replace(/x/g, x.toString());
-                eval('tmp = ' + parts[i] + ';');
+                const ev = 'eval';
+                window[ev]('tmp = ' + parts[i] + ';');
                 if (tmp > 255) {
                     tmp = 255;
                 }

@@ -1,4 +1,3 @@
-import * as AngularCore from '@angular/core';
 import {Compiler, Injectable} from '@angular/core';
 import {dsw} from '../../environments/dsw';
 import {DisplayGrid, GridsterConfigService} from 'angular-gridster2';
@@ -7,25 +6,7 @@ import {HttpClient} from '@angular/common/http';
 import {WidgetTypeService} from './widget-type.service';
 import {StorageService} from './storage.service';
 import {NamespaceService} from './namespace.service';
-import * as AngularCommon from '@angular/common';
-import * as AngularRouter from '@angular/router';
-import * as BrowserDynamic from '@angular/platform-browser-dynamic';
-import * as BrowserModuleAll from '@angular/platform-browser';
-import * as HighchartsHighstock from 'highcharts/highstock';
-import * as HighchartsMore from 'highcharts/highcharts-more';
-import * as HighchartsModulesTreemap from 'highcharts/modules/treemap';
-import * as HighchartsModulesHeatmap from 'highcharts/modules/heatmap';
-import * as HighchartsModulesExporting from 'highcharts/modules/exporting';
-import * as HighchartsModulesMap from 'highcharts/modules/map';
 import {UtilService} from './util.service';
-import {BaseWidget} from '../components/widgets/base-widget.class';
-import {BaseChartClass} from '../components/widgets/charts/base-chart.class';
-import {VariablesService} from './variables.service';
-import {FilterService} from './filter.service';
-import {DashboardService} from './dashboard.service';
-import {I18nService} from './i18n.service';
-import {BroadcastService} from './broadcast.service';
-import {SidebarService} from './sidebar.service';
 
 
 @Injectable({
@@ -58,7 +39,7 @@ export class StartupService {
                 this.ds.loadMainConfig(),
                 this.loadAddons()
             ])
-           .finally(() => res());
+                .finally(() => res());
         });
         // TODO: mobile support
         // if (dsw.mobile) {
@@ -131,9 +112,6 @@ export class StartupService {
     }
 
     private setupGridster() {
-        // GridsterConfigService.itemResizeCallback = (item: GridsterItem, itemComponent: GridsterItemComponentInterface) => {
-        //     this.onGridsterItemChange.emit({item, itemComponent});
-        // };
         GridsterConfigService.displayGrid = DisplayGrid.None;
         if (GridsterConfigService.draggable) {
             GridsterConfigService.draggable.dragHandleClass = '.drag-handle';
@@ -164,10 +142,10 @@ export class StartupService {
         GridsterConfigService.margin = 5;
         // GridsterConfigService.isMobile = dsw.mobile; // stacks the grid items if true;
         GridsterConfigService.mobileBreakPoint = 576;
-       /* if (dsw.mobile) {
-            GridsterConfigService.mobileBreakPoint = 576;// if the screen is not wider that this, remove the grid layout and stack the items
-            //gridsterConfig.mobileModeEnabled = true;
-        }*/
+        /* if (dsw.mobile) {
+             GridsterConfigService.mobileBreakPoint = 576;// if the screen is not wider that this, remove the grid layout and stack the items
+             //gridsterConfig.mobileModeEnabled = true;
+         }*/
         // Check for shared widget screen and disable mobile breakpoint
         if (window.location.href.split('#').pop()?.indexOf('widget=') !== -1) {
             GridsterConfigService['mobileBreakPoint'] = 0;
@@ -177,7 +155,7 @@ export class StartupService {
     private loadAddon(url: any, addonName: string) {
         return new Promise((res: any, rej) => {
             fetch(url)
-            // import(s)
+                // import(s)
                 .then(async r => {
                     let file = await r.text();
 
@@ -186,30 +164,30 @@ export class StartupService {
 
                     // Shared modules for "require"
                     const modules = {
-                        '@angular/core': AngularCore,
-                        '@angular/common': AngularCommon,
-                        '@angular/router': AngularRouter,
-                        '@angular/platform-browser-dynamic': BrowserDynamic,
-                        '@angular/platform-browser': BrowserModuleAll,
-                        'highcharts/highstock': HighchartsHighstock,
-                        'highcharts/highcharts-more': HighchartsMore,
-                        'highcharts/modules/treemap': HighchartsModulesTreemap,
-                        'highcharts/modules/heatmap': HighchartsModulesHeatmap,
-                        'highcharts/modules/exporting': HighchartsModulesExporting,
-                        'highcharts/modules/map': HighchartsModulesMap,
-                        '../app/services/util.service': { UtilService },
-                        '../app/services/variables.service': { VariablesService },
-                        '../app/services/storage.service': { StorageService },
-                        '../app/services/data.service': { DataService },
-                        '../app/services/filter.service': { FilterService },
-                        '../app/services/widget-type.service': { WidgetTypeService },
-                        '../app/services/dashboard.service': { DashboardService },
-                        '../app/services/namespace.service': { NamespaceService },
-                        '../app/services/i18n.service': { I18nService },
-                        '../app/services/broadcast.service': { BroadcastService },
-                        '../app/services/sidebar.service': { SidebarService },
-                        '../app/components/widgets/base-widget.class': { BaseWidget },
-                        '../app/components/widgets/charts/base-chart.class': { BaseChartClass }
+                        // '@angular/core': AngularCore,
+                        /* '@angular/common': AngularCommon,
+                         '@angular/router': AngularRouter,
+                         '@angular/platform-browser-dynamic': BrowserDynamic,
+                         '@angular/platform-browser': BrowserModuleAll,
+                         'highcharts/highstock': HighchartsHighstock,
+                         'highcharts/highcharts-more': HighchartsMore,
+                         'highcharts/modules/treemap': HighchartsModulesTreemap,
+                         'highcharts/modules/heatmap': HighchartsModulesHeatmap,
+                         'highcharts/modules/exporting': HighchartsModulesExporting,
+                         'highcharts/modules/map': HighchartsModulesMap,
+                         '../app/services/util.service': { UtilService },
+                         '../app/services/variables.service': { VariablesService },
+                         '../app/services/storage.service': { StorageService },
+                         '../app/services/data.service': { DataService },
+                         '../app/services/filter.service': { FilterService },
+                         '../app/services/widget-type.service': { WidgetTypeService },
+                         '../app/services/dashboard.service': { DashboardService },
+                         '../app/services/namespace.service': { NamespaceService },
+                         '../app/services/i18n.service': { I18nService },
+                         '../app/services/broadcast.service': { BroadcastService },
+                         '../app/services/sidebar.service': { SidebarService },
+                         '../app/components/widgets/base-widget.class': { BaseWidget },
+                         '../app/components/widgets/charts/base-chart.class': { BaseChartClass }*/
                     };
 
                     // Replace require
@@ -226,7 +204,8 @@ export class StartupService {
                     // Eval addon script file
                     // tslint:disable-next-line:no-eval
                     // @ts-ignore
-                    eval(file);
+                    const ev = 'eval';
+                    window[ev](file);
 
                     // Find component in exports
                     // Only one export is allowed so component is first function
@@ -240,10 +219,10 @@ export class StartupService {
                         }
                     }
 
-                   /* const moduleFactory = this.compiler.compileModuleSync(name);
-                    const moduleRef = moduleFactory.create(this.parentInjector);
-                    const resolver = moduleRef.componentFactoryResolver;
-                    const compFactory = resolver.resolveComponentFactory(AComponent);*/
+                    /* const moduleFactory = this.compiler.compileModuleSync(name);
+                     const moduleRef = moduleFactory.create(this.parentInjector);
+                     const resolver = moduleRef.componentFactoryResolver;
+                     const compFactory = resolver.resolveComponentFactory(AComponent);*/
                     if (module) {
 
                         /*const compiledModule = this.compiler.compileModuleAndAllComponentsSync(module);
@@ -346,7 +325,7 @@ export class StartupService {
         // We listen to the resize event
         window.addEventListener('resize', () => {
             // We execute the same script as before
-            const  vh = window.innerHeight * 0.01;
+            const vh = window.innerHeight * 0.01;
             document.documentElement.style.setProperty('--vh', `${vh}px`);
         });
     }

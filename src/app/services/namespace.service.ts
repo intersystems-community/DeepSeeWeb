@@ -1,10 +1,7 @@
 import {Injectable} from '@angular/core';
 import {StorageService} from './storage.service';
-import {BehaviorSubject, Observable, Subscription} from 'rxjs';
-import {ActivatedRoute, ActivatedRouteSnapshot, NavigationEnd, Router, RouterStateSnapshot} from '@angular/router';
-import {filter, map, switchMap, tap} from 'rxjs/operators';
-import {subscriptionLogsToBeFn} from 'rxjs/internal/testing/TestScheduler';
-import {DataService} from "./data.service";
+import {Observable} from 'rxjs';
+import {ActivatedRoute, ActivatedRouteSnapshot, Router, RouterStateSnapshot} from '@angular/router';
 
 const KEY_NAMESPACES = 'dsw.namespaces';
 const KEY_NAMESPACE = 'dsw.namespace';
@@ -41,6 +38,10 @@ export class NamespaceService {
         // })
     }
 
+    public get namespaces(): string[] {
+        return this.list;
+    }
+
     resolve(
         route: ActivatedRouteSnapshot,
         state: RouterStateSnapshot
@@ -56,10 +57,6 @@ export class NamespaceService {
             }
             void this.router.navigateByUrl('/login');
         });
-    }
-
-    public get namespaces(): string[] {
-        return this.list;
     }
 
     loadNamespaces() {

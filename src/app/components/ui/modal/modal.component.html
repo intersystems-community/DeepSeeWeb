@@ -1,26 +1,35 @@
 <div class="modal" [class.no-padding]="data.noPadding" [class.min-height]="data.minHeight">
-
-    <!-- Title -->
-    <div class="title" [hidden]="!data.title">
-        {{data.title}}
+  <!-- Title -->
+  @if (data.title) {
+    <div class="title">
+      {{ data.title }}
     </div>
+  }
 
-    <!-- Main content -->
-    <div class="content">
-        {{data.message}}
-        <ng-template #dynamicComponent></ng-template>
-    </div>
+  <!-- Main content -->
+  <div class="content">
+    {{ data.message }}
+    <!-- Dynamic component -->
+    @if (isInitialized) {
+      <ng-container *ngComponentOutlet="data?.component; inputs: data?.inputs"></ng-container>
+    }
+  </div>
 
-    <!-- footer with buttons -->
-    <div class="footer" *ngIf="data.buttons?.length">
-        <dsw-search-input *ngIf="data.search !== undefined" [ngModel]="data.search" (search)="onSearch($event)"></dsw-search-input>
+  <!-- footer with buttons -->
+  @if (data.buttons?.length) {
+    <div class="footer">
+      @if (data.search !== undefined) {
+        <dsw-search-input [ngModel]="data.search" (search)="onSearch($event)"></dsw-search-input>
+      }
+      @for (btn of data.buttons; track btn) {
         <button
-            class="btn"
-            *ngFor="let btn of data.buttons"
-            [class.btn-white]="!btn.default"
-            (click)="onButtonClick(btn)"
+          class="btn"
+          [class.btn-white]="!btn.default"
+          (click)="onButtonClick(btn)"
         >
-            {{btn.label}}
+          {{ btn.label }}
         </button>
+      }
     </div>
+  }
 </div>

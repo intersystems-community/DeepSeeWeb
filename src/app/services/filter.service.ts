@@ -7,7 +7,8 @@ import {I18nService} from './i18n.service';
 import {NamespaceService} from './namespace.service';
 import {BroadcastService} from './broadcast.service';
 import {DashboardService} from './dashboard.service';
-import {IWidgetEvent} from '../components/widgets/base-widget.class';
+
+import {IWidgetEvent} from "./dsw.types";
 
 const DATE_PICKER_CLASS = '%ZEN.Component.calendar';
 

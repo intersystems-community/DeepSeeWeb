@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {BaseChartClass} from './base-chart.class';
-import * as numeral from 'numeral';
+import numeral from 'numeral';
 import {XAxisOptions, YAxisOptions} from 'highcharts';
 
 @Component({

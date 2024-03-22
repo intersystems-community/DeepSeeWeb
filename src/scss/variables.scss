@@ -140,6 +140,7 @@ $max-width: 1336px;
     // Sidebar
     --sidebar-width: 322px;
 
+    --cl-scrollbar: #606367;
 
 
 
@@ -235,4 +236,61 @@ $max-width: 1336px;
     &::-webkit-search-results-decoration {
         -webkit-appearance:none;
     }
+}
+
+
+// Media query for tablet/mobile
+@mixin breakpoint($screen) {
+  @media (max-width: $screen) {
+    @content;
+  }
+}
+
+// Scrollbar style
+@mixin scrollbar {
+  &::-webkit-scrollbar {
+    -webkit-appearance: none;
+    width: 24px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    border-radius: 0;
+    background-color: var(--cl-scrollbar);
+    border-left: 20px solid white;
+  }
+}
+
+// Scrollbar shown only on hover
+@mixin scrollbar-hover {
+  &::-webkit-scrollbar {
+    -webkit-appearance: none;
+    width: 24px;
+    height: 32px;
+  }
+
+  &::-webkit-scrollbar-thumb:vertical {
+    border-radius: 0;
+    background-color: white;
+    border-left: 20px solid white;
+
+  }
+
+  &::-webkit-scrollbar-thumb:horizontal {
+    border-radius: 0;
+    background-color: white;
+    border-top: 10px solid white;
+    border-bottom: 10px solid white;
+  }
+
+  &:hover {
+    &::-webkit-scrollbar-thumb {
+      background-color: var(--cl-scrollbar);
+    }
+  }
+
+  &::-webkit-scrollbar-button {
+    display: none;
+    width: 1px;
+    height: 1px;
+  }
 }

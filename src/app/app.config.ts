@@ -1,15 +1,22 @@
-import {APP_INITIALIZER, ApplicationConfig} from '@angular/core';
-import {provideRouter} from '@angular/router';
+import {APP_INITIALIZER, ApplicationConfig, importProvidersFrom} from '@angular/core';
+import {provideRouter, withHashLocation} from '@angular/router';
 import {routes} from './app.routes';
-import {provideHttpClient, withFetch, withInterceptors} from "@angular/common/http";
-import {provideClientHydration} from "@angular/platform-browser";
+import {provideHttpClient, withFetch} from "@angular/common/http";
+import {BrowserModule, provideClientHydration} from "@angular/platform-browser";
 import {provideAnimations} from "@angular/platform-browser/animations";
 import {StartupService} from "./services/startup.service";
+import {GridsterModule} from "angular-gridster2";
+import {NgSelectModule} from "@ng-select/ng-select";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {ColorPickerModule} from "ngx-color-picker";
+import {I18nService} from "./services/i18n.service";
+import {DataService} from "./services/data.service";
+import {ConfigResolver} from "./services/config-resolver";
 
 export const initializeApplication = (ss: StartupService) => {
-  return async () => {
-    await ss.initialize();
-  };
+    return async () => {
+        await ss.initialize();
+    };
 };
 
 /*const scrollConfig: InMemoryScrollingOptions = {
@@ -18,22 +25,34 @@ export const initializeApplication = (ss: StartupService) => {
 };*/
 
 export const appConfig: ApplicationConfig = {
-  providers: [
-    //{provide: APP_SSR_COOKIES, useValue: ''},
-    provideHttpClient(withFetch()/*, withInterceptors([httpInterceptor])*/),
-    provideClientHydration(),
-    provideAnimations(),
-    provideRouter(
-      routes,
-      // withInMemoryScrolling(scrollConfig)
-      // withDebugTracing()
-      // withPreloading(PreloadAllModules)
-    ),
-    {
-      provide: APP_INITIALIZER,
-      useFactory: initializeApplication,
-      multi: true,
-      deps: [StartupService],
-    },
-  ]
+    providers: [
+        importProvidersFrom(
+            GridsterModule,
+            BrowserModule,
+            NgSelectModule,
+            FormsModule,
+            ReactiveFormsModule,
+            ColorPickerModule
+        ),
+       /* I18nService,
+        DataService,
+        StartupService,
+        ConfigResolver,*/
+        provideHttpClient(withFetch()/*, withInterceptors([httpInterceptor])*/),
+        //provideClientHydration(),
+        provideAnimations(),
+        provideRouter(
+            routes,
+            withHashLocation()
+            // withInMemoryScrolling(scrollConfig)
+            // withDebugTracing()
+            // withPreloading(PreloadAllModules)
+        ),
+      /*  {
+            provide: APP_INITIALIZER,
+            useFactory: initializeApplication,
+            multi: true,
+            deps: [StartupService],
+        },*/
+    ]
 };

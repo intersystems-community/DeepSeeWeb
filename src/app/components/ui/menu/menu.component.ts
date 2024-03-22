@@ -15,16 +15,15 @@ import {MenuSettingsComponent} from './menu-settings/menu-settings.component';
 import {CURRENT_NAMESPACE} from '../../../services/namespace.service';
 import {TextAreaComponent} from '../text-area/text-area.component';
 import { I18nPipe } from '../../../services/i18n.service';
-import { NgIf } from '@angular/common';
+
 
 @Component({
     selector: 'dsw-menu',
     templateUrl: './menu.component.html',
-    styleUrls: ['./menu.component.scss']
+    styleUrls: ['./menu.component.scss'],
     //changeDetection: ChangeDetectionStrategy.OnPush
-    ,
     standalone: true,
-    imports: [NgIf, I18nPipe]
+    imports: [I18nPipe]
 })
 export class MenuComponent implements OnInit, OnDestroy {
 
@@ -71,28 +70,28 @@ export class MenuComponent implements OnInit, OnDestroy {
 
     showNamespaceSelector() {
         this.sbs.showComponent({
-            component: NamespaceSelectorComponent
+            component: import('./../../ui/namespace-selector/namespace-selector.component')
         });
     }
 
     showLanguageSelector() {
         this.sbs.showComponent({
-            component: LanguageSelectorComponent
+            component: import('./../../ui/language-selector/language-selector.component')
         });
     }
 
     showAboutDialog() {
         this.modal.show({
             title: 'DeepSeeWeb v.' + this.version,
-            component: AboutComponent,
+            component: import('./../../ui/about/about.component'),
             closeByEsc: true,
             closeByBackdropClick: true
         });
-        this.sbs.showComponent(null);
+        this.sbs.hide();
     }
 
     showSettingsMenu() {
-        this.sbs.showComponent({component: MenuSettingsComponent});
+        this.sbs.showComponent({component: import('./../../ui/menu/menu-settings/menu-settings.component')});
     }
 
     shareDashboard() {

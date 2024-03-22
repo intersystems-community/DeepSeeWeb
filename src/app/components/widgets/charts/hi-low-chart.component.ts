@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {BaseChartClass} from './base-chart.class';
-import * as numeral from 'numeral';
-import * as Highcharts from 'highcharts/highstock';
+import numeral from 'numeral';
+import Highcharts from 'highcharts/highstock';
 
 @Component({
     selector: 'dsw-hi-low-chart',
