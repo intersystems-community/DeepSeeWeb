@@ -10,7 +10,6 @@ import {
   OnInit
 } from '@angular/core';
 import {UtilService} from '../../services/util.service';
-import {VariablesService} from '../../services/variables.service';
 import {StorageService} from '../../services/storage.service';
 import {DataService} from '../../services/data.service';
 import {FilterService} from '../../services/filter.service';
@@ -27,7 +26,8 @@ import {SidebarService} from '../../services/sidebar.service';
 import {WidgetComponent} from './base/widget/widget.component';
 import {DashboardService} from '../../services/dashboard.service';
 import numeral from 'numeral';
-import {IKPIData, IWidgetDataProperties, IWidgetEvent, IWidgetDesc, IWidgetOverride} from "../../services/dsw.types";
+import {IKPIData, IWidgetDataProperties, IWidgetDesc, IWidgetEvent, IWidgetOverride} from "../../services/dsw.types";
+import Filter from "ol/format/filter/Filter";
 
 @Component({
   standalone: true,
@@ -43,20 +43,15 @@ export class BaseWidget implements OnInit, OnDestroy {
 
   // Services
   el = inject(ElementRef);
-  us = inject(UtilService);
-  ss = inject(StorageService);
-  ds = inject(DataService);
-  fs = inject(FilterService);
-  wts = inject(WidgetTypeService);
-  dbs = inject(DashboardService);
-  ns = inject(NamespaceService);
-  route = inject(ActivatedRoute);
-  i18n = inject(I18nService);
-  bs = inject(BroadcastService);
-  san = inject(DomSanitizer);
-  sbs = inject(SidebarService);
   cd = inject(ChangeDetectorRef);
-  zone = inject(NgZone);
+  ds = inject(DataService);
+  ss = inject(StorageService);
+  bs = inject(BroadcastService);
+  us = inject(UtilService);
+  i18n = inject(I18nService);
+  route = inject(ActivatedRoute);
+  fs = inject(FilterService);
+  dbs = inject(DashboardService);
 
   dataInfo: any;
   // use showLoading(), hideLoading() instead

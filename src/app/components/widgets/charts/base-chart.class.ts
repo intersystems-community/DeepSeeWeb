@@ -1,6 +1,6 @@
 /* tslint:disable:no-string-literal */
 import {BaseWidget} from '../base-widget.class';
-import {AfterViewInit, Component, OnDestroy, OnInit} from '@angular/core';
+import {AfterViewInit, Component, inject, NgZone, OnDestroy, OnInit} from '@angular/core';
 import {dsw} from '../../../../environments/dsw';
 import {AxisTypeValue, XAxisOptions, YAxisOptions} from 'highcharts';
 import {IButtonToggle} from '../../../services/widget.service';
@@ -15,6 +15,9 @@ import Heatmap from 'highcharts/modules/heatmap';
 import ThreeD from 'highcharts/highcharts-3d';
 import Exporting from 'highcharts/modules/exporting';
 import HC_stock from 'highcharts/modules/stock';
+import {SidebarService} from "../../../services/sidebar.service";
+import {WidgetTypeService} from "../../../services/widget-type.service";
+import {ActivatedRoute} from "@angular/router";
 
 HighMaps(Highcharts);
 More(Highcharts);
@@ -55,6 +58,12 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
   chartConfig!: Highcharts.Options;
   protected _selectedPoint: any;
   protected firstRun = true;
+
+  // Services
+  private sbs = inject(SidebarService);
+  private wts = inject(WidgetTypeService);
+  private zone = inject(NgZone);
+  //private route = inject(ActivatedRoute);
 
   private subPrint?: Subscription;
   private subColorsConfig?: Subscription;

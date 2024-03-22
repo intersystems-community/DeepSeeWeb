@@ -7,7 +7,7 @@ import {catchError, tap} from 'rxjs/operators';
 import {ErrorService} from './error.service';
 import {CURRENT_NAMESPACE} from './namespace.service';
 
-import {IWidgetDesc} from "./dsw.types";
+import {IWidgetDesc} from './dsw.types';
 
 export let MDX2JSON = 'MDX2JSON';
 export let NAMESPACE = 'MDX2JSON';
