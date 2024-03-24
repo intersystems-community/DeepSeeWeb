@@ -105,6 +105,9 @@ To use DSW Open `server:port/dsw/index.html`
 
 Demo: https://www.youtube.com/watch?v=-HplM12eNik
 
+# Configuring endpoints 
+You can set your endpoint and namespace in an appropriate file config.json located in the root directory
+
 # Known issues:
 
 Sometimes after installation you can see umlyauts in the client. like in the shot:
