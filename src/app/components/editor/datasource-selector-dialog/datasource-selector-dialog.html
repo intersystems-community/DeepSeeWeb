@@ -1,0 +1,37 @@
+<section class="header">
+    <dsw-tabs
+        [tabs]="tabs"
+        [currentTab]="currentTab"
+        [useQuery]="false"
+        (currentTabChange)="requestData($event)"
+    >
+    </dsw-tabs>
+</section>
+
+<ng-template #items let-data="data" let-level="level">
+    <div class="row" *ngFor="let d of data; trackBy: trackByIndex" [class.selected]="selected[level] === d" (click)="selectRow(d, level)">
+        <img *ngIf="d.children?.length" src="assets/img/widget-icons/folder-1.svg">
+        {{d.name}}
+    </div>
+</ng-template>
+
+<section #table class="table">
+    <!-- First column - fixed -->
+    <div>
+        <ng-container *ngTemplateOutlet="items; context:{data: filteredData, level: 0}"></ng-container>
+    </div>
+
+    <!-- Other columns -->
+    <div *ngFor="let sel of selected; let idx = index; trackBy: trackByIndex">
+        <ng-container *ngTemplateOutlet="items; context:{data: sel.children, level: idx + 1}"></ng-container>
+    </div>
+
+    <!-- Spinner -->
+    <div class="dsw-spinner" *ngIf="isLoading">
+        <img src="assets/img/spinner.svg">
+    </div>
+
+    <!--<div class="no-data" *ngIf="!data?.length">No data</div>-->
+</section>
+
+

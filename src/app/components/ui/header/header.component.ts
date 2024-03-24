@@ -1,18 +1,20 @@
-import {AfterViewInit, Component, OnDestroy, OnInit} from '@angular/core';
+import {AfterViewInit, Component, HostListener, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {MenuComponent} from '../menu/menu.component';
 import {SidebarService} from '../../../services/sidebar.service';
 import {HeaderService} from '../../../services/header.service';
-import {FormControl} from '@angular/forms';
-import {debounceTime, distinctUntilChanged, filter, map, shareReplay, switchMap, tap} from 'rxjs/operators';
-import {combineLatest, Observable, of, merge, Subscription} from 'rxjs';
+import {filter, map, tap} from 'rxjs/operators';
+import {merge, Observable, of, Subscription} from 'rxjs';
 import {MenuService} from '../../../services/menu.service';
 import {ActivatedRoute, NavigationEnd, Router} from '@angular/router';
 import {UtilService} from '../../../services/util.service';
 import {StorageService} from '../../../services/storage.service';
 import {CURRENT_NAMESPACE} from '../../../services/namespace.service';
-import {TextAreaComponent} from '../text-area/text-area.component';
 import {ModalService} from '../../../services/modal.service';
 import {FilterService} from '../../../services/filter.service';
+import {DataService} from "../../../services/data.service";
+import {I18nService} from "../../../services/i18n.service";
+import {WidgetEditorComponent} from "../../editor/widget-editor/widget-editor.component";
+import {SearchInputComponent} from "../search/search-input/search-input.component";
 
 /**
  * Breadcrumb
@@ -20,6 +22,8 @@ import {FilterService} from '../../../services/filter.service';
 interface IPathNav {
     title: string;
     url?: string;
+    isMoreButton?: boolean;
+    moreList?: IPathNav[];
 }
 
 @Component({
@@ -28,40 +32,52 @@ interface IPathNav {
     styleUrls: ['./header.component.scss']
 })
 export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
-    searchField = new FormControl();
+    @ViewChild('inpSearch') inpSearch: SearchInputComponent;
+
     private subTitle: Subscription;
-    private subOnSearch: Subscription;
-    private subOnSearchReset: Subscription;
-    private subShareDashboard: Subscription;
+    // private subShareDashboard: Subscription;
     private subGotoDSZ: Subscription;
     private subToggleMobileFilter: Subscription;
-
+    private subOnSearchReset: Subscription;
     private pathSegments: IPathNav[] = [];
 
     path$: Observable<any>;
     namespace = '';
     isSearch = false;
 
-    isSearchActive = false;
     title = '';
 
     path: IPathNav[] = [];
     isMobileFilterButton = false;
+    languages: string[];
+    selectedLanguage = this.i18n.current.toUpperCase();
+    isMorePressed = false;
+    shareUrl = '';
+    search = '';
 
     constructor(public ss: SidebarService,
                 public hs: HeaderService,
+                private ds: DataService,
                 private ms: MenuService,
                 private us: UtilService,
                 private modal: ModalService,
                 private fs: FilterService,
                 private storage: StorageService,
+                private i18n: I18nService,
                 private route: ActivatedRoute,
                 private router: Router
     ) {
+        this.languages = this.i18n.getLanguages().map(l => l.toUpperCase());
+
         this.path$ = this.getNavigationEndStream();
         if (this.storage.serverSettings?.Embed || this.us.isEmbedded()) {
             this.hs.visible$.next(false);
         }
+
+        this.subOnSearchReset = this.hs.onSearchReset.subscribe(() => {
+            this.inpSearch.value = '';
+            this.inpSearch.emitValueChanged();
+        });
     }
 
     static processPath(path: string[], p: string, idx: number) {
@@ -69,7 +85,7 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
         if (title.indexOf('?') !== -1) {
             title = title.split('?')[0];
         }
-        return {title, url: path.slice(0, idx + 1).join('/')};
+        return {title, url: decodeURIComponent(path.slice(0, idx + 1).join('/'))};
     }
 
     ngOnInit() {
@@ -79,9 +95,9 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
             this.title = t || this.path[this.path?.length - 1]?.title || '';
         });
 
-        this.subShareDashboard = this.hs.shareDashboardEmitter.subscribe(() => {
+        /*this.subShareDashboard = this.hs.shareDashboardEmitter.subscribe(() => {
             this.showShareDashboard();
-        });
+        });*/
 
         this.subGotoDSZ = this.hs.gotoZenDeepSeeEmitter.subscribe(() => {
             this.gotoZenDeepSee();
@@ -93,30 +109,14 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     ngOnDestroy() {
+        this.subOnSearchReset.unsubscribe();
         this.subToggleMobileFilter.unsubscribe();
-        this.subShareDashboard.unsubscribe();
+        // this.subShareDashboard.unsubscribe();
         this.subGotoDSZ.unsubscribe();
         this.subTitle.unsubscribe();
-        this.subOnSearch.unsubscribe();
-        this.subOnSearchReset.unsubscribe();
     }
 
     ngAfterViewInit() {
-        this.subOnSearch = this.searchField.valueChanges
-            .pipe(debounceTime(200), distinctUntilChanged())
-            .subscribe(term => {
-                // Cancel editing during search
-                this.ms.onEditDashboard.emit(false);
-                this.ss.sidebarToggle.next(null);
-                // Emit search event
-                this.hs.onSearch.next(term);
-            });
-
-        this.subOnSearchReset = this.hs.onSearchReset.subscribe(() => {
-            this.searchField.setValue('', {emitEvent: false});
-            this.hs.onSearch.next('');
-            this.isSearchActive = false;
-        });
     }
 
     /**
@@ -129,6 +129,7 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
             .split('/').slice(1);
         this.initSearch(path);
         this.pathSegments = path.map((p, idx) => HeaderComponent.processPath(path, p, idx));
+        this.buildMoreDropdown();
         return this.pathSegments;
     }
 
@@ -137,9 +138,9 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
      */
     toggleMenu() {
         if (this.ss.sidebarToggle.value) {
-            this.ss.sidebarToggle.next(null);
+            this.ss.showComponent(null);
         } else {
-            this.ss.sidebarToggle.next({component: MenuComponent});
+            this.ss.showComponent({component: MenuComponent});
         }
     }
 
@@ -148,10 +149,23 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
      */
     private getPathFromNavigation(e: any): IPathNav[] {
         const tree = this.router.parseUrl(this.router.url);
-        let path = tree.root.children.primary?.segments?.map(s => s.path) || [];
+        const path = tree.root.children.primary?.segments?.map(s => s.path) || [];
         this.initSearch(path);
         this.pathSegments = path.map((p, idx) => HeaderComponent.processPath(path, p, idx));
+        this.buildMoreDropdown();
+
         return this.pathSegments;
+    }
+
+    private buildMoreDropdown() {
+        if (this.pathSegments.length > 3) {
+            const more = this.pathSegments.splice(1, this.pathSegments.length - 2);
+            this.pathSegments.splice(1, 0, {
+                title: '',
+                isMoreButton: true,
+                moreList: more
+            });
+        }
     }
 
     /**
@@ -159,7 +173,7 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
      * @param path
      */
     private initSearch(path: string[]) {
-        this.isSearch = !path[path.length - 1]?.endsWith('.dashboard');
+        this.isSearch = !path[path.length - 1]?.split('?')[0]?.endsWith('.dashboard');
     }
 
     /**
@@ -172,18 +186,19 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
                 filter(e => e instanceof NavigationEnd),
                 map(e => this.getPathFromNavigation(e))
             )).pipe(tap(path => {
-                this.path = path;
-                return path;
-            }));
+            this.path = path;
+            return path;
+        }));
     }
 
     /**
      * Navigates to same dashboard on DeepSeeZen
      */
     gotoZenDeepSee() {
-        const folder = this.storage.serverSettings.DefaultApp || '/csp/' + CURRENT_NAMESPACE;
+        const folder = this.storage.serverSettings.DefaultApp || ('/csp/' + CURRENT_NAMESPACE);
         const dashboard = this.path[this.path.length - 1].url.split('/').slice(1).join('/');
-        const url = folder + '/_DeepSee.UserPortal.DashboardViewer.zen?DASHBOARD=' + dashboard;
+        const prefix = location.pathname.split('/').slice(0, -2).join('/') || '';
+        const url = prefix + folder + '/_DeepSee.UserPortal.DashboardViewer.zen?DASHBOARD=' + encodeURIComponent(decodeURIComponent(dashboard));
         window.open(url);
     }
 
@@ -191,7 +206,19 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
      * Shows share dashboard screen
      */
     showShareDashboard() {
-        const url = this.fs.getFiltersShareUrl();
+        this.shareUrl = this.fs.getFiltersShareUrl();
+        /*if (asModal) {
+            this.modal.show({
+                title: 'Share dashboard',
+                component: ShareDashboardComponent,
+                closeByEsc: true,
+               /!* onComponentInit: (c: TextAreaComponent) => {
+                    c.value = url;
+                }*!/
+            });
+        }*/
+
+        /*const url = this.fs.getFiltersShareUrl();
         this.modal.show({
             title: 'Share dashboard',
             component: TextAreaComponent,
@@ -199,7 +226,7 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
             onComponentInit: (c: TextAreaComponent) => {
                 c.value = url;
             }
-        });
+        });*/
     }
 
     /**
@@ -207,5 +234,39 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
      */
     toggleMobileFilter() {
         this.hs.toggleMobileFilterDialog();
+    }
+
+    selectLanguage(l: string) {
+        const lang = l.toLowerCase();
+        const settings = this.storage.getAppSettings();
+        this.i18n.current = lang;
+        settings.language = lang;
+        this.storage.setAppSettings(settings);
+        window.location.reload();
+    }
+
+    logout() {
+        void this.ds.signOut();
+    }
+
+    @HostListener('document:click', ['$event'])
+    hideMoreDropdown(e: MouseEvent, isMoreBtn = false) {
+        if (isMoreBtn || (e?.target as any)?.classList?.contains('btn-more')) {
+            return;
+        }
+
+        this.isMorePressed = false;
+    }
+
+    onAddClick() {
+        this.ss.showComponent(null);
+        this.ss.showComponent({component: WidgetEditorComponent, single: true});
+    }
+
+    onSearch(term: string) {
+        // Cancel editing during search
+        this.ms.onEditDashboard.emit(false);
+        // Emit search event
+        this.hs.onSearch.next(term);
     }
 }

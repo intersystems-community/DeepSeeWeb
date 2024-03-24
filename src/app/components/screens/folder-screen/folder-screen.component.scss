@@ -5,10 +5,22 @@
     display: block;
     width: 100%;
     height: 100%;
+
+    //@media (min-width: #{$max-width}) {
+        //padding-left: calc((1vw - #{$max-width}) / 2);
+        //padding-right: calc((1vw - #{$max-width}) / 2);
+        // max-width: $max-width;
+        //margin: 0 auto;
+    //}
 }
 
 gridster {
     background: var(--cl-bg);
+   /* height:  initial;
+    overflow: initial !important;
+    overflow-x: initial !important;
+    overflow-y: initial !important;*/
+    overflow-y: overlay !important;
 }
 
 .tile {
@@ -20,11 +32,22 @@ gridster {
     -webkit-user-select: none;
     background-size: cover;
     background: transparent no-repeat 50% 50%;
+    padding: 20px;
+
+    border: 1px solid #EBEBEA;
+    border-radius: 10px;
 
     // Hover state
     &:hover {
-        transform: translate(0px, -2px);
-        box-shadow: 0 1px 6px 0 rgba(0, 0, 0, 0.3);
+        //transform: translate(0px, -2px) scale(2) !important;
+       /* box-shadow:
+            0 1px 1px hsl(0deg 0% 0% / 0.075),
+            0 2px 2px hsl(0deg 0% 0% / 0.075),
+            0 4px 4px hsl(0deg 0% 0% / 0.075),
+            0 8px 8px hsl(0deg 0% 0% / 0.075),
+            0 16px 16px hsl(0deg 0% 0% / 0.075);*/
+
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
     }
 
     // Editing state
@@ -35,7 +58,7 @@ gridster {
     // Selected state
     &.selected {
         opacity: 1;
-        outline: 2px solid var(--cl-accent);
+        border: 2px solid var(--cl-accent);
     }
     @include sm {
         border: none;
@@ -48,20 +71,33 @@ gridster {
 
 .tile label {
     font-family: $font;
-    font-size: 16px;
     font-style: normal;
-    font-weight: normal;
     outline-color: #1c5ec7;
     position: absolute;
-    left: 10px;
-    right: 10px;
-    bottom: 8px;
+    left: 20px;
+    right: 20px;
+    bottom: 20px;
     top: auto;
     text-align: left;
 
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 16px;
+    color: var(--cl-header-txt);
+
+    max-height: 2.3em;
+    overflow: hidden;
+    display: inline-block;
+
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+
+
     @include sm {
         position: static;
-        font-size: 18px;
+        font-size: 14px;
     }
 }
 

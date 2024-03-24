@@ -1,11 +1,12 @@
 import {Injectable} from '@angular/core';
+import {ActivatedRoute} from '@angular/router';
 
 @Injectable({
     providedIn: 'root'
 })
 export class UtilService {
 
-    constructor() {
+    constructor(private route: ActivatedRoute) {
     }
 
     // merge(o1: any, o2: any) {
@@ -37,7 +38,7 @@ export class UtilService {
                 return true;
             }
         }
-        return params.indexOf('embed=1') !== -1;
+        return this.route.snapshot.queryParams?.embed === '1';
     }
 
     isPreventContextMenu() {
@@ -94,5 +95,46 @@ export class UtilService {
 
     isMobile(): boolean {
         return document.body.offsetWidth <= 576;
+    }
+
+    copyToClipboard(text: string) {
+        const clipboardData = window['clipboardData'];
+        if (clipboardData && clipboardData.setData) {
+            // Internet Explorer-specific code path to prevent textarea being shown while dialog is visible.
+            return clipboardData.setData('Text', text);
+
+        } else if (document.queryCommandSupported && document.queryCommandSupported('copy')) {
+            const textarea = document.createElement('textarea');
+            textarea.textContent = text;
+            textarea.style.position = 'fixed';  // Prevent scrolling to bottom of page in Microsoft Edge.
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                return document.execCommand('copy');  // Security exception may be thrown by some browsers.
+            } catch (ex) {
+                console.warn('Copy to clipboard failed.', ex);
+                return false;
+            } finally {
+                document.body.removeChild(textarea);
+            }
+        }
+    }
+
+    toDate(date: string) {
+        let d;
+        if (date.toLowerCase().startsWith('now')) {
+            const m = date.match(/([-+]?\d+)/);
+            let daysDelta = 0;
+            if (m && m[0]) {
+                daysDelta = parseInt(m[0], 10);
+            }
+            d = new Date();
+            if (daysDelta) {
+                d.setDate(d.getDate() + daysDelta);
+            }
+        } else {
+            d = new Date(date);
+        }
+        return d;
     }
 }

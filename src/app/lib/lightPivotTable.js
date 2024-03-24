@@ -301,7 +301,7 @@ DataController.prototype.TOTAL_FUNCTIONS = {
         if (a == "") return false;
         return isFinite(a);
     },
-    
+
     totalSUM: function (array, iStart, iEnd, column, xStart, row) {
         var sum = 0;
         for (var i = iStart; i < iEnd; i++) {
@@ -339,7 +339,7 @@ DataController.prototype.TOTAL_FUNCTIONS = {
         }
         return count;
     },
-    
+
     totalMIN: function (array, iStart, iEnd, column, xStart, row) {
         var min = Infinity;
         for (var i = iStart; i < iEnd; i++) {
@@ -363,7 +363,7 @@ DataController.prototype.TOTAL_FUNCTIONS = {
         }
         return max;
     },
-    
+
     totalPERCENTAGE: function (array, iStart, iEnd, column, xStart, row) {
         var averages = [], x, summ;
         for (x = xStart; x < typeof column === "undefined" ? array.length : array[0].length; x++) {
@@ -375,11 +375,11 @@ DataController.prototype.TOTAL_FUNCTIONS = {
         return (averages[(typeof row === "undefined" ? column : row) - xStart]
             / summ * 100 || 0).toFixed(2) + "%";
     },
-    
+
     totalNONE: function () {
         return "";
     }
-    
+
 };
 
 DataController.prototype.setLeftHeaderColumnsNumber = function (data) {
@@ -1749,12 +1749,13 @@ MDXParser.prototype.drillDown = function (mdx, filter, expression) {
  */
 MDXParser.prototype.drillThrough = function (basicMDX, filters, customListing) {
 
-    var cubeAndFilters = basicMDX.slice(basicMDX.lastIndexOf("FROM "));
-    let query = "DRILLTHROUGH SELECT " + cubeAndFilters;
+    var cubeAndFilters = basicMDX.slice(basicMDX.lastIndexOf("FROM ")),
+        query = "DRILLTHROUGH SELECT " + cubeAndFilters;
 
     for (var i in filters) {
         query = this.applyFilter(query, filters[i]);
     }
+
     if (customListing) {
         query += ` %LISTING [${customListing}]`;
     }
@@ -2929,7 +2930,7 @@ PivotView.prototype._rowClickHandler = function (rowIndex, cellData) {
         var d = this.controller.getRowsValues([rowIndex])[0].slice(
             this.controller.dataController.getData().info.leftHeaderColumnsNumber
         );
-        res = this.controller.CONFIG.triggers["rowClick"](rowIndex, d);
+        res = this.controller.CONFIG.triggers["rowClick"](rowIndex, d, cellData);
     }
     if (res !== false)
         this.controller.tryDrillDown(cellData.source.path);
@@ -3431,7 +3432,7 @@ PivotView.prototype.recalculateSizes = function (container) {
         leftHeader.style.height = containerHeight - headerH - pagedHeight + "px";
         leftHeader.style.width = headerW + "px";
         if (mainHeaderWidth > headerW) leftHeader.style.width = mainHeaderWidth + "px";
-        tableBlock.style.height = containerHeight - headerH - pagedHeight + "px";
+        tableBlock.style.height = containerHeight - headerH - pagedHeight - 1 + "px";
         headerContainer.style.height = headerH + "px";
         headerContainer.style.width = headerW + "px";
         if (!this.controller.CONFIG.stretchColumns) {
@@ -3900,7 +3901,8 @@ PivotView.prototype.renderRawData = function (data) {
     };
 
     // top left header setup
-    header.textContent = info.leftHeaderColumnsNumber ? rawData[0][0].value : "";
+    // Request by Shvarov, make top left cell empty (DSW repo #391)
+    header.textContent = '';
     if (rawData[0][0].style && !LISTING) header.setAttribute("style", rawData[0][0].style);
     if (this.tablesStack.length > 1 && !this.controller.CONFIG["hideButtons"]) {
         header.className += "back ";

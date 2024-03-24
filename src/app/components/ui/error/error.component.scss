@@ -23,4 +23,9 @@
         overflow: hidden;
         text-overflow: ellipsis;
     }
+
+    &.left {
+        right: auto;
+        left: 10px;
+    }
 }

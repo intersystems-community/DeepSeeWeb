@@ -35,7 +35,7 @@ export class NamespaceSelectorComponent {
     selectNamespace(ns: string) {
         this.ns.setCurrent(ns);
         void this.router.navigateByUrl(ns);
-        this.ss.sidebarToggle.next(null);
+        this.ss.showComponent(null);
     }
 
     /**

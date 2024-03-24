@@ -3,11 +3,14 @@ import {BaseWidget, IWidgetOverride} from '../base-widget.class';
 import {AfterViewInit, OnInit, Directive, OnDestroy} from '@angular/core';
 import {dsw} from '../../../../environments/dsw';
 import * as numeral from 'numeral';
-import {AxisTypeValue, SeriesOptionsType, XAxisOptions, YAxisOptions} from 'highcharts';
+import {AxisTypeValue, Series, SeriesOptionsType, XAxisOptions, YAxisOptions} from 'highcharts';
 import {IButtonToggle} from '../../../services/widget.service';
 
 // Highcharts
 import * as  Highcharts from 'highcharts/highstock';
+
+import HighMaps from 'highcharts/modules/map';
+HighMaps(Highcharts);
 
 import More from 'highcharts/highcharts-more';
 More(Highcharts);
@@ -64,6 +67,7 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
     private subColorsConfig: Subscription;
 
     private axisLabelListeners: IAxisLabelListener[] = [];
+    private seriesVisibility: boolean[] = [];
 
     ngOnInit() {
         super.ngOnInit();
@@ -73,8 +77,8 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
 
 
         // Check for series types
-        if (this.widget.overrides && this.widget.overrides[0] && this.widget.overrides[0].seriesTypes) {
-            this.seriesTypes = this.widget.overrides[0].seriesTypes.split(',');
+        if (this.override?.seriesTypes) {
+            this.seriesTypes = this.override?.seriesTypes.split(',');
         }
 
         this.subPrint = this.bs.subscribe('print:' + this.widget.name, () => {
@@ -107,9 +111,13 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
 
     ngAfterViewInit() {
         this.createChart();
+        /*this.chartConfig.chart.height = null;
+        this.chartConfig.chart.width = null;
+        this.chart.update(this.chartConfig, true);*/
+
         setTimeout(() => {
             this.chart.reflow();
-        }, 100);
+        });
     }
 
     private removeAxisListeners() {
@@ -120,6 +128,9 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
 
     createChart() {
         this.chartConfig.chart.renderTo = this.el.nativeElement;
+        if (this.chartConfig?.chart?.type === 'map') {
+            this.chart = Highcharts.mapChart(this.chartConfig);
+        } else
         if (this.widget.type.toLowerCase() === 'timechart') {
             this.chart = Highcharts.stockChart(this.chartConfig);
         } else {
@@ -155,6 +166,9 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
                 break;
             case 'showValues': {
                 (this.chartConfig.plotOptions.series.dataLabels as Highcharts.PlotSeriesDataLabelsOptions).enabled = bt.state;
+                if (this.chartConfig.plotOptions?.pie?.dataLabels) {
+                    (this.chartConfig.plotOptions.pie.dataLabels as any).enabled = bt.state;
+                }
                 this.updateChart();
                 // Update legend due to highcharts bug - legend is hidden after disabling data labels
                 this.chart.legend.update({
@@ -327,7 +341,8 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
     retrieveData(result) {
         let i;
         this.hideLoading();
-        // Clean up previous data
+        // Clean up previous data and store visibility state
+        this.seriesVisibility = this.chart?.series?.map(s => s.visible);
         while (this.chart?.series?.length > 0) {
             this.chart.series[0].remove();
         }
@@ -428,6 +443,13 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
             }
             // this.createChart();
         }
+
+        // Don't show legend for 1 series (#346)
+        if (this.chart?.series.length < 2) {
+            this.chart.legend.update({
+                enabled: false
+            });
+        }
     }
 
     /**
@@ -473,6 +495,7 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
      */
     addSeries(data, chart?: Highcharts.Chart, conf?: Highcharts.Options, redraw = false) {
         const c = chart || this.chart;
+        const index = (this.chart || this.chartConfig).series.length;
         if (data && data.data && data.data.length !== 0) {
             let isEmpty = true;
             let exists = false;
@@ -501,12 +524,34 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
         data.color = cols[(c.series.length % cols.length) || 0];
         // data.color = cols[(this.chartConfig.series.length % cols.length) || 0];
 
-        // Check chart type
-        const curIdx = (conf || this.chartConfig).series.length;
+        // Check series type from widget
+        if (this.widget?.seriesTypes) {
+            const st = this.widget?.seriesTypes[index];
+            if (st) {
+                data.type = st;
+            }
+        }
+
+        // Check for marker type
+        if (this.override?.markerShapes) {
+            let marker = this.override?.markerShapes.split(',')[index];
+            if (!marker) {
+                return;
+            }
+            switch (marker) {
+                case 'up': marker = 'triangle'; break;
+                case 'down': marker = 'triangle-down'; break;
+            }
+            data.marker = {
+                symbol: marker
+            };
+        }
+
+        // Check series type from override
+        const curIdx = (conf || (this.chart || this.chartConfig)).series.length;
         if (this.seriesTypes && this.seriesTypes[curIdx]) {
             data.type = this.seriesTypes[curIdx];
         }
-
         data.visible = true;
         // Show or hide series depending on settings
         if (this.widgetsSettings && this.widgetsSettings[this.widget.name] && this.widgetsSettings[this.widget.name].series) {
@@ -518,34 +563,32 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
 
         // Set axis for combo chart
         if (this.widget.type.toLowerCase() === 'combochart') {
-            // TODO: check if overrides already exists in new mdx2json?
-            const o = this.widget.overrides?.find(ov => ov._type.toLowerCase() === 'combochart');
-            if (o) {
-                let sy: number[] = [];
-                if (o && o.seriesYAxes) {
-                    sy = o.seriesYAxes.split(',').map(el => parseInt(el, 10));
-                }
-                let st: string[] = [];
-                if (o.seriesTypes) {
-                    st = o.seriesTypes.split(',');
-                }
-                const idx = this.chart.series.length;
-                data.type = st[idx] || (idx === 0 ? 'bar' : 'line');
-                data.yAxis = sy[idx] || 0;
-                /*const series = this.chartConfig.series;
-                for (let k = 0; k < series.length; k++) {
-                    series[k].yAxis = sy[k] || 0;
-                }*/
+            // Use default series type of not set
+            if (!data.type) {
+                data.type = (curIdx === 0 ? 'bar' : 'line');
             }
 
-            const st = this.widget?.seriesTypes[this.chart.series.length];
-            if (st) {
-                data.type = st;
+            if (this.override) {
+                let sy: number[] = [];
+                if (this.override.seriesYAxes) {
+                    sy = this.override.seriesYAxes.split(',').map(el => parseInt(el, 10));
+                }
+               /* let st: string[] = [];
+                if (o.seriesTypes) {
+                    st = o.seriesTypes.split(',');
+                }*/
+                const idx = (this.chart || this.chartConfig).series.length;
+                // data.type = st[idx] || (idx === 0 ? 'bar' : 'line');
+                data.yAxis = sy[idx] || 0;
             }
         }
         data.showInLegend = true;
         // this.chartConfig.series.push(data);
         c.addSeries(data, redraw, false);
+        const visibility = this.seriesVisibility[c.series.length - 1];
+        if (visibility !== undefined) {
+            c.series[c.series.length - 1].visible = visibility;
+        }
     }
 
     /**
@@ -702,9 +745,11 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
      */
     async parseData(d) {
         const data = d;
-        /*if (await this.checkForAutoDrill(d)) {
-            return;
-        }*/
+        if (this.route.snapshot.queryParamMap.get('autodrill') === '1') {
+            if (await this.checkForAutoDrill(d)) {
+                return;
+            }
+        }
         let i;
         const currentAxis = 0;
         // Add non exists axis as count
@@ -720,13 +765,22 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
         if (d && d.Info) {
             this.dataInfo = d.Info;
         }
-
+        this.sortTuplesBasedOnLabels(data);
         this.setupAxisMinMax(data.Data);
 
         this.chartConfig.series = [];
-        (this.chartConfig.xAxis as Highcharts.XAxisOptions).categories = [];
+        const xAxis = this.chartConfig.xAxis as Highcharts.XAxisOptions;
+        xAxis.categories = [];
         for (i = 0; i < data.Cols[1].tuples.length; i++) {
-            (this.chartConfig.xAxis as Highcharts.XAxisOptions).categories.push(data.Cols[1].tuples[i].caption.toString());
+            const caption = data.Cols[1].tuples[i].caption.toString();
+            const children = data.Cols[1].tuples[i].children;
+            if (children?.length) {
+                children.forEach(c => {
+                    xAxis.categories.push(caption + '/' + c.caption.toString());
+                });
+            } else {
+                xAxis.categories.push(caption);
+            }
         }
         const tempData = [];
         let hasChildren = false;
@@ -743,8 +797,12 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
                 for (let c = 0; c < len; c++) {
                     const tempData = [];
                     for (let g = 0; g < data.Cols[1].tuples.length; g++) {
+                        let oIdx = data.Cols[1].tuples[g].originalIndex;
+                        if (oIdx === undefined) {
+                            oIdx = g;
+                        }
                         tempData.push({
-                            y: +data.Data[data.Cols[0].tuples.length * len * g + t * len + c],
+                            y: +data.Data[data.Cols[0].tuples.length * len * oIdx + t * len + c],
                             cube: data.Info.cubeName,
                             drilldown: true,
                             path: data.Cols[1].tuples[g].path,
@@ -758,37 +816,59 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
                         this.addSeries({
                             data: tempData,
                             name: data.Cols[0].tuples[t].caption, // + '/' + data.Cols[0].tuples[t].children[c].caption,
-                            format: data.Cols[0].tuples[t].children[c].format || this.getFormat(data)
+                            format: data.Cols[0].tuples[t].children[c].format || this.getFormat(data),
+                            path: data.Cols[0].tuples[t].children[c].path
                         });
                     } else {
                         this.addSeries({
                             data: tempData,
                             name: data.Cols[0].tuples[t].caption,
-                            format: data.Cols[0].tuples[t].format || this.getFormat(data)
+                            format: data.Cols[0].tuples[t].format || this.getFormat(data),
+                            path: data.Cols[0].tuples[t].path
                         });
                     }
                 }
             }
         } else {
             for (let j = 0; j < data.Cols[0].tuples.length; j++) {
-
                 if (colCountControl) {
                     if (j >= colCountControl.value) {
                         continue;
                     }
                 }
-
+                let oIdx = data.Cols[0].tuples[j].originalIndex;
+                if (oIdx === undefined) {
+                    oIdx = j;
+                }
                 const tempData = [];
                 for (i = 0; i < data.Cols[1].tuples.length; i++) {
-                    tempData.push({
-                        y: +data.Data[i * data.Cols[0].tuples.length + j],
-                        drilldown: true,
-                        cube: data.Info.cubeName,
-                        path: data.Cols[1].tuples[i].path,
-                        name: data.Cols[1].tuples[i].caption,
-                        title: data.Cols[1].tuples[i].title,
-                    });
+                    const t = data.Cols[1].tuples[i];
+                    const children = t.children;
+                    if (children?.length) {
+                        const lenY = data.Cols[0].tuples.length - 1;
+                        const lenX = data.Cols[1].tuples.length - 1;
+                        for (let h = 0; h < children.length; h++) {
+                            tempData.push({
+                                y: +data.Data[oIdx * lenY + h * lenX + i * lenX * (children.length)],
+                                drilldown: true,
+                                cube: data.Info.cubeName,
+                                path: t.path,
+                                name: t.caption + '/' + children[h].caption.toString(),
+                                title: t.title
+                            });
+                        }
+                    } else {
+                        tempData.push({
+                            y: +data.Data[i * data.Cols[0].tuples.length + oIdx],
+                            drilldown: true,
+                            cube: data.Info.cubeName,
+                            path: data.Cols[1].tuples[i].path,
+                            name: data.Cols[1].tuples[i].caption,
+                            title: data.Cols[1].tuples[i].title
+                        });
+                    }
                 }
+
                 this.fixData(tempData);
                 let name = this.i18n.get('count');
                 let format = '';
@@ -799,6 +879,7 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
                 this.addSeries({
                     data: tempData,
                     name,
+                    path: data.Cols[0]?.tuples[j]?.path,
                     format: format || this.getFormat(data)
                 });
             }
@@ -857,9 +938,8 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
             },
             legend: {
                 enabled: this.widget.isLegend,
-                itemStyle: {
-                    color: this.tc.hcTextColor
-                }
+                align: 'left',
+                ...(this.tc.hcTextColor ? ({itemStyle : { color: this.tc.hcTextColor }}) : {})
             },
             navigation: {
                 buttonOptions: {
@@ -875,6 +955,33 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
                         // Add right click
                         // @ts-ignore
                         event.target?.series?.forEach(se => {
+
+                            // Add hover events for legend (only for pie chart)
+                            if (_this.chartConfig.chart.type === 'pie') {
+
+
+                                _this.chart.legend.allItems.forEach((l: any) => {
+                                    const onLegendItemHover = (e) => {
+                                        this.onLegendItemHover({series: l.series, index: l.index});
+                                    };
+                                    const onLegendItemOut = (e) => {
+                                        this.onLegendItemOut({series: l.series, index: l.index});
+                                    };
+                                    const element = (l.legendItem as any)?.group.element;
+                                    if (element) {
+                                        element.addEventListener('mouseover', onLegendItemHover);
+                                        _this.axisLabelListeners.push({
+                                            event: 'mouseover',
+                                            element,
+                                            func: onLegendItemHover
+                                        });
+
+                                        element.addEventListener('mouseout', onLegendItemOut);
+                                        _this.axisLabelListeners.push({event: 'out', element, func: onLegendItemOut});
+                                    }
+                                });
+                            }
+
                             se.data.forEach((d, dIdx) => {
                                 const ev = 'contextmenu';
                                 const element = d.graphic?.element;
@@ -882,7 +989,6 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
                                     return;
                                 }
                                 const func = (e) => {
-                                    console.log(e);
                                     e.preventDefault();
                                     e.stopImmediatePropagation();
 
@@ -891,13 +997,20 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
                                         return;
                                     }
 
+                                    const seriesPath = se.userOptions.path;
+                                    let path = aData[dIdx].path;
+                                    if (seriesPath) {
+                                        path = seriesPath;
+                                        //path.push(seriesPath);
+                                    }
+
                                     this.bs.broadcast('contextmenu', {
                                         widget: this.widget,
                                         event: e,
                                         ctxData: {
                                             canDrillthrough: this.canDoDrillthrough,
                                             canDrill: true,
-                                            drillPath: aData[dIdx].path,
+                                            drillPath: path,
                                             drillTitle: aData[dIdx].caption || aData[dIdx].title
                                         }
                                     });
@@ -907,23 +1020,48 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
                             });
                         });
 
-                        // @ts-ignore
-                        _this.chart.xAxis[0]?.labelGroup?.element?.childNodes?.forEach((el, idx) => {
-                            const onClick = () => {
-                                const aData = _this._currentData?.Cols[1]?.tuples;
-                                if (!aData || !aData[idx]) {
+                        // Bind label click for pie chart
+                        if (_this.chartConfig.chart.type === 'pie') {
+                            _this.chart?.legend?.allItems.forEach(item => {
+                                const el = (item as any).dataLabel?.element;
+                                if (!el) {
                                     return;
                                 }
 
-                                _this.showLoading();
-                                _this.doDrillOnly(aData[idx].path, aData[idx].caption || aData[idx].title, aData[idx].caption || aData[idx].title)
-                                    .finally(() => {
-                                        _this.hideLoading();
-                                    });
-                            };
-                            el.addEventListener('click', onClick);
-                            this.axisLabelListeners.push({event: 'click', element: el, func: onClick});
-                        });
+                                const onClick = () => {
+                                    _this.showLoading();
+                                    _this.doDrillOnly((item.options as any).path, item.name.toString(), item.name.toString())
+                                        .finally(() => {
+                                            _this.hideLoading();
+                                        });
+                                };
+                                el.addEventListener('click', onClick);
+                                this.axisLabelListeners.push({event: 'click', element: el, func: onClick});
+                            });
+                        } else {
+
+                            // @ts-ignore
+                            _this.chart?.xAxis[0]?.labelGroup?.element?.childNodes?.forEach((el, idx) => {
+                                const onClick = () => {
+                                    const aData = _this._currentData?.Cols[1]?.tuples;
+                                    const children = _this._currentData?.Cols[1]?.tuples[0]?.children;
+                                    if (children?.length) {
+                                        idx = Math.floor(idx / children?.length);
+                                    }
+                                    if (!aData || !aData[idx]) {
+                                        return;
+                                    }
+
+                                    _this.showLoading();
+                                    _this.doDrillOnly(aData[idx].path, aData[idx].caption || aData[idx].title, aData[idx].caption || aData[idx].title)
+                                        .finally(() => {
+                                            _this.hideLoading();
+                                        });
+                                };
+                                el.addEventListener('click', onClick);
+                                this.axisLabelListeners.push({event: 'click', element: el, func: onClick});
+                            });
+                        }
                     }
                 }
             },
@@ -945,7 +1083,7 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
                     }
                     let a = (t.point.name || t.x || '') + '<br>' + (title ? (title + '<br>') : '') + t.series.name + ': <b>' + val + '</b><br>';
                     if (t.point.percentage) {
-                        a += _this.formatNumber(this.point.percentage, _this.getDataPropValue('percentageFormat') || '#.##') + '%';
+                        a += _this.formatNumber(this.point.percentage, _this.getDataPropByDataValue(this.series?.userOptions?.name)?.format || '#.##') + '%';
                         // a += parseFloat(t.point.percentage).toFixed(2).toString() + '%';
                     }
                     return a;
@@ -990,8 +1128,13 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
                                         return;
                                     }
                                 }
+                                const seriesPath = e.point.series.userOptions.path;
+                                const path = [e.point.path];
+                                if (seriesPath) {
+                                    path.push(seriesPath);
+                                }
                                 _this.showLoading();
-                                _this.doDrillthrough(e.point.path, e.point.name, e.point.category)
+                                _this.doDrillthrough(path, e.point.name, e.point.category)
                                     .finally(() => {
                                         _this.hideLoading();
                                     });
@@ -1033,10 +1176,10 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
                     },
                     formatter: axisFormatter
                 },
-                minorGridLineColor: this.tc.hcLineColor,
-                gridLineColor: this.tc.hcLineColor,
-                lineColor: this.tc.hcLineColor,
-                tickColor: this.tc.hcLineColor
+                minorGridLineColor: this.tc.hcLineColor || '#e6e6e6',
+                gridLineColor: this.tc.hcLineColor || '#e6e6e6',
+                lineColor: this.tc?.hcLineColor || undefined,
+                tickColor: this.tc?.hcLineColor || undefined
             },
             xAxis: {
                 events: {
@@ -1052,10 +1195,10 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
                         cursor: 'pointer'
                     }
                 },
-                minorGridLineColor: this.tc.hcLineColor,
-                gridLineColor: this.tc.hcLineColor,
-                lineColor: this.tc.hcLineColor,
-                tickColor: this.tc.hcLineColor
+                minorGridLineColor: this.tc.hcLineColor || '#e6e6e6',
+                gridLineColor: this.tc.hcLineColor || '#e6e6e6',
+                lineColor: this.tc?.hcLineColor || undefined,
+                tickColor: this.tc?.hcLineColor || undefined
             },
             series: [],
             title: {
@@ -1213,7 +1356,7 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
 
         const appearance = CHART_COLOR_CONFIG_APPEARANCES[this.chart?.options?.chart?.type];
 
-        this.sbs.sidebarToggle.next({
+        this.sbs.showComponent({
             component: ChartConfigComponent,
             inputs: {
                 widgetSettings: widgetsSettings[name],
@@ -1486,5 +1629,79 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
     ngOnDestroy() {
         this.removeAxisListeners();
         super.ngOnDestroy();
+    }
+
+    protected onLegendItemHover(e: any) {
+
+    }
+
+    protected onLegendItemOut(e: any) {
+
+    }
+
+    /*private sortSeries() {
+        const legend = this.widget.overrides?.find(o => o._type === 'chartLegend');
+        if (!legend) {
+            return;
+        }
+
+        const labels = legend.legendLabels?.split(',');
+        if (!labels) {
+            return;
+        }
+
+        if (this.chart?.series?.length) {
+            // Chart already exists sort series in chart
+            this.sortSeriesArray(this.chart.series, labels);
+            //this.char
+        } else {
+            // Chart not exists sort series in config
+            this.sortSeriesArray(this.chartConfig.series, labels);
+
+        }
+    }*/
+
+    private sortTuplesArray(tuples: any[], labels: string[]) {
+        // Create a map to store the indices of each label
+        const indexMap = new Map();
+        labels.forEach((title, index) => {
+            indexMap.set(title, index);
+        });
+        tuples.forEach((t, idx) => {
+           t.originalIndex = idx;
+        });
+        tuples.sort((a, b) => {
+            const indexA = indexMap.get(a.dimension);
+            const indexB = indexMap.get(b.dimension);
+
+            // Check if both elements have corresponding names in the labels array
+            if (indexA !== undefined && indexB !== undefined) {
+                return indexA - indexB;
+            } else if (indexA !== undefined) {
+                return -1;
+            } else if (indexB !== undefined) {
+                return 1;
+            }
+
+            return 0;
+        });
+    }
+
+    private sortTuplesBasedOnLabels(data: any) {
+        if (!data.Cols[0].tuples?.length) {
+            return;
+        }
+
+        const legend = this.widget.overrides?.find(o => o._type === 'chartLegend');
+        if (!legend) {
+            return;
+        }
+
+        const labels = legend.legendLabels?.split(',');
+        if (!labels) {
+            return;
+        }
+
+        this.sortTuplesArray(data.Cols[0].tuples, labels);
     }
 }

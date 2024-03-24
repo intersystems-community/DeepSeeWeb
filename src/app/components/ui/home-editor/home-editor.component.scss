@@ -1,27 +1,7 @@
 @import "src/scss/variables";
 
-:host {
-    display: flex;
-    flex-direction: column;
-    height: calc(100% - var(--header-height));
-        //margin-top: calc(-1 * var(--header-height));
-    //height: calc(100% + var(--header-height));
-    //background-color: var(--cl-sidebar-bg);
-}
-
-// Label text style
-label {
-    display: block;
-    clear: both;
-    font-family: $font;
-    color: var(--cl-sidebar-txt);
-    margin-top: 10px;
-    margin-bottom: 2px;
-}
-
 // Upload control
 input[type=file] {
-    padding: 3px;
     &::-webkit-file-upload-button {
         // color: red;
     }
@@ -30,54 +10,11 @@ input[type=file] {
 // Checkbox, must be placed inside label
 input[type=checkbox] {
     cursor: pointer;
-    height: 20px;
-    width: 20px;
     outline: none;
     display: inline;
-    float: right;
     &:focus, &:active {
         outline: none;
     }
-}
-
-
-.color-rect {
-    display: inline-flex;
-    position: relative;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    width: 32px;
-    height: 32px;
-    margin-right: 4px;
-    margin-bottom: 4px;
-    border: var(--tile-border);
-    font-size: 24px;
-    transition: outline 0.1s ease-out;
-    outline-offset: -2px;
-    float: left;
-    &:hover {
-        outline: 1px solid var(--cl-accent);
-    }
-    &.active {
-        outline: 3px solid var(--cl-accent);
-    }
-}
-
-.color-rect svg {
-    position: absolute;
-    font-family: FontAwesome;
-}
-
-.container {
-    margin-left: 10px;
-    margin-right: 10px;
-    overflow-y: auto;
-    height: 100%;
-}
-
-input {
-    margin-bottom: 4px;
 }
 
 .divider {

@@ -101,7 +101,7 @@ export class StorageService {
                 link.id = 'page-theme';
                 link.rel = 'stylesheet';
                 link.type = 'text/css';
-                link.href = 'css/' + settings.theme;
+                link.href = settings.theme;
                 document.head.appendChild(link);
             }
         }

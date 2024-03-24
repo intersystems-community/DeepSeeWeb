@@ -1,23 +1,46 @@
 <div>
     <button class="btn square btn-side-menu" [class.active]="!!(ss.sidebarToggle | async)?.component" (click)="toggleMenu()">
-        <img src="assets/img/logo.svg">
+        <img src="assets/img/icons/menu.svg">
     </button>
     <h2 class="breadcrumbs">
 <!--        <a routerLink="/" class="path">DeepSeeWeb</a>-->
         <div class="only-sm" *ngIf="!isSearch">{{title}}</div>
-        <div [class.no-opacity]="isSearch">
-            <a [routerLink]="p.url" class="path" *ngFor="let p of path$ | async; let idx = index" [class.show-only-last]="isSearch">{{p.title}}</a>
+        <div [class.no-opacity]="isSearch" class="items">
+            <a
+                [routerLink]="p.url"
+                class="path"
+                *ngFor="let p of path$ | async; let idx = index"
+                [title]="p.title"
+                [class.show-only-last]="isSearch"
+                (click)="hideMoreDropdown($event, p.isMoreButton)"
+            >
+                {{p.title}}
+                <span class="btn-more" *ngIf="p.isMoreButton" [class.pressed]="isMorePressed" (click)="isMorePressed = !isMorePressed">
+                    ...
+                </span>
+                <div class="dropdown-more" *ngIf="p.isMoreButton && isMorePressed">
+                    <a *ngFor="let l of p.moreList" [routerLink]="l.url" class="path" [title]="l.title">{{l.title}}</a>
+                </div>
+            </a>
         </div>
     </h2>
 
     <!-- Goto DSZ -->
     <button class="btn btn-icon square s60 btn-goto only-desktop" (click)="gotoZenDeepSee()" *ngIf="!isSearch" [title]="'gotoDeepSee' | i18n">
-        <img class="flip" src="assets/img/icons/reply-black-18dp.svg">
+        <img class="flip" src="assets/img/icons/icon-navigate.svg">
     </button>
 
     <!-- Share dashboard -->
-    <button class="btn btn-icon square s60 only-desktop" (click)="showShareDashboard()" *ngIf="!isSearch" [title]="'shareDashboard' | i18n">
-        <img src="assets/img/icons/share-black-18dp.svg">
+    <div class="btn btn-icon square s60 only-desktop btn-share" (mouseover)="showShareDashboard()" *ngIf="!isSearch" [title]="'shareDashboard' | i18n">
+        <img src="assets/img/icons/icon-share.svg">
+
+        <dsw-share-dashboard [shareUrl]="shareUrl" [isSmall]="true"></dsw-share-dashboard>
+    </div>
+
+    <!-- Add widget-->
+    <button class="btn btn-icon square s60 btn-goto only-desktop" (click)="onAddClick()" *ngIf="!isSearch" [title]="'addWidget' | i18n">
+       <span class="icon-plus">+</span>
+       <!--<img class="flip" src="assets/img/icons/icon-copy.svg">-->
     </button>
 
     <!-- Mobile filter -->
@@ -25,13 +48,22 @@
         <img src="assets/img/icons/filter_alt-black-18dp.svg">
     </div>
 </div>
-<div class="search-block" [hidden]="!isSearch">
-    <div [class.active]="isSearchActive">
-        <input #inp [formControl]="searchField" type="search" placeholder="Search" (blur)="isSearchActive = false" (keydown.enter)="isSearchActive = false">
-    </div>
-    <span class="btn-search" [class.active]="isSearchActive" (click)="isSearchActive = !isSearchActive; isSearchActive ? inp.focus() : null">
-        <img src="assets/img/icons/search-black-18dp.svg">
-    </span>
+<div class="search-block">
+   <!-- <span class="search" [hidden]="!isSearch">
+        <div [class.active]="isSearchActive">
+            <img class="img-search" src="assets/img/icons/icon-search.svg">
+            <input #inp [formControl]="searchField" type="search" placeholder="Search" (blur)="isSearchActive = false" (keydown.enter)="isSearchActive = false">
+        </div>
+    </span>-->
+    <dsw-search-input #inpSearch [hidden]="!isSearch" (search)="onSearch($event)"></dsw-search-input>
 
+    <!-- Language selector -->
+    <select #lang class="lang-selector only-desktop" [(ngModel)]="selectedLanguage" (change)="selectLanguage(lang.value)">
+        <option *ngFor="let l of languages" [value]="l">{{l}}</option>
+    </select>
+    <!-- Logout -->
+    <button class="btn btn-icon only-desktop" (click)="logout()" [title]="'signout' | i18n">
+        <img src="assets/img/icons/icon-logout.svg">
+        {{'signout' | i18n}}
+    </button>
 </div>
-

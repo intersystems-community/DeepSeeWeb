@@ -1,40 +1,40 @@
 <ul>
-    <!-- Share dashboard -->
-    <li *ngIf="!isHome" (click)="shareDashboard()" class="only-sm">
-        <img src="assets/img/icons/share-black-18dp.svg">
-        {{'shareDashboard' | i18n}}
-    </li>
-
     <!-- Goto DSZ -->
     <li *ngIf="!isHome" (click)="gotoZenDeepSee()" class="only-sm">
-        <img src="assets/img/icons/reply-black-18dp.svg">
+        <img src="assets/img/icons/icon-navigate.svg">
         {{'gotoDeepSee' | i18n}}
     </li>
+
+    <!-- Share dashboard -->
+    <!--<li *ngIf="!isHome" (click)="shareDashboard()" class="only-sm">
+        <img src="assets/img/icons/share-black-18dp.svg">
+        {{'shareDashboard' | i18n}}
+    </li>-->
 
     <div class="divider only-sm"></div>
 
     <li *ngIf="isHome" (click)="editDashboard()">
-        <img src="assets/img/icons/edit-black-18dp.svg">
+        <img src="assets/img/icons/icon-edit.svg">
         Edit dashboard
     </li>
     <li (click)="showSettingsMenu()">
-        <img src="assets/img/icons/settings-black-18dp.svg">
+        <img src="assets/img/icons/icon-settings.svg">
         Settings
     </li>
     <li (click)="showNamespaceSelector()">
-        <img src="assets/img/icons/database.svg">
+        <img src="assets/img/icons/icon-namespace.svg">
         Namespace
     </li>
-    <li (click)="showLanguageSelector()">
+    <li (click)="showLanguageSelector()" class="only-sm">
         <img src="assets/img/icons/language-24px.svg">
         Language
     </li>
     <li (click)="showAboutDialog()">
-        <img src="assets/img/icons/information-outline.svg">
+        <img src="assets/img/icons/icon-info.svg">
         About
     </li>
-    <li (click)="logout()">
-        <img src="assets/img/icons/logout-variant.svg">
+    <li (click)="logout()" class="only-sm">
+        <img src="assets/img/icons/icon-logout.svg">
         Logout
     </li>
 </ul>

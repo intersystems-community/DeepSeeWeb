@@ -12,13 +12,13 @@ ul {
     list-style-type: none;
     margin: 0;
     padding: 0;
+    padding-top: 30px;
 }
 
 @keyframes pulse {
     0% { transform: scale(1); }
-    50% { transform: scale(1.1);
+    50% { transform: scale(1.1); }
     100% { transform: scale(1); }
-    }
 }
 
 // Menu item
@@ -28,14 +28,17 @@ li {
     position: relative;
     font-family: $font;
     color: var(--cl-header-txt);
-    font-size: 18px;
-    padding: 15px 15px;
+    font-size: 14px;
+    padding: 10px 15px;
     background-color: var(--cl-sidebar-bg);
     cursor: pointer;
     transition: background-color $animSpeed linear;
     white-space: nowrap;
+    padding-left: 40px;
+    border-radius: 0 40px 40px 0;
     &:hover {
-        background-color: var(--cl-header-btn-hover);
+        background-color: var(--cl-hover);
+
     }
 
     // Icon
@@ -46,13 +49,13 @@ li {
 
     // Image icon
     & > img {
-        padding: 4px;
-        background-color: rgba(0, 0, 0, 0.1);
-        border-radius: 4px;
-        height: 28px;
-        min-width: 28px;
-        margin-right: 10px;
-        filter: var(--menu-item-icon-filter);
+        //padding: 4px;
+        // background-color: rgba(0, 0, 0, 0.1);
+        //border-radius: 4px;
+        //height: 28px;
+        //min-width: 28px;
+        margin-right: 8px;
+        //filter: var(--menu-item-icon-filter);
     }
 
     &:hover > img {
@@ -78,10 +81,11 @@ li {
 .version {
     position: absolute;
     bottom: 0;
-    right: 0;
+    left: 0;
     font-family: $font;
     font-size: 9px;
     padding: 6px;
+    color: var(--cl-header-txt);
 }
 
 // Loading spinner

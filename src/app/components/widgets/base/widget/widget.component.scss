@@ -8,6 +8,7 @@
     min-height: 0;
     overflow: hidden;
     background-color: var(--cl-widget-bg);
+    padding: 20px;
 }
 
 .error {
@@ -20,7 +21,7 @@
     top: 40%;
     padding: 6px;
     text-align: center;
-    z-index: 1000;
+    z-index: 10;
     background:  var(--cl-widget-bg);
 }
 
@@ -28,7 +29,7 @@
     position: absolute;
     left: 0;
     right: 0;
-    top: var(--tile-header-height);
+    top: 44px;
     bottom: 0;
     z-index: 3;
     display: flex;
@@ -36,6 +37,7 @@
     align-items: center;
     background-color: rgba(255,255,255,0.9);
     backdrop-filter: blur(2px);
+    height: auto;
 }
 
 dsw-widget-filter {

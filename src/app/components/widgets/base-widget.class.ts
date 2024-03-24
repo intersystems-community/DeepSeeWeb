@@ -1,12 +1,14 @@
 import {
+    ChangeDetectorRef,
     ComponentFactoryResolver,
+    Directive,
     ElementRef,
     HostBinding,
-    OnDestroy,
-    OnInit,
-    Directive,
+    Inject,
+    Injector,
     NgZone,
-    ChangeDetectorRef, Inject, Injector
+    OnDestroy,
+    OnInit
 } from '@angular/core';
 import {UtilService} from '../../services/util.service';
 import {VariablesService} from '../../services/variables.service';
@@ -15,7 +17,7 @@ import {DataService} from '../../services/data.service';
 import {FilterService} from '../../services/filter.service';
 import {ActivatedRoute} from '@angular/router';
 import {I18nService} from '../../services/i18n.service';
-import {IWidgetType, WidgetTypeService} from '../../services/widget-type.service';
+import {WidgetTypeService} from '../../services/widget-type.service';
 import * as Highcharts from 'highcharts';
 import {IButtonToggle} from '../../services/widget.service';
 import {Subscription} from 'rxjs';
@@ -28,6 +30,15 @@ import {DashboardService} from '../../services/dashboard.service';
 import * as numeral from 'numeral';
 
 export type WidgetEventType = 'drill' | 'filter' | 'datasource';
+
+export interface IWidgetDisplayInfo {
+    colWidth: number;
+    leftRow: number;
+    rowHeight: number;
+    topCol: number;
+    width?: number;
+    height?: number;
+}
 
 export interface IWidgetDrill {
     name: string;
@@ -76,9 +87,12 @@ export interface IWidgetOverride {
     seriesYAxes?: string;
     _type: string;
     columns?: any[];
+    legendLabels?: string;
+    markerShapes?: string;
 }
 
 export type IAddonType = 'custom' | 'chart' | 'map';
+
 export interface IAddonInfo {
     version?: number;
     type?: IAddonType;
@@ -87,14 +101,14 @@ export interface IAddonInfo {
 }
 
 export type WidgetColumnDisplayType = 'trendLine' | 'plotBox' | 'itemNo' | 'value' | 'label' | '';
-export type WidgetColumnShowType = 'value';
+export type WidgetColumnShowType = 'value' | 'target%' | 'sum%';
 export type WidgetColumnSummaryType = 'sum' | '';
 
 export interface IWidgetDataProperties {
     // align: string;
     // baseValue: string
     name: string;
-    dataValue: string|number;
+    dataValue: string | number;
     display: WidgetColumnDisplayType;
     format: string;
     label: string;
@@ -123,7 +137,8 @@ export interface IWidgetInfo {
     x: number;
     y: number;
     cols: number;
-    row: number;
+    rows: number;
+    dragEnabled?: boolean;
 
     dataProperties: IWidgetDataProperties[];
 
@@ -139,11 +154,13 @@ export interface IWidgetInfo {
     controls: any[];
     linkedMdx: string;
     dependents: any[];
-    Link: any;
+    dataLink?: string;
     kpitype: string;
     mdx: string;
     properties: any;
     seriesTypes: string[];
+    kpiclass: string;
+    displayInfo?: IWidgetDisplayInfo;
 
     isExpanded: boolean;
 
@@ -198,12 +215,49 @@ export interface IWidgetInfo {
     // For empty widget filters size
     viewSize: number;
     shared?: boolean;
+
+    // Additional
+    format?: string;
+
+    // Gridster
+    //item?: GridsterItem;
+
+    // editor
+    referenceTo?: string;
+    edKey: string; // needed to recreate widget by generating new key, so angular will create new using trackBy
+    oldWidget?: IWidgetInfo;
+}
+
+export interface IKPIDataInfo {
+    Error: string;
+    KpiName: string;
+}
+
+export interface IKPIDataProperty {
+    caption: string;
+    columnNo: number;
+    name: string;
+}
+
+export interface IKPIDataSeries {
+    [key: string]: number;
+}
+
+export interface IKPIDataResult {
+    Properties: IKPIDataProperty[];
+    Series: IKPIDataSeries[];
+}
+
+export interface IKPIData {
+    Info: IKPIDataInfo;
+    Result: IKPIDataResult;
 }
 
 @Directive()
 export abstract class BaseWidget implements OnInit, OnDestroy {
 
     static CURRENT_ADDON_VERSION = 1;
+    protected preventColFilteringBasedOnDataProperties = false;
 
     @HostBinding('class.inline') get inline(): boolean {
         return this.widget.inline;
@@ -339,6 +393,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
     ngOnInit() {
         this.baseType = this.widget?.type;
         this.override = this.getOverride();
+        this.extendPropsWithOverrides();
         const settings = this.ss.getAppSettings();
 
         const theme = settings.theme || '';
@@ -444,14 +499,20 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         // }
 
         if (this.isLinked()) {
-            if (this.widget.shared || this.widget.inline) {
+            if (this.widget.shared || this.widget.inline || this.widget.edKey) {
                 const widgets = this.dbs.getAllWidgets();
-                const link = widgets.find(w => w.name === this.widget.Link);
+                const link = widgets.find(w => w.name === this.widget.dataLink);
                 if (link) {
                     this.linkedMdx = link.mdx;
                 }
             } else {
                 this.subLinkedMdx = this.bs.subscribe('setLinkedMDX:' + this.widget.name, (mdx: string) => this.onSetLinkedMdx(null, mdx));
+
+                // When setting link for edited widget, refresh target
+                // to be sure that edited widget will receive mdx
+               /* if (this.widget.edKey) {
+                    this.bs.broadcast('refresh:' + this.widget.dataLink);
+                }*/
             }
         }
         if (this.hasDependents()) {
@@ -525,24 +586,63 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         });
     } */
 
-    getDataProp(name: string): IWidgetDataProperties|undefined {
+    getDataProp(name: string): IWidgetDataProperties | undefined {
         if (!this.widget.dataProperties) {
             return;
         }
         return this.widget.dataProperties.find(pr => pr.name === name);
     }
 
-    getDataPropValue(name: string): string|undefined {
+    getDataPropByDataValue(dataValue: string): IWidgetDataProperties | undefined {
+        if (!this.widget.dataProperties) {
+            return;
+        }
+        const dv = dataValue.split('/');
+        return this.widget.dataProperties.find(pr => {
+            const p = pr.dataValue?.toString().split('/');
+            return dv.some(d => p.includes(d));
+            //  pr.dataValue === dataValue;
+        });
+    }
+
+    getDataPropValue(name: string): string | undefined {
         const prop = this.getDataProp(name);
         if (prop && prop.dataValue !== null && prop.dataValue !== undefined) {
             return prop.dataValue.toString();
         }
     }
 
+    protected getFormat(index: number, mdxResult: any, prop: IWidgetDataProperties) {
+        let fmt = '';
+        if (this.widget?.format) {
+            fmt = this.widget.format;
+        }
+        if (mdxResult.Cols[0].tuples[index].format) {
+            fmt = mdxResult.Cols[0].tuples[index].format;
+        }
+        if (prop?.format) {
+            fmt = prop?.format;
+        }
+        return fmt;
+    }
+
+    protected getDataValue(index: number, mdxResult: any, prop: IWidgetDataProperties) {
+        // Format value
+        let v = mdxResult.Data[index];
+        const fmt = this.getFormat(index, mdxResult, prop);
+        if (fmt) {
+            v = numeral(v).format(fmt);
+        }
+        return v;
+    }
+
     private getOverride(): IWidgetOverride {
         let t = this.baseType;
         if (t === 'lineChartMarkers') {
             t = 'lineChart';
+        }
+        if (t === 'regular') {
+            t = 'scoreCard';
         }
         return this.widget?.overrides?.find(o => o._type === t);
     }
@@ -554,13 +654,13 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         if (!this.widget.controls || this.widget.controls.length === 0) {
             return;
         }
-        const stdList = ['chooserowspec', 'choosedatasource', 'choosecharttype', 'applyfilter',
+        const stdList = ['chooserowspec', 'setrowspec', 'choosedatasource', 'choosecharttype', 'applyfilter',
             'setfilter', 'refresh', 'reloaddashboard', 'showlisting', 'showgeolisting',
             'showbreakdown', 'setdatasource', 'applyvariable', 'setrowcount',
             'setrowsort', 'setcolumncount', 'setcolumnsort', 'choosecolumnspec'];
 
         /*var stdList = ['applyfilter', 'setfilter', 'refresh', 'reloaddashboard', 'setdatasource',
-            'applyvariable', 'setrowspec', 'setcolumnspec',
+            'applyvariable', 'setcolumnspec',
             'choosecolumnspec', 'viewdashboard', 'navigate',
             'newwindow', 'setrowcount', 'setrowsort', 'setcolumncount', 'setcolumnsort', 'newwindow'];*/
         const actions = this.widget.controls.filter((el) => {
@@ -579,13 +679,13 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
     /**
      * Will setup datasource chooser. If widget has control chooseDataSource
      */
-    setupChoseDataSource() {
+    async setupChoseDataSource() {
         if (!this.widget) {
             return;
         }
 
         const filterChoosers = (el) => {
-            return el.action === 'chooseDataSource' || el.action === 'chooseRowSpec' || el.action === 'chooseColumnSpec';
+            return el.action === 'chooseDataSource' || el.action === 'chooseRowSpec' || el.action === 'setRowSpec' || el.action === 'chooseColumnSpec';
         };
 
         const isEmptyWidget = this.widget.type === 'mdx2json.emptyportlet';
@@ -617,13 +717,28 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         this.hasDatasourceChoser = true;
         this.widget.dsItems = [];
         for (let i = 0; i < choosers.length; i++) {
+            const list = choosers[i].valueList;
+            const display = choosers[i].displayList;
+            let listData = null;
             let prop = choosers[i].targetProperty;
             if (!prop) {
-                continue;
+                if (!list || !display) {
+                    continue;
+                } else {
+                    listData = {};
+                    const values = list.split(',');
+                    display.split(',').forEach((d, idx) => {
+                        listData[d] = values[idx];
+                    });
+                }
+            } else {
+                if (prop.toLowerCase().slice(-9) === '.termlist') {
+                    prop = prop.slice(0, -9);
+                }
+                if (prop.toLowerCase().slice(-5) === '.term') {
+                    prop = prop.slice(0, -5);
+                }
             }
-            const a = prop.split('.');
-            a.pop();
-            prop = a.join('.');
             const item = {
                 action: choosers[i].action,
                 label: choosers[i].label || this.i18n.get('dataSource'),
@@ -634,38 +749,43 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
                 field: 'select'
             };
             this.widget.dsItems.push(item);
-            this.ds.getTermList(prop).then(data => {
-                if (data && typeof data === 'object') {
-                    for (const prop in data) {
-                        if (data[prop] === this.widget.dataSource) {
-                            this.widget.dsSelected = prop;
-                        }
+            let data = null;
+            if (prop) {
+                data = await this.ds.getTermList(prop);
+            } else {
+                data = listData;
+            }
+
+            if (data && typeof data === 'object') {
+                for (const p in data) {
+                    if (data[p] === this.widget.dataSource) {
+                        this.widget.dsSelected = p;
                     }
-                    item.labels = [];
-                    item.values = [];
-                    if (item.control.action === 'chooseRowSpec') {
-                        item.labels.push('');
-                        item.values.push('');
-                    }
-                    for (const k in data) {
-                        item.labels.push(k);
-                        item.values.push(data[k]);
-                    }
-                    // Set selection to first item
-                    let selIdx = -1;
-                    if (this.customDataSource) {
-                        selIdx = item.values.findIndex(v => v === this.customDataSource);
-                    } else {
-                        selIdx = item.values.findIndex(v => v.split('/').pop() === item.dsSelected);
-                    }
-                    if (selIdx === -1) {
-                        item.dsSelected = item.labels[0];
-                    } else {
-                        item.dsSelected = item.labels[selIdx];
-                    }
-                    this.parent?.filters?.cd.detectChanges();
                 }
-            });
+                item.labels = [];
+                item.values = [];
+                if (item.control.action === 'chooseRowSpec' || item.control.action === 'setRowSpec') {
+                    item.labels.push('');
+                    item.values.push('');
+                }
+                for (const k in data) {
+                    item.labels.push(k);
+                    item.values.push(data[k]);
+                }
+                // Set selection to first item
+                let selIdx = -1;
+                if (this.customDataSource) {
+                    selIdx = item.values.findIndex(v => v === this.customDataSource);
+                } else {
+                    selIdx = item.values.findIndex(v => v.split('/').pop() === item.dsSelected);
+                }
+                if (selIdx === -1) {
+                    item.dsSelected = item.labels[0];
+                } else {
+                    item.dsSelected = item.labels[selIdx];
+                }
+                this.parent?.filters?.cd.detectChanges();
+            }
         }
     }
 
@@ -709,7 +829,11 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         if (col.length === 0) {
             return;
         }
-        const idx = data.Cols[0].tuples.indexOf(col[0]);
+        let idx = data.Cols[0].tuples.indexOf(col[0]);
+        const oIdx = data.Cols[0].tuples[idx].originalIndex;
+        if (oIdx !== undefined) {
+            idx = oIdx;
+        }
         let v = data.Data[dataIndex + idx];
         if (fmt) {
             v = this.formatNumber(v, fmt);
@@ -734,7 +858,13 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
             return;
         }
         for (let i = 0; i < this.drillFilterWidgets.length; i++) {
-            this.bs.broadcast('drillFilter:' + this.drillFilterWidgets[i], {path: '', drills: []});
+            if (!this.drillFilterWidgets[i]) {
+                continue;
+            }
+            const widgets = this.drillFilterWidgets[i].split(',');
+            widgets.forEach(w => {
+                this.bs.broadcast('drillFilter:' + w, {path: '', drills: []});
+            });
         }
     }
 
@@ -749,8 +879,15 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         }
         this.widget.clickFilterActive = !!path;
         for (i = 0; i < this.drillFilterWidgets.length; i++) {
-            this.bs.broadcast('drillFilter:' + this.drillFilterWidgets[i], {path, drills: dr});
+            if (!this.drillFilterWidgets[i]) {
+                continue;
+            }
+            const widgets = this.drillFilterWidgets[i].split(',');
+            widgets.forEach(w => {
+                this.bs.broadcast('drillFilter:' + w, {path, drills: dr});
+            });
         }
+        this.parent?.header?.cd.detectChanges();
     }
 
     onDrillFilter(path: string, drills: string[]) {
@@ -846,9 +983,8 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         const a = action.action.toLowerCase();
 
         if (a === 'viewdashboard') {
-           this.navigateDashboard(action.targetProperty);
-        } else
-        if (a === 'navigate') {
+            this.navigateDashboard(action.targetProperty);
+        } else if (a === 'navigate') {
             this.actionNavigate(action);
         } else if (a === 'newwindow') {
             this.actionNavigate(action, true);
@@ -895,8 +1031,10 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         delete this.widget.pivotMdx;
         delete this.widget.pivotData;
         // TODO: this.widget.backButton = this.drills.length !== 0;
-        this.widget.type = this.widget.oldType;
-        this.createWidgetComponent();
+        if (this.widget?.oldType) {
+            this.widget.type = this.widget.oldType;
+            this.createWidgetComponent();
+        }
     }
 
     changeWidgetType(newType: string) {
@@ -907,14 +1045,24 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
 
 
     getDrillthroughMdx(mdx: string) {
-        const m = mdx.toLowerCase();
+        let m = mdx.toLowerCase();
+
+        //TODO: check if this needed: Remove %MDX(...) to ignore in processing mdx
+        // (AAA(?:( ?!%MDX()[^)]+))BBB)
+        // m = m.replace(/(?<=\%MDX\().*?(?=\))/ig, '');
+        /* const matches = m.match(/(?<=\%MDX\().*?(?=\))/ig);
+        const indices = matches.map(ma => m.indexOf(ma));
+        matches.forEach(ma => {
+            m = m.replace(ma, '');
+        });*/
+
         let selTxt = 'select non empty';
-        let idx1 = m.indexOf(selTxt);
+        let idx1 = m.lastIndexOf(selTxt);
         if (idx1 === -1) {
             selTxt = 'select';
-            idx1 = m.indexOf(selTxt);
+            idx1 = m.lastIndexOf(selTxt);
         }
-        const idx2 = m.indexOf('from');
+        const idx2 = m.lastIndexOf('from');
         if (idx1 === -1) {
             console.warn('Can\'t find \'select\' in MDX during calculation drillthrough mdx');
             return;
@@ -990,6 +1138,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
                         this.widget.isDrillthrough = true;
                         this.widget.backButton = true;
                         this.widget.pivotData = data2;
+                        this._currentData = data2;
                         this.displayAsPivot(ddMdx);
                     })
                     .catch(e => {
@@ -1014,6 +1163,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
                     if (!data) {
                         return;
                     }
+
                     if (this.chartConfig) {
                         this.chartConfig.loading = false;
                     }
@@ -1038,6 +1188,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
                     this.retrieveData(data);
                     this.updateLocationDrillParameters();
                     this.parent?.header?.cd.detectChanges();
+                    this._currentData = data;
                     if (autoDrillSuccess) {
                         autoDrillSuccess();
                     }
@@ -1050,7 +1201,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         });
     }
 
-    doDrillthrough(path?: string, name?: string, category?: string, noDrillCallback?: () => void, preventDrillFilter = false, autoDrillSuccess?: () => void, drillError?: (e) => void) {
+    doDrillthrough(path?: string | string[], name?: string, category?: string, noDrillCallback?: () => void, preventDrillFilter = false, autoDrillSuccess?: () => void, drillError?: (e) => void) {
         return new Promise((res: any, rej) => {
             if (!this.canDoDrillthrough) {
                 res();
@@ -1060,7 +1211,13 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
             this.clearError();
             const old = this.drills.slice();
             if (path) {
-                this.drills.push({path, name, category});
+                if (Array.isArray(path)) {
+                    path.forEach(p => {
+                        this.drills.push({path: p, name, category});
+                    });
+                } else {
+                    this.drills.push({path, name, category});
+                }
             } else {
                 this.drills.pop();
             }
@@ -1072,21 +1229,21 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
             const ddMdx = this.getDrillthroughMdx(mdx);
 
             this.ds.execMDX(ddMdx)
-                    // .error(this._onRequestError)
-                    .then((data2: any) => {
-                        if (!data2 || !data2.children || data2.children.length === 0) {
-                            return;
-                        }
-                        this.widget.isDrillthrough = true;
-                        this.widget.backButton = true;
-                        this.widget.pivotData = data2;
-                        this.displayAsPivot(ddMdx);
-                    })
-                    .catch(e => {
-                        if (drillError) {
-                            drillError(e);
-                        }
-                    })
+                // .error(this._onRequestError)
+                .then((data2: any) => {
+                    if (!data2 || !data2.children || data2.children.length === 0) {
+                        return;
+                    }
+                    this.widget.isDrillthrough = true;
+                    this.widget.backButton = true;
+                    this.widget.pivotData = data2;
+                    this.displayAsPivot(ddMdx);
+                })
+                .catch(e => {
+                    if (drillError) {
+                        drillError(e);
+                    }
+                })
                 .finally(() => {
                     this.hideLoading();
                 });
@@ -1212,9 +1369,18 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         }
 
         for (i = 0; i < drills.length; i++) {
-            if (drills[i].path) {
-                mdx += ' %FILTER ' + drills[i].path;
-            }
+          /*  if (Array.isArray(drills[i].path)) {
+                drills[i].path.forEach(p => {
+                    if (!p) {
+                        return;
+                    }
+                    mdx += ' %FILTER ' + p;
+                });
+            } else {*/
+                if (drills[i].path) {
+                    mdx += ' %FILTER ' + drills[i].path;
+                }
+            //}
         }
 
 
@@ -1297,13 +1463,15 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
      * Change current row spec
      * @param {string} path Path
      */
-    changeRowSpec(path) {
+    changeRowSpec(path, refreshData = true) {
         if (!path) {
             this.customRowSpec = '';
         } else {
             this.customRowSpec = path;
         }
-        this.requestData();
+        if (refreshData) {
+            this.requestData();
+        }
     }
 
     /**
@@ -1338,7 +1506,8 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
                 this.changeDataSource(val, item);
                 break;
             case 'chooseRowSpec':
-                this.changeRowSpec(val);
+            case 'setRowSpec':
+                this.changeRowSpec(val, item.action !== 'setRowSpec');
                 break;
             case 'chooseColumnSpec':
                 this.changeColumnSpec(val, item);
@@ -1376,7 +1545,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         if (!this.widget) {
             return false;
         }
-        return this.widget.Link;
+        return this.widget.dataLink;
     }
 
     /**
@@ -1398,9 +1567,9 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         const ds = this.customDataSource || this.widget.dataSource;
         // Check if this KPI
         if (this.widget.kpitype) {
-            if (ds) {
-                this.ds.getKPIData(ds).then(data => this._retriveKPI(data));
-            }
+            /* if (ds) {
+                 this.ds.getKPIData(ds).then(data => this._retriveKPI(data));
+             }*/
         } else {
             if (ds) {
                 this.ds.getPivotData(ds)
@@ -1412,7 +1581,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         }
     }
 
-    convertKPIToMDXData(d) {
+    convertKPIToMDXData(d, isDrillthrough = false) {
         const orig = d;
         d = d.Result;
         const res = {Info: {cubeName: orig.Info.KpiName}, Cols: [], Data: []};
@@ -1435,10 +1604,14 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
             });
         }
         res.Cols.push({tuples: ser});
+
+        if (!isDrillthrough) {
+            this.removeColsThatNotExistInDataProperties(res);
+        }
         return res;
     }
 
-    retrieveData(data: any) {
+    retrieveData(data: any, kpiData?: IKPIData) {
         this.hideLoading();
         if (data.Error) {
             this.showError(data.Error);
@@ -1450,18 +1623,18 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
      * Callback for retrieving KPI data
      * @param {object} data KPI data
      */
-    _retriveKPI(data) {
+    _retriveKPI(data, isDrillthrough = false) {
         if (!this) {
             return;
         }
         this._kpiData = data;
         // this._desc.kpiName = data.Info;
         if (this.lpt) {
-            this.lpt.dataController.setData(this.lpt.dataSource._convert(this.convertKPIToMDXData(data)));
+            this.lpt.dataController.setData(this.lpt.dataSource._convert(this.convertKPIToMDXData(data, isDrillthrough)));
             // this.lpt.refresh();
             return;
         }
-        this.retrieveData(this.convertKPIToMDXData(data));
+        this.retrieveData(this.convertKPIToMDXData(data, isDrillthrough), data);
         // console.log(data);
     }
 
@@ -1477,6 +1650,30 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
     }
 
     public onResize() {
+    }
+
+    protected _requestKPIData(drillthroughFilter?) {
+        const ds = this.customDataSource || this.widget.dataSource;
+        if (!ds) {
+            return;
+        }
+        const filters = this.fs.getWidgetFilters(this.widget.name)?.filter(f => !!f.value).map(f => {
+            const values = (f.value.toString()).split('|');
+            return values.map(v => {
+                return {
+                    name: f.targetProperty,
+                    value: v
+                };
+            });
+        }).flat();
+        if (drillthroughFilter) {
+            filters.push(...drillthroughFilter);
+        }
+        this.showLoading();
+        return this.ds.getKPIData(ds, filters, !!drillthroughFilter).then(data => this._retriveKPI(data, !!drillthroughFilter))
+            .finally(() => {
+                this.hideLoading();
+            });
     }
 
     /**
@@ -1501,14 +1698,12 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         // this.drillLevel = 0;
         // this.drills = [];
         if (this.widget.kpitype) {
-            const ds = this.customDataSource || this.widget.dataSource;
-            if (ds) {
-                this.ds.getKPIData(ds).then(data => this._retriveKPI(data));
-            }
+            this._requestKPIData();
             return;
         }
         const mdx = this.getMDX();
         if (!mdx) {
+            this.isSpinner = false;
             return;
         }
         this.clearError();
@@ -1521,17 +1716,19 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
                 this.pivotVariables = d;
             })
                 .catch(e => {
-                   this.showError(e.message);
+                    this.showError(e.message);
                 });
         }
 
         this.showLoading();
         this.ds.execMDX(mdx).catch((e) => this._onRequestError(e)).then((data) => {
+            this.removeColsThatNotExistInDataProperties(data);
             this._currentData = data;
             this.retrieveData(data);
         })
             .finally(() => {
                 this.hideLoading();
+                // this.cd.detectChanges();
             });
     }
 
@@ -1556,7 +1753,8 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         }
         let msg = this.i18n.get('errWidgetRequest');
         switch (status) {
-            case 401: case 403:
+            case 401:
+            case 403:
                 msg = this.i18n.get('errUnauth');
                 break;
             case 404:
@@ -1604,11 +1802,11 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         return mdx;
     }
 
-    replaceMDXVariables(mdx) {
+    replaceMDXVariables(mdx, filters) {
         if (mdx.indexOf('$') === -1) {
             return mdx;
         }
-        const vars = this.vs.items;
+        const vars = filters.filter(f => f.action === 'applyVariable'); // this.vs.items;
 
         // Get variables from url parameters for shared widgets
         if (this.widget.shared) {
@@ -1693,6 +1891,14 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         return mdx;
     }
 
+    dateToHorolog(date: string) {
+        const start = new Date('12/31/1840Z');
+        const d = this.us.toDate(date);
+
+        const diff = d.getTime() - start.getTime();
+        return Math.ceil(diff / (1000 * 3600 * 24));
+    }
+
     /**
      * Return widget MDX depending on active filters
      */
@@ -1703,16 +1909,22 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         let path;
         let str;
 
-        // If widget is linked, use linkedMDX
-        // if (this.isLinked() && !this.widget.shared && !this.widget.inline) {
-        if (this.isLinked()) {
-            str = this.replaceMDXVariables(this.linkedMdx || this.widget.linkedMdx || '');
-            str = this.checkColSpec(str);
-            return this.applyDrill(str);
+        // No mdx for KPI widgets
+        if (this.widget.kpitype) {
+            return '';
         }
 
         // Check for active filters on widget
         const filters = this.fs.getWidgetFilters(this.widget.name);
+
+        // If widget is linked, use linkedMDX
+        // if (this.isLinked() && !this.widget.shared && !this.widget.inline) {
+        if (this.isLinked()) {
+            str = this.replaceMDXVariables(this.linkedMdx || this.widget.linkedMdx || '', filters);
+            str = this.checkColSpec(str);
+            return this.applyDrill(str);
+        }
+
 
         // Add filter for drillFilter feature
         if (this.drillFilter) {
@@ -1731,9 +1943,13 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
                 break;
             }
         }
-        let mdx = this.replaceMDXVariables(this.widget.mdx);
+        let mdx = this.replaceMDXVariables(this.widget.mdx, filters);
         if (!mdx) {
-            console.warn('Widget without MDX');
+            // Don't show message for new or edited widget
+            if (!this.widget.edKey) {
+                this.showError('Widget without MDX');
+            }
+            return '';
         }
 
         if (this.customRowSpec) {
@@ -1765,14 +1981,24 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
                 continue;
             }
             path = flt.targetProperty;
-            const v1 = flt.values[flt.fromIdx].path;
-            const v2 = flt.values[flt.toIdx].path;
+            let v1 = flt.values[flt.fromIdx].path;
+            let v2 = flt.values[flt.toIdx].path;
+            if (flt.isDate) {
+                v1 = this.dateToHorolog(v1.replace('&[', '').replace(']', ''));
+                v2 = this.dateToHorolog(v2.replace('&[', '').replace(']', ''));
+                v1 = `&[${v1}]`;
+                v2 = `&[${v2}]`;
+            }
             mdx += ' %FILTER %OR(' + path + '.' + v1 + ':' + v2 + ')';
         }
 
         // Find other filters
         for (i = 0; i < filters.length; i++) {
             flt = filters[i];
+            // Skip all apply variable filters
+            if (flt.action === 'applyVariable') {
+                continue;
+            }
             if (flt.value !== '' && !flt.isInterval) {
                 let bracket = '{';
                 if (flt.isExclude) {
@@ -1786,10 +2012,15 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
                     mdx += ' %FILTER %OR(' + bracket;
                 }
                 for (let j = 0; j < values.length; j++) {
+                    let v = values[j];
+                    if (flt.isDate) {
+                        v = this.dateToHorolog(v.replace('&[', '').replace(']', ''));
+                        v = `&[${v}]`;
+                    }
                     if (flt.isExclude) {
-                        mdx += path + '.' + values[j] + '.%NOT,';
+                        mdx += path + '.' + v + '.%NOT,';
                     } else {
-                        mdx += path + '.' + values[j] + ',';
+                        mdx += path + '.' + v + ',';
                     }
                 }
                 bracket = '}';
@@ -1841,6 +2072,9 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
     public onHeaderButton(bt: IButtonToggle) {
         if (bt.name === 'expand') {
             this.widget.isExpanded = bt.state;
+            this.widget.dragEnabled = this.widget.isExpanded;
+            // this.parent..api.optionsChanged();
+
             setTimeout(() => {
                 this.onResize();
             }, 0);
@@ -1899,7 +2133,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
             [],
             {
                 relativeTo: this.route,
-                queryParams: { drilldown: drills },
+                queryParams: {drilldown: drills},
                 queryParamsHandling: 'merge'
             });
 
@@ -1922,18 +2156,18 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         }
     }
 
-   /* replaceUrlParam(url: string, paramName: string, paramValue: string)
-    {
-        if (paramValue === null) {
-            paramValue = '';
-        }
-        const pattern = new RegExp('\\b(' + paramName + '=).*?(&|#|$)');
-        if (url.search(pattern) >= 0) {
-            return url.replace(pattern, '$1' + paramValue + '$2');
-        }
-        url = url.replace(/[?#]$/, '');
-        return url + (url.indexOf('?') > 0 ? '&' : '?') + paramName + '=' + paramValue;
-    }*/
+    /* replaceUrlParam(url: string, paramName: string, paramValue: string)
+     {
+         if (paramValue === null) {
+             paramValue = '';
+         }
+         const pattern = new RegExp('\\b(' + paramName + '=).*?(&|#|$)');
+         if (url.search(pattern) >= 0) {
+             return url.replace(pattern, '$1' + paramValue + '$2');
+         }
+         url = url.replace(/[?#]$/, '');
+         return url + (url.indexOf('?') > 0 ? '&' : '?') + paramName + '=' + paramValue;
+     }*/
 
     getDrillsAsParameter(): string {
         const drills = this.drills;
@@ -1952,7 +2186,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
             [],
             {
                 relativeTo: this.route,
-                queryParams: { datasource: this.customDataSource },
+                queryParams: {datasource: this.customDataSource},
                 queryParamsHandling: 'merge'
             });
 
@@ -1970,8 +2204,7 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
             if ((window.parent as any).dsw?.onDataSource) {
                 (window.parent as any).dsw.onDataSource(event);
             }
-        }
-        catch (e) {
+        } catch (e) {
             console.error(e);
         }
     }
@@ -1999,6 +2232,12 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         if (!ctrl || !ctrl._value) {
             return mdx;
         }
+        // Check if there is already rowcout HEAD keyword in mdx
+        const pattern = /(HEAD\(.*),(.*)(\))/i;
+        if (mdx.match(pattern)) {
+            return mdx.replace(pattern, `$1,${ctrl._value}$3`);
+        }
+
         const m = mdx.match(/ON 0,(.*)ON 1/);
         let part = m[1];
         if (!part) {
@@ -2008,5 +2247,79 @@ export abstract class BaseWidget implements OnInit, OnDestroy {
         part = part.replace('NON EMPTY', '');
         const newPart = ' HEAD(' + part.trim() + `, ${ctrl._value}) `;
         return mdx.replace(part, newPart);
+    }
+
+    private extendPropsWithOverrides() {
+        if (!this.override) {
+            return;
+        }
+        this.override.columns?.forEach((c, idx) => {
+            const prop = this.widget.dataProperties[idx];// .find(p => p.dataValue === c.dataValue);
+            if (!prop) {
+                return;
+            }
+            if (c.showAs) {
+                prop.showAs = c.showAs;
+            }
+            if (c.format) {
+                prop.format = c.format;
+            }
+            if (c.display) {
+                prop.display = c.display;
+            }
+            if (c.label) {
+                prop.label = c.label;
+            }
+            if (c.summary) {
+                prop.summary = c.summary;
+            }
+            if (c.rangeLower) {
+                prop.rangeLower = c.rangeLower;
+            }
+            if (c.rangeUpper) {
+                prop.rangeUpper = c.rangeUpper;
+            }
+            if (c.targetValue) {
+                prop.targetValue = c.targetValue;
+            }
+            if (c.thresholdLower) {
+                prop.thresholdLower = c.thresholdLower;
+            }
+            if (c.thresholdUpper) {
+                prop.thresholdUpper = c.thresholdUpper;
+            }
+        });
+    }
+
+    protected removeColsThatNotExistInDataProperties(data: any) {
+        if (this.preventColFilteringBasedOnDataProperties) {
+            return;
+        }
+        if (!this.widget.dataProperties?.length) {
+            return;
+        }
+        if (!data?.Cols[0]?.tuples?.length) {
+            return;
+        }
+        const indices = [];
+        const colCount = data.Cols[0]?.tuples?.length || 0;
+        if (!colCount) {
+            return;
+        }
+        data.Cols[0].tuples = data?.Cols[0]?.tuples.filter((t, idx) => {
+            const dim = t.dimension.toString().split('/');
+            const exists = this.widget.dataProperties.some(p => {
+                //p.dataValue === t.dimension
+                const dv = p.dataValue.toString().split('/');
+                return dv.some(v => dim.includes(v));
+            });
+            if (!exists) {
+                indices.push(idx);
+            }
+            return exists;
+        });
+        data.Data = data.Data?.filter((d, idx) => {
+            return !indices.some(i => idx % colCount === i);
+        });
     }
 }

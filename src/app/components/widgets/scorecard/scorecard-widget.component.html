@@ -2,7 +2,7 @@
     <thead>
     <tr>
         <!-- Header cells -->
-        <td *ngFor="let p of props">
+        <td *ngFor="let p of props" [class.plotbox-cell]="p.display === 'plotBox'">
             <ng-container [ngSwitch]="p.display">
 
                 <!-- Plot box -->
@@ -39,10 +39,11 @@
 
                 <div *ngSwitchCase="'plotBox'" class="box" [style.background-color]="color"
                      [style.width.%]="data[ridx][pidx]">
+                     <span class="target" *ngIf="targets[ridx][pidx]" [style.left.%]="targets[ridx][pidx]"></span>
                 </div>
 
                 <div *ngSwitchDefault>
-                    {{data[ridx][pidx]}}
+                    {{data[ridx]? data[ridx][pidx] : ''}}
                 </div>
             </ng-container>
         </td>

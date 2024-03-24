@@ -2,14 +2,18 @@ import {Injectable} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {dsw} from '../../environments/dsw';
-import {Observable, of} from 'rxjs';
+import {firstValueFrom, Observable, of} from 'rxjs';
 import {catchError, tap} from 'rxjs/operators';
 import {ErrorService} from './error.service';
 import {CURRENT_NAMESPACE} from './namespace.service';
+import {IWidgetInfo} from "../components/widgets/base-widget.class";
 
 export let MDX2JSON = 'MDX2JSON';
 export let NAMESPACE = 'MDX2JSON';
-
+export interface IKPIFilter {
+    name: string; // targetProperty
+    value: string;
+}
 // Tile info object
 export interface ITileInfo {
     isFolder: boolean;
@@ -51,20 +55,23 @@ export class DataService {
         if (redirect) {
             prefix = redirect;
         }
-        return prefix + '/' + MDX2JSON + '/';
+        return prefix + '../' + MDX2JSON + '/';
     }
 
     public dashboardList = new Map<string, string>();
 
-    private withCredentialsHeaders = {withCredentials: true};
-    private withoutCredentialsHeaders = {};
+    private withCredentialsHeaders = {withCredentials: true, headers: new HttpHeaders({'Accept-Language': 'en-US' })};
+    private withoutCredentialsHeaders = {
+        headers: new HttpHeaders({'Accept-Language': 'en-US' })
+    };
     private withCredentialsTimeoutHeaders = {
         withCredentials: true,
-        headers: new HttpHeaders({timeout: dsw.const.timeout.toString()})
+        headers: new HttpHeaders({timeout: dsw.const.timeout.toString(), 'Accept-Language': 'en-US' })
     };
     private withoutCredentialsTimeoutHeaders = {
         headers: new HttpHeaders({
-            timeout: dsw.const.timeout.toString()
+            timeout: dsw.const.timeout.toString(),
+            'Accept-Language': 'en-US'
         })
     };
     public username = '';
@@ -140,10 +147,10 @@ export class DataService {
      * @param {string} name Name of KPI
      * @returns {object} $http promise
      */
-    getKPIData(name: string) {
+    getKPIData(name: string, filters?: IKPIFilter[], isDrillthrough = false) {
         return this.http.post(
             this.url + 'KPI?Namespace=' + CURRENT_NAMESPACE,
-            {KPI: name},
+            {KPI: name, FILTERS: filters, Drillthrough: isDrillthrough ? 1 : undefined},
             this.withCredentialsTimeoutHeaders
         ).toPromise();
     }
@@ -155,11 +162,11 @@ export class DataService {
      */
     getPivotData(name: string
     ) {
-        return this.http.post(
+        return firstValueFrom<any>(this.http.post(
             this.url + 'DataSource?Namespace=' + CURRENT_NAMESPACE,
             {DataSource: name},
             this.withCredentialsTimeoutHeaders
-        ).toPromise();
+        ));
     }
 
     /**
@@ -210,11 +217,11 @@ export class DataService {
      * Requests widgets list
      */
     getWidgets(dashboard) {
-        return this.http.post(
+        return firstValueFrom<any>(this.http.post(
             this.url + 'Dashboard?Namespace=' + CURRENT_NAMESPACE,
             {Dashboard: dashboard},
             {...this.withCredentialsTimeoutHeaders, ...{'Content-Type': 'application/json'}}
-        ).pipe(this.handleError());
+        ).pipe(this.handleError()));
     }
 
     /**
@@ -223,11 +230,15 @@ export class DataService {
     handleError() {
         return catchError(err => {
             if (err.status === 401 || err.status === 403) {
-                void this.router.navigateByUrl('/login?from=' + this.router.url);
+                void this.router.navigateByUrl('/login?from=' + encodeURIComponent(this.router.url));
                 return of();
             }
-            this.es.show(err.message);
-            return of([]);
+            let msg = err.message;
+            if (err?.error?.summary) {
+                msg = err?.error?.summary;
+            }
+            this.es.show(msg);
+            throw err;
         });
     }
 
@@ -478,4 +489,27 @@ export class DataService {
         ).toPromise();
     }
 
+    requestListOfDataSources(type: string) {
+        return firstValueFrom<any>(this.http.post(
+            this.url + `DataSourceList/${type}?Namespace=` + CURRENT_NAMESPACE,
+            {},
+            this.withCredentialsTimeoutHeaders
+        ));
+    }
+
+    async saveWidget(dashboard: string, data: Partial<IWidgetInfo>, key?: string) {
+        return firstValueFrom<any>(this.http.post(
+            this.url + 'saveWidget?Namespace=' + CURRENT_NAMESPACE,
+            {key: key || '', Dashboard: dashboard, WidgetData: data},
+            this.withCredentialsTimeoutHeaders
+        ).pipe(this.handleError()));
+    }
+
+    async deleteWidget(dashboard: string, key?: string) {
+        return firstValueFrom<any>(this.http.post(
+            this.url + 'deleteWidget?Namespace=' + CURRENT_NAMESPACE,
+            {key: key || '', Dashboard: dashboard},
+            this.withCredentialsTimeoutHeaders
+        ).pipe(this.handleError()));
+    }
 }

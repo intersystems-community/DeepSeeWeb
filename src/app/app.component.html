@@ -5,11 +5,12 @@
 </div>
 
 <!-- Modals -->
-<dsw-modal *ngFor="let modal of ms.modals | async" [data]="modal"></dsw-modal>
+<dsw-modal *ngFor="let modal of ms.modals | async" [data]="modal" [ngClass]="modal.class" ></dsw-modal>
 
 <!-- Error list -->
 <dsw-error
     *ngFor="let err of es.errors$ | async; let idx = index; trackBy:trackError"
-    [@toggleError]
+    [@toggleError]="!err.isLeft"
+    [@toggleErrorLeft]="err.isLeft"
     [error]="err">
 </dsw-error>

@@ -1,7 +1,7 @@
 <dsw-sidebar-actions (cancel)="onCancel()" (apply)="onApply()" >Settings</dsw-sidebar-actions>
 <div class="container">
     <label>{{'dashColumns' | i18n}}</label>
-    <input type="number" [(ngModel)]="model.colCount">
+    <dsw-input type="number" [(ngModel)]="model.colCount"></dsw-input>
 
     <label>{{'saveFilters' | i18n}}
         <input type="checkbox" [(ngModel)]="model.isSaveFilters">
@@ -17,7 +17,7 @@
 
 
     <div class="actions">
-        <button class="btn btn-gray" (click)="resetSettings()">{{'resetSettings' | i18n}}</button>
-        <button class="btn btn-gray" (click)="exportSettings()">{{'exportSettings' | i18n}}</button>
+        <button class="btn" (click)="resetSettings()">{{'resetSettings' | i18n}}</button>
+        <button class="btn" (click)="exportSettings()">{{'exportSettings' | i18n}}</button>
     </div>
 </div>

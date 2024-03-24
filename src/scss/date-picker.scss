@@ -1,0 +1,44 @@
+@import "variables";
+
+// Change selection color
+.air-datepicker-cell.-selected- {
+    --adp-background-color-selected-other-month: var(--cl-accent);
+    --adp-cell-background-color-selected: var(--cl-accent);
+    --adp-cell-background-color-in-range: var(--cl-hover);
+    --adp-cell-border-radius: 40px;
+}
+
+// Change font and color
+.air-datepicker {
+    --adp-color: #1C1D20;
+    font-family: $font;
+    --adp-color-current-date: var(--cl-accent);
+    --adp-width: 224px;
+}
+
+// Day names
+.air-datepicker-body--day-name {
+    --adp-day-name-color: var(--cl-widget-filter-txt);
+}
+
+// Day names background
+.air-datepicker-body--day-names {
+    background-color: #EBEBEA;
+    padding: 0;
+    margin: 0;
+    // margin-bottom: 4px;
+
+    padding-top: 6px;
+    padding-bottom: 6px;
+   /* padding-left: 4px;
+    padding-right: 4px;*/
+}
+
+.air-datepicker-body--cells.-days- {
+    /*padding-left: 4px;
+    padding-right: 4px;*/
+}
+
+.air-datepicker--content {
+    padding: 0;
+}

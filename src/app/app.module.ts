@@ -1,5 +1,5 @@
 import {BrowserModule} from '@angular/platform-browser';
-import {APP_INITIALIZER, CompilerFactory, NgModule} from '@angular/core';
+import {APP_INITIALIZER, CompilerFactory, InjectionToken, NgModule} from '@angular/core';
 
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
@@ -65,10 +65,27 @@ import Heatmap from 'highcharts/modules/heatmap';
 // Load the exporting module.
 import Exporting from 'highcharts/modules/exporting';
 import Map from 'highcharts/modules/map';
+import SolidGauge from 'highcharts/modules/solid-gauge';
+import { ShareDashboardComponent } from './components/ui/share-dashboard/share-dashboard/share-dashboard.component';
+import {WSmileyComponent} from "./components/widgets/smiley/smiley.component";
+import {WLightBarComponent} from "./components/widgets/light-bar/light-bar.component";
+import {WTrafficLightComponent} from "./components/widgets/traffic-light/traffic-light.component";
+import {DatePickerComponent} from "./components/ui/date-picker/date-picker.component";
+import {DateFilterComponent} from "./components/ui/date-filter/date-filter.component";
+import {TooltipDirective} from "./directives/tooltip.directive";
+import {WidgetEditorComponent} from "./components/editor/widget-editor/widget-editor.component";
+import {DataSourceSelectorDialog} from "./components/editor/datasource-selector-dialog/datasource-selector-dialog";
+import {TabsComponent} from "./components/ui/tabs/tabs.component";
+import {TypeAndDatasourceComponent} from "./components/editor/type-and-datasource/type-and-datasource.component";
+import { InputComponent } from './components/ui/input/input/input.component';
+import { SearchInputComponent } from './components/ui/search/search-input/search-input.component';
+import {NgSelectModule} from "@ng-select/ng-select";
+import {DashboardEditingClass} from "./components/screens/dashboard-screen/dashboard-editing.class";
 
 More(Highcharts);
 Tree(Highcharts);
 Heatmap(Highcharts);
+SolidGauge(Highcharts);
 // Initialize exporting module.
 Exporting(Highcharts);
 Map(Highcharts);
@@ -84,6 +101,7 @@ export function createCompiler(compilerFactory: CompilerFactory) {
         LoginScreenComponent,
         FocusNextDirective,
         AutoFocusDirective,
+        TooltipDirective,
         FolderScreenComponent,
         HeaderComponent,
         SidebarComponent,
@@ -123,12 +141,26 @@ export function createCompiler(compilerFactory: CompilerFactory) {
         AppSettingsComponent,
         MenuSettingsComponent,
         ThemeSettingsComponent,
-        ScorecardWidgetComponent
+        ScorecardWidgetComponent,
+        ShareDashboardComponent,
+        WSmileyComponent,
+        WLightBarComponent,
+        WTrafficLightComponent,
+        DatePickerComponent,
+        DateFilterComponent,
+        WidgetEditorComponent,
+        DataSourceSelectorDialog,
+        TabsComponent,
+        TypeAndDatasourceComponent,
+        InputComponent,
+        SearchInputComponent,
+        //DashboardEditingClass
     ],
     imports: [
         BrowserAnimationsModule,
         GridsterModule,
         BrowserModule,
+        NgSelectModule,
         FormsModule,
         ReactiveFormsModule,
         AppRoutingModule,
@@ -145,7 +177,6 @@ export function createCompiler(compilerFactory: CompilerFactory) {
         {provide: COMPILER_OPTIONS, useValue: {}, multi: true},
         {provide: CompilerFactory, useClass: JitCompilerFactory, deps: [COMPILER_OPTIONS]},
         {provide: Compiler, useFactory: createCompiler, deps: [CompilerFactory]},*/
-
         {
             provide: APP_INITIALIZER,
             useFactory: (start: StartupService) => () => start.initialize(),

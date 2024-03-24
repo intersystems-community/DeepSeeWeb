@@ -1,0 +1,100 @@
+@import "src/scss/variables";
+
+:host {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding-bottom: 20px;
+    transition: transform 2s linear;
+    min-width: var(--sidebar-width);
+}
+
+.container {
+    @include editor-scrollbar;
+    height: 100%;
+    // width: calc(100% - 20px);
+    overflow-y: auto;
+    padding-left: 20px;
+    flex: 1 1 100%;
+}
+
+// Label text style
+label {
+    display: flex;
+    justify-content: space-between;
+    font-family: $font;
+    color: var(--cl-sidebar-txt);
+    margin-top: 10px;
+    margin-bottom: 2px;
+    font-size: 14px;
+    width: calc(100% - 4px);
+}
+
+input {
+    margin-bottom: 4px;
+}
+
+.divider {
+    display: block;
+    width: 100%;
+    clear: both;
+}
+
+.btn-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: white;
+    padding: 10px;
+    color: #1A73E8;
+    font-size: 14px;
+    line-height: 16px;
+    border: 1px solid #EBEBEA;
+    border-radius: 4px;
+    width: 100%;
+    cursor: pointer;
+    transition: background-color 0.3s linear;
+
+    &:not(.disabled):hover {
+        background-color: rgba(26, 115, 232, 0.05);
+    }
+    &:not(.disabled):active {
+        transform: translate(0, 1px);
+    }
+}
+
+.headline {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.navigation {
+    margin-top: 20px;
+
+    & > .btn-section:not(:last-child) {
+        margin-bottom: 4px;
+    }
+
+    & > .headline {
+        margin-top: 20px;
+    }
+}
+
+.disabled {
+    cursor: default;
+    filter: grayscale(1);
+    opacity: 0.5;
+    //pointer-events: none;
+}
+
+.footer {
+    padding-left: 20px;
+
+    & > *:first-child {
+        margin-top: 20px;
+    }
+
+    & > button {
+        width: 100%;
+    }
+}

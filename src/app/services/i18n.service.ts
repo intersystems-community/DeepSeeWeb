@@ -98,7 +98,7 @@ const TRANSLATIONS = {
         dashboard: 'Dashboard',
         folder: 'Folder',
         signin: 'Sign in',
-        signout: 'Sign out',
+        signout: 'Logout',
         login: 'Login',
         signinOAuth: 'OAuth sign in',
         password: 'Password',
@@ -127,10 +127,13 @@ const TRANSLATIONS = {
         byRows: 'Display by rows',
         by2columns: 'Display by two columns',
         by3columns: 'Display by three columns',
+        by4columns: 'Display by four columns',
+        by5columns: 'Display by five columns',
+        by6columns: 'Display by six columns',
         print: 'Print...',
         fav: 'Favorites',
         options: 'Settings',
-        gotoDeepSee: 'DeepSee Zen',
+        gotoDeepSee: 'Iris BI',
         showLegend: 'Toggle legend',
         showPivot: 'Show as pivot table',
         back: 'Back',
@@ -162,8 +165,11 @@ const TRANSLATIONS = {
         errNoWidgets: 'No widgets received from server',
         errNoDashboards: 'No dashboards in this namespace',
         shortMonths: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-        changeColors: "Change colors",
-        fullscreen: "Toggle fullscreen"
+        changeColors: 'Change colors',
+        fullscreen: 'Toggle fullscreen',
+        showKPI: 'Show KPI',
+        openAnalyzer: 'Open analyzer',
+        addWidget: 'Add widget'
     },
     de: {
         settingsImported: 'Einstellungen wurden erfolgreich importiert!',
@@ -265,8 +271,10 @@ const TRANSLATIONS = {
         errNoWidgets: 'Keine Widgets vom Server',
         errNoDashboards: 'Keine Dashboards vorhanden',
         shortMonths: ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'],
-        changeColors: "Ändern Sie die Farben",
-        fullscreen: "Vollbild umschalten"
+        changeColors: 'Ändern Sie die Farben',
+        fullscreen: 'Vollbild umschalten',
+        showKPI: 'KPI anzeigen',
+        openAnalyzer: 'Analysator öffnen'
     },
     cs: {
         settingsImported: 'Nastavení bylo úspěšně importováno!',
@@ -365,8 +373,10 @@ const TRANSLATIONS = {
         errNoWidgets: 'Žádné přijaté widgety ze serveru',
         errNoDashboards: 'Žádné nástěnky v namespace',
         shortMonths: ['Leden', 'Únor', 'Březen', 'Duben', 'Květen', 'Červen', 'Červenec', 'Srpen', 'Září', 'Říjen', 'Listopad', 'Prosinec'],
-        changeColors: "Změnit barvy",
-        fullscreen: "Přepnout na celou obrazovku"
+        changeColors: 'Změnit barvy',
+        fullscreen: 'Přepnout na celou obrazovku',
+        showKPI: 'Zobrazit KPI',
+        openAnalyzer: 'Otevřete analyzátor'
     },
     ru: {
         settingsImported: 'Настройки были загружены успешно!',
@@ -436,7 +446,7 @@ const TRANSLATIONS = {
         print: 'Печать...',
         fav: 'Избраное',
         options: 'Настройки',
-        gotoDeepSee: 'DeepSee Zen',
+        gotoDeepSee: 'Iris BI',
         showLegend: 'Вкл/выкл легенду',
         showPivot: 'Показать как таблицу',
         back: 'Назад',
@@ -468,7 +478,9 @@ const TRANSLATIONS = {
         errNoWidgets: 'Сервер вернул пустой список виджетов',
         errNoDashboards: 'В данной обласни нет дашбордов',
         shortMonths: ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'],
-        changeColors: "Изменить цвета",
-        fullscreen: "На весь экран"
+        changeColors: 'Изменить цвета',
+        fullscreen: 'На весь экран',
+        showKPI: 'Показать KPI',
+        openAnalyzer: 'Открыть analyzer'
     }
 };

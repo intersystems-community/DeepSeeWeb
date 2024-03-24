@@ -26,6 +26,7 @@ import {ModalService} from '../../../../services/modal.service';
 import {TextAreaComponent} from '../../../ui/text-area/text-area.component';
 import {BaseChartClass} from '../../charts/base-chart.class';
 import {ActivatedRoute} from '@angular/router';
+import {ShareDashboardComponent} from "../../../ui/share-dashboard/share-dashboard/share-dashboard.component";
 
 @Component({
     selector: 'dsw-widget',
@@ -232,11 +233,16 @@ export class WidgetComponent implements OnInit, OnDestroy, AfterViewInit {
 
         for (let i = 0; i < this.model.filters.length; i++) {
             const flt = this.getFilter(i);
+            if (flt.isDate) {
+                this.model.filters[i].text = flt.valueDisplay;
+                continue;
+            }
             if (flt.isInterval) {
                 this.model.filters[i].text = flt.values[flt.fromIdx].name + ':' + flt.values[flt.toIdx].name;
                 continue;
             }
-            this.model.filters[i].text = ((flt.isExclude === true && flt.valueDisplay) ? (this.i18n.get('not') + ' ') : '') + flt.valueDisplay;
+            // ((flt.isExclude === true && flt.valueDisplay) ? (this.i18n.get('not') + ' ') : '')
+            this.model.filters[i].text = flt.valueDisplay;
         }
         this.cd.detectChanges();
     }
@@ -289,14 +295,24 @@ export class WidgetComponent implements OnInit, OnDestroy, AfterViewInit {
             return;
         }
         const mdx = this.component.getMDX();
-        this.ms.show({
-            title: 'Copy MDX',
-            component: TextAreaComponent,
+
+        const copyModal = {
+            title: '',
+            component: ShareDashboardComponent,
             closeByEsc: true,
-            onComponentInit: (c: TextAreaComponent) => {
-                c.value = mdx;
+            buttons: [],
+            class: 'modal-no-border',
+            componentStyles: {padding: '0'},
+            onComponentInit: (sd: ShareDashboardComponent) => {
+                sd.title = 'Copy MDX';
+                sd.btnTitle = 'Copy';
+                sd.shareUrl = mdx;
+                sd.onCopy = () => {
+                    this.ms.close(copyModal);
+                };
             }
-        });
+        };
+        this.ms.show(copyModal);
     }
 
     /**
@@ -362,14 +378,23 @@ export class WidgetComponent implements OnInit, OnDestroy, AfterViewInit {
         }
         html += '></iframe>';
 
-        this.ms.show({
-            title: 'Share Widget',
-            component: TextAreaComponent,
+        const shareModal = {
+            title: '',
+            component: ShareDashboardComponent,
             closeByEsc: true,
-            onComponentInit: (c: TextAreaComponent) => {
-                c.value = html;
+            buttons: [],
+            class: 'modal-no-border',
+            componentStyles: {padding: '0'},
+            onComponentInit: (sd: ShareDashboardComponent) => {
+                sd.title = 'Share widget';
+                sd.btnTitle = 'Copy';
+                sd.shareUrl = html;
+                sd.onCopy = () => {
+                    this.ms.close(shareModal);
+                };
             }
-        });
+        };
+        this.ms.show(shareModal);
 
     }
 

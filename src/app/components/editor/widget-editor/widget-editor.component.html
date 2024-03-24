@@ -1,0 +1,61 @@
+<dsw-sidebar-actions
+    isWidgetEditorWarning="true"
+    (cancel)="onCancelEditing()"
+    (apply)="onSave()"
+>
+    Add widget
+</dsw-sidebar-actions>
+
+<div class="container">
+    <div class="headline">
+        General settings
+    </div>
+    <!-- Name -->
+    <label>Name</label>
+    <dsw-input [required]="invalid.includes('name')" [(ngModel)]="model.name" (change)="updateWidget()"></dsw-input>
+
+    <!-- Title -->
+    <label>Title</label>
+    <dsw-input [(ngModel)]="model.title" (change)="updateWidget()"></dsw-input>
+
+    <div class="navigation">
+        <button class="btn-section" (click)="onTypeAndDataSourceClick()">
+            Type and data source
+            <img src="assets/img/icons/icon-next-blue.svg">
+        </button>
+        <button class="btn-section disabled" title="Not implemented yet">
+            Widget settings
+            <img src="assets/img/icons/icon-next-blue.svg">
+        </button>
+        <button class="btn-section disabled" title="Not implemented yet">
+            Controls
+            <img src="assets/img/icons/icon-next-blue.svg">
+        </button>
+        <button class="btn-section disabled" title="Not implemented yet">
+            Data properties
+            <img src="assets/img/icons/icon-next-blue.svg">
+        </button>
+
+        <div class="headline">
+            Diagram and pivot table
+        </div>
+
+        <button class="btn-section disabled" title="Not implemented yet">
+            Table settings
+            <img src="assets/img/icons/icon-next-blue.svg">
+        </button>
+        <button class="btn-section disabled" title="Not implemented yet">
+            Diagram settings
+            <img src="assets/img/icons/icon-next-blue.svg">
+        </button>
+        <button class="btn-section disabled" title="Not implemented yet">
+            Diagram legend
+            <img src="assets/img/icons/icon-next-blue.svg">
+        </button>
+    </div>
+</div>
+
+<div class="footer">
+    <button *ngIf="widget" class="btn btn-white" (click)="deleteWidgetClick()">Delete widget</button>
+</div>
+

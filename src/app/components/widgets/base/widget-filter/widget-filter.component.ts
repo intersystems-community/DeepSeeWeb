@@ -46,11 +46,28 @@ export class WidgetFilterComponent implements OnInit {
     ) {
     }
 
-    @HostBinding('class.wrap') get hasViewSize(): boolean {
-        if (!this.widget) {
-            return false;
-        }
-        return !!this.widget.viewSize;
+    @HostBinding('class.col-2') get colCount2() {
+        return this.widget?.viewSize === 1;
+    }
+
+    @HostBinding('class.col-3') get colCount3() {
+        return this.widget?.viewSize === 2;
+    }
+
+    @HostBinding('class.col-4') get colCount4() {
+        return this.widget?.viewSize === 3;
+    }
+
+    @HostBinding('class.col-5') get colCount5() {
+        return this.widget?.viewSize === 4;
+    }
+
+    @HostBinding('class.col-6') get colCount6() {
+        return this.widget?.viewSize === 5;
+    }
+
+    @HostBinding('class.col-1') get colCount1(): boolean {
+        return this.widget?.viewSize === 0;
     }
 
     ngOnInit(): void {
@@ -83,8 +100,12 @@ export class WidgetFilterComponent implements OnInit {
         this.openedFilter = idx;
         const target = e.target as HTMLElement;
         const b = target.getBoundingClientRect();
-        const x = b.x - 2; // 2 is padding
-        const y = b.y + b.height;
+        let x = b.x - 4; // 4 is padding
+        const y = b.y + b.height + 4;
+        const width = flt.isDate ? 420 : 340;
+        if (x + width > window.innerWidth) {
+            x = b.x + b.width - width;
+        }
         const isMobile = this.us.isMobile();
         let height;
         if (isMobile) {

@@ -34,17 +34,17 @@
     font-size: 8pt;
     text-align: center;
     color: var(--cl-widget-header-txt);
-    overflow: hidden;
+    // overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
-    border-bottom: 1px solid var(--cl-header-border);
+    border-bottom: var(--cl-widget-header-border);
 
     & > .drag-handle {
         position: absolute;
-        left: 0;
-        right: 0;
+        left: -20px;
+        right: -20px;
         bottom: 0;
-        top: 0;
+        top: -20px;
     }
    /* & > span {
         display: inline-flex;
@@ -64,8 +64,12 @@
         padding-left: 4px;
         padding-right: 4px;
         margin: 0;
-        min-width: var(--tile-header-height);
-        height: 100%;
+        // min-width: var(--tile-header-height);
+        height: 22px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: -3px;
         // border-left: 1px solid var(--cl-header-border);
         transition: background-color $animSpeed line-height;
         outline: none;
@@ -110,9 +114,14 @@
     justify-content: center;
     align-items: center;
 
+    &.no-drag {
+        cursor: default;
+    }
+
     // Disable drag when widget is expanded to fullscreen
     &.expanded {
-        pointer-events: none;
+        cursor: default;
+        //pointer-events: none;
     }
 }
 
@@ -149,10 +158,11 @@ button.btn-with-text {
 .title-text {
     pointer-events: none;
     //margin-right: auto;
-    margin-left: 4px;
+    margin-left: 0;
     margin-right: 4px;
     font-size: 14px;
     font-weight: bold;
+    z-index: 2;
 
     @include sm {
         display: none !important;
@@ -163,53 +173,7 @@ button.btn-with-text {
     margin-left: auto;
 }
 
-/*.left-side {
-    @include sm {
-        flex-grow: 1;
-        flex-shrink: 1;
-        min-width: 0;
-        width: auto;
-    }
-}*/
-
-/*
-.right-side {
-    & > button > label {
-        display: none;
-    }
-
-    @include sm {
-        // flex-basis: 100%;
-        flex-grow: 1;
-        flex-shrink: 1;
-        width: auto;
-        justify-content: space-between;
-    }
+.btn-filters {
+    pointer-events: auto;
+    vertical-align: top;
 }
-
-.right-side, .left-side {
-    @include sm {
-        & > button {
-            display: inline-flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            width: auto;
-            // min-width: var(--header-height);
-            flex: 1 1 100%;
-            padding: 0;
-
-            & > img {
-                height: calc(var(--header-height) * 0.5);
-            }
-
-            & > label {
-                display: inline-block;
-                font-size: 13px;
-                opacity: var(--widget-header-btn-opacity);
-                filter: var(--widget-header-btn-filter);
-            }
-        }
-    }
-}
-*/

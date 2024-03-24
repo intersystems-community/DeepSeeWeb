@@ -171,7 +171,7 @@ export class StartupService {
             fetch(url)
             // import(s)
                 .then(async r => {
-                    const file = await r.text();
+                    let file = await r.text();
 
                     // Create exports object to store module exports
                     const exports = {};
@@ -212,6 +212,9 @@ export class StartupService {
                         }
                         return modules[m];
                     };
+
+                    // Add filename for dev tools
+                    file += '\r\n//# sourceURL=' + url;
 
                     // Eval addon script file
                     // tslint:disable-next-line:no-eval

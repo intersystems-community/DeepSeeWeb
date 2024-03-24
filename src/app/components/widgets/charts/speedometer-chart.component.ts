@@ -2,7 +2,7 @@ import {Component, ElementRef, OnInit, QueryList, ViewChildren} from '@angular/c
 import {BaseChartClass} from './base-chart.class';
 import * as numeral from 'numeral';
 import {YAxisOptions} from 'highcharts';
-import * as Highcharts from "highcharts/highstock";
+import * as Highcharts from 'highcharts/highstock';
 
 
 @Component({
@@ -34,6 +34,9 @@ export class SpeedometerChartComponent extends BaseChartClass implements OnInit 
                 }
             },
             tooltip: {
+                enabled: false
+            },
+            legend: {
                 enabled: false
             },
             chart: {
@@ -104,6 +107,21 @@ export class SpeedometerChartComponent extends BaseChartClass implements OnInit 
             tickColor: '#666'
         };
 
+        if (this.chartConfig.chart.type === 'solidgauge') {
+           ex.pane = {
+                center: ['50%', '85%'],
+                size: '140%',
+                startAngle: -90,
+                endAngle: 90,
+                background: [{
+                    backgroundColor: '#EEE',
+                    innerRadius: '60%',
+                    outerRadius: '100%',
+                    shape: 'arc'
+                }]
+            } as any;
+        }
+
         this.us.mergeRecursive(this.chartConfig, ex);
     }
 
@@ -160,14 +178,15 @@ export class SpeedometerChartComponent extends BaseChartClass implements OnInit 
     async parseData(data) {
         if (this.confs.length === 0) {
             for (let t = 0; t < data.Cols[0].tuples.length; t++) {
-                this.confs.push(this.us.mergeRecursive({}, this.chartConfig));
                 let caption = data.Cols[0].tuples[t].caption;
-                const dp = this.widget.dataProperties[t];
+                const dp = this.widget.dataProperties.find(p => p.dataValue === data.Cols[0].tuples[t].dimension);
                 if (dp && dp.label && dp.label !== '$auto') {
                     caption = dp.label;
                 }
-                this.confs[t].title.text = caption;
+                this.confs.push(this.us.mergeRecursive({}, this.chartConfig));
+                this.confs[this.confs.length - 1].title.text = caption;
             }
+            this.cd.markForCheck();
             this.cd.detectChanges();
 
             setTimeout(() => {
@@ -182,7 +201,9 @@ export class SpeedometerChartComponent extends BaseChartClass implements OnInit 
             if (!v) {
                 v = 0;
             }
-            this.clearSeries(this.charts[idx]);
+            if (this.charts[idx]) {
+                this.clearSeries(this.charts[idx]);
+            }
             const yAxis = this.confs[idx].yAxis as YAxisOptions;
            /* yAxis.title = {
                 text: data.Cols[0].tuples[idx].caption
@@ -277,7 +298,9 @@ export class SpeedometerChartComponent extends BaseChartClass implements OnInit 
                 format: fmt
             }, this.charts[idx], this.confs[idx]);
 
-            this.charts[idx].update(this.confs[idx]);
+            if (this.charts[idx]) {
+                this.charts[idx].update(this.confs[idx]);
+            }
         }
     }
 

@@ -17,52 +17,7 @@ import GeoJSON from 'ol/format/GeoJSON';
 @Component({
     selector: 'dsw-map-widget',
     templateUrl: './map-widget.component.html',
-    styles: [`
-        @import "/src/scss/variables.scss";
-        :host {
-            position: relative;
-        }
-        .tooltip {
-            margin-top: 24px;
-            z-index: 1000;
-            position: absolute;
-            border: solid 1px #000000;
-            color: #000000;
-            background-color: #ffffe1;
-            white-space: nowrap;
-            font-family: Tahoma, sans-serif;
-            fontSize: 13px;
-            -moz-box-shadow: 2px 2px 4px #7f7f7f;
-            box-shadow: 2px 2px 4px #7f7f7f;
-            padding: 2px 3px;
-        }
-        .map-popup {
-            transform: translateY(-100%) translateX(-50%);
-            z-index: 1;
-            position: absolute;
-            background-color: var(--cl-widget-filter-bg);
-            margin-bottom: 0px;
-            border-color: rgb(176, 176, 176);
-            padding: 4px;
-            -webkit-box-shadow: 1px 1px 9px 0px rgba(50, 50, 50, 0.5);
-            -moz-box-shadow: 1px 1px 9px 0px rgba(50, 50, 50, 0.5);
-            box-shadow: 1px 1px 9px 0px rgba(50, 50, 50, 0.5);
-            /*background-color: var(--cl-widget-bg);*/
-            color: var(--cl-widget-header-txt);
-        }
-        .map-popup:after {
-            content: " ";
-            display: block;
-            width: 0;
-            height: 0;
-            border-style: solid;
-            border-width: 8px 4px 0 4px;
-            bottom: -8px;
-            left: calc(50% - 4px);
-            position: absolute;
-            border-color: var(--cl-widget-filter-bg) transparent transparent transparent;
-        }
-    `]
+    styleUrls: ['./map-widget.component.scss']
 })
 export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy, AfterViewInit {
     private readonly CLUSTER_RANGE = 1;
@@ -88,6 +43,8 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
     private polyData = null;
     private isGeoJSON = false;
     private onMessage;
+
+    preventColFilteringBasedOnDataProperties = true;
 
     ngOnInit() {
         super.ngOnInit();

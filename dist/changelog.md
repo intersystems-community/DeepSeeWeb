@@ -1,3 +1,355 @@
+#### 3.2.24
+* MDX with cross joins now correctly displayed in line/area/bar/column charts (#417)
+
+#### 3.2.23
+* fixed issue with hiding series by clicking legend item on donut chart (#413)
+* fixed issue for bar chart drilldown for inline widgets (#411)
+
+#### 3.2.22
+* fixed treemap legend saving state (#409)
+* fixed issue with hiding series by clicking legend item on pie chart (#410)
+* fixed issue for bar chart drilldown for inline widgets (#411)
+
+#### 3.2.21
+* added `autodrill=1` parameter in url to make automatic drilldown if only one data item received
+
+#### 3.2.20
+* fixed issue with drilldown on pie chart(was not implemented). added drill down by label click for pie chart
+* fixed issue for drilling from context menu
+
+#### 3.2.19
+* fixed percentage formatting for pie/donut/treemap charts. now no needed to name data property as `percentageFormat`, dsw will automatically find it depending on data value binding
+
+#### 3.2.18
+* fixed support of related filters, only works if enabled in application settings (#388)
+
+#### 3.2.17
+* added support for range filters with `NOW` keyword for all widgets (#403)
+
+#### 3.2.16
+* added `Accept-Language: en-US` to all requests (#404)
+
+#### 3.2.15
+* temporary fix for scorecard columns filtering when axis contains children
+
+#### 3.2.14
+* temporary fix for dataProperties filtering when axis contains children
+
+#### 3.2.13
+* temporary fix for dataProperties filtering when axis contains children
+
+#### 3.2.12
+* fixed issue with filter default values. when the value is a number instead of a string
+
+#### 3.2.11
+* fixed issue with filter default values. when the value is a number instead of a string
+
+#### 3.2.10
+* added display by 4/5/6 columns for filter widget (#400)
+* added support for filter url parameter for date filters (#398)
+* added support for "NOW"/"NOW-x" as date string for both calendar and filters (#398)
+
+#### 3.2.9
+* changed locale of date picker to "en"
+
+#### 3.2.8
+* added workaround for invalid filter base64 urls with `%3D` at the end
+
+#### 3.2.7
+* * added url parameter to prevent applying of default filters: `nofilters=12
+* 
+* added url parameter to prevent applying of default filters: `nofilters=1`
+* added options to share menu: "Deny widget resizing", "Deny widget moving", "Ignore filters"
+* added workaround for invalid filter urls with `.{=&` & `,=&[` characters
+* fixed url generation for shared dashboard if navigated to an invalid dsw link
+ 
+#### 3.2.6
+* added workaround for invalid filter urls with `=&` characters
+* added option to encode filters as base64 string when sharing dashboard
+* fixed issue with the invisible share button when opening the dashboard with filters 
+
+#### 3.2.5 
+* added workaround for invalid filter urls with `&` character
+* fixed issue with dashboard loading without filters 
+
+#### 3.2.4
+* added workaround for invalid filter urls with `&` character
+
+#### 3.2.3
+* added support for dragging and resizing restrictions for widgets by URL parameters: `nodrag=1` and `noresize=1` (#392)
+* pivot top left cell now empty (#391)
+
+#### 3.2.2
+* fixed issues with filter URLs on the shared dashboard (interval filters/multiple filters)
+* added support for wrong escaped dashboard links. when "=" character has been escaped, but it shouldn't
+
+#### 3.2.1
+* fixed issue with default multiple filter text
+
+#### 3.2.0
+* added support for default multiple filters on the widget
+
+#### 3.1.99
+* fixed issue with filters panel position and size when opening the dashboard for the first time
+
+#### 3.1.98
+* fixed issue with filters panel position and size when opening the dashboard for the first time
+
+#### 3.1.97
+* fixed navigation to ZEN (#381)
+
+#### 3.1.96
+* fixed issue with chats without `override` (blank widgets)
+
+#### 3.1.95
+* added support for labels order (`overrides.chartLegend.legendLabels`) for base charts (#383, #385)
+* added marker option support for charts (#383)
+
+#### 3.1.94
+* fixed issue with `donutChart3D` type
+
+#### 3.1.93
+* fixed navigation to ZEN if dsw installed not in the root (#381)
+* added widget deletion. button placed in the editor panel footer and on the widget header in editor mode (#121)
+* fixed issue trying to edit/add another widget when editor already opened
+* new widget size and position now generated and saved for Zen (#121)
+* added validation and messages support for the editor (#121)
+* added validation for widget name/datasource/reference (#121)
+* dev internal:
+    * widget types converted to camelCase
+    * changed styles for non-default modal buttons
+
+#### 3.1.92
+* fixed issue with an invisible header after login
+* fixed fullscreen widget position and styles. prevent resizing in fullscreen. fixed sidebar overlap
+* now fullscreen mode can be activated by double-clicking on the widget header
+* added new icons for widgets
+* fixed issue with search on the dashboard, when searching from folder
+* fixed issue with a dashboard loading spinner
+* fixed styling issue with bottom padding on dashboards
+* fixed issue with context menu on empty widget
+* fixed "Copy MDX" and "Share" dialog styles
+* changed the style of the main scrollbar on the dashboard screen
+* fixed styles for dashboard editor, new components used
+* fixed styles for app settings
+* fixed styles for theme settings
+* fixed issue when pressing menu during editing folders screen
+* fixed issue with widget resizing when there is an error displayed on widget (unable to resize)
+* designer mode (#121):
+    * added "Edit widget" context menu item
+    * added widget saving
+    * added restoring of dashboard and widget state after canceling editing
+    * added message if the user has unsaved changes during widget creation/editing
+    * added MDX generation for the edited widget
+    * added ability to change the data source for the edited widget
+    * added the ability to link widget to another
+    * added ability to change the widget type
+    * widget leaves fullscreen mode, if the "edit widget" menu item has been chosen from the context menu
+    * header buttons are now hidden for the edited widget
+    * context menu is now hidden for the edited widget
+    * fixed Safari styling of input with the select button
+* dev internal:
+    * improved performance of widget rendering
+    * optimized widget resizing
+    * added `type=numeric` support for "dsw-input" component
+    * optimized widget position and size saving
+    * added minimum height support for modal dialogs, refactored modal size styles
+    * widget list now is not using async pipe for rendering
+    * refactored dashboard screen class
+    * sidebar now can create components with single instance(used by widget editor)
+  
+#### 3.1.91
+* fixed issue with invisible app header
+
+#### 3.1.90
+* fixes for mdx2json path
+
+#### 3.1.89
+* mdx2json endpoint now relative to dsw installation path (#379)
+* fixed default color for Highcharts lines (#380)
+* dev internal:
+    * added search component
+    * changed modal styles, refactored modals
+    * changed styles for sidebar, refactored sidebar service
+    * added support for navigation on sidebar keeping previous instances of component alive, this is used in the designer to be able to go back
+* designer mode (#121):
+    * added tabs, dropdown, input with picker, file selection components to use in designer
+    * added designer panel and base sections
+    * added data source selection and widget type list for designer
+  
+#### 3.1.88
+* fixed back button issue after KPI drillthrough (#291)
+* for KPI drillthrough data properties filtering now disabled (#291)
+* added drillthrough action to text meters (#368)
+* fixed datepicker issue with horolog and timezones (#338)
+* added filter state display for widgets (#369)
+
+#### 3.1.87
+* fixed horizontal scroll in pivot tables (#366)
+* fixed state of exclude filters (#367)
+* fixed series reset after filtering (#140)
+
+#### 3.1.86
+* fixed issue with pivot table style (#311)
+* changed date format for MDX requests for horolog (#338)
+* fixed refresh issue for pivot table (#188)
+* added "Open analyzer" context menu item for the widget (#364)
+* now filter popup opens above filter field if there is not enough free space below field (#362)
+
+#### 3.1.85
+* added check for date picker filter by `targetPropertyDataType` equals to `%DeepSee.Time.DayMonthYear`
+
+#### 3.1.84
+* fixed issue with date picker and single date selection 
+
+#### 3.1.83
+* fixed issue with pivot table style (#311)
+* changed date format for MDX requests for horolog (#338)
+* fixed refresh issue for pivot table (#188)
+
+#### 3.1.82
+* added new design for pivot tables (#311)
+* fixed issue with `embed=1` (#361)
+* added support for `setFilter`, `setRowSpec` actions (#281)
+* added `sourceURL` generation for addon files loaded at runtime for better access using dev tools
+* fixed issue with highcharts map rendering charts
+* fixed click filter for world map (#183)
+
+#### 3.1.81
+* fixed issue with click filter resetting 
+ 
+#### 3.1.80
+* added date picker support for filters with `%ZEN.Component.calendar` class (#338)
+* added click filter for multiple widgets target defined as a comma-separated string
+ 
+#### 3.1.79
+* added drill filter support for pivot (#16)
+* fixed hiding data labels on pie charts (#318)
+
+#### 3.1.78
+* fixes for images for DSW installed not in the root of the site
+ 
+#### 3.1.77
+* added support for new widget types: `smiley`, `light bar`, `traffic light`. fixed `gauge` widget (#1316)
+* fixed issue with `combo chart` and overrides for series type (#357) 
+
+#### 3.1.76
+* fixed scorecard `sum%` issue if data has empty values
+ 
+#### 3.1.75
+* added support for scorecard columns without `display` property
+
+#### 3.1.74
+* added series filtering depending on data properties for KPI widgets (#354)
+* removed ability to make drilldown for KPI widgets
+* added support for future feature - listing for KPI. feature not present in this release, because have to be implemented on mdx2json side (#291)
+ 
+#### 3.1.73
+* fixed issue with saved filters when it is number
+ 
+#### 3.1.72
+* fixed issue with saved filters when it is number
+
+#### 3.1.71
+* fixed issue with invalid data on widgets with data properties (#358)
+* scorecard widget now shows empty values as empty instead of '0.00' (#359)
+
+#### 3.1.70
+* **Warning! Now if `data properties` is present, only defined properties will be displayed for ALL widgets!** (#354) 
+* added `sum%` support for scorecard (#350)
+* changed format priority for text meters, low to high: `widget > data > data properties` (#352)
+* added `target%` support for scorecard (#353)
+* added support for non-numeric `rangeLower/rangeUpper`. when linked to a column by text name 
+* now format from `overrides` always overwrites `dataProperties` format
+
+#### 3.1.69
+* fixed issue with multiple pie charts when only one axis was present in an MDX result
+* legend is hidden for charts with one series (#346)
+
+#### 3.1.68
+* fixed issue with `rowcount` if MDX already contains HEAD
+* fixed broken navigation after a page refresh
+* fixed navigating to Iris BI issue
+* fixed issue with a legend for speedometer, when visibility option has been saved on the client side
+* now filters panel always fits to max height of the dashboard if no user settings for it
+* now widgets perfectly fit to the screen, but if the widget is small - the widget becomes larger and the dashboard becomes scrollable. this solves the issue when there are many widgets on the dashboard
+* added support of format that comes from widget info for text meters
+* fixed issue with fitting widgets into the screen after the redesign
+* fixed fullscreen widget bottom margin
+
+#### 3.1.67
+* fixed issue with KPI filters and `number` value in filter received from mdx2json
+
+#### 3.1.66
+* added support for ".term" for ChooseRowSpec, ChooseDataSource, ChooseColSpec
+* legend for speedometer now hidden
+* filter popup window now has limit to height, never can overflow window height
+
+#### 3.1.65
+* text widgets now show only customized meters, or all if no custom has been set
+* fixed issue with drillthrough and "%MDX()"
+* fixed issue with incorrect url after logging out and logging in
+* added an implementation of pivot variables as filters
+* changed design for "share widget"/"copy mdx" modal dialogs
+* added a new share dashboard dropdown to the header
+* added missing icons from the new design on the widget header
+* changed the design of the login form
+* fixed doubled series error for pie char when switching labels
+* fixed console errors, pie charts without labels
+* fixed issue when loading saved filters when mdx2json returns numbers instead of string
+* migrated to Angular 15.1 & Highcharts 10.3.3
+ 
+#### 3.1.64
+* fixed issue when loading dashboard with saved filters in old format
+
+#### 3.1.63
+* fixed issue with filters on dashboard & datasource (no filter values for KPI widgets)
+* added support for KPI filters. now widgets with kpitype uses `/KPI` filters feature to process filtering
+* fixed issue with drillthrough with filters
+* added loading indicator when pivot executes KPI requests
+* added KPI support for non-pivot widgets
+* now saved filters are always displayed in the filter dropdown, even if no user action for a filter request has been made
+* fixed issue with app option "save filters" (doesn't work in some cases)
+* fixed issue with saving filters that returned as numbers from mdx2json 
+
+#### 3.1.62
+* partially fixed filter saving for filters outside filter list 
+
+#### 3.1.61
+* added dropdown menu for breadcrumbs if path is long
+
+#### 3.1.60
+* extended scorecard widget. now it supports `targetValue` & `target%`, uses auto max value for `plotBox` axis
+
+#### 3.1.59
+* fixed `.termlist' issue 
+
+#### 3.1.58
+* compatibility termlist support for ChooseRowSpec, ChooseDataSource, ChooseColSpec
+
+#### 3.1.57
+* extended drag region for widget, now it covers full size of header
+* updated icons for widget header actions
+* added new design for menu & header
+* added new design for folders screen
+* added drillthrough by category for chart widgets
+
+#### 3.1.56
+* fixed meters widget 
+
+#### 3.1.55
+* added missing images from new design 
+
+#### 3.1.54
+* new design for default theme (other themes will be supported soon)
+* fixed filter issue when deselecting selected value
+* fixed filter popup closing issue when selecting search text
+* fixed issue when clearing filter by "X" icon
+* added support for several charts
+* fixed issue when opening filter popup near edge of the screen
+* fixed issue with navigating to ZEN when there are special characters in url
+* added support for valuelist/displaylist properties for choose controls
+
 #### 3.1.53
 * fixed drilldown issue when drilling second time
 

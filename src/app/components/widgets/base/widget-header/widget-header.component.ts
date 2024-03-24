@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, EventEmitter, Input, Output} from '@angular/core';
+import {ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {IWidgetInfo} from '../../base-widget.class';
 import {StorageService} from '../../../../services/storage.service';
 import {UtilService} from '../../../../services/util.service';
@@ -8,13 +8,16 @@ import {NamespaceService} from '../../../../services/namespace.service';
 import {dsw} from '../../../../../environments/dsw';
 import {IWidgetType} from '../../../../services/widget-type.service';
 import {HeaderService} from '../../../../services/header.service';
+import {FilterService} from "../../../../services/filter.service";
+import {Subscription} from "rxjs";
+import {EditorService} from "../../../../services/editor.service";
 
 @Component({
     selector: 'dsw-widget-header',
     templateUrl: './widget-header.component.html',
     styleUrls: ['./widget-header.component.scss']
 })
-export class WidgetHeaderComponent {
+export class WidgetHeaderComponent implements OnInit, OnDestroy {
     @Input() typeDesc: IWidgetType;
     @Output() onButtonClick = new EventEmitter<IButtonToggle>();
     @Output() onBack = new EventEmitter();
@@ -22,14 +25,41 @@ export class WidgetHeaderComponent {
 
     widget: IWidgetInfo;
     private widgetsSettings: any;
+    hasFilters = false;
+    filtersTooltip = '';
+    private subFiltersChanged: Subscription;
+    noDrag = false;
 
     constructor(private ss: StorageService,
                 private us: UtilService,
                 private ws: WidgetService,
                 public cd: ChangeDetectorRef,
                 private ns: NamespaceService,
+                private fs: FilterService,
                 private hs: HeaderService,
+                private eds: EditorService,
                 private route: ActivatedRoute) {
+        this.noDrag = this.route.snapshot.queryParamMap.get('nodrag') === '1';
+    }
+
+    ngOnInit() {
+        this.subFiltersChanged = this.fs.onFiltersChanged.subscribe(() => {
+            this.updateActiveFiltersInfo();
+            this.cd.detectChanges();
+        });
+        this.updateActiveFiltersInfo();
+    }
+
+    updateActiveFiltersInfo() {
+        if (!this.widget) {
+            return;
+        }
+        if (this.widget.type === dsw.const.emptyWidgetClass) {
+            return;
+        }
+        const active = this.fs.getWidgetFilters(this.widget?.name).filter(f => f.value !== '' || f.isInterval);
+        this.hasFilters = !!active.length;
+        this.filtersTooltip = active.map(f => f.label + ': <span style="opacity: 0.7">' + f.valueDisplay + '</span>').join('\n');
     }
 
     /**
@@ -116,5 +146,20 @@ export class WidgetHeaderComponent {
 
     closeMobileFilter() {
         this.hs.toggleMobileFilterDialog();
+    }
+
+    ngOnDestroy() {
+        this.subFiltersChanged.unsubscribe();
+    }
+
+    onHeaderDoubleClick() {
+        if (this.isEmptyWidget() || !this.widget.isSupported) {
+            return;
+        }
+        this.onClick('expand');
+    }
+
+    deleteWidgetClick() {
+        this.eds.deleteWidget(this.widget);
     }
 }

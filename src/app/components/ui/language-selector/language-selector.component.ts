@@ -25,7 +25,7 @@ export class LanguageSelectorComponent {
         this.storage.setAppSettings(settings);
         window.location.reload();
 
-        this.ss.sidebarToggle.next(null);
+        this.ss.showComponent(null);
     }
 
     /**

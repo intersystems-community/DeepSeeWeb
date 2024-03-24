@@ -3,6 +3,14 @@ import {BaseWidget, IWidgetInfo} from '../base-widget.class';
 import * as numeral from 'numeral';
 import {dsw} from '../../../../environments/dsw';
 
+interface ITextWidgetData {
+    label: string;
+    value: string;
+    color: string;
+    valueColor: string;
+    dimension: string;
+}
+
 @Component({
     selector: 'dsw-wtext',
     templateUrl: './wtext.component.html',
@@ -19,6 +27,10 @@ export class WTextComponent extends BaseWidget implements OnInit, AfterViewInit 
             return;
         }
         return el.offsetWidth > el.offsetHeight ? 'row' : 'column';
+    }
+
+    get canDrillthrough() {
+        return this.canDoDrillthrough;
     }
 
     ngOnInit(): void {
@@ -75,16 +87,20 @@ export class WTextComponent extends BaseWidget implements OnInit, AfterViewInit 
         this.hideLoading();
         if (result) {
             for (let i = 0; i < result.Cols[0].tuples.length; i++) {
-                let propFmt = '';
-                if (this.widget && this.widget.properties && this.widget.properties.format) {
-                    propFmt = this.widget.properties.format;
+                let dProp = null;
+                if (this.widget.dataProperties) {
+                    dProp = this.getDataPropByDataValue(result.Cols[0].tuples[i].dimension);
+                    if (!dProp) {
+                        continue;
+                    }
                 }
                 // Format value
-                let v = result.Data[i];
-                const fmt = result.Cols[0].tuples[i].format || propFmt;
+                const v = this.getDataValue(i, result, dProp);
+                /*let v = result.Data[i];
+                const fmt = this.getFormat(result, dProp);
                 if (fmt) {
                     v = numeral(v).format(fmt);
-                }
+                }*/
 
                 // Change font color, if widget is displayed on tile
                 let color = 'var(--cl-text-widget-font)'; // getComputedStyle(document.documentElement).getPropertyValue('--cl-text-widget-font');
@@ -153,7 +169,13 @@ export class WTextComponent extends BaseWidget implements OnInit, AfterViewInit 
                     }
 
                     // Add parameter
-                    this.model.textData.push({label: caption, value: v, color, valueColor});
+                    this.model.textData.push({
+                        label: caption,
+                        value: v,
+                        color,
+                        valueColor,
+                        dimension: result.Cols[0].tuples[i].dimension
+                    } as ITextWidgetData);
                 }
             }
         }
@@ -177,5 +199,9 @@ export class WTextComponent extends BaseWidget implements OnInit, AfterViewInit 
             return parseFloat(v.replace(/,/g, '').replace(/ /g, ''));
         }
         return v;
+    }
+
+    onClick(item: ITextWidgetData) {
+        void this.doDrillthrough('', item.label);
     }
 }

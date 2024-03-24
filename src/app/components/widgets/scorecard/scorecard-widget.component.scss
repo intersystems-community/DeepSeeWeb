@@ -13,6 +13,11 @@ table {
         color: #686868;
     }
 
+    & > thead {
+        position: relative;
+        z-index: 2;
+    }
+
     & > thead > tr > td {
         white-space: pre;
         text-align: right;
@@ -84,6 +89,7 @@ table {
     height: 18px;
     flex-shrink: 0;
     flex-grow: 0;
+    position: relative;
 }
 
 
@@ -141,3 +147,16 @@ table {
     }
 }
 
+.target {
+    display: inline-block;
+    width: 2px;
+    transform: translateX(-1);
+    background-color: #1C1D20;
+    height: calc(100% + 4px);
+    position: absolute;
+    top: -2px;
+}
+
+.plotbox-cell {
+    z-index: 1;
+}

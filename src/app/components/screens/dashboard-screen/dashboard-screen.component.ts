@@ -1,51 +1,32 @@
 import {
     AfterViewInit,
     ChangeDetectionStrategy,
-    ChangeDetectorRef,
     Component,
     ElementRef,
     HostListener,
+    Inject,
+    Injector,
     OnDestroy,
     OnInit,
-    QueryList,
-    Renderer2,
-    ViewChild,
-    ViewChildren
+    ViewChild
 } from '@angular/core';
-import {
-    GridsterComponent,
-    GridsterConfig,
-    GridsterItem,
-    GridsterItemComponentInterface,
-    GridType
-} from 'angular-gridster2';
-import {StorageService} from '../../../services/storage.service';
+import {GridsterConfig, GridsterItem, GridsterItemComponentInterface, GridType} from 'angular-gridster2';
 import {dsw} from '../../../../environments/dsw';
-import {combineLatest, fromEvent, Observable, of, Subscription} from 'rxjs';
-import {DataService} from '../../../services/data.service';
-import {map, switchMap} from 'rxjs/operators';
-import {ActivatedRoute, Router} from '@angular/router';
-import {VariablesService} from '../../../services/variables.service';
-import {FilterService} from '../../../services/filter.service';
-import {UtilService} from '../../../services/util.service';
-import {ErrorService} from '../../../services/error.service';
-import {HeaderService} from '../../../services/header.service';
-import {I18nService} from '../../../services/i18n.service';
+import {combineLatest, fromEvent, Subscription} from 'rxjs';
 import {IWidgetInfo} from '../../widgets/base-widget.class';
-import {WidgetComponent} from '../../widgets/base/widget/widget.component';
-import {CURRENT_NAMESPACE, NamespaceService} from '../../../services/namespace.service';
-import {BroadcastService} from '../../../services/broadcast.service';
+import {CURRENT_NAMESPACE} from '../../../services/namespace.service';
 import {ExportingOptions} from 'highcharts';
-import {DashboardService} from '../../../services/dashboard.service';
-import {MenuService} from '../../../services/menu.service';
 import {WTextComponent} from '../../widgets/text/wtext.component';
 import {BaseChartClass} from '../../widgets/charts/base-chart.class';
+import {DashboardEditingClass} from './dashboard-editing.class';
+import {WidgetEditorComponent} from '../../editor/widget-editor/widget-editor.component';
 
 const SWIPE_TIME_THRESHOLD = 200;
 const SWIPE_PIXELS_Y_THRESHOLD = 100;
 const SWIPE_PIXELS_X_THRESHOLD = 50;
 
 export const DEFAULT_COL_COUNT = 12;
+
 
 export interface IContextMenuData {
     canDrill: boolean;
@@ -69,12 +50,9 @@ interface ITouchInfo {
     styleUrls: ['./dashboard-screen.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DashboardScreenComponent implements OnInit, OnDestroy, AfterViewInit {
-    @ViewChildren('widgets') widgets: QueryList<WidgetComponent>;
+export class DashboardScreenComponent extends DashboardEditingClass implements OnInit, OnDestroy, AfterViewInit {
     @ViewChild('ctxMenu') ctxMenu: ElementRef;
-    @ViewChild('gridster') gridster: GridsterComponent;
 
-    private widgetInfo: IWidgetInfo[] = [];
     private settings: any;
     private readonly sharedWidget: string;
     private readonly subReset: Subscription;
@@ -82,18 +60,22 @@ export class DashboardScreenComponent implements OnInit, OnDestroy, AfterViewIni
     private subContextMenu: Subscription;
     private subMobileFilterDialog: Subscription;
     private touchInfo: ITouchInfo;
+    private path = '';
     page = 0;
 
-    model: any;
+    model = {
+        items: []
+    };
     ctxItem: IWidgetInfo = null;
     contexMenuData: IContextMenuData = {
         canDrill: false,
         canDrillthrough: false
     };
     tilesOptions: GridsterConfig = {
-
         useTransformPositioning: true,
-        margin: 10,
+        margin: 20,
+        // rowHeightRatio: 1.5,
+        // gridType: GridType.ScrollVertical,
         gridType: GridType.VerticalFixed,
         draggable: {
             ignoreContent: true,
@@ -105,103 +87,51 @@ export class DashboardScreenComponent implements OnInit, OnDestroy, AfterViewIni
         }
     };
     isMobile = false;
-    data$: Observable<any>;
-    isLoaded = false;
+    isLoading = true;
     itemsInitialized = 0;
     mobileFilter: IWidgetInfo;
     isMobileFilterVisible = false;
 
     private subSettingsChanged: Subscription;
+    private subOnSidebarAnim: Subscription;
+    private subParamsChange: Subscription;
+    private onLoadingTimeout = 0;
 
-    constructor(private ds: DataService,
-                private vs: VariablesService,
-                private fs: FilterService,
-                public us: UtilService,
-                private ss: StorageService,
-                private es: ErrorService,
-                private hs: HeaderService,
-                public dbs: DashboardService,
-                private router: Router,
-                private i18n: I18nService,
-                private ns: NamespaceService,
-                private cd: ChangeDetectorRef,
-                private bs: BroadcastService,
-                private r2: Renderer2,
-                private ms: MenuService,
-                private route: ActivatedRoute) {
+    trackByName = (index: number, w: IWidgetInfo) => {
+        const nameKey = this.path + '-' + w.name.toString();
+        if (w === this.editedWidget) {
+            // For edited widget use a key,
+            // this allows us to recreate widget if needed (e.g. when type has been changed)
+            // by changing the key
+            return this.editedWidget.edKey || nameKey;
+        }
+        return nameKey;
+    }
 
+    constructor(@Inject(Injector) protected inj: Injector) {
+        super(inj);
+
+        this.checkRestrictions();
         this.hs.resetSearch();
         this.hs.hideMobileFilterButton();
-        // this.ms.onSetTitle.emit('');
+
         this.sharedWidget = this.route.snapshot.queryParamMap.get('widget');
 
-        this.tilesOptions.draggable.start = () => {
-            this.cd.detach();
-        };
+        this.subscribeForGridsterEvents();
+        this.loadSettings();
+        this.subscribeForSettingsChanged();
+        this.subscribeForEditing();
 
-        this.tilesOptions.itemInitCallback = () => {
-            this.itemsInitialized++;
-            if (this.itemsInitialized === this.widgetInfo.length) {
-                // console.log('loaded');
-                setTimeout(() => {
-                    this.isLoaded = true;
-                });
-
-            }
-        };
-
-        this.tilesOptions.draggable.stop = () => {
-            this.cd.reattach();
-        };
-
-        this.tilesOptions.itemChangeCallback = (item: GridsterItem, itemComponent: GridsterItemComponentInterface) => {
-            this.saveWidgetPositionAndSize(item as any, itemComponent);
-        };
-
-        this.model = {
-            items: []
-        };
-        this.settings = ss.getAppSettings();
-        this.tilesOptions.maxCols = parseInt(this.settings.colCount, 10) || DEFAULT_COL_COUNT;
-        this.tilesOptions.minCols = this.tilesOptions.maxCols;
-        this.tilesOptions.fixedRowHeight = parseInt(this.settings.widgetHeight, 10) || (Math.floor((window.innerHeight - 158) / 10)) - 1;
-
-        this.subSettingsChanged = this.ss.onSettingsChanged.subscribe(settings => {
-            this.tilesOptions.maxCols = settings.colCount || DEFAULT_COL_COUNT;
-            this.tilesOptions.minCols = this.tilesOptions.maxCols;
-            if (this.gridster) {
-                this.gridster.optionsChanged();
-                setTimeout(() => {
-                    this.gridster.resize();
-                }, 1000);
-            }
+        // Resize gridster after sidebar animation
+        this.subOnSidebarAnim = this.sbs.onAnimEnd.subscribe(() => {
+            this.gridster.onResize();
         });
 
-        if (this.sharedWidget) {
-            this.tilesOptions.maxCols = 1;
-            this.tilesOptions.minCols = 1;
-            this.tilesOptions.maxRows = 1;
-            this.tilesOptions.minRows = 1;
-            this.tilesOptions.gridType = 'fit';
-            const p = this.route.snapshot.queryParamMap;
-            const h = p.get('height');
-            if (h) {
-                this.tilesOptions.rowHeight = parseInt(h, 10);
-            } else {
-                //this.tilesOptions.rowHeight = "match";
-            }
-            this.tilesOptions.draggable = {
-                enabled: false,
-                dragHandleClass: ''
-            };
-            this.tilesOptions.resizable = {
-                enabled: false
-            };
-        }
+        this.setupSharedWidget();
 
         this.isMobile = this.us.isMobile();
-        this.subReset = this.bs.subscribe('resetWidgets', () => {
-            window.location.reload();
+        this.subReset = this.bs.subscribe('refresh-dashboard', () => {
+            this.requestData();
         });
 
         this.subMobileFilterDialog = this.hs.mobileFilterDialogToggle.subscribe(() => {
@@ -216,27 +146,7 @@ export class DashboardScreenComponent implements OnInit, OnDestroy, AfterViewIni
     }
 
     ngOnInit() {
-        this.data$ = combineLatest([
-            this.route.url,
-            this.route.params
-        ]).pipe(
-            switchMap(([segments, params]) => {
-                // Switch namespace if changed
-                if (params['ns'] && params['ns'].toLowerCase() !== CURRENT_NAMESPACE.toLowerCase()) {
-                    this.ns.setCurrent(params['ns']);
-                }
-                // Build path
-                const path = [params.name, ...segments.map(s => s.path)].join('/').slice(1);
-                // Return nothis if this is not dashboard
-                if (path.indexOf('.dashboard') === -1) {
-                    return of([]);
-                }
-                // Return widgets for dashboard
-                return this.ds.getWidgets(path || '').pipe(
-                    map((data) => this.retrieveData(data, path))
-                );
-            })
-        );
+        this.subscribeForParamsChange();
 
         // // This needed to restore gridster after printing
         // window.onafterprint = () => {
@@ -253,7 +163,11 @@ export class DashboardScreenComponent implements OnInit, OnDestroy, AfterViewIni
     }
 
     ngOnDestroy() {
+        super.ngOnDestroy();
+        clearTimeout(this.onLoadingTimeout);
         window.onafterprint = null;
+        this.subParamsChange.unsubscribe();
+        this.subOnSidebarAnim.unsubscribe();
         this.subContextMenu.unsubscribe();
         this.subMobileFilterDialog.unsubscribe();
         if (this.subCtxClose) {
@@ -262,36 +176,6 @@ export class DashboardScreenComponent implements OnInit, OnDestroy, AfterViewIni
         if (this.subReset) {
             this.subReset.unsubscribe();
         }
-        this.data$ = null;
-    }
-
-    getWidgetByInfo(info: IWidgetInfo): WidgetComponent {
-        return this.widgets.find((w) => w.widget === info);
-    }
-
-
-    saveWidgetPositionAndSize(widget: IWidgetInfo, item: GridsterItemComponentInterface) {
-        const pos = item.$item; // {cols: 2, rows: 7, x: 3, y: 1}
-        const widgets = this.ss.getWidgetsSettings(widget.dashboard);
-        const k = widget.name;
-        if (!widgets[k]) {
-            widgets[k] = {};
-        }
-
-        if (!isNaN(pos.x)) {
-            widgets[k].col = pos.x;
-        }
-        if (!isNaN(pos.y)) {
-            widgets[k].row = pos.y;
-        }
-        if (!isNaN(pos.cols)) {
-            widgets[k].sizeX = pos.cols;
-        }
-        if (!isNaN(pos.rows)) {
-            widgets[k].sizeY = pos.rows;
-        }
-
-        this.ss.setWidgetsSettings(widgets, widget.dashboard);
     }
 
     /**
@@ -360,9 +244,9 @@ export class DashboardScreenComponent implements OnInit, OnDestroy, AfterViewIni
     }
 
     /**
-     * Retrieve data callback. Builds widget list
+     * Builds widget list
      */
-    retrieveData(result, path: string) {
+    prepareData(result) {
         let i;
 
         this.itemsInitialized = 0;
@@ -379,10 +263,18 @@ export class DashboardScreenComponent implements OnInit, OnDestroy, AfterViewIni
             return;
         }
         if (result.displayInfo && result.displayInfo.gridRows && !this.settings.widgetHeight && !this.sharedWidget) {
-            const headerHeight = 58;
+            const headerHeight = 63;
             const rows = result.displayInfo.gridRows;
-            const padding = 10;
-            this.tilesOptions.fixedRowHeight = Math.floor((window.innerHeight - (headerHeight + padding * (rows + 1))) / rows);
+            const padding = 20;
+            let minHeight = window.innerHeight;
+            if (minHeight < 800) {
+                minHeight = 800;
+            }
+            this.tilesOptions.fixedRowHeight = Math.floor((minHeight - (headerHeight + padding * (rows + 1))) / rows);
+            // this.tilesOptions.fixedRowHeight = 400;
+            /* if (this.tilesOptions.fixedRowHeight < 20) {
+                 this.tilesOptions.fixedRowHeight = 20;
+             }*/
             if (this.gridster) {
                 this.gridster.optionsChanged();
             }
@@ -391,7 +283,7 @@ export class DashboardScreenComponent implements OnInit, OnDestroy, AfterViewIni
         this.vs.init(result);
 
         if (result.filters) {
-            this.fs.init(result.filters, path);
+            this.fs.init(result.filters, this.path);
         }
 
         let isExists = false;
@@ -404,11 +296,11 @@ export class DashboardScreenComponent implements OnInit, OnDestroy, AfterViewIni
             }
             if (!isExists) {
                 result.widgets.push({
-                    dashboard: path,
+                    dashboard: this.path,
                     autocreated: true,
                     name: 'emptyWidget',
                     type: dsw.const.emptyWidgetClass,
-                    key: 'emptyWidgetFor' + path
+                    key: 'emptyWidgetFor' + this.path
                 });
                 isExists = true;
             }
@@ -421,11 +313,11 @@ export class DashboardScreenComponent implements OnInit, OnDestroy, AfterViewIni
             // TODO: broadcast
             // $rootScope.$broadcast('menu:changeTitle', result.info.title);
         }
-        this.widgetInfo = [];
-        this.dbs.setWidgets(this.widgetInfo);
+        this.list = [];
+        this.dbs.setWidgets(this.list);
         this.dbs.setAllWidgets(result.widgets);
         for (i = 0; i < result.widgets.length; i++) {
-            result.widgets[i].dashboard = path;
+            result.widgets[i].dashboard = this.path;
             // Ignore all widgets but not shared
             if (this.sharedWidget) {
                 const idx = parseInt(this.sharedWidget, 10);
@@ -440,7 +332,9 @@ export class DashboardScreenComponent implements OnInit, OnDestroy, AfterViewIni
             let item: any = {
                 idx: i,
                 cols: 2,
-                rows: 2,
+                // Don't use predefined height for empty widget
+                // It will be calculated during fitEmptyWidget() call
+                rows: result.widgets[i].type?.toLowerCase() === dsw.const.emptyWidgetClass ? undefined : 2,
                 x: (i * 2) % this.tilesOptions.maxCols,
                 y: Math.floor(i / 6) * 2,
                 title: result.widgets[i].title,
@@ -473,9 +367,8 @@ export class DashboardScreenComponent implements OnInit, OnDestroy, AfterViewIni
                 delete item.y;
             }
             if (result.widgets[i].name) {
-                this.setWidgetSizeAndPos(item, result.widgets[i].name.toString(), path);
+                this.setWidgetSizeAndPos(item, result.widgets[i].name.toString());
             }
-
             // For shared widget set pos to zero and index too
             if (this.sharedWidget) {
                 item.x = 0;
@@ -504,23 +397,34 @@ export class DashboardScreenComponent implements OnInit, OnDestroy, AfterViewIni
                 continue;
             }
 
-            this.widgetInfo.push(item);
+            this.list.push(item);
         }
 
         if (!this.sharedWidget) {
             setTimeout(() => this.broadcastDependents(), 0);
         }
 
-        this.dbs.setWidgets(this.widgetInfo);
+        this.fitEmptyWidget();
+
+        this.dbs.setWidgets(this.list);
 
         // Update title
         this.ms.onSetTitle.emit(this.dbs.getWidgets()[this.page]?.title);
 
-        if (this.isMobile) {
-            this.isLoaded = true;
-        }
 
-        return this.widgetInfo;
+        /*
+                if (this.editedWidget) {
+                    this.list.push(this.editedWidget);
+                }
+        */
+
+        /*this.cd.detectChanges();
+        this.gridster.updateGrid();
+        this.gridster.onResize()*/
+
+        setTimeout(() => {
+            // this.isLoaded = true;
+        });
     }
 
     /**
@@ -528,9 +432,9 @@ export class DashboardScreenComponent implements OnInit, OnDestroy, AfterViewIni
      */
     broadcastDependents() {
         const brodcasted = [];
-        for (let i = 0; i < this.widgetInfo.length; i++) {
-            if (this.widgetInfo[i].dependents.length !== 0) {
-                const item = this.widgetInfo[i];
+        for (let i = 0; i < this.list.length; i++) {
+            if (this.list[i].dependents.length !== 0) {
+                const item = this.list[i];
                 if (brodcasted.indexOf(item.name) !== -1) {
                     continue;
                 }
@@ -550,10 +454,10 @@ export class DashboardScreenComponent implements OnInit, OnDestroy, AfterViewIni
         item.dependents = [];
         for (let i = 0; i < widgets.length; i++) {
             if (widgets[i] !== item) {
-                if (!widgets[i].Link) {
+                if (!widgets[i].dataLink) {
                     continue;
                 }
-                if (widgets[i].Link === item.name) {
+                if (widgets[i].dataLink === item.name) {
                     item.dependents.push(widgets[i].name);
                 }
             }
@@ -565,8 +469,8 @@ export class DashboardScreenComponent implements OnInit, OnDestroy, AfterViewIni
      * @param {object} item Gridster item
      * @param {string|number} k Widget key
      */
-    setWidgetSizeAndPos(item, k, path: string) {
-        const widgets = this.ss.getWidgetsSettings(path);
+    setWidgetSizeAndPos(item, k) {
+        const widgets = this.ss.getWidgetsSettings(this.path);
         const w = widgets[k];
         if (!w) {
             return;
@@ -591,17 +495,16 @@ export class DashboardScreenComponent implements OnInit, OnDestroy, AfterViewIni
      * @returns {object} Widget description
      */
     getDesc(idx) {
-        if (!this.widgetInfo[idx]) {
+        if (!this.list[idx]) {
             return undefined;
         }
-        return this.widgetInfo[idx];
+        return this.list[idx];
     }
 
-    onAnimationEnd(item: any, e: TransitionEvent) {
-        // TODO: change size only when width or height has been changed
-        // if (e.propertyName !== 'width' && e.propertyName !== 'height') {
-        //     return;
-        // }
+    onWidgetSizeChanged(item: any, e?: TransitionEvent) {
+        if (e && (e.propertyName !== 'width' && e.propertyName !== 'height')) {
+             return;
+         }
         const w = this.getWidgetByInfo(item);
         if (w && w.component) {
             w.component.onResize();
@@ -614,12 +517,15 @@ export class DashboardScreenComponent implements OnInit, OnDestroy, AfterViewIni
      * @param e
      */
     showContextMenu(item: IWidgetInfo, e: MouseEvent, ctxData?) {
+        if (item === this.editedWidget) {
+            return;
+        }
         this.contexMenuData = ctxData;
         const ctxEl = this.ctxMenu.nativeElement;
         this.r2.setStyle(ctxEl, 'visibility', 'hidden');
 
         let noMenu = false;
-        const noCtxProp = item.dataProperties.find(p => p.name === 'disableContextMenu');
+        const noCtxProp = item.dataProperties?.find(p => p.name === 'disableContextMenu');
         if (noCtxProp) {
             noMenu = noCtxProp.dataValue === 1;
         }
@@ -766,7 +672,9 @@ export class DashboardScreenComponent implements OnInit, OnDestroy, AfterViewIni
 
         const filename = (this.ctxItem.title || 'data') + '.csv';
         const blob = new Blob([csvFile], {type: 'text/csv;charset=utf-8;'});
+        // @ts-ignore
         if (navigator.msSaveBlob) { // IE 10+
+            // @ts-ignore
             navigator.msSaveBlob(blob, filename);
         } else {
             const link = document.createElement('a');
@@ -783,10 +691,6 @@ export class DashboardScreenComponent implements OnInit, OnDestroy, AfterViewIni
                 }, 10);
             }
         }
-    }
-
-    checkItems() {
-        console.log('CD!');
     }
 
     /**
@@ -878,7 +782,7 @@ export class DashboardScreenComponent implements OnInit, OnDestroy, AfterViewIni
         }
         if (comp instanceof BaseChartClass && comp.chartConfig.chart.type !== 'treemap') {
             comp.updateChart(true, false);
-            //comp.onResize();
+            // comp.onResize();
             return;
         }
     }
@@ -897,5 +801,190 @@ export class DashboardScreenComponent implements OnInit, OnDestroy, AfterViewIni
             title: this.contexMenuData.drillTitle
         });
         this.hideContextMenu();
+    }
+
+    private fitEmptyWidget() {
+        let empty = null;
+        let maxx = 0;
+        let maxy = 0;
+        this.list.forEach(wi => {
+            if (wi.name === 'emptyWidget') {
+                empty = wi;
+                return;
+            }
+            const x = (wi.x || 0) + (wi.cols || 0);
+            const y = (wi.y || 0) + (wi.rows || 0);
+            if (x > maxx) {
+                maxx = x;
+            }
+            if (y > maxy) {
+                maxy = y;
+            }
+        });
+        if (!empty || empty.rows) {
+            return;
+        }
+        empty.rows = maxy || 2;
+    }
+
+    gotoKPIPage(w: IWidgetInfo) {
+        if (!w.kpiclass) {
+            return;
+        }
+        const folder = this.ss.serverSettings.DefaultApp || '/csp/' + CURRENT_NAMESPACE;
+        const url = folder + '/' + w.kpiclass + '.cls';
+        window.open(url, '_blank');
+    }
+
+    gotoAnalyzer(w: IWidgetInfo) {
+        if (!w.dataSource) {
+            return;
+        }
+        const folder = this.ss.serverSettings.DefaultApp || '/csp/' + CURRENT_NAMESPACE;
+        const filters = this.fs.getFiltersUrlString(w.name, false, '\t', '\n');
+        let url = folder + '/_DeepSee.UI.Dialog.Analyzer.zen?&PIVOT=' + encodeURIComponent(w.dataSource);
+        if (filters) {
+            url += '&FILTERSTATE=' + filters;
+        }
+        window.open(url, '_blank');
+    }
+
+    private requestData() {
+        this.list = [];
+        // Return if this is not a dashboard
+        if (this.path.indexOf('.dashboard') === -1) {
+            return;
+        }
+        this.isLoading = true;
+        this.cd.detectChanges();
+        this.ds.getWidgets(this.path || '')
+            .then(data => {
+                this.dbs.dashboard.next(data);
+                this.prepareData(data);
+            })
+            .finally(() => {
+                this.onDataLoaded();
+            });
+    }
+
+    private subscribeForParamsChange() {
+        this.subParamsChange = combineLatest([
+            this.route.url,
+            this.route.params
+        ]).subscribe(([segments, params]) => {
+            this.switchNamespaceAndPath(segments, params);
+            this.requestData();
+        });
+    }
+
+    private switchNamespaceAndPath(segments: any, params: any) {
+        // Switch namespace if changed
+        if (params.ns && params.ns.toLowerCase() !== CURRENT_NAMESPACE.toLowerCase()) {
+            this.ns.setCurrent(params.ns);
+        }
+        // Build path
+        this.path = [params.name, ...segments.map(s => s.path)].join('/').slice(1);
+        this.dbs.current.next(this.path);
+    }
+
+    ctxEdit() {
+        // Reset editing if edit another widget
+        if (this.editedWidget && this.editedWidget !== this.ctxItem) {
+            this.sbs.showComponent(null);
+        }
+        if (this.ctxItem.isExpanded) {
+            const w = this.getWidgetByInfo(this.ctxItem);
+            w?.header?.onClick('expand');
+        }
+        this.sbs.showComponent({component: WidgetEditorComponent, single: true, inputs: {widget: this.ctxItem}});
+        this.hideContextMenu();
+    }
+
+    private onDataLoaded() {
+        this.cd.detectChanges();
+        this.gridster.onResize();
+        clearTimeout(this.onLoadingTimeout);
+        this.onLoadingTimeout = setTimeout(() => {
+            this.isLoading = false;
+            this.cd.detectChanges();
+        }, 1);
+    }
+
+    private subscribeForSettingsChanged() {
+        this.subSettingsChanged = this.ss.onSettingsChanged.subscribe(settings => {
+            this.tilesOptions.maxCols = settings.colCount || DEFAULT_COL_COUNT;
+            this.tilesOptions.minCols = this.tilesOptions.maxCols;
+            if (this.gridster) {
+                this.gridster.optionsChanged();
+                setTimeout(() => {
+                    // this.gridster.resize();
+                    this.gridster.onResize();
+                }, 1000);
+            }
+        });
+    }
+
+    private subscribeForGridsterEvents() {
+        // This resize needed only for editable widget, because animation disabled
+        // and transitionend event not fired
+        this.tilesOptions.itemResizeCallback = (item: GridsterItem) => {
+            this.onWidgetSizeChanged(item);
+        };
+
+        this.tilesOptions.draggable.start = () => {
+            this.cd.detach();
+        };
+
+        this.tilesOptions.draggable.stop = () => {
+            this.cd.reattach();
+        };
+
+        this.tilesOptions.itemChangeCallback = (item: GridsterItem, itemComponent: GridsterItemComponentInterface) => {
+            if (this.isLoading) {
+                return;
+            }
+            this.dbs.saveWidgetPositionAndSize(item as IWidgetInfo);
+        };
+    }
+
+    private loadSettings() {
+        this.settings = this.ss.getAppSettings();
+        this.tilesOptions.maxCols = parseInt(this.settings.colCount, 10) || DEFAULT_COL_COUNT;
+        this.tilesOptions.minCols = this.tilesOptions.maxCols;
+        this.tilesOptions.fixedRowHeight = parseInt(this.settings.widgetHeight, 10) || (Math.floor((window.innerHeight - 158) / 10)) - 1;
+    }
+
+    private setupSharedWidget() {
+        if (!this.sharedWidget) {
+            return;
+        }
+        this.tilesOptions.maxCols = 1;
+        this.tilesOptions.minCols = 1;
+        this.tilesOptions.maxRows = 1;
+        this.tilesOptions.minRows = 1;
+        this.tilesOptions.gridType = 'fit';
+        const p = this.route.snapshot.queryParamMap;
+        const h = p.get('height');
+        if (h) {
+            this.tilesOptions.rowHeight = parseInt(h, 10);
+        } else {
+            // this.tilesOptions.rowHeight = "match";
+        }
+        this.tilesOptions.draggable = {
+            enabled: false,
+            dragHandleClass: ''
+        };
+        this.tilesOptions.resizable = {
+            enabled: false
+        };
+    }
+
+    private checkRestrictions() {
+        if (this.route.snapshot.queryParamMap.get('nodrag') === '1') {
+            this.tilesOptions.draggable.enabled = false;
+        }
+        if (this.route.snapshot.queryParamMap.get('noresize') === '1') {
+            this.tilesOptions.resizable.enabled = false;
+        }
     }
 }

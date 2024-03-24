@@ -65,13 +65,13 @@ export class MenuComponent implements OnInit, OnDestroy {
     }
 
     showNamespaceSelector() {
-        this.sbs.sidebarToggle.next({
+        this.sbs.showComponent({
             component: NamespaceSelectorComponent
         });
     }
 
     showLanguageSelector() {
-        this.sbs.sidebarToggle.next({
+        this.sbs.showComponent({
             component: LanguageSelectorComponent
         });
     }
@@ -83,11 +83,11 @@ export class MenuComponent implements OnInit, OnDestroy {
             closeByEsc: true,
             closeByBackdropClick: true
         });
-        this.sbs.sidebarToggle.next(null);
+        this.sbs.showComponent(null);
     }
 
     showSettingsMenu() {
-        this.sbs.sidebarToggle.next({component: MenuSettingsComponent});
+        this.sbs.showComponent({component: MenuSettingsComponent});
     }
 
     shareDashboard() {

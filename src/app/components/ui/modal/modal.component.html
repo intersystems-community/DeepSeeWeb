@@ -1,4 +1,4 @@
-<div class="modal" [class.no-padding]="data.noPadding">
+<div class="modal" [class.no-padding]="data.noPadding" [class.min-height]="data.minHeight">
 
     <!-- Title -->
     <div class="title" [hidden]="!data.title">
@@ -13,11 +13,11 @@
 
     <!-- footer with buttons -->
     <div class="footer" *ngIf="data.buttons?.length">
+        <dsw-search-input *ngIf="data.search !== undefined" [ngModel]="data.search" (search)="onSearch($event)"></dsw-search-input>
         <button
             class="btn"
             *ngFor="let btn of data.buttons"
-            [class.btn-success]="btn.default"
-            [class.btn-text]="!btn.default"
+            [class.btn-white]="!btn.default"
             (click)="onButtonClick(btn)"
         >
             {{btn.label}}

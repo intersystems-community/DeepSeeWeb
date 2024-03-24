@@ -4,7 +4,7 @@
 [![Gitter](https://img.shields.io/badge/chat-on%20telegram-blue.svg)](https://t.me/joinchat/FoZ4M0xJSMDPlCQBLPRosw)
 
 Renderer for DeepSee Dashboards in Browser with MDX2JSON as a Serverside and JS web-client.<br>
-Developed using AngularJS and Bootstrap.<br><br>
+Developed using Angular11 and Highcharts.<br><br>
 
 # Whats new in 3.0
 This is newly rewritten DeepSeeWeb with TypeScript & Angular 10!
@@ -104,6 +104,9 @@ It will:
 To use DSW Open `server:port/dsw/index.html`
 
 Demo: https://www.youtube.com/watch?v=-HplM12eNik
+
+# Configuring endpoints 
+You can set your endpoint and namespace in an appropriate file config.json located in the root directory
 
 # Known issues:
 
@@ -247,6 +250,12 @@ User can create or use custom themes, more about it here: [Custom themes](doc/th
 # License
 Though DeepSeeWeb source goes with MIT License it uses hicharts.js for visualisation of several widgets so please obey the [Highcharts license](https://shop.highsoft.com/highcharts/) when use DeepSeeWeb for commercial applications.
 According to [Highcharts license](https://shop.highsoft.com/highcharts/#non-com) it's free for non-commercial usage
+
+# Development
+At least NodeJS v16.14.0 required to build application.
+1. Run `npm i`
+2. Run 'npm run build'
+3. `dist` folder will contain built app
 
 # Article and discussion around DeepSee Web
 Here is the [article on InterSystems Developer Community](https://community.intersystems.com/post/deepsee-web-intersystems-analytics-visualization-angularjs-part-1) describing DSW features and capabilites.

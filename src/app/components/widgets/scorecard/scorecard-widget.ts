@@ -1,5 +1,5 @@
 import {Component, ElementRef, HostBinding, Input, OnDestroy, OnInit, ViewChildren} from '@angular/core';
-import {BaseWidget, IWidgetDataProperties, IWidgetInfo} from '../base-widget.class';
+import {BaseWidget, IKPIData, IWidgetDataProperties, IWidgetInfo} from '../base-widget.class';
 import * as numeral from 'numeral';
 import {dsw} from '../../../../environments/dsw';
 import * as Highcharts from 'highcharts/highstock';
@@ -24,18 +24,19 @@ export class ScorecardWidgetComponent extends BaseWidget implements OnInit, OnDe
     columns: any[] = [];
     rows: any[] = [];
     data: (string | number)[][] = [];
+    targets: (string | number)[][] = [];
     color: string;
     props: IWidgetDataProperties[];
 
     hasFooter = false;
     footerValues = [];
+    private totalByColumn: {[key: string]: number} = {};
 
     private subColorsConfig: Subscription;
     private originalData: any[];
 
     ngOnInit(): void {
         super.ngOnInit();
-
         this.color = Highcharts.getOptions().colors[0] as string;
         if (this.tc && this.tc.hcColors) {
             this.color = this.tc.hcColors[0];
@@ -45,10 +46,8 @@ export class ScorecardWidgetComponent extends BaseWidget implements OnInit, OnDe
 
         this.prepareProps();
         if (!this.props?.length) {
-            this.props = this.widget.overrides as any;
-            const sc = this.widget.overrides.find(ov => ov._type === 'scoreCard');
-            if (sc?.columns?.length) {
-                this.props = sc.columns;
+            if (this.override?.columns?.length) {
+                this.props = this.override.columns;
             }
         }
     }
@@ -70,7 +69,7 @@ export class ScorecardWidgetComponent extends BaseWidget implements OnInit, OnDe
 
         this.originalData = data.Data;
         this.columns = data.Cols[0].tuples;
-        this.rows = data.Cols[1].tuples;
+        this.rows = data.Cols[1]?.tuples || [{}];
 
         this.prepareData(data.Data);
         this.cd.detectChanges();
@@ -122,7 +121,7 @@ export class ScorecardWidgetComponent extends BaseWidget implements OnInit, OnDe
             widgetsSettings[name].themeColors = {};
         }
 
-        this.sbs.sidebarToggle.next({
+        this.sbs.showComponent({
             component: ChartConfigComponent,
             inputs: {
                 appearance: {
@@ -139,8 +138,22 @@ export class ScorecardWidgetComponent extends BaseWidget implements OnInit, OnDe
         });
     }
 
-    getValue(data: any[], rowIndex: number, prop: IWidgetDataProperties): string | number {
-        switch (prop.display) {
+    private getPropValue(data: any[], rowIndex: number, prop: IWidgetDataProperties, valueToGet = 'dataValue') {
+        const isNumber = !isNaN(parseFloat(prop[valueToGet] as string));
+        let v: string | number = prop[valueToGet];
+        if (!isNumber) {
+            const colIdx = this.getColumnIndex(prop[valueToGet]);
+            if (colIdx === -1) {
+                v = 0;
+            } else {
+                v = data[rowIndex * this.columns.length + colIdx];
+            }
+        }
+        return v;
+    }
+
+    getValue(data: any[], rowIndex: number, prop: IWidgetDataProperties, _min?: number, _max?: number): string | number {
+        switch ((prop.display || '')) {
             case 'itemNo':
                 return (rowIndex + 1).toString();
 
@@ -152,32 +165,47 @@ export class ScorecardWidgetComponent extends BaseWidget implements OnInit, OnDe
             case 'value':
             case 'plotBox': {
                 const fmt = prop.format;
-                const isNumber = !isNaN(parseFloat(prop.dataValue as string));
-                let v: string | number = prop.dataValue;
-                if (!isNumber) {
-                    const colIdx = this.getColumnIndex(prop);
-                    if (colIdx === -1) {
-                        v = 0;
-                    } else {
-                        v = data[rowIndex * this.columns.length + colIdx];
-                    }
-                }
+               /* if (fmt?.charAt(0) === '%') {
+                    // fmt = '#.#';
+                }*/
+                let v: string | number = this.getPropValue(data, rowIndex, prop);
 
                 if (prop.display === 'plotBox') {
                     // Calc in % for plotbox
-                    const min = prop.rangeLower as number || 0;
-                    const max = prop.rangeUpper as number || 0;
+                    let min = prop.rangeLower as number || 0;
+                    let max = prop.rangeUpper as number || 0;
+                    if (_min !== undefined) {
+                        min = _min;
+                    }
+                    if (_max !== undefined) {
+                        max = _max;
+                    }
+
+                    if (prop.showAs === 'target%') {
+                       return parseFloat(v as any) / parseFloat(this.getPropValue(data, rowIndex, prop, 'targetValue') as any) * 100;
+                    }
+
                     if (max - min === 0) {
                         return 0;
                     }
                     return (v as number - min) / (max - min) * 100;
                 } else {
+                    if (v === '') {
+                        return '';
+                    }
+                    if (prop.showAs === 'target%') {
+                        const targetV = this.getPropValue(data, rowIndex, prop, 'targetValue');
+                        return this.formatNumber((v as number) / (targetV as number), fmt);
+                    }
+                    if (prop.showAs === 'sum%') {
+                        return this.formatNumber((v as number) / this.totalByColumn[prop.dataValue], (fmt || '#.##%'));
+                    }
                     return this.formatNumber(v, fmt);
                 }
             }
 
             case 'trendLine': {
-                const colIdx = this.getColumnIndex(prop);
+                const colIdx = this.getColumnIndex(prop.dataValue as string);
                 let v = '';
                 if (colIdx !== -1) {
                     v = data[rowIndex * this.columns.length + colIdx];
@@ -189,29 +217,86 @@ export class ScorecardWidgetComponent extends BaseWidget implements OnInit, OnDe
         return 0;
     }
 
-
-    private getColumnIndex(prop: IWidgetDataProperties): number {
+    private getColumnIndex(dimension: string): number {
         const colIdx = this.columns.findIndex(c => {
+
             if (c.dimension) {
-                return c.dimension === prop.dataValue;
+                const d = dimension.split('/');
+                return d.includes(c.dimension);
             }
             const regExp = /^Properties\(\"([^)]+)\"\)/;
             const matches = regExp.exec(c.valueID);
-            return matches[1] === prop.dataValue;
+            return matches[1] === dimension;
         });
         return colIdx;
     }
 
     private prepareData(data: any[]) {
+        // Calc min and max for all columns if needed
+        const extremes = [];
+        for (let p = 0; p < this.props.length; p++) {
+            let min;
+            let max;
+            if (this.props[p].rangeLower !== undefined && this.props[p].rangeLower !== '') {
+                min = this.props[p].rangeLower;
+            }
+            if (this.props[p].rangeUpper !== undefined && this.props[p].rangeUpper !== '') {
+                max = this.props[p].rangeUpper;
+            }
+            if (min !== undefined && max !== undefined && !isNaN(min) && !isNaN(max)) {
+                extremes.push({min, max});
+                continue;
+            }
+
+            if (this.props[p].display === 'plotBox') {
+                const colIdx = this.getColumnIndex(this.props[p].dataValue as string);
+                const d = data.filter((da, idx) => {
+                    return (idx + colIdx) % this.columns.length === 0;
+                });
+                max = Math.max(...d);
+                min = Math.min(...d);
+            }
+            min = 0;
+
+            extremes.push({min, max});
+
+            if (!this.props[p].rangeLower) {
+                this.props[p].rangeLower = min;
+            }
+            if (!this.props[p].rangeUpper) {
+                this.props[p].rangeUpper = max;
+            }
+        }
+
+        this.preparePercentageSums(data);
+
         this.data = [];
+        this.targets = [];
         for (let r = 0; r < this.rows.length; r++) {
             if (!this.data[r]) {
                 this.data[r] = [];
+                this.targets[r] = [];
             }
             for (let p = 0; p < this.props.length; p++) {
-                this.data[r][p] = this.getValue(data, r, this.props[p]);
+                let min = extremes[p].min;
+                let max = extremes[p].max;
+                if (this.props[p].rangeLower && (typeof this.props[p].rangeLower === 'string')) {
+                    min =  this.getPropValue(data, r, this.props[p], 'rangeLower');
+                }
+                if (this.props[p].rangeUpper && (typeof this.props[p].rangeUpper === 'string')) {
+                    max =  this.getPropValue(data, r, this.props[p], 'rangeUpper');
+                }
+                this.data[r][p] = this.getValue(data, r, this.props[p], min, max);
+                if (this.props[p].showAs !== 'target%' && this.props[p].targetValue && (max - min !== 0)) {
+                    let percent = 100 * 100;
+                    /*if (this.props[p].showAs === 'target%') {
+                        percent = 100;
+                    }*/
+                    this.targets[r][p] = percent * 1 / (this.data[r][p] as number) * (this.getPropValue(data, r, this.props[p], 'targetValue') as number - min) / (max - min);
+                }
             }
         }
+
         this.prepareFooter();
     }
 
@@ -248,7 +333,7 @@ export class ScorecardWidgetComponent extends BaseWidget implements OnInit, OnDe
         } else if (typeof data === 'number') {
             values = [data];
         } else if (Array.isArray(data)) {
-            console.log('gffd');
+
         }
         const max = Math.max(...values);
         const min = Math.min(...values);
@@ -275,7 +360,7 @@ export class ScorecardWidgetComponent extends BaseWidget implements OnInit, OnDe
     }
 
     private calcTotal(propIndex: number, op: string) {
-        const colIdx = this.getColumnIndex(this.props[propIndex]);
+        const colIdx = this.getColumnIndex(this.props[propIndex].dataValue as string);
         if (colIdx === -1) {
             return 0;
         }
@@ -287,5 +372,32 @@ export class ScorecardWidgetComponent extends BaseWidget implements OnInit, OnDe
             total = total / this.rows.length;
         }
         return total;
+    }
+
+    private preparePercentageSums(data: any) {
+        this.totalByColumn = {};
+        if (!this.override) {
+            return;
+        }
+        const cols = this.override.columns.filter(c => c.showAs === 'sum%');
+        if (cols.length === 0) {
+            return;
+        }
+        cols.forEach(c => {
+            const idx = this.columns.findIndex(co => co.dimension === c.dataValue);
+            this.totalByColumn[c.dataValue] = data.reduce((partialSum, a, index) => {
+                if (index % this.columns.length !== idx) {
+                    return partialSum;
+                }
+                if (a === '') {
+                    return partialSum;
+                }
+                const v = parseFloat(a);
+                if (isNaN(v)) {
+                    return partialSum;
+                }
+                return partialSum + v;
+            }, 0);
+        });
     }
 }

@@ -1,4 +1,14 @@
-import {ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren} from '@angular/core';
+import {
+    ChangeDetectorRef,
+    Component,
+    ElementRef,
+    HostListener,
+    OnDestroy,
+    OnInit,
+    QueryList,
+    ViewChild,
+    ViewChildren
+} from '@angular/core';
 import {StorageService} from '../../../services/storage.service';
 import {dsw} from '../../../../environments/dsw';
 import {GridsterComponent, GridsterConfig} from 'angular-gridster2';
@@ -32,6 +42,7 @@ interface IHomeModel {
 export class FolderScreenComponent implements OnInit, OnDestroy {
     @ViewChildren('widgets', {read: WidgetComponent}) widgets: QueryList<WidgetComponent>;
     @ViewChild('gridster', {read: ElementRef, static: true}) gridster: ElementRef;
+    @ViewChild('gridster', {static: true}) gridsterComp: GridsterComponent;
     private settings: any;
     private folder = '';
     private subOnTilesChanged;
@@ -41,6 +52,10 @@ export class FolderScreenComponent implements OnInit, OnDestroy {
     isResizing = false;
     model: IHomeModel;
     tilesOptions: GridsterConfig = {
+        maxCols: 8,
+        minCols: 8,
+        fixedRowHeight: 122,
+        gridType: 'verticalFixed',
         mobileBreakpoint: 576,
         margin: 20,
         draggable: {
@@ -63,6 +78,7 @@ export class FolderScreenComponent implements OnInit, OnDestroy {
                 private route: ActivatedRoute,
                 private router: Router,
                 private ss: SidebarService,
+                private cd: ChangeDetectorRef,
                 private hs: HeaderService,
                 private ms: MenuService,
                 private ds: DataService,
@@ -70,6 +86,7 @@ export class FolderScreenComponent implements OnInit, OnDestroy {
                 private i18n: I18nService,
                 private fs: FilterService,
                 private ns: NamespaceService) {
+        this.onResize();
         this.settings = st.getAppSettings();
         this.ms.onSetTitle.emit('');
         this.fs.clear();
@@ -93,8 +110,21 @@ export class FolderScreenComponent implements OnInit, OnDestroy {
         //         queryParamsHandling: 'merge'
         //     });
         // //$location.search('FILTERS', null);
+    }
 
+    trackByIndex = (index: number, r: any) => index;
 
+    @HostListener('window:resize', ['$event'])
+    onResize() {
+       /* let delta = (window.innerWidth - 1336) / 2;
+        if (delta < 20) {
+            delta = 20;
+        }
+        this.tilesOptions.outerMarginLeft = delta;
+        this.tilesOptions.outerMarginRight = delta;
+        if (this.gridsterComp) {
+            this.gridsterComp.optionsChanged();
+        }*/
     }
 
     ngOnInit(): void {
@@ -163,8 +193,9 @@ export class FolderScreenComponent implements OnInit, OnDestroy {
         this.tilesOptions.draggable.enabled = true;
         this.tilesOptions.resizable.enabled = true;
         this.tilesOptions.api.optionsChanged();
-        this.ss.sidebarToggle.next({
+        this.ss.showComponent({
             component: HomeEditorComponent,
+            single: true,
             inputs: {
                 tiles: this.model.tiles,
                 tile: this.model.tiles[0],
@@ -190,17 +221,17 @@ export class FolderScreenComponent implements OnInit, OnDestroy {
         // If editing mode - update editing sidebar
         if (this.model.edItem) {
             this.model.edItem = tile;
-            this.ss.sidebarToggle.next({ component: HomeEditorComponent, inputs: {tile}});
+            this.ss.showComponent({ component: HomeEditorComponent, single: true, inputs: {tile}});
             return;
         }
         // Default navigate to dashboard
-        let nav = tile.path;
+        let nav = tile.fullPath;
 
         if (tile.isFolder) {
             nav = tile.title === '' ? '..' : tile.title;
         }
 
-        this.router.navigate([nav], {relativeTo: this. route});
+        this.router.navigate([nav], {relativeTo: tile.isFolder ? this.route : this.route.root.children[0]});
     }
 
     /**
@@ -246,7 +277,6 @@ export class FolderScreenComponent implements OnInit, OnDestroy {
                 dashboards[i].icon = 0;
                 dashboards[i].requestedWidget = dashboards[i].widget;
                 this.ds.getWidgets(dashboards[i].fullPath)
-                    .toPromise()
                     .then((data) => {
                         this.retriveWidgetData(data, dashboards[i]);
                     });
@@ -363,7 +393,7 @@ export class FolderScreenComponent implements OnInit, OnDestroy {
             if (c.icon !== undefined) {
                 tiles[i].icon = c.icon;
             } else {
-                tiles[i].icon = (tiles[i].title === '' ? (this.model.icons.length - 1) : tiles[i].isFolder ? 2 : 1);
+                tiles[i].icon = (tiles[i].title === '' ? 1 : tiles[i].isFolder ? 2 : 3);
             }
             tiles[i].color = c.color || (tiles[i].title === '' ? 2 : tiles[i].isFolder ? 3 : 1);
             tiles[i].fontColor = c.fontColor || 0;
@@ -403,8 +433,8 @@ export class FolderScreenComponent implements OnInit, OnDestroy {
                 if (!this.widgets || (e.propertyName !== 'width' && e.propertyName !== 'height')) { return; }
                 this.widgets.toArray().forEach(w => {
                     if (!w.component) { return; }
-                    w.component.onResize()
-                })
+                    w.component.onResize();
+                });
             });
     }
 }

@@ -3,6 +3,11 @@
 @import "fonts";
 @import "gridster";
 @import "breakpoints";
+@import 'air-datepicker/air-datepicker.css';
+@import 'date-picker';
+@import 'pivot-table';
+@import '@ng-select/ng-select/scss/default.theme';
+@import 'ng-select';
 
 .only-sm {
     @media (min-width: #{$screen-sm-min}) {
@@ -51,19 +56,19 @@ html, body {
 }
 
 
-input, textarea, select {
+input:not([type=file]), textarea, select {
     display: block;
-    height: 30px;
+    padding: 0 10px;
+    height: var(--cl-input-height);
     border-radius: var(--input-border-radius);
     width: 100%;
-    padding: 6px 12px;
     font-size: 14px;
-    color: #555;
+    color: var(--cl-input-text);
     background-color: var(--cl-input-bg);
     background-image: none;
     border: 1px solid var(--cl-input-border);
-    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
-    box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+   /* -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075);*/
     -webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;
     -o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
     transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
@@ -71,23 +76,88 @@ input, textarea, select {
         outline: 1px solid var(--cl-accent);
         outline-offset: -1px;
     }
-}
-input[type=checkbox], input[type=radio] {
-    margin: 0;
-    width: 30px;
-}
-input:not([type=checkbox]):not([type=radio]), textarea {
-    -moz-appearance: none;
-    -webkit-appearance: none;
+    &::placeholder {
+        color: var(--cl-input-placeholder);
+    }
 }
 
-.btn {
+textarea {
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+input[type=checkbox], input[type=radio] {
+    margin: 0;
+    width: 16px;
+    height: 16px;
+    position: relative;
+    padding: 0;
+
+    &::before {
+        content: "";
+        width: 16px;
+        height: 16px;
+        transform-origin: center;
+        transform: scale(0);
+        transition: 120ms transform ease-in-out;
+        background-image: url('^assets/img/icons/checkbox.svg');
+        display: block;
+        background-repeat: no-repeat;
+        position: absolute;
+        left: 2px;
+        top: 3px;
+    }
+
+    &:checked {
+        border: 1.2px solid var(--cl-accent);
+        &::before {
+            transform: scale(1);
+        }
+    }
+}
+
+input[type=radio] {
+    border: 1px solid var(--cl-check-border);
+    &:checked {
+        border: 4px solid var(--cl-accent);
+    }
+    &::before {
+        background-image: none;
+    }
+}
+
+input, textarea {
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    appearance: none;
+    /* For iOS < 15 to remove gradient background */
+    background-color: #fff;
+    /* Not removed via appearance */
+    margin: 0;
+}
+
+input[type=checkbox] {
+    border: 1px solid var(--cl-check-border);
+    border-radius: 2px;
+    width: 16px;
+    height: 16px;
+}
+
+input[type=file] {
+    background-color: transparent;
+}
+
+.btn, .btn-round {
     display: inline-block;
     padding: 6px 12px;
     font-family: $font;
     margin-bottom: 0;
     height: 36px;
+    font-style: normal;
+    font-weight: 500;
     font-size: 14px;
+    line-height: 16px;
+
     text-align: center;
     white-space: nowrap;
     vertical-align: middle;
@@ -99,16 +169,34 @@ input:not([type=checkbox]):not([type=radio]), textarea {
     -ms-user-select: none;
     user-select: none;
     background-image: none;
-    border: 1px solid transparent;
-    box-shadow: rgba(0, 0, 0, 0.3) 0 1px 2px 0;
+    border: none;
+    //border: 1px solid transparent;
+    //box-shadow: rgba(0, 0, 0, 0.3) 0 1px 2px 0;
     transition: background-color $animSpeed linear;
+    color: white;
+
+    background: var(--cl-accent);
+    border-radius: 4px;
+
     &:active {
         transform: translateY(1px);
-        box-shadow: rgba(0, 0, 0, 0.3) 0 1px 1px 0;
     }
     &:focus {
         outline: 1px solid var(--cl-accent);
         outline-offset: -1px;
+    }
+
+    &:hover {
+        background: var(--cl-btn-hover);
+    }
+}
+
+.btn-round {
+    background: var(--cl-hover);
+    border-radius: 18px;
+    color: var(--cl-accent);
+    &:hover {
+        background: #D8E6FF;
     }
 }
 
@@ -125,9 +213,17 @@ input:not([type=checkbox]):not([type=radio]), textarea {
 .btn-gray {
     color: var(--cl-btn-secondary-txt);
     background-color: var(--cl-btn-secondary);
-    border-color: var(--cl-btn-secondary-border);
     &:hover {
         background-color: var(--cl-btn-secondary-hover);
+    }
+}
+
+.btn-white {
+    color: var(--cl-accent);
+    background-color: white;
+    border: 1px solid var(--cl-input-border);
+    &:hover {
+        background-color: rgba(26, 115, 232, 0.05);;
     }
 }
 
@@ -188,6 +284,19 @@ input:not([type=checkbox]):not([type=radio]), textarea {
     background-color: var(--cl9) !important;
 }
 
+.cl10 {
+    background-color: var(--cl10) !important;
+}
+
+.cl11 {
+    background-color: var(--cl11) !important;
+}
+
+.cl12 {
+    background-color: var(--cl12) !important;
+}
+
+
 .fc1 {
     color: var(--fc1);
     fill:  var(--fc1);
@@ -221,8 +330,8 @@ input:not([type=checkbox]):not([type=radio]), textarea {
     color: var(--cl-txt);
 }
 
-// Set dynamic component to fir all free space
-dsw-widget-filter + * {
+// Set dynamic component to fit all free space
+dsw-widget-filter ~ * {
     height: 100%;
     width: 100%;
     min-height: 0;
@@ -290,5 +399,68 @@ dsw-widget-filter + * {
         background: var(--cl-widget-filter-bg);
         opacity: 0.6;
     }
+}
+*/
+
+gridster {
+    @include dsw-scrollbar-v;
+}
+
+.gridster-preview {
+    background: var(--cl-hover);
+}
+
+.gridster-item-moving, .gridster-item-resizing {
+    box-shadow: none !important;// 0 0 12px rgba(0, 0, 0, 0.25) !important;
+    outline: 1px solid var(--cl-accent);
+}
+
+dsw-modal.modal-no-border {
+    padding: 0;
+    background: transparent;
+    & > .modal {
+        padding: 0;
+        margin: 0;
+        background-color: transparent;
+        & > .content {
+            overflow: visible;
+        }
+    }
+}
+
+.dsw-tooltip {
+    position: absolute;
+    z-index: 100;
+    font-family: $font;
+    color: var(--cl-input-text);
+    font-size: 14px;
+    padding: 10px;
+    background: #FFFFFF;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    white-space: pre-line;
+}
+
+.dsw-spinner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.7);
+    z-index: 2;
+}
+
+/*
+.go-out {
+    transform: translateX(calc(100% + 40px));
+    position: absolute;
+}
+
+.go-in {
+    transform: translateX(0) !important;
 }
 */

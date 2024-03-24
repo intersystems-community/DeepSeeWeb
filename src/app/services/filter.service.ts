@@ -9,6 +9,8 @@ import {BroadcastService} from './broadcast.service';
 import {DashboardService} from './dashboard.service';
 import {IWidgetEvent} from '../components/widgets/base-widget.class';
 
+const DATE_PICKER_CLASS = '%ZEN.Component.calendar';
+
 @Injectable({
     providedIn: 'root'
 })
@@ -19,6 +21,7 @@ export class FilterService {
     items = [];
 
     onApplyFilter = new EventEmitter<any>();
+    onFiltersChanged = new EventEmitter<void>();
 
     constructor(private route: ActivatedRoute,
                 private us: UtilService,
@@ -43,6 +46,19 @@ export class FilterService {
             this.items.push(filterArray[i]);
             const flt = this.items[this.items.length - 1];
 
+            // Check for date filters
+            flt.isDate = flt.controlClass === DATE_PICKER_CLASS || flt.targetPropertyDataType === '%DeepSee.Time.DayMonthYear';
+            if (flt.isDate) {
+                flt.values = [];
+            }
+
+            // Check for multiple filter in value
+            if (flt.value && flt.value?.toString().charAt(0) === '{') {
+                flt.value = flt.value.toString().slice(1, -1);
+                const paths = flt.value.toString().split(',');
+                flt.value = flt.value.toString().replace(/,/g, '|');
+            }
+
             // Check for valueList
             if (flt.valueList && flt.displayList) {
                 const vals = flt.valueList.split(',');
@@ -50,6 +66,28 @@ export class FilterService {
                 flt.values = [];
                 for (let j = 0; i < vals.length; j++) {
                     flt.values.push({name: txt[j], path: vals[j]});
+                }
+            }
+
+            // Check for interval
+            if (flt.value?.toString().indexOf(':') !== -1) {
+                if (flt.isDate) {
+                    this.initDateFilter(flt);
+                } else {
+                    const parts = flt.value?.toString().split(':');
+                    flt.fromIdx = flt.values?.findIndex(f => f.path === parts[0]);
+                    flt.toIdx = flt.values?.findIndex(f => f.path === parts[1]);
+                    if (flt.fromIdx === -1) {
+                        flt.values.push({path: parts[0], name: parts[0].replace('&[', '').replace(']', '')});
+                        flt.fromIdx = flt.values.length - 1;
+                    }
+                    flt.values[flt.fromIdx].checked = true;
+                    if (flt.toIdx === -1) {
+                        flt.values.push({path: parts[1], name: parts[1].replace('&[', '').replace(']', '')});
+                        flt.toIdx = flt.values.length - 1;
+                    }
+                    flt.values[flt.toIdx].checked = true;
+                    flt.isInterval = true;
                 }
             }
 
@@ -83,6 +121,9 @@ export class FilterService {
                 flt.label = flt.label.replace(/(\/\*([^*]|[\r\n]|(\*+([^*\/]|[\r\n])))*\*+\/)|(\/\/.*)/g, '');
             }
 
+            if (this.route.snapshot.queryParamMap.get('nofilters') === '1') {
+                flt.value = '';
+            }
             flt.valueDisplay = this.findDisplayText(flt);
         }
 
@@ -101,8 +142,8 @@ export class FilterService {
      * Returns whole share ulr for filters on dashboard
      */
     public getFiltersShareUrl() {
-        let url = window.location.href;
-        url = this.removeParameterFromUrl(url, 'FILTERS');
+        let url = window.location.href.split('?')[0];
+        // url = this.removeParameterFromUrl(url, 'FILTERS');
         const part = url.split('#')[1];
         const fltUrl = this.getFiltersUrlString();
         const flt = 'FILTERS=TARGET:*;FILTER:' + fltUrl;
@@ -121,7 +162,7 @@ export class FilterService {
      * @param {string} [widgetName] Name of widget
      * @returns {string}
      */
-    getFiltersUrlString(widgetName?: string, ignoreTargetAll = false) {
+    getFiltersUrlString(widgetName?: string, ignoreTargetAll = false, dot = '.', seporator = '~') {
         const f = [];
         let widgetFilters = widgetName ? this.getAffectsFilters(widgetName) : this.items;
         if (ignoreTargetAll && widgetFilters) {
@@ -135,9 +176,9 @@ export class FilterService {
             let v = '';
             if (flt.isInterval) {
                 // Format filter string like path.v1:v2
-                v = flt.targetProperty + '.' + flt.values[flt.fromIdx].path + ':' + flt.values[flt.toIdx].path;
+                v = flt.targetProperty + dot + flt.values[flt.fromIdx].path + ':' + flt.values[flt.toIdx].path;
             } else {
-                v = flt.targetProperty + '.' + (flt.isExclude ? '%NOT ' : '') + flt.value;
+                v = flt.targetProperty + dot + (flt.isExclude ? '%NOT ' : '') + flt.value;
             }
             // For many selected values make correct filter string {v1,v2,v3}
             if (v.indexOf('|') !== -1) {
@@ -145,14 +186,60 @@ export class FilterService {
             }
             f.push(v);
         }
-        return encodeURIComponent(f.join('~'));
+        return encodeURIComponent(f.join(seporator));
     }
 
+    private isBase64(str: string) {
+        try {
+            return btoa(atob(str)) === str;
+        } catch (e) {
+            return false;
+        }
+    }
 
     loadFiltersFromUrl() {
-        const param = this.route.snapshot.queryParamMap.get('FILTERS');
-        if (!param) {
+        if (this.route.snapshot.queryParamMap.get('nofilters') === '1') {
             return;
+        }
+
+        let query = window.location.hash.split('?')[1];
+        if (!query) {
+            return;
+        }
+        query = query.replace(/\.&%5B/g, '.%26%5B');
+        query = query.replace(/\.=&%5B/g, '.%26%5B');
+        query = query.replace(/\.%7B=&%5B/g, '.%7B%26%5B');
+        query = query.replace(/\,=&%5B/g, ',%26%5B');
+        query = query.replace(/\.&\[/g, '.%26%5B');
+        query = query.replace(/\.=&\[/g, '.%26%5B');
+        const p = query.split('&');
+        let param = '';
+        p.forEach(q => {
+            if (q.split('=')[0].toLowerCase() === 'filters') {
+                param = q.split('=')[1];
+            };
+        });
+
+        try {
+            if (this.isBase64(decodeURIComponent(param))) {
+                param = decodeURIComponent(param);
+                if (param.charAt(param.length - 1) === '=') {
+                    param = param.slice(0, -1);
+                }
+                param = atob(param);
+            }
+        } catch (e) {}
+        //let param = this.route.snapshot.queryParamMap.get('FILTERS');
+        if (!param) {
+            // Workaround for invalid escaped links where "=" char is escaped. Requested by Shvarov
+            const p = Object.keys(this.route.snapshot.queryParams)[0];
+            if (!p) {
+                return;
+            }
+            param = p.split('FILTERS=')[1];
+            if (!param) {
+                return;
+            }
         }
         const params = param.split(';');
         let widgetName = null;
@@ -174,10 +261,27 @@ export class FilterService {
         } else {
             flt = this.items.slice();
         }
-        flt.forEach(f => {
-            const urlFilters = filters.split('~');
+        flt.forEach((f, idx) => {
+            const urlFilters = decodeURIComponent(filters).split('~');
             for (let i = 0; i < urlFilters.length; i++) {
-                const s = decodeURIComponent(urlFilters[i]);
+                let s = decodeURIComponent(urlFilters[i]);
+                // Workaround for invalid urls with ending '='. Requested by Shvarov
+                if (s.charAt(s.length - 1) === '=') {
+                    s = s.slice(0, -1);
+                }
+
+                // Check for date
+                if (f.isDate) {
+                    // Check for path
+                    const parts = s.split('.&');
+                    const path = parts[0];
+                    if (path !== f.targetProperty) {
+                        continue;
+                    }
+                    f.value = '&' + parts[1];
+                    this.initDateFilter(f);
+                }
+
                 // Check filter path
                 if (s.indexOf('{') !== -1) {
                     // Many values
@@ -188,17 +292,28 @@ export class FilterService {
                     // &[30 to 59]|&[60+]|"
                     const values = s.match(/\{([^)]+)\}/)[1].split(',');
                     f.value = values.join('|');
-                    f.valueDisplay = values.map(v => v.replace('&[', '').replace(']', '')).join(',');
                 } else {
-                    // One value
+                    // Check for path
                     const path = s.split('.&')[0];
                     if (path !== f.targetProperty) {
                         continue;
                     }
-                    f.value = '&' + s.split('.&')[1];
-                    f.valueDisplay = this.findDisplayText(f);
+
+                    // Check for interval
+                    if (s.indexOf(':') !== -1) {
+                     const parts = s.split(':');
+                     // const path = parts[0].split('.&')[0];
+                     const from = parts[0].split('.').pop();
+                     const to = parts[1];
+                     f.fromIdx = f.values.findIndex(el => el.path === from);
+                     f.toIdx = f.values.findIndex(el => el.path === to);
+                     f.isInterval = true;
+                    } else {
+                        f.value = '&' + s.split('.&')[1];
+                    }
                 }
             }
+            f.valueDisplay = this.findDisplayText(f);
         });
     }
 
@@ -206,12 +321,15 @@ export class FilterService {
      * Load saved filter values from settings
      */
     private loadFiltersFromSettings() {
+        if (this.route.snapshot.queryParamMap.get('nofilters') === '1') {
+            return;
+        }
         // Don't Load filters for shared widget
         if (this.us.isEmbedded()) {
             return;
         }
 
-        if (!this.ss.getAppSettings()?.isSaveFilters) {
+        if (this.ss.getAppSettings()?.isSaveFilters === false) {
             return;
         }
         let found = false;
@@ -233,29 +351,47 @@ export class FilterService {
                     if (exists.isInterval) {
                         exists.fromIdx = flt.fromIdx;
                         exists.toIdx = flt.toIdx;
-                        exists.valueDisplay = exists.values[exists.fromIdx].name + ':' + exists.values[exists.toIdx].name;
+                        if (exists.isDate) {
+                            exists.valueDisplay = flt.valueDisplay;
+                            exists.values = flt.value.toString().split('|').map(v => {
+                                return {
+                                    path: v,
+                                    checked: true
+                                };
+                            });
+                        } else {
+                            exists.valueDisplay = exists.values[exists.fromIdx].name + ':' + exists.values[exists.toIdx].name;
+                        }
                     } else {
-                        const values = flt.value.split('|');
+                        const values = flt.value.toString().split('|');
 
                         // Multiple values was selected
                         exists.values.forEach((v) => {
-                            if (values.indexOf(v.path) !== -1) {
+                            if (values.indexOf(v.path.toString()) !== -1) {
                                 v.checked = true;
                             }
                         });
 
-                        exists.valueDisplay = flt.value.split('|').map(el => {
-                            const isNot = el.indexOf('.%NOT') !== -1;
-                            if (isNot) {
-                                el = el.replace('.%NOT', '');
-                            }
-                            const v = exists.values.find(e => e.path == el);
-                            let name = '';
-                            if (v && v.name) {
-                                name = v.name.toString();
-                            }
-                            return (isNot ? this.i18n.get('not') + ' ' : '') + name;
-                        }).join(',');
+                        this._addSavedFilterToFilterList(flt, exists);
+
+                        if (flt.valueDisplay) {
+                            exists.valueDisplay = flt.valueDisplay.trim();
+                        }
+
+                        if (!exists.valueDisplay) {
+                            exists.valueDisplay = flt.value.toString().split('|').map(el => {
+                                const isNot = el.indexOf('.%NOT') !== -1;
+                                if (isNot) {
+                                    el = el.replace('.%NOT', '');
+                                }
+                                const v = exists.values.find(e => e.path == el);
+                                let name = '';
+                                if (v && v.name) {
+                                    name = v.name.toString();
+                                }
+                                return (isNot ? this.i18n.get('not') + ' ' : '') + name;
+                            }).join(',');
+                        }
                     }
 
                     found = true;
@@ -299,22 +435,31 @@ export class FilterService {
         let value = flt.value;
         let isExclude = false;
         if (typeof value === 'string') {
-            isExclude = value.toUpperCase().endsWith('.%NOT');
+            isExclude = value.toString().toUpperCase().endsWith('.%NOT');
         }
         if (isExclude) {
-            value = value.substr(0, value.length - 5);
+            value = value.toString().substr(0, value.toString().length - 5);
         }
+
+        if (flt.isDate) {
+            return this.findDateText(flt);
+        }
+        /*if (flt.isDate) {
+            flt.valueDisplay = parts[0] + ':' + parts[1];
+        }*/
         flt.value = value;
+        const values = flt.value.toString().split('|');
+        const names = [];
         for (let i = 0; i < flt.values.length; i++) {
-            if (flt.values[i].path === value) {
+            if (flt.values[i].path === value || (values.length > 1 && values.includes(flt.values[i].path))) {
                 flt.values[i].checked = true;
                 flt.values[i].default = true;
                 flt.defaultExclude = isExclude;
                 flt.isExclude = isExclude;
-                return flt.values[i].name;
+                names.push(flt.values[i].name);
             }
         }
-        return '';
+        return names.join(',');
     }
 
     /**
@@ -385,18 +530,32 @@ export class FilterService {
         if (val !== '') {
             val = val.substr(0, val.length - 1);
         }
+        // Change "," to "-" for date filter, because it applied as range
+        if (flt.isDate) {
+            disp = disp.replace(',', ' - ');
+        }
+        if (flt.isExclude) {
+            disp = this.i18n.get('not') + ' ' + disp;
+        }
+        if (flt.isInterval) {
+            disp = (flt.values[flt.fromIdx]?.name?.toString() || '') + ':' + (flt.values[flt.toIdx]?.name?.toString() || '');
+        }
         flt.valueDisplay = disp;
         flt.value = val;
         if (!noRefresh) {
-            if (flt.targetArray.length !== 0) {
-                // Listened in widget.component.ts
-                for (i = 0; i < flt.targetArray.length; i++) {
-                    this.bs.broadcast('filter' + flt.targetArray[i], flt);
-                }
-            } else {
-                // Listened in widget.component.ts
-                if (flt.target === '*' || flt.target === '') {
-                    this.bs.broadcast('filterAll', flt);
+
+            // Only broadcast filtering if not `setFilter`
+            if (flt.action !== 'setFilter') {
+                if (flt.targetArray.length !== 0) {
+                    // Listened in widget.component.ts
+                    for (i = 0; i < flt.targetArray.length; i++) {
+                        this.bs.broadcast('filter' + flt.targetArray[i], flt);
+                    }
+                } else {
+                    // Listened in widget.component.ts
+                    if (flt.target === '*' || flt.target === '') {
+                        this.bs.broadcast('filterAll', flt);
+                    }
                 }
             }
 
@@ -410,6 +569,7 @@ export class FilterService {
         this.filtersChanged = true;
         this.saveFilters();
         this.updateFiltersParameterInURL();
+        this.onFiltersChanged.emit();
     }
 
     private updateFiltersParameterInURL() {
@@ -473,7 +633,8 @@ export class FilterService {
                 isExclude: e.isExclude,
                 isInterval: e.isInterval,
                 fromIdx: e.fromIdx,
-                toIdx: e.toIdx
+                toIdx: e.toIdx,
+                valueDisplay: e.valueDisplay
             };
         });
 
@@ -503,5 +664,63 @@ export class FilterService {
      */
     clear() {
         this.items = [];
+    }
+
+    private _addSavedFilterToFilterList(toAdd: any, filters: any) {
+        const values = toAdd.value.toString().split('|');
+        if (!values.length || !toAdd.valueDisplay) {
+            return;
+        }
+
+        const display = toAdd.valueDisplay.toString().split(',');
+        values.forEach((v, idx) => {
+            // Check if this value already exists
+            if (filters.values.some(exists => {
+                if (exists.path === v) {
+                    return true;
+                }
+                // Check if path is number, because all saved filters is strings
+                if (!isNaN(exists.path) && (parseInt(v, 10) === exists.path)) {
+                    return true;
+                }
+                return false;
+            })) {
+                return;
+            }
+            filters.values.push({
+                name: display[idx],
+                path: v,
+                checked: true,
+                _saved: true
+            });
+        });
+    }
+
+    private initDateFilter(flt: any) {
+        flt.isInterval = true;
+        flt.value = flt.value.toString().replace(':', '|');
+        const parts = flt.value.toString().split('|');
+        if (!flt.values) {
+            flt.value = [];
+        }
+        flt.values.forEach(v => v.checked = false);
+        flt.fromIdx = flt.values.findIndex(fi => fi.path === parts[0]);
+        if (flt.fromIdx === -1) {
+            flt.values.push({path: parts[0]});
+            flt.fromIdx = flt.values.length - 1;
+        }
+        flt.values[flt.fromIdx].checked = true;
+
+        flt.toIdx = flt.values.findIndex(fi => fi.path === parts[1]);
+        if (flt.toIdx === -1) {
+            flt.values.push({path: parts[1]});
+            flt.toIdx = flt.values.length - 1;
+        }
+        flt.values[flt.toIdx].checked = true;
+    }
+
+    private findDateText(flt) {
+        const value = flt.value || '';
+        return value.toString().split('|').map(v => v.replace('&[', '').replace(']', '')).join(':');
     }
 }

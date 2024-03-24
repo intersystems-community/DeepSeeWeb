@@ -12,7 +12,20 @@ export const ERROR_TOGGLE_ANIMATION = trigger(
             style({transform: 'translateX(0)'}),
             animate('100ms', style({transform: 'translateX(100%)'}))
         ])
-    ]
+    ],
+);
+
+export const ERROR_TOGGLE_LEFT_ANIMATION = trigger(
+    'toggleErrorLeft', [
+        transition(':enter', [
+            style({transform: 'translateX(-100%)'}),
+            animate('100ms', style({transform: 'translateX(0)'}))
+        ]),
+        transition(':leave', [
+            style({transform: 'translateX(0)'}),
+            animate('100ms', style({transform: 'translateX(-100%)'}))
+        ])
+    ],
 );
 
 
@@ -28,6 +41,11 @@ export class ErrorComponent implements OnInit, AfterViewInit {
 
     constructor(private es: ErrorService,
                 private el: ElementRef) {
+    }
+
+    @HostBinding('class.left')
+    get isLeft() {
+        return this.error.isLeft;
     }
 
     ngOnInit() {

@@ -1,9 +1,14 @@
 <dsw-sidebar-actions (cancel)="onCancel()" (apply)="onApply()">Theme settings</dsw-sidebar-actions>
 <div class="container">
     <label>Current theme</label>
-    <select [(ngModel)]="model.theme" (change)="applyTheme()">
-        <option *ngFor="let o of model.themes" [value]="o.file">{{o.text}}</option>
-    </select>
+    <ng-select
+        class="dsw"
+        [(ngModel)]="model.theme"
+        bindValue="file"
+        bindLabel="text"
+        [clearable]="false"
+        [items]="model.themes">
+    </ng-select>
 
     <label>Theme variables</label>
     <div class="variables-container">

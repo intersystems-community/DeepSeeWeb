@@ -1,10 +1,7 @@
-import {ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, OnDestroy} from '@angular/core';
 import {SidebarService} from '../../../services/sidebar.service';
 import {dsw} from '../../../../environments/dsw';
 import {StorageService} from '../../../services/storage.service';
-import {IError} from '../../../services/error.service';
-import {Subscription} from 'rxjs';
-import {skip} from 'rxjs/operators';
 
 interface ICssVariable {
     name: string;
@@ -16,7 +13,7 @@ interface ICssVariable {
     selector: 'dsw-theme-settings',
     templateUrl: './theme-settings.component.html',
     // TODO: refactor home-editor
-    styleUrls: ['./../home-editor/home-editor.component.scss', './theme-settings.component.scss']
+    styleUrls: ['./../../editor/editor-styles.scss', './theme-settings.component.scss']
 })
 export class ThemeSettingsComponent implements OnDestroy {
 
@@ -65,7 +62,7 @@ export class ThemeSettingsComponent implements OnDestroy {
     }
 
     onCancel() {
-        this.sbs.sidebarToggle.next(null);
+        this.sbs.showComponent(null);
     }
 
     onApply() {
@@ -73,7 +70,7 @@ export class ThemeSettingsComponent implements OnDestroy {
         settings.theme = this.model.theme;
         this.ss.setAppSettings(settings);
         this.isApplied = true;
-        this.sbs.sidebarToggle.next(null);
+        this.sbs.showComponent(null);
     }
 
     private getAllCssVariables(): string[] {

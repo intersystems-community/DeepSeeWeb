@@ -25,10 +25,13 @@ export class WPivotComponent extends BaseWidget implements OnInit, AfterViewInit
     }
 
     createPivotTable() {
+        const _this = this;
         const setup = {
             initialData: this.widget.pivotData,
             container: this.el.nativeElement,
             pivotProperties: {},
+            enableListingSelect: false,
+            enableSearch: false,
             dataSource: {
                 pivot: this.widget.dataSource,
                 MDX2JSONSource: this.ds.url.substring(0, this.ds.url.length - 1),
@@ -38,8 +41,22 @@ export class WPivotComponent extends BaseWidget implements OnInit, AfterViewInit
             },
             triggers: {
                 drillDown: (p) => this.onDrillDown(p),
+                // Prevent drilldown for KPI
+                rowClick: (idx, rowData, cellData) => {
+                    if (_this.drillFilterWidgets?.length) {
+                        // Prevent drill if widget has click filter (#261)
+                        _this.doDrillFilter(cellData.source.path, _this.drills);
+                        _this.parent?.header?.cd.detectChanges();
+                        return false;
+                    }
+
+                    if (this.widget.kpitype) {
+                        return false;
+                    }
+                    return true;
+                },
                 back: (p) => this.onDrillDown(p),
-                cellDrillThrough: () => this.onDrillThrough(),
+                cellDrillThrough: (...args) => this.onDrillThrough(...args),
                 responseHandler: (info) => {
                     if (info.status !== 200) {
                         this.showError(info.xhr.responseText);
@@ -56,13 +73,19 @@ export class WPivotComponent extends BaseWidget implements OnInit, AfterViewInit
         delete this.widget.pivotMdx;
 
         this.lpt = new LightPivotTable(setup);
-        (window as any).lpt = this.lpt;
+        // Remove spinner for editing widget because it created empty
+        if (this.widget.edKey) {
+            this.lpt.pivotView.displayMessage('');
+        }
     }
 
     doDrillUp() {
         if (this.widget.isDrillthrough && this.restoreWidgetType) {
             this.widget.isDrillthrough = null;
             this.restoreWidgetType();
+            if (this.widget.kpitype) {
+                this.requestData();
+            }
         } else {
             this.lpt.CONTROLS.back();
         }
@@ -71,8 +94,30 @@ export class WPivotComponent extends BaseWidget implements OnInit, AfterViewInit
         this.parent.cd.detectChanges();
     }
 
-    onDrillThrough() {
+    onDrillThrough(...args) {
         if (!this.canDoDrillthrough) {
+            return false;
+        }
+        if (this.widget.kpitype) {
+            const {cellData, x, y} = args[0];
+            const {info, dimensions} = args[1];
+            if (!dimensions[0]) {
+                return;
+            }
+            const pathX = dimensions[0][x - info.leftHeaderColumnsNumber]?.dimension || '';
+            const pathY = dimensions[0][0]?.dimension || '';
+            const val = dimensions[1][y - info.topHeaderRowsNumber]?.title || '';
+            if (!pathX || !pathY) {
+                return;
+            }
+            const flt = [{name: pathX, value: cellData.value}, {name: pathY, value: val}];
+
+            this._requestKPIData(flt)
+                .then(() => {
+                    this.widget.isDrillthrough = true;
+                    this.widget.backButton = true;
+                    this.parent.cd.detectChanges();
+                });
             return false;
         }
         this._oldMdx = this.lpt.getActualMDX();
@@ -102,6 +147,12 @@ export class WPivotComponent extends BaseWidget implements OnInit, AfterViewInit
      * Requests pivot data
      */
     requestData() {
+        const ds = this.customDataSource || this.widget.dataSource;
+        if (this.widget.kpitype) {
+           this._requestKPIData();
+           return;
+        }
+
         if (this.lpt) {
             let newMdx = this.getMDX();
             if (this.lpt.isListing()) {
@@ -117,10 +168,9 @@ export class WPivotComponent extends BaseWidget implements OnInit, AfterViewInit
                 newMdx = newMdx + ' %FILTER ' + this.drillFilter;
             }
             this.broadcastDependents();
-            if (this.lpt.getActualMDX() !== newMdx) {
-                this.clearError();
-                this.lpt.changeBasicMDX(newMdx);
-            }
+            this.clearError();
+            this.lpt.changeBasicMDX(newMdx);
+            //this.parent.cd.detectChanges();
         }
     }
 

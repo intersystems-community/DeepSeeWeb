@@ -24,9 +24,12 @@ export class EmptyWidgetComponent extends BaseWidget implements OnInit {
     onHeaderButton(btn: IButtonToggle) {
         switch (btn.name) {
             case 'setDefault': this.setFiltersToDefaults(); break;
-            case 'byRows': this.setViewSize(100); break;
-            case 'by2columns': this.setViewSize(50); break;
-            case 'by3columns': this.setViewSize(33); break;
+            case 'byRows': this.setViewSize(0); break;
+            case 'by2columns': this.setViewSize(1); break;
+            case 'by3columns': this.setViewSize(2); break;
+            case 'by4columns': this.setViewSize(3); break;
+            case 'by5columns': this.setViewSize(4); break;
+            case 'by6columns': this.setViewSize(5); break;
         }
     }
 
@@ -64,8 +67,12 @@ export class EmptyWidgetComponent extends BaseWidget implements OnInit {
     getViewSize() {
         const widgets = this.ss.getWidgetsSettings(this.widget.dashboard);
         const n = this.widget.name;
-        if (!widgets[n]) return 100;
-        if (widgets[n].viewSize === undefined) return 100;
+        if (!widgets[n]) {
+            return 0;
+        }
+        if (widgets[n].viewSize === undefined) {
+            return 0;
+        }
         return widgets[n].viewSize;
     }
 

@@ -2,12 +2,15 @@
 <gridster [options]="tilesOptions" #gridster *ngIf="!isMobile">
     <!-- Grid item -->
     <gridster-item
+        #list
         class="tile"
-        *ngFor="let item of data$ | async; let idx = index"
-        [class.no-anim]="!isLoaded"
+        *ngFor="let item of list; let idx = index; trackBy: trackByName"
+        [id]="item === editedWidget ? 'edited-widget' : undefined"
+        [class.editing]="item === editedWidget"
+        [class.no-anim]="isLoading || editedWidget"
         [class.expanded]="item.isExpanded"
         [item]="item"
-        (transitionend)="onAnimationEnd(item, $event)"
+        (transitionend)="onWidgetSizeChanged(item, $event)"
         (contextmenu)="showContextMenu(item, $event)"
     >
         <dsw-widget #widgets [widget]="item"></dsw-widget>
@@ -16,7 +19,7 @@
 
 <!-- Widgets list for mobile -->
 <div class='mobile-widgets' *ngIf="isMobile" [style.transform]="'translateX(calc(100vw * ' +- page + '))'">
-    <div class="tile" *ngFor="let item of data$ | async; let idx = index">
+    <div class="tile" *ngFor="let item of list; let idx = index">
         <dsw-widget #widgets [widget]="item"></dsw-widget>
     </div>
 
@@ -32,8 +35,10 @@
     </div>
 </div>
 
+<div class="dsw-spinner" *ngIf="isLoading">
+    <img src="assets/img/spinner.svg">
+</div>
 
-<img src="assets/img/spinner.svg" [hidden]="isLoaded">
 
 <!-- Context menu -->
 <div #ctxMenu class="ctx-menu" style="visibility:hidden">
@@ -44,6 +49,8 @@
     <div (click)="printItem()" *ngIf="ctxItem?.isChart">{{'print' | i18n}}</div>
     <div (click)="shareItem()">{{'share' | i18n}}</div>
     <div (click)="copyMDX()">{{'copyMDX' | i18n}}</div>
+    <div *ngIf="ctxItem?.kpitype" (click)="gotoKPIPage(ctxItem)">{{'showKPI' | i18n}}</div>
+    <div *ngIf="ctxItem?.dataSource" (click)="gotoAnalyzer(ctxItem)">{{'openAnalyzer' | i18n}}</div>
     <div class="divider"></div>
 
     <!-- Export -->
@@ -72,6 +79,8 @@
             <div (click)="setType('pie')">Pie chart</div>
         </div>
     </div>
+
+    <div *ngIf="ctxItem" (click)="ctxEdit()">Edit widget</div>
 </div>
 
 <!-- TODO: implement mobile -->
