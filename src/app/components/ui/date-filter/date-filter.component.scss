@@ -1,54 +1,55 @@
 @import "variables";
 
 :host {
-    font-family: $font;
-    font-size: 14px;
-    color: var(--cl-widget-filter-txt);
-    display: flex;
-    align-items: flex-start;
-    overflow: auto;
+  font-family: $font;
+  font-size: 14px;
+  color: var(--cl-widget-filter-txt);
+  display: flex;
+  align-items: flex-start;
+  overflow: auto;
 
-    &::-webkit-scrollbar {
-        width: 5px;
-        height: 8px;
-        background-color: #eee; /* or add it to the track */
-    }
-    &::-webkit-scrollbar-thumb {
-        background: #aaa;
-    }
+  &::-webkit-scrollbar {
+    width: 5px;
+    height: 8px;
+    background-color: #eee; /* or add it to the track */
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #aaa;
+  }
 }
 
 ul {
-    border-right: 1px solid var(--cl-input-border);
-    padding: 20px;
-    margin: 0;
-    list-style-type: none;
+  border-right: 1px solid var(--cl-input-border);
+  padding: 20px;
+  margin: 0;
+  list-style-type: none;
 }
 
 li {
-    white-space: nowrap;
-    cursor: pointer;
+  white-space: nowrap;
+  cursor: pointer;
 
-    &:not(:last-child) {
-        margin-bottom: 12px;
+  &:not(:last-child) {
+    margin-bottom: 12px;
+  }
+
+  &.selected {
+    position: relative;
+    color: var(--cl-accent);
+
+    &:before {
+      position: absolute;
+      left: -20px;
+      top: 0;
+      height: 100%;
+      width: 2px;
+      content: "";
+      background-color: var(--cl-accent);
     }
-
-    &.selected {
-        position: relative;
-        color: var(--cl-accent);
-
-        &:before {
-            position: absolute;
-            left: -20px;
-            top: 0;
-            height: 100%;
-            width: 2px;
-            content: "";
-            background-color: var(--cl-accent);
-        }
-    }
+  }
 }
 
 dsw-date-picker::ng-deep.air-datepicker {
-    border: none;
+  border: none;
 }

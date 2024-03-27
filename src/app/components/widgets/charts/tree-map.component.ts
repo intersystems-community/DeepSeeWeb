@@ -1,163 +1,164 @@
 import {Component, OnInit} from '@angular/core';
 import {BaseChartClass} from './base-chart.class';
-import numeral from 'numeral';
-import {IButtonToggle} from '../../../services/widget.service';
-import {XAxisOptions} from "highcharts";
 
 @Component({
-    selector: 'dsw-tree-map',
-    template: '',
-    standalone: true
+  selector: 'dsw-tree-map',
+  template: '',
+  standalone: true
 })
 export class TreeMapComponent extends BaseChartClass implements OnInit {
-    private isPercent = true;
-    private totalSum = 0;
-    private prevData = null;
+  private isPercent = true;
+  private totalSum = 0;
+  private prevData = null;
 
-    ngOnInit() {
-        super.ngOnInit();
-        this.totalSum = 0;
+  ngOnInit() {
+    super.ngOnInit();
+    this.totalSum = 0;
 
-        // Check for percentage
-        if (this.widget.overrides && this.widget.overrides[0] && this.widget.overrides[0].showPercentage === 0) { this.isPercent = false; }
-
-        // Load isLegend option if exists
-        /*if (this.hasOption('isLegend')) {
-            this.isPercent = this.widget.isLegend;
-        }*/
-        const _this = this;
-        const ex = {
-            categories: ['fds'],
-            legend: {
-                enabled: this.widget.isLegend
-            },
-            plotOptions: {
-                series: {
-                    animation: false,
-                    colorByPoint: true,
-                    legendType: 'point'
-                },
-                treemap: {
-                    // colorByPoint: true,
-                    dataLabels: {
-                        enabled: true,
-                        // useHTML: true,
-                        formatter(this: any) {
-                            // Define custom label formatter
-                            // if (_this.widget['btn.ShowPercents'] && _this.totalSum) {
-                            if ( _this.totalSum) {
-                                let percent: number|string = (this.point.value / _this.totalSum * 100);
-                                percent = _this.formatNumber(percent, _this.getDataPropByDataValue(this.series?.userOptions?.dimension)?.format || '#.##');
-                                return `${this.point.caption}<br>${percent}%`;
-                            } else {
-                                // const v = _this.formatNumber(this.point.value, '');
-                                // return `${this.point.caption}<br>${v}`;
-                                return `${this.point.caption}`;
-                            }
-                        }
-                    }
-                }
-            },
-            tooltip: {
-                formatter(this: any) {
-                    const cap = this.series.userOptions.caption;
-                    const fmt = this.series.userOptions.format;
-                    let v = this.point.value;
-                    v = _this.formatNumber(v, fmt);
-                    /*if (fmt) {
-                        v = numeral(v).format(fmt);
-                    }*/
-                    return this.point.caption + '<br>' + cap + ': <b>' + v + '</b>';
-                }
-            }
-        };
-
-        this.us.mergeRecursive(this.chartConfig, ex);
-
-        delete this.chartConfig.plotOptions?.series?.dataLabels;
+    // Check for percentage
+    if (this.widget.overrides && this.widget.overrides[0] && this.widget.overrides[0].showPercentage === 0) {
+      this.isPercent = false;
     }
 
-
-/*    onHeaderButton(bt: IButtonToggle) {
-        if (bt.name === 'isLegend') {
-            this.isPercent = bt.state;
-            this.chart.redraw(false);
-        } else {
-            super.onHeaderButton(bt);
-        }
+    // Load isLegend option if exists
+    /*if (this.hasOption('isLegend')) {
+        this.isPercent = this.widget.isLegend;
     }*/
-
-    async parseData(data) {
-        this.prevData = data;
-
-        if (data && data.Info) {
-            this.dataInfo = data.Info;
+    const _this = this;
+    const ex = {
+      categories: ['fds'],
+      legend: {
+        enabled: this.widget.isLegend
+      },
+      plotOptions: {
+        series: {
+          animation: false,
+          colorByPoint: true,
+          legendType: 'point'
+        },
+        treemap: {
+          // colorByPoint: true,
+          dataLabels: {
+            enabled: true,
+            // useHTML: true,
+            formatter(this: any) {
+              // Define custom label formatter
+              // if (_this.widget['btn.ShowPercents'] && _this.totalSum) {
+              if (_this.totalSum) {
+                let percent: number | string = (this.point.value / _this.totalSum * 100);
+                percent = _this.formatNumber(percent, _this.getDataPropByDataValue(this.series?.userOptions?.dimension)?.format || '#.##');
+                return `${this.point.caption}<br>${percent}%`;
+              } else {
+                // const v = _this.formatNumber(this.point.value, '');
+                // return `${this.point.caption}<br>${v}`;
+                return `${this.point.caption}`;
+              }
+            }
+          }
         }
-
-        // this.chartConfig.series = [];
-        let tempData: any[] = [];
-        if (!data.Cols[0].tuples.length) { return; }
-
-        if (data.Cols[0].tuples[0].children) {
-            console.error('Data converter for this treemap chart not implemented!');
-        } else {
-            // Make drilldown if there is only one item after filtering
-            if (await this.checkForAutoDrill(data)) {
-                return;
-            }
-
-            tempData = [];
-            let total = 0;
-            for (let i = 0; i < data.Data.length; i++) {
-                total += parseFloat(data.Data[i]);
-            }
-            for (let i = 0; i < data.Cols[1].tuples.length; i++) {
-                tempData.push({
-                    caption: data.Cols[1].tuples[i].caption,
-                    id: data.Cols[1].tuples[i].caption + '<br>' + parseFloat((parseFloat(data.Data[i] as any) / total * 100) as any).toFixed(2).toString() + '%',
-                    value: parseFloat(data.Data[i]),
-                    y: parseFloat(data.Data[i]),
-                    path: data.Cols[1].tuples[i].path,
-                    name: data.Cols[1].tuples[i].caption
-                });
-            }
-
-            let cap = '';
-            let fmt = '';
-            if (data.Cols[0].tuples[0]) {
-                cap = data.Cols[0].tuples[0].caption;
-                fmt = data.Cols[0].tuples[0].format;
-            }
-            this.totalSum = data.Data.map(d => parseFloat(d) || 0).reduce((a, b) => a + b, 0);
-
-            // const xAxis = this.chartConfig.xAxis as XAxisOptions;
-            // xAxis.categories = ['fdsfds', 'fdsdfs'];
-
-            this.addSeries({
-                // type: 'treemap',
-                data: tempData,
-                name: '',
-                layoutAlgorithm: 'squarified',
-                caption: cap,
-                dimension: data.Cols[0].tuples[0].dimension,
-                format: fmt,
-                // layoutAlgorithm: 'strip',
-                dataLabels: {
-                    enabled: true
-                }
-            }, undefined, undefined, true);
+      },
+      tooltip: {
+        formatter(this: any) {
+          const cap = this.series.userOptions.caption;
+          const fmt = this.series.userOptions.format;
+          let v = this.point.value;
+          v = _this.formatNumber(v, fmt);
+          /*if (fmt) {
+              v = numeral(v).format(fmt);
+          }*/
+          return this.point.caption + '<br>' + cap + ': <b>' + v + '</b>';
         }
+      }
+    };
 
-        // TODO: temporary workaround. check after updating lib
-        this.toggleLegend(this.widget.isLegend);
+    this.us.mergeRecursive(this.chartConfig, ex);
+
+    delete this.chartConfig.plotOptions?.series?.dataLabels;
+  }
+
+
+  /*    onHeaderButton(bt: IButtonToggle) {
+          if (bt.name === 'isLegend') {
+              this.isPercent = bt.state;
+              this.chart.redraw(false);
+          } else {
+              super.onHeaderButton(bt);
+          }
+      }*/
+
+  async parseData(data) {
+    this.prevData = data;
+
+    if (data && data.Info) {
+      this.dataInfo = data.Info;
     }
 
-    /*setType(type) {
-        this.clearSeries();
-        /!*this.chartConfig.chart.type = type;
-        this.updateChart();*!/
-        super.setType(type);
+    // this.chartConfig.series = [];
+    let tempData: any[] = [];
+    if (!data.Cols[0].tuples.length) {
+      return;
+    }
 
-        this.parseData(this.prevData);
-    }*/
+    if (data.Cols[0].tuples[0].children) {
+      console.error('Data converter for this treemap chart not implemented!');
+    } else {
+      // Make drilldown if there is only one item after filtering
+      if (await this.checkForAutoDrill(data)) {
+        return;
+      }
+
+      tempData = [];
+      let total = 0;
+      for (let i = 0; i < data.Data.length; i++) {
+        total += parseFloat(data.Data[i]);
+      }
+      for (let i = 0; i < data.Cols[1].tuples.length; i++) {
+        tempData.push({
+          caption: data.Cols[1].tuples[i].caption,
+          id: data.Cols[1].tuples[i].caption + '<br>' + parseFloat((parseFloat(data.Data[i] as any) / total * 100) as any).toFixed(2).toString() + '%',
+          value: parseFloat(data.Data[i]),
+          y: parseFloat(data.Data[i]),
+          path: data.Cols[1].tuples[i].path,
+          name: data.Cols[1].tuples[i].caption
+        });
+      }
+
+      let cap = '';
+      let fmt = '';
+      if (data.Cols[0].tuples[0]) {
+        cap = data.Cols[0].tuples[0].caption;
+        fmt = data.Cols[0].tuples[0].format;
+      }
+      this.totalSum = data.Data.map(d => parseFloat(d) || 0).reduce((a, b) => a + b, 0);
+
+      // const xAxis = this.chartConfig.xAxis as XAxisOptions;
+      // xAxis.categories = ['fdsfds', 'fdsdfs'];
+
+      this.addSeries({
+        // type: 'treemap',
+        data: tempData,
+        name: '',
+        layoutAlgorithm: 'squarified',
+        caption: cap,
+        dimension: data.Cols[0].tuples[0].dimension,
+        format: fmt,
+        // layoutAlgorithm: 'strip',
+        dataLabels: {
+          enabled: true
+        }
+      }, undefined, undefined, true);
+    }
+
+    // TODO: temporary workaround. check after updating lib
+    this.toggleLegend(this.widget.isLegend);
+  }
+
+  /*setType(type) {
+      this.clearSeries();
+      /!*this.chartConfig.chart.type = type;
+      this.updateChart();*!/
+      super.setType(type);
+
+      this.parseData(this.prevData);
+  }*/
 }

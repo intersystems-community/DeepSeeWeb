@@ -13,7 +13,7 @@ import {FilterService} from '../../../../services/filter.service';
 import {StorageService} from '../../../../services/storage.service';
 import {VariablesService} from '../../../../services/variables.service';
 import {I18nService} from '../../../../services/i18n.service';
-import {IWidgetType, WidgetTypeService} from '../../../../services/widget-type.service';
+import {WidgetTypeService} from '../../../../services/widget-type.service';
 import {IButtonToggle} from '../../../../services/widget.service';
 import {WidgetHeaderComponent} from '../widget-header/widget-header.component';
 import {BroadcastService} from '../../../../services/broadcast.service';
@@ -22,8 +22,9 @@ import {ModalService} from '../../../../services/modal.service';
 import {ActivatedRoute} from '@angular/router';
 import {ShareDashboardComponent} from '../../../ui/share-dashboard/share-dashboard/share-dashboard.component';
 import {WidgetFilterComponent} from '../widget-filter/widget-filter.component';
-import {IWidgetDesc, IWidgetModel} from '../../../../services/dsw.types';
+import {IWidgetControl, IWidgetDesc, IWidgetModel, IWidgetType} from '../../../../services/dsw.types';
 import {NgComponentOutlet, NgOptimizedImage} from '@angular/common';
+import {animate, style, transition, trigger} from "@angular/animations";
 
 @Component({
   selector: 'dsw-widget',
@@ -31,7 +32,21 @@ import {NgComponentOutlet, NgOptimizedImage} from '@angular/common';
   styleUrls: ['./widget.component.scss'],
   standalone: true,
   imports: [WidgetHeaderComponent, WidgetFilterComponent, NgComponentOutlet, NgOptimizedImage],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  animations: [
+    trigger(
+      'fade-in-out', [
+        transition(':enter', [
+          style({opacity: 0}),
+          animate('100ms', style({opacity: 1}))
+        ]),
+        transition(':leave', [
+          style({opacity: 1}),
+          animate('100ms', style({opacity: 0}))
+        ])
+      ]
+    )
+  ]
 })
 export class WidgetComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(NgComponentOutlet) ngComponentOutlet?: NgComponentOutlet;
@@ -68,6 +83,7 @@ export class WidgetComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnInit() {
+    this.widgetInputs = {widget: this.widget, model: this.model, parent: this};
     this.updateComponent();
     this.initFilters();
     this.setupPivotVariables();
@@ -155,14 +171,20 @@ export class WidgetComponent implements OnInit, OnDestroy, AfterViewInit {
     if (this.widget.type === 'mdx2json.emptyportlet') {
       for (let i = 0; i < this.model.filters.length; i++) {
         const flt = this.getFilter(i);
+        if (!flt) {
+          continue;
+        }
         if (!flt.valueDisplay && flt.value) {
-          flt.valueDisplay = flt.value.replace('&[', '').replace(']', '');
+          flt.valueDisplay = flt.value.toString().replace('&[', '').replace(']', '');
         }
       }
     }
 
     for (let i = 0; i < this.model.filters.length; i++) {
       const flt = this.getFilter(i);
+      if (!flt) {
+        continue;
+      }
       if (flt.isDate) {
         this.model.filters[i].text = flt.valueDisplay;
         continue;
@@ -173,7 +195,7 @@ export class WidgetComponent implements OnInit, OnDestroy, AfterViewInit {
       }
       // ((flt.isExclude === true && flt.valueDisplay) ? (this.i18n.get('not') + ' ') : '')\
       if (this.model.filters) {
-        this.model.filters[i].text = flt.valueDisplay;
+        this.model.filters[i].text = flt?.valueDisplay || '';
       }
     }
     this.cd.detectChanges();
@@ -193,14 +215,15 @@ export class WidgetComponent implements OnInit, OnDestroy, AfterViewInit {
    * @param {object} sc Scope
    * @param {string} t Type
    */
-  changeType(t: string) {
-    this.widget.type = t;
-    this.updateComponent();
-  }
+  /* changeType(t: string) {
+     this.widget.type = t;
+     this.updateComponent();
+   }*/
 
   /**
    * Reset widget position and size
    */
+
   /*resetWidget() {
     const widgets = this.ss.getWidgetsSettings(this.widget.dashboard);
     const k = this.widget.name;
@@ -301,10 +324,10 @@ export class WidgetComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     let html = '<iframe style="border: none" src="' + url + '" ';
-   /* if (w && h) {
-      html = html + 'width="' + w + '" ';
-      html = html + 'height="' + h + '" ';
-    }*/
+    /* if (w && h) {
+       html = html + 'width="' + w + '" ';
+       html = html + 'height="' + h + '" ';
+     }*/
     html += '></iframe>';
 
     const shareModal = {
@@ -410,7 +433,7 @@ export class WidgetComponent implements OnInit, OnDestroy, AfterViewInit {
   /**
    * On action handler
    */
-  onFilterAction(action: string) {
+  onFilterAction(action: IWidgetControl) {
     this.component?.performAction(action);
   }
 
@@ -423,16 +446,11 @@ export class WidgetComponent implements OnInit, OnDestroy, AfterViewInit {
     const t = this.widgetType?.class; // this.wts.getClass(type || this.widget.type);
     if (t) {
       this.widget.isSupported = true;
-      this.widgetInputs = {widget: this.widget, model: this.model, parent: this};
-      if (this.header) {
-        this.header.typeDesc = this.widgetType ?? undefined;
-        this.header.widget = this.widget;
-        this.header.loadButtons();
-      }
+      this.cd.detectChanges();
     } else {
-      this.widgetInputs = undefined;
       this.widget.isSupported = false;
       this.showError(this.i18n.get('errWidgetNotSupported') + ': ' + this.widget.type);
+      this.cd.detectChanges();
     }
   }
 
@@ -486,6 +504,6 @@ export class WidgetComponent implements OnInit, OnDestroy, AfterViewInit {
     this.subRefresh = this.bs.subscribe('refresh:' + this.widget.name, () => this.requestData());
     this.subCopyMdx = this.bs.subscribe(`copyMDX:${this.widget.name}`, () => this.copyMDX());
     this.subShare = this.bs.subscribe(`share:${this.widget.name}`, () => this.share());
-    this.subChangeType = this.bs.subscribe('setType:' + this.widget.name, type => this.changeType(type));
+    //this.subChangeType = this.bs.subscribe('setType:' + this.widget.name, type => this.changeType(type));
   }
 }

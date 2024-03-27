@@ -14,24 +14,22 @@
   <div class="variables-container">
     <table>
       <thead>
-        <tr>
-          <td>Name</td>
-          <td>Value</td>
-        </tr>
+      <tr>
+        <td>Name</td>
+        <td>Value</td>
+      </tr>
       </thead>
       <tbody>
         @for (v of variables; track trackVariable($index, v)) {
           <tr>
-            <td>{{v.name}}</td>
+            <td>{{ v.name }}</td>
             <td>
               @if (v.isColor) {
-                <input
-                  class="color"
-                  [(colorPicker)]="v.value" [style.background]="v.value"
-                  cpPosition="bottom"
-                  (colorPickerChange)="updateVariable(v)"
-                  readonly
-                  />
+                <dsw-color-picker
+                  [(color)]="v.value"
+                  [isImmediate]="true"
+                  (colorChange)="updateVariable(v)"
+                ></dsw-color-picker>
               }
               @if (!v.isColor) {
                 <input class="input" [(ngModel)]="v.value" (change)="updateVariable(v)">

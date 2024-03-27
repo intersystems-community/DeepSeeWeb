@@ -1,12 +1,12 @@
 <!-- Title -->
 <span class="title-text">
-  {{widget.title}}
+  {{ widget.title }}
   @if (hasFilters) {
     <img
       class="btn-filters"
       src="assets/img/icons/icon-filter.svg"
       [tooltip]="filtersTooltip"
-      >
+    >
   }
 </span>
 
@@ -15,7 +15,7 @@
 @if (widget.backButton) {
   <button class="btn-with-text" (click)="onBackClick()">
     <img src="assets/img/icons/chevron_left-black-18dp.svg">
-    <label>{{'back' | i18n}}</label>
+    <label>{{ 'back' | i18n }}</label>
   </button>
 }
 
@@ -23,14 +23,15 @@
 @if (widget.clickFilterActive) {
   <button class="btn-with-text" (click)="onResetClickFilterHandler()">
     <img src="assets/img/icons/close-black-18dp.svg">
-    <label>{{'resetClickFilter' | i18n}}</label>
+    <label>{{ 'resetClickFilter' | i18n }}</label>
   </button>
 }
 <!--</span>-->
 
 <div class="divider"></div>
 
-<div class="drag-handle" [class.no-drag]="noDrag" [class.expanded]="widget.isExpanded" (dblclick)="onHeaderDoubleClick()"></div>
+<div class="drag-handle" [class.no-drag]="noDrag" [class.expanded]="widget.isExpanded"
+     (dblclick)="onHeaderDoubleClick()"></div>
 
 <!--<span class="right-side">-->
 
@@ -38,43 +39,43 @@
 @if (isEmptyWidget()) {
   <!-- Display 6 columns  button -->
   <button class="only-desktop" (click)="onClick('by6columns')" [title]="'by6columns' | i18n"
-    [class.active]="widget.viewSize === 5">
+          [class.active]="widget.viewSize === 5">
     <img src="assets/img/icons/view-6columns.svg">
   </button>
   <!-- Display 5 columns  button -->
   <button class="only-desktop" (click)="onClick('by5columns')" [title]="'by5columns' | i18n"
-    [class.active]="widget.viewSize === 4">
+          [class.active]="widget.viewSize === 4">
     <img src="assets/img/icons/view-5columns.svg">
   </button>
   <!-- Display 4 columns  button -->
   <button class="only-desktop" (click)="onClick('by4columns')" [title]="'by4columns' | i18n"
-    [class.active]="widget.viewSize === 3">
+          [class.active]="widget.viewSize === 3">
     <img src="assets/img/icons/view-4columns.svg">
   </button>
   <!-- Display 3 columns  button -->
   <button class="only-desktop" (click)="onClick('by3columns')" [title]="'by3columns' | i18n"
-    [class.active]="widget.viewSize === 2">
+          [class.active]="widget.viewSize === 2">
     <img src="assets/img/icons/view-3columns.svg">
   </button>
   <!-- Display 2 columns  button -->
   <button class="only-desktop" (click)="onClick('by2columns')" [title]="'by2columns' | i18n"
-    [class.active]="widget.viewSize === 1">
+          [class.active]="widget.viewSize === 1">
     <img src="assets/img/icons/view-2columns.svg">
   </button>
   <!-- Display as rows button -->
   <button class="only-desktop" (click)="onClick('byRows')" [title]="'byRows' | i18n"
-    [class.active]="widget.viewSize === 0">
+          [class.active]="widget.viewSize === 0">
     <img src="assets/img/icons/view-list.svg">
   </button>
   <!-- Refresh button -->
   <button (click)="onClick('setDefault')" [title]="'setDefault' | i18n">
     <img src="assets/img/icons/reset.svg">
-    <label>{{'refresh' | i18n}}</label>
+    <label>{{ 'refresh' | i18n }}</label>
   </button>
   <!-- Refresh button -->
   <button class="only-sm" (click)="closeMobileFilter()">
     <img src="assets/img/icons/close-black-18dp.svg">
-    <label>{{'close' | i18n}}</label>
+    <label>{{ 'close' | i18n }}</label>
   </button>
 }
 
@@ -85,7 +86,7 @@
   <button
     title="Delete widget"
     (click)="deleteWidgetClick()"
-    >
+  >
     <img src="assets/img/icons/icon-close.svg">
     <label>Delete widget</label>
   </button>
@@ -99,16 +100,16 @@
       (click)="onClick(btn.id)"
       [class.active]="widget[btn.id]"
       [title]="btn.tooltip"
-      >
+    >
       <img [src]="btn.icon">
-      <label>{{btn.text}}</label>
+      <label>{{ btn.text }}</label>
     </button>
   }
   <!-- Toggle legend -->
   @if (!typeDesc?.disableLegend && (widget.isChart && !widget.noToggleLegend)) {
     <button (click)="onClick('isLegend')"
-      [class.active]="widget.isLegend"
-      title="{{'showLegend' | i18n}}">
+            [class.active]="widget.isLegend"
+            title="{{'showLegend' | i18n}}">
       <!--        <i class="fa fa-info"></i>-->
       <img src="assets/img/icons/legend-toggle.svg">
       <label>Legend</label>
@@ -117,7 +118,7 @@
   <!-- Show values -->
   @if (widget.isBtnValues) {
     <button (click)="onClick('showValues')"
-      [class.active]="widget.showValues" title="{{'showValues' | i18n}}">
+            [class.active]="widget.showValues" title="{{'showValues' | i18n}}">
       <!--        <i>v</i>-->
       <img src="assets/img/icons/format-list-numbered.svg">
       <label>Values</label>
@@ -126,7 +127,7 @@
   <!-- Top records -->
   @if (widget.isChart) {
     <button (click)="onClick('isTop')"
-      [class.active]="widget.isTop" title="{{'showTop' | i18n}}">
+            [class.active]="widget.isTop" title="{{'showTop' | i18n}}">
       <!--        <i class="fa fa-star"></i>-->
       <img src="assets/img/icons/top-records.svg">
       <label>Top</label>
@@ -135,7 +136,7 @@
   <!-- Show zero -->
   @if (widget.isBtnZero) {
     <button (click)="onClick('showZero')"
-      [class.active]="widget.showZero" title="{{'showZero' | i18n}}">
+            [class.active]="widget.showZero" title="{{'showZero' | i18n}}">
       <!--        <i class="fa">0</i>-->
       <img src="assets/img/icons/exposure-zero.svg">
       <label>Zero</label>
@@ -144,7 +145,7 @@
   <!-- Display as pivot -->
   @if (widget.isChart || widget.isMap || widget.type === 'regular' || widget.oldType === 'regular') {
     <button (click)="onClick('displayAsPivot')"
-      [class.active]="widget.type === 'pivot'" title="{{'showPivot' | i18n}}">
+            [class.active]="widget.type === 'pivot'" title="{{'showPivot' | i18n}}">
       <!--        <i class="fa fa-table"></i>-->
       <img src="assets/img/icons/table.svg">
       <label>Pivot</label>
@@ -153,7 +154,7 @@
   <!-- Chart settings -->
   @if (widget.isChart || widget.type === 'regular') {
     <button title="{{'changeColors' | i18n}}"
-      (click)="onClick('chartConfig')">
+            (click)="onClick('chartConfig')">
       <img src="assets/img/icons/palette-icon.svg">
       <label>Colors</label>
     </button>
@@ -161,7 +162,7 @@
   <!-- Fullscreen button -->
   @if (!widget.shared) {
     <button (click)="onClick('expand')" class="only-desktop" [class.active]="widget.isExpanded"
-      [title]="'fullscreen' | i18n" [hidden]="isEmptyWidget() || !widget.isSupported">
+            [title]="'fullscreen' | i18n" [hidden]="isEmptyWidget() || !widget.isSupported">
       <img src="assets/img/icons/full-screen.svg">
     </button>
   }

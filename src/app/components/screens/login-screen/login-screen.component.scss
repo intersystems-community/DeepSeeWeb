@@ -1,96 +1,97 @@
 @import "breakpoints";
 
-:host{
-    display: flex;
-    width: 100%;
-    height: 100%;
-    align-items: center;
-    justify-content: center;
-    background: url('./../../../../assets/img/bg.jpg');
-    background-size: cover;
+:host {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+  background: url('./assets/img/bg.jpg');
+  background-size: cover;
 
-   /* @include sm {
-        background: #7F7FD5;  !* fallback for old browsers *!
-        !*
-        background: -webkit-linear-gradient(to right, #91EAE4, #86A8E7, #7F7FD5);  !* Chrome 10-25, Safari 5.1-6 *!
-        background: linear-gradient(to right, #91EAE4, #86A8E7, #7F7FD5); !* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ *!
-        *!
+  /* @include sm {
+       background: #7F7FD5;  !* fallback for old browsers *!
+       !*
+       background: -webkit-linear-gradient(to right, #91EAE4, #86A8E7, #7F7FD5);  !* Chrome 10-25, Safari 5.1-6 *!
+       background: linear-gradient(to right, #91EAE4, #86A8E7, #7F7FD5); !* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ *!
+       *!
 
-        background: linear-gradient(to right bottom, #91eae473, #86a8e78f, #7f7fd5a8);
-    }*/
+       background: linear-gradient(to right bottom, #91eae473, #86a8e78f, #7f7fd5a8);
+   }*/
 }
 
 // Login container
 .login-form {
-    position: relative;
-    width: 300px;
-    padding: 25px 25px;
-    // background-color: white;
-    margin-bottom: 20vh;
-    backdrop-filter: blur(6px);
+  position: relative;
+  width: 300px;
+  padding: 25px 25px;
+  // background-color: white;
+  margin-bottom: 20vh;
+  backdrop-filter: blur(6px);
 
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-    border-radius: 10px;
-    background-color: rgba(255, 255, 255, 0.5);
-    & > div:first-child {
-        width: 100%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.5);
 
-    @include sm {
+  & > div:first-child {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 
-       /* background-color: rgba(255, 255, 255, 0.4);
-        -webkit-backdrop-filter: blur(10px);*/
+  @include sm {
 
-        /*border: 1px solid rgb(255 255 255 / 39%);
-        box-shadow: 0 10px 40px #00000033;
-        border-radius: 20px;*/
-    }
+    /* background-color: rgba(255, 255, 255, 0.4);
+     -webkit-backdrop-filter: blur(10px);*/
+
+    /*border: 1px solid rgb(255 255 255 / 39%);
+    box-shadow: 0 10px 40px #00000033;
+    border-radius: 20px;*/
+  }
 }
 
 // Version text
 .ver {
-    position: absolute;
-    right: 2px;
-    top: 0;
-    font-size: 8px;
+  position: absolute;
+  right: 2px;
+  top: 0;
+  font-size: 8px;
 }
 
 .msg-error {
-    text-align: center;
-    padding-top: 16px;
-    word-break: break-word;
-    position: absolute;
-    width: 100%;
-    font-size: 14px;
-    color: #d11818;
-    margin-left: -25px;
-    margin-top: 25px;
-    font-weight: 500;
+  text-align: center;
+  padding-top: 16px;
+  word-break: break-word;
+  position: absolute;
+  width: 100%;
+  font-size: 14px;
+  color: #d11818;
+  margin-left: -25px;
+  margin-top: 25px;
+  font-weight: 500;
 }
 
 img {
-    margin-bottom: 16px;
+  margin-bottom: 16px;
 }
 
 input {
-    margin-bottom: 24px;
+  margin-bottom: 24px;
+  width: 100%;
+
+  @include sm {
+    margin-bottom: 16px;
+    height: 40px;
+    /*margin-bottom: 16px;
     width: 100%;
+    height: 40px;
+    border-radius: 10px;
+    border: 1px solid #ffffff61;
+    box-shadow: 0 10px 10px #0000000d;
+    background: #ffffff47;
 
-    @include sm {
-        margin-bottom: 16px;
-        height: 40px;
-        /*margin-bottom: 16px;
-        width: 100%;
-        height: 40px;
-        border-radius: 10px;
-        border: 1px solid #ffffff61;
-        box-shadow: 0 10px 10px #0000000d;
-        background: #ffffff47;
-
-        background: linear-gradient(to right bottom, #91eae473, #86a8e78f, #7f7fd5a8);*/
+    background: linear-gradient(to right bottom, #91eae473, #86a8e78f, #7f7fd5a8);*/
     /*    margin-bottom: 16px;
         width: 100%;
         height: 40px;
@@ -104,34 +105,34 @@ input {
             outline: none;
             border: 1px solid #0400ff40;
         }*/
-    }
+  }
 }
 
 .btn {
-    width: 100%;
-    display: block;
-    margin-top: 30px;
-    margin-bottom: 4px;
-    height: 40px;
-   /* @include sm {
-        height: 40px;
-        border-radius: 10px;
-        border: none;
-        box-shadow: 0 10px 20px #00000036;
-        background: #1D976C;
-        background: -webkit-linear-gradient(to right, #93F9B9, #1D976C);
-        background: linear-gradient(to right bottom, #93F9B9, #1D976C);
-    }*/
+  width: 100%;
+  display: block;
+  margin-top: 30px;
+  margin-bottom: 4px;
+  height: 40px;
+  /* @include sm {
+       height: 40px;
+       border-radius: 10px;
+       border: none;
+       box-shadow: 0 10px 20px #00000036;
+       background: #1D976C;
+       background: -webkit-linear-gradient(to right, #93F9B9, #1D976C);
+       background: linear-gradient(to right bottom, #93F9B9, #1D976C);
+   }*/
 }
 
 
 .btn-link {
-    margin-bottom: -15px;
+  margin-bottom: -15px;
 }
 
 .logo {
-    font-size: 26px;
-    font-weight: bold;
-    margin-bottom: 30px;
-    color: #1C1D20;
+  font-size: 26px;
+  font-weight: bold;
+  margin-bottom: 30px;
+  color: #1C1D20;
 }

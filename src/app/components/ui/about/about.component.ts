@@ -4,19 +4,19 @@ import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
 import markdownit from 'markdown-it';
 
 @Component({
-    selector: 'dsw-about',
-    templateUrl: './about.component.html',
-    styleUrls: ['./about.component.scss'],
-    standalone: true
+  selector: 'dsw-about',
+  templateUrl: './about.component.html',
+  styleUrls: ['./about.component.scss'],
+  standalone: true
 })
 export class AboutComponent {
-    changelog?: SafeHtml;
+  changelog?: SafeHtml;
 
-    constructor(private ds: DataService,
-                private san: DomSanitizer) {
-        this.ds.getFile('changelog.md')
-            .then(html => {
-                this.changelog = markdownit({html: true}).render(html);
-            });
-    }
+  constructor(private ds: DataService,
+              private san: DomSanitizer) {
+    this.ds.getFile('changelog.md')
+      .then(html => {
+        this.changelog = markdownit({html: true}).render(html);
+      });
+  }
 }

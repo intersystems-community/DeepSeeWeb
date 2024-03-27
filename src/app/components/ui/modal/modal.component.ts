@@ -32,8 +32,8 @@ export class ModalComponent implements OnInit, OnDestroy, OnChanges, AfterViewIn
   @ViewChild(NgComponentOutlet) ngComponentOutlet?: NgComponentOutlet;
   @Input() data!: IModal;
   search = new EventEmitter<string>();
-  private subscriptions: Subscription[] = [];
   isInitialized = false;
+  private subscriptions: Subscription[] = [];
 
   constructor(private ms: ModalService,
               private cd: ChangeDetectorRef,

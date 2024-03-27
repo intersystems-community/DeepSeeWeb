@@ -5,11 +5,11 @@
     [class.hidden-offscreen]="tab.hidden"
     (click)="tabClick(tab)"
     [class.active]="currentTab === tab"
-    >
+  >
     <!--[routerLink]="'.'"
     [queryParams]="useQuery ? { tab: tab.id, edit: null } : null"
     queryParamsHandling="merge"-->
-    {{tab.text}}
+    {{ tab.text }}
   </div>
 }
 @if (isMoreButtonVisible) {
@@ -27,8 +27,8 @@
         [routerLink]="'./'"
         [queryParams]="useQuery ? { tab: tab.id, edit: null } : undefined"
         queryParamsHandling="merge"
-        >
-        {{tab.text}}
+      >
+        {{ tab.text }}
       </div>
     }
   </div>

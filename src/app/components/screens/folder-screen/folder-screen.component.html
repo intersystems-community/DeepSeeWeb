@@ -9,79 +9,21 @@
       (click)="onItemClicked(tile)"
       >
       <!-- Inline widget -->
-      @if (itemDescs[tile.idx]) {
-        <dsw-widget #widgets [widget]="itemDescs[tile.idx]" [class.transparent]="itemDescs[tile.idx].inline"></dsw-widget>
+      @if (itemDesc[tile.idx]) {
+        <dsw-widget #widgets [widget]="itemDesc[tile.idx]" [class.transparent]="itemDesc[tile.idx].inline"></dsw-widget>
       }
       <!-- Icon -->
-      <div class="tile-icon" [hidden]="itemDescs[tile.idx]">
-        @if (model.icons[tile.icon]; as icon) {
-          <img [src]="'assets/img/widget-icons/' + icon">
-        }
-      </div>
+      @if (!itemDesc[tile.idx] && model.icons[tile.icon]; as icon) {
+        <div class="tile-icon" [ngClass]="icon"></div>
+      }
       <!-- Title -->
-      <label [hidden]="tile.hideTitle" [class]="model.fontColors[tile.fontColor]" [title]="tile.customTitle || tile.title">
-        <span>{{tile.customTitle || tile.title}}</span>
-        <!--<span>{{tile.fullPath}}</span>-->
-      </label>
+      @if (!tile.hideTitle) {
+        <label [title]="tile.customTitle || tile.title">
+          <span [class]="model.fontColors[tile.fontColor]">{{tile.customTitle || tile.title}}</span>
+        </label>
+      }
     </gridster-item>
   }
 </gridster>
 
-<img src="assets/img/spinner.svg" [hidden]="!isSpinner">
-
-<!--&lt;!&ndash; Sidebar &ndash;&gt;-->
-<!--<div class="sidebar" [class.closed]="!model.edItem" *ngIf="model.edItem">-->
-
-<!--    &lt;!&ndash; Bg colors &ndash;&gt;-->
-<!--    <span class="sidebar-block">-->
-<!--        <label>{{'bgColor' | i18n}}</label>-->
-<!--        <div (click)='setTileColor(idx)'-->
-<!--             [class]="'color-rect ' + col + ' ' + (model.edItem.color == idx ? 'active' : '')"-->
-<!--             *ngFor="let col of model.colors; let idx = index">-->
-<!--            <span class="fa fa-check" *ngIf="model.edItem.color == idx"></span>-->
-<!--        </div>-->
-<!--    </span>-->
-
-<!--    &lt;!&ndash; Font colors &ndash;&gt;-->
-<!--    <span class="sidebar-block">-->
-<!--            <label>{{'fntColor' | i18n}}</label>-->
-<!--            <div (click)='setFontColor(idx)'-->
-<!--                 [class]="'color-rect ' + 'cl' + model.edItem.color + ' ' +  (model.edItem.font == idx ? 'active' : '')"-->
-<!--                 *ngFor="let col of model.fontColors; let idx = index"><span [class]="col"-->
-<!--                                                                              style="margin-left: 7px;margin-top: -1px;">T</span>-->
-<!--                    <span class="fa fa-check" *ngIf="model.edItem.fontColor == idx"></span>-->
-<!--            </div>-->
-<!--        </span>-->
-
-<!--    &lt;!&ndash; Icons &ndash;&gt;-->
-<!--    <span class="sidebar-block">-->
-<!--            <label>{{'icon' | i18n}}</label>-->
-<!--            <div class="color-rect" *ngFor="let ico of model.icons; let idx = index" (click)='setIcon(idx)'-->
-<!--                 [class]="'cl' + model.edItem.color + ' ' +  (model.edItem.icon == idx ? 'active' : '')">-->
-<!--                <svg viewBox="-10 -16 20 20" [class]="model.fontColors[model.edItem.fontColor]">-->
-<!--                    <g><text text-anchor="middle" font-size="16px">{{ico}}</text></g>-->
-<!--                </svg>-->
-<!--            </div>-->
-<!--        </span>-->
-
-<!--    &lt;!&ndash; Widgets &ndash;&gt;-->
-<!--    <span class="sidebar-block">-->
-<!--            <label>{{'widget' | i18n}}</label>-->
-<!--            <select [(ngModel)]="model.edItem.widget">-->
-<!--                <option *ngFor="let opt of model.widgetList" value="{{opt.idx}}"-->
-<!--                        [selected]="opt.idx===model.edItem.widget">{{opt.name}}</option>-->
-<!--            </select>-->
-<!--        </span>-->
-
-<!--    &lt;!&ndash; Hide title &ndash;&gt;-->
-<!--    <span class="sidebar-block">-->
-<!--            <label>{{'hideTitle' | i18n}}</label>-->
-<!--            <input type="checkbox" [(ngModel)]="model.edItem.hideTitle" blur-on-enter>-->
-<!--        </span>-->
-<!--</div>-->
-
-<!-- Settings button -->
-<!--<button class="btn-edit" (click)="enableEditing()" [class.active]="model.editing">-->
-<!--    <i class="fa fa-wrench" [hidden]="model.editing"></i>-->
-<!--    <i class="fa fa-check" [hidden]="!model.editing"> {{'done' | i18n}}</i>-->
-<!--</button>-->
+<img ngSrc="assets/img/spinner.svg" [hidden]="!isSpinner" height="100" width="100" priority>

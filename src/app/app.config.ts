@@ -1,58 +1,51 @@
 import {APP_INITIALIZER, ApplicationConfig, importProvidersFrom} from '@angular/core';
-import {provideRouter, withHashLocation} from '@angular/router';
+import {PreloadAllModules, provideRouter, withHashLocation, withPreloading} from '@angular/router';
 import {routes} from './app.routes';
 import {provideHttpClient, withFetch} from "@angular/common/http";
-import {BrowserModule, provideClientHydration} from "@angular/platform-browser";
+import {BrowserModule} from "@angular/platform-browser";
 import {provideAnimations} from "@angular/platform-browser/animations";
 import {StartupService} from "./services/startup.service";
 import {GridsterModule} from "angular-gridster2";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
-import {ColorPickerModule} from "ngx-color-picker";
-import {I18nService} from "./services/i18n.service";
-import {DataService} from "./services/data.service";
-import {ConfigResolver} from "./services/config-resolver";
+import {environment} from '../environments/environment';
 
 export const initializeApplication = (ss: StartupService) => {
-    return async () => {
-        await ss.initialize();
-    };
+  return async () => {
+    await ss.initialize();
+  };
 };
 
-/*const scrollConfig: InMemoryScrollingOptions = {
-  anchorScrolling: 'disabled',
-  scrollPositionRestoration: 'disabled'
-};*/
 
 export const appConfig: ApplicationConfig = {
-    providers: [
-        importProvidersFrom(
-            GridsterModule,
-            BrowserModule,
-            NgSelectModule,
-            FormsModule,
-            ReactiveFormsModule,
-            ColorPickerModule
-        ),
-       /* I18nService,
-        DataService,
-        StartupService,
-        ConfigResolver,*/
-        provideHttpClient(withFetch()/*, withInterceptors([httpInterceptor])*/),
-        //provideClientHydration(),
-        provideAnimations(),
-        provideRouter(
-            routes,
-            withHashLocation()
-            // withInMemoryScrolling(scrollConfig)
-            // withDebugTracing()
-            // withPreloading(PreloadAllModules)
-        ),
-      /*  {
-            provide: APP_INITIALIZER,
-            useFactory: initializeApplication,
-            multi: true,
-            deps: [StartupService],
-        },*/
-    ]
+  providers: [
+    importProvidersFrom(
+      GridsterModule,
+      BrowserModule,
+      NgSelectModule,
+      FormsModule,
+      ReactiveFormsModule
+    ),
+    provideHttpClient(withFetch()/*, withInterceptors([httpInterceptor])*/),
+    provideAnimations(),
+    environment.production ?
+      provideRouter(
+        routes,
+        withHashLocation(),
+      ) :
+      provideRouter(
+        routes,
+        withHashLocation(),
+        // For dev mode load all modules to be able open sources by filename in devtoio
+        withPreloading(PreloadAllModules)
+        // withInMemoryScrolling(scrollConfig)
+        // withDebugTracing()
+      ),
+    {
+      provide: APP_INITIALIZER,
+      useFactory: initializeApplication,
+      multi: true,
+      deps: [StartupService]
+    }
+  ]
 };

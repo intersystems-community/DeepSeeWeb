@@ -3,47 +3,48 @@
 $row-height: 22px;
 
 .lpt .lpt-bottomSection, .lpt .lpt-topSection {
-    border-right: none;
+  border-right: none;
 }
 
 // Border top-left
-.lpt>.tableContainer {
-    // border-left: 1px solid #EBEBEA;
-    border-top: 1px solid #EBEBEA;
-    // box-sizing: content-box;
+.lpt > .tableContainer {
+  // border-left: 1px solid #EBEBEA;
+  border-top: 1px solid #EBEBEA;
+  // box-sizing: content-box;
 }
 
 // Header height
 .lpt-header {
-    height: $row-height;
+  height: $row-height;
 }
+
 .lpt table {
-    // height: $row-height;
+  // height: $row-height;
 }
 
 // First cell
 .lpt .lpt-headerValue {
-    // text-align: center;
+  // text-align: center;
 }
 
 // Row height
 .lpt .lpt-headerValue, .lpt td, .lpt th {
-    height: $row-height;
-    font-family: $font;
-    font-size: 12px;
-    line-height: 16px;
-    vertical-align: middle;
+  height: $row-height;
+  font-family: $fontNum;
+  font-size: 12px;
+  line-height: 16px;
+  vertical-align: middle;
 }
 
 // Header color
 .lpt .lpt-headerValue, .lpt th {
-    font-family: $font;
-    color: var(--cl-widget-filter-txt);
-    background: #F8F9FA;
+  font-family: $fontNum;
+  color: var(--cl-widget-filter-txt);
+  background: #F8F9FA;
 
-    font-weight: 500;
-    font-size: 14px;
-    line-height: 16px;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 16px;
 }
 
 // Header text align
@@ -52,226 +53,237 @@ $row-height: 22px;
 }
 
 // Header sorting icon - swap order
-.lpt th.lpt-resizableColumn>div {
-    display: flex;
-    flex-direction: row-reverse;
-    align-items: center;
-    justify-content: center;
+.lpt th.lpt-resizableColumn > div {
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  justify-content: center;
 }
 
 // Sort down
-.lpt-sortDesc>div:before {
-    background-repeat: no-repeat;
-    background-position: center center;
-    content: "";
-    width: 14px;
-    height: 14px;
-    //margin-left: -2px;
-    background-image: url("data:image/svg+xml,%3Csvg width='14' height='10' viewBox='0 0 14 10' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10.0623 0.333374L10.004 0.337457C9.89906 0.351577 9.80279 0.403284 9.73306 0.482987C9.66334 0.562689 9.62489 0.664977 9.62484 0.770874V8.17454L7.74651 6.29737L7.69751 6.25537C7.60873 6.18938 7.49824 6.15947 7.38829 6.17167C7.27833 6.18386 7.17709 6.23726 7.10492 6.3211C7.03276 6.40495 6.99504 6.51302 6.99935 6.62356C7.00366 6.73411 7.0497 6.83891 7.12818 6.91687L9.75551 9.54187L9.80451 9.58387C9.88878 9.64612 9.9926 9.67606 10.0971 9.66825C10.2016 9.66043 10.2998 9.61538 10.3738 9.54129L12.9971 6.91629L13.0391 6.86729C13.1015 6.78297 13.1315 6.67903 13.1237 6.57442C13.1159 6.46981 13.0708 6.37148 12.9965 6.29737L12.9475 6.25537C12.8632 6.19297 12.7593 6.16293 12.6546 6.17075C12.55 6.17857 12.4517 6.22371 12.3776 6.29796L10.4998 8.17687V0.770874L10.4963 0.711374C10.482 0.606634 10.4301 0.510644 10.3505 0.441155C10.2708 0.371666 10.1686 0.333378 10.0629 0.333374H10.0623Z' fill='%23606367'/%3E%3C/svg%3E");
+.lpt-sortDesc > div:before {
+  background-repeat: no-repeat;
+  background-position: center center;
+  content: "";
+  width: 14px;
+  height: 14px;
+  //margin-left: -2px;
+  background-image: url("data:image/svg+xml,%3Csvg width='14' height='10' viewBox='0 0 14 10' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10.0623 0.333374L10.004 0.337457C9.89906 0.351577 9.80279 0.403284 9.73306 0.482987C9.66334 0.562689 9.62489 0.664977 9.62484 0.770874V8.17454L7.74651 6.29737L7.69751 6.25537C7.60873 6.18938 7.49824 6.15947 7.38829 6.17167C7.27833 6.18386 7.17709 6.23726 7.10492 6.3211C7.03276 6.40495 6.99504 6.51302 6.99935 6.62356C7.00366 6.73411 7.0497 6.83891 7.12818 6.91687L9.75551 9.54187L9.80451 9.58387C9.88878 9.64612 9.9926 9.67606 10.0971 9.66825C10.2016 9.66043 10.2998 9.61538 10.3738 9.54129L12.9971 6.91629L13.0391 6.86729C13.1015 6.78297 13.1315 6.67903 13.1237 6.57442C13.1159 6.46981 13.0708 6.37148 12.9965 6.29737L12.9475 6.25537C12.8632 6.19297 12.7593 6.16293 12.6546 6.17075C12.55 6.17857 12.4517 6.22371 12.3776 6.29796L10.4998 8.17687V0.770874L10.4963 0.711374C10.482 0.606634 10.4301 0.510644 10.3505 0.441155C10.2708 0.371666 10.1686 0.333378 10.0629 0.333374H10.0623Z' fill='%23606367'/%3E%3C/svg%3E");
 }
 
 // Sort up
-.lpt-sortAsc>div:before {
-    background-repeat: no-repeat;
-    background-position: center center;
-    content: "";
-    width: 14px;
-    height: 14px;
-    transform: translateX(6px);
-    background-image: url("data:image/svg+xml,%3Csvg width='14' height='10' viewBox='0 0 14 10' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M3.62468 0.461707L1.00318 3.08379L0.960594 3.13279C0.898344 3.21706 0.868405 3.32088 0.876219 3.42536C0.884034 3.52984 0.929084 3.62805 1.00318 3.70212L1.05218 3.74471C1.13645 3.80696 1.24027 3.8369 1.34475 3.82908C1.44923 3.82127 1.54743 3.77622 1.62151 3.70212L3.49809 1.82496V9.23212L3.50276 9.29162C3.51714 9.39636 3.56896 9.49235 3.64863 9.56184C3.72831 9.63133 3.83046 9.66962 3.93618 9.66962L3.99509 9.66554C4.09994 9.65129 4.19607 9.59953 4.26568 9.51984C4.33528 9.44015 4.37365 9.33793 4.37368 9.23212L4.37309 1.82612L6.25318 3.70271L6.30218 3.74471C6.39102 3.80987 6.50119 3.83912 6.61066 3.8266C6.72013 3.81407 6.82084 3.76071 6.89267 3.67716C6.96451 3.59361 7.00217 3.48603 6.99814 3.37592C6.99411 3.26581 6.94868 3.16128 6.87093 3.08321L4.24359 0.461707L4.19401 0.419707C4.10974 0.357457 4.00592 0.327518 3.90144 0.335333C3.79696 0.343147 3.69875 0.388197 3.62468 0.462291V0.461707Z' fill='%23606367'/%3E%3C/svg%3E");
+.lpt-sortAsc > div:before {
+  background-repeat: no-repeat;
+  background-position: center center;
+  content: "";
+  width: 14px;
+  height: 14px;
+  transform: translateX(6px);
+  background-image: url("data:image/svg+xml,%3Csvg width='14' height='10' viewBox='0 0 14 10' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M3.62468 0.461707L1.00318 3.08379L0.960594 3.13279C0.898344 3.21706 0.868405 3.32088 0.876219 3.42536C0.884034 3.52984 0.929084 3.62805 1.00318 3.70212L1.05218 3.74471C1.13645 3.80696 1.24027 3.8369 1.34475 3.82908C1.44923 3.82127 1.54743 3.77622 1.62151 3.70212L3.49809 1.82496V9.23212L3.50276 9.29162C3.51714 9.39636 3.56896 9.49235 3.64863 9.56184C3.72831 9.63133 3.83046 9.66962 3.93618 9.66962L3.99509 9.66554C4.09994 9.65129 4.19607 9.59953 4.26568 9.51984C4.33528 9.44015 4.37365 9.33793 4.37368 9.23212L4.37309 1.82612L6.25318 3.70271L6.30218 3.74471C6.39102 3.80987 6.50119 3.83912 6.61066 3.8266C6.72013 3.81407 6.82084 3.76071 6.89267 3.67716C6.96451 3.59361 7.00217 3.48603 6.99814 3.37592C6.99411 3.26581 6.94868 3.16128 6.87093 3.08321L4.24359 0.461707L4.19401 0.419707C4.10974 0.357457 4.00592 0.327518 3.90144 0.335333C3.79696 0.343147 3.69875 0.388197 3.62468 0.462291V0.461707Z' fill='%23606367'/%3E%3C/svg%3E");
 }
 
 
 // Header and row border
 .lpt .lpt-headerValue, .lpt td, .lpt th {
-    border-right: none;
-    border-bottom: 1px solid #EBEBEA;
-    border-right: 1px solid #EBEBEA;
+  border-right: none;
+  border-bottom: 1px solid #EBEBEA;
+  border-right: 1px solid #EBEBEA;
+  font-family: $fontNum;
 }
+
 .lpt .lpt-header {
-    border-right: none;
-    // border-right: 1px solid #EBEBEA;
-    border-left: 1px solid #EBEBEA;
+  border-right: none;
+  // border-right: 1px solid #EBEBEA;
+  border-left: 1px solid #EBEBEA;
 }
 
 // LEft border
 .lpt .lpt-leftHeader > table {
-    border-left: 1px solid #EBEBEA;
+  border-left: 1px solid #EBEBEA;
 }
 
 // Right border
 .lpt .lpt-tableBlock > table {
-    //border-right: 1px solid #EBEBEA;
-    //border-bottom: 1px solid #EBEBEA;
+  //border-right: 1px solid #EBEBEA;
+  //border-bottom: 1px solid #EBEBEA;
 }
 
 // Hover cell background
 .lpt-clickable:hover, .lpt .lpt-leftHeader th:last-child:hover {
-    // Header hover
-    background-color: var(--cl-hover);
+  // Header hover
+  background-color: var(--cl-hover);
 }
+
 .lpt .lpt-tableBlock tr:hover td {
-    // Row hover
-    box-shadow: inset 0 0 30px #ebf1ff;
+  // Row hover
+  box-shadow: inset 0 0 30px #ebf1ff;
 }
+
 .lpt .lpt-tableBlock table td:hover {
-    // Cell hover
-    box-shadow: inset 0 0 30px #d3e1ff;
+  // Cell hover
+  box-shadow: inset 0 0 30px #d3e1ff;
 }
 
 // Selected row > cell
 .lpt-selectedRow td {
-    box-shadow: inset 0 0 30px #ebf1ff;
+  box-shadow: inset 0 0 30px #ebf1ff;
 }
 
 // Hide search
 .lpt-searchBlock {
-   // display: none;
+  // display: none;
 }
 
 
 // Table scroll style
 .lpt-tableBlock {
-        // scrollbar-gutter: stable;
-    &::-webkit-scrollbar {
-        width: 4px;
-        height: 4px;
-    }
+  // scrollbar-gutter: stable;
+  &::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
 
-    &::-webkit-scrollbar-track {
-        background: #EBEBEA;
-    }
+  &::-webkit-scrollbar-track {
+    background: #EBEBEA;
+  }
 
-    &::-webkit-scrollbar-thumb {
-        border-radius: 3px;
-        background: rgba(28, 29, 32, 0.4);
-    }
+  &::-webkit-scrollbar-thumb {
+    border-radius: 3px;
+    background: rgba(28, 29, 32, 0.4);
+  }
 }
 
 // Compensate scroll width
 .lpt .lpt-extraCell {
-    /*min-width: 4px !important;
-    width: 4px !important;*/
+  /*min-width: 4px !important;
+  width: 4px !important;*/
 
-    min-width: 4px !important;
-    width: 4px !important;
-    border: none;
+  min-width: 4px !important;
+  width: 4px !important;
+  border: none;
 
-    // border-right: 1px solid #EBEBEA;
+  // border-right: 1px solid #EBEBEA;
 }
 
 .lpt .lpt-tableBlock {
-    //overflow-x: hidden;
+  //overflow-x: hidden;
 }
 
 // Footer
 .lpt .lpt-pageSwitcher {
-    // height: $row-height;
-    color: var(--cl-widget-filter-txt);
-    background: #F8F9FA;
+  // height: $row-height;
+  color: var(--cl-widget-filter-txt);
+  background: #F8F9FA;
 
-    font-family: $font;
-    font-weight: 400;
-    font-size: 12px;
-    line-height: 14px;
-    color: #606367;
-   //  bottom: 5px;
-    border: none;
-    border: 1px solid #EBEBEA;
-    // border-bottom: 1px solid #EBEBEA;
+  font-family: $font;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 14px;
+  color: #606367;
+  //  bottom: 5px;
+  border: none;
+  border: 1px solid #EBEBEA;
+  // border-bottom: 1px solid #EBEBEA;
 }
 
 // Footer counter and pages
-.lpt .lpt-pageSwitcher>div {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+.lpt .lpt-pageSwitcher > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 
-    // Pager
-    & > span {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        min-height: auto;
-        border-right: none;
-        width: 16px;
-        height: 16px;
-        margin-right: 8px;
-        border-radius: 2px;
-        &:last-child {
-            margin-right: 60px;
-        }
-        &.lpt-active {
-            color: var(--cl-accent);
-            background-color: var(--cl-hover);
-        }
-        &:hover {
-            background-color: var(--cl-hover);
-        }
+  // Pager
+  & > span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: auto;
+    border-right: none;
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
+    border-radius: 2px;
+
+    &:last-child {
+      margin-right: 60px;
     }
+
+    &.lpt-active {
+      color: var(--cl-accent);
+      background-color: var(--cl-hover);
+    }
+
+    &:hover {
+      background-color: var(--cl-hover);
+    }
+  }
 }
 
 // Total count container
 .lpt-bottomInfo {
-    float: none;
-    margin-right: auto;
-    margin-left: 10px;
-    padding: 0;
-    & > span {
-        vertical-align: middle;
-    }
+  float: none;
+  margin-right: auto;
+  margin-left: 10px;
+  padding: 0;
+
+  & > span {
+    vertical-align: middle;
+  }
 }
 
 // Total count icon
 .lpt-icon-rows {
-    border: none;
-    width: 14px;
-    height: 14px;
-    margin-right: 20px;
-    background-image: url("./../assets/img/icons/burger-menu-gray.svg");
-    &:before {
-        display: none;
-    }
+  border: none;
+  width: 14px;
+  height: 14px;
+  margin-right: 20px;
+  background-image: url("./assets/img/icons/burger-menu-gray.svg");
+
+  &:before {
+    display: none;
+  }
 }
 
 // Copy icon
 .lpt-icon-copy {
-    border: none;
-    width: 16px;
-    height: 16px;
-    border: none;
-    background-image: url("./../assets/img/icons/icon-copy.svg");
-    margin-right: 10px;
-    &:before, &:after {
-        display: none;
-    }
-    &:hover {
-        background: transparent;
-        background-image: url("./../assets/img/icons/icon-copy.svg");
-    }
+  border: none;
+  width: 16px;
+  height: 16px;
+  border: none;
+  background-image: url("./assets/img/icons/icon-copy.svg");
+  margin-right: 10px;
+
+  &:before, &:after {
+    display: none;
+  }
+
+  &:hover {
+    background: transparent;
+    background-image: url("./assets/img/icons/icon-copy.svg");
+  }
 }
 
 // Field name
 .lpt-messageHead {
-    font-family: $font;
-    font-style: normal;
-    font-weight: 500;
-    font-size: 14px;
-    color: var(--cl-widget-filter-txt);
-    text-decoration: none;
+  font-family: $font;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 14px;
+  color: var(--cl-widget-filter-txt);
+  text-decoration: none;
 }
 
 // Field value
 .lpt-messageBody {
-    font-family: $font;
-    font-weight: 500;
-    font-size: 12px;
-    line-height: 16px;
-    color: #1C1D20;
+  font-family: $font;
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 16px;
+  color: #1C1D20;
 }
 
 // Line separator
 .lpt-hoverMessage > hr {
-    border: none;
-    border-bottom: 1px solid #EBEBEA;
+  border: none;
+  border-bottom: 1px solid #EBEBEA;
 }

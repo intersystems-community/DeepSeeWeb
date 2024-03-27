@@ -14,15 +14,16 @@
 .error {
   font-family: $font;
   position: absolute;
-  left: 0;
-  right: 0;
+  inset: 0;
   color: rgb(215 7 2 / 58%);
   background-color: transparent;
-  top: 40%;
-  padding: 6px;
   text-align: center;
-  z-index: 10;
   background: var(--cl-widget-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 10;
 }
 
 .spinner {

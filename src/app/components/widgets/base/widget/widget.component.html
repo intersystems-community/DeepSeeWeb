@@ -2,6 +2,7 @@
 <dsw-widget-header
   #header
   [typeDesc]="widgetType"
+  [widget]="widget"
   [hidden]="widget.tile || !isHeader"
   (onButtonClick)="onHeaderButton($event)"
   (onBack)="onHeaderButtonBack()"
@@ -26,10 +27,12 @@
 
 <!-- Error message -->
 @if (model.error) {
-  <div class="error">{{model.error}}</div>
+  <div class="error">{{ model.error }}</div>
 }
 
 <!-- Loading spinner -->
-<div class="spinner" [hidden]="model.error || !component?.isSpinner">
-  <img ngSrc="assets/img/spinner.svg" height="100" width="100" priority>
-</div>
+@if (component?.isSpinner && !model.error) {
+  <div class="spinner" @fade-in-out>
+    <img ngSrc="assets/img/spinner.svg" height="100" width="100" priority>
+  </div>
+}

@@ -5,7 +5,7 @@
   @for (ns of items; track ns) {
     <li (click)="selectNamespace(ns)">
       <img [src]="isSelected(ns) ? 'assets/img/icons/check-black-18dp.svg' : ''">
-      {{ns}}
+      {{ ns }}
     </li>
   }
 </ul>

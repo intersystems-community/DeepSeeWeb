@@ -79,17 +79,17 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
+  get canEdit() {
+    // Currently for dev mode only
+    return location.port === '4007';
+  }
+
   static processPath(path: string[], p: string, idx: number) {
     let title = decodeURIComponent(p);
     if (title.indexOf('?') !== -1) {
       title = title.split('?')[0];
     }
     return {title, url: decodeURIComponent(path.slice(0, idx + 1).join('/'))};
-  }
-
-  get canEdit() {
-    // Currently for dev mode only
-    return location.port === '4007';
   }
 
   ngOnInit() {

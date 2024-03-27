@@ -4,8 +4,6 @@ import {
   Component,
   ElementRef,
   HostListener,
-  Inject,
-  Injector,
   OnDestroy,
   OnInit,
   ViewChild
@@ -112,9 +110,8 @@ export class DashboardScreenComponent extends DashboardEditingClass implements O
   private onLoadingTimeout?: ReturnType<typeof setTimeout>;
   private sidebarAnimEnd$ = this.sbs.onAnimEnd.pipe(takeUntilDestroyed());
 
-  constructor(@Inject(Injector) protected inj: Injector) {
-    super(inj);
-
+  constructor() {
+    super();
     this.subscribeForSidebarAnim();
     this.checkRestrictions();
     this.hs.resetSearch();
@@ -144,6 +141,11 @@ export class DashboardScreenComponent extends DashboardEditingClass implements O
     });
   }
 
+  get canEdit() {
+    // Currently for dev mode only
+    return location.port === '4007';
+  }
+
   trackByName = (index: number, w: IWidgetDesc) => {
     const nameKey = this.path + '-' + w.name.toString();
     if (w === this.editedWidget) {
@@ -153,11 +155,6 @@ export class DashboardScreenComponent extends DashboardEditingClass implements O
       return this.editedWidget.edKey || nameKey;
     }
     return nameKey;
-  }
-
-  get canEdit() {
-    // Currently for dev mode only
-    return location.port === '4007';
   }
 
   ngOnInit() {
@@ -196,11 +193,11 @@ export class DashboardScreenComponent extends DashboardEditingClass implements O
    * Sets widget type. Widget to change: this.ctxItem
    * @param {string} type Widget type
    */
-  setChartType(type: string) {
+  setType(type: string) {
     if (!this.ctxItem) {
       return;
     }
-    this.bs.broadcast('setChartType:' + this.ctxItem.name, type);
+    this.bs.broadcast('setWidgetType:' + this.ctxItem.name, type);
     this.hideContextMenu();
   }
 
@@ -284,7 +281,7 @@ export class DashboardScreenComponent extends DashboardEditingClass implements O
       if (minHeight < 800) {
         minHeight = 800;
       }
-      this.tilesOptions.fixedRowHeight = Math.floor((minHeight - (headerHeight + padding * (rows + 1))) / rows);
+      this.tilesOptions.fixedRowHeight = Math.floor((minHeight - (headerHeight + padding * (rows + 1))) / rows) - 1;
       // this.tilesOptions.fixedRowHeight = 400;
       /* if (this.tilesOptions.fixedRowHeight < 20) {
            this.tilesOptions.fixedRowHeight = 20;
@@ -329,6 +326,8 @@ export class DashboardScreenComponent extends DashboardEditingClass implements O
     }
     this.list = [];
     // result.widgets = [result.widgets[0]];
+    // result.widgets[0].type = 'simpleAddon';
+
     this.dbs.setWidgets(this.list);
     this.dbs.setAllWidgets(result.widgets);
     for (i = 0; i < result.widgets.length; i++) {
@@ -630,7 +629,7 @@ export class DashboardScreenComponent extends DashboardEditingClass implements O
       }
     }
     if (this.ctxItem?.isChart) {
-      comp?.chart['exportChart'](opt, {});
+      comp?.chart?.exportChart(opt, {});
     }
     this.hideContextMenu();
   }

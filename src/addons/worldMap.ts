@@ -36,15 +36,6 @@ export class WorldMap extends BaseChartClass implements OnInit {
         type: 'custom'
     };
 
-    /**
-     * Constructor of addon class
-     * Always stay UNCHANGED, do not modify
-     * initialize your addon inside ngOnInit method
-     */
-    constructor(@Inject(Injector) protected inj: Injector) {
-        super(inj);
-    }
-
     ngOnInit() {
         super.ngOnInit();
         const _this = this;

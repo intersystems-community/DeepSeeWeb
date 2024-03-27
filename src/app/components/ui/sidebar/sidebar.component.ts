@@ -1,16 +1,6 @@
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  ComponentFactoryResolver,
-  ComponentRef,
-  OnDestroy,
-  OnInit,
-  Renderer2
-} from '@angular/core';
-import {Subscription} from 'rxjs';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ComponentRef, OnInit, Renderer2} from '@angular/core';
 import {ISidebarInfo, SidebarService} from '../../../services/sidebar.service';
-import {animate, state, style, transition, trigger} from '@angular/animations';
+import {animate, style, transition, trigger} from '@angular/animations';
 import {NgComponentOutlet} from "@angular/common";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 

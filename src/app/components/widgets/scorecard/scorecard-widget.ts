@@ -6,7 +6,6 @@ import {IButtonToggle} from '../../../services/widget.service';
 import {IWidgetDataProperties, IWidgetDesc} from "../../../services/dsw.types";
 import {DomSanitizer} from "@angular/platform-browser";
 import {SidebarService} from "../../../services/sidebar.service";
-import {StorageService} from "../../../services/storage.service";
 
 
 interface IScorecardColumn {
@@ -209,7 +208,7 @@ export class ScorecardWidgetComponent extends BaseWidget implements OnInit, OnDe
     }
 
     this.sbs.showComponent({
-      component: import('./../../ui/chart-config/chart-config.component'),
+      component: import('../../ui/chart-colors-config/chart-colors-config.component'),
       inputs: {
         appearance: {
           showSeries: [true, false, false, false, false, false, false, false, false, false],

@@ -1,7 +1,6 @@
-import {Component, inject, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {BaseWidget} from './base-widget.class';
 import {IButtonToggle} from '../../services/widget.service';
-import {FilterService} from "../../services/filter.service";
 
 @Component({
   selector: 'dsw-empty-widget',
@@ -15,7 +14,6 @@ export class EmptyWidgetComponent extends BaseWidget implements OnInit {
     this.widget.title = this.i18n.get('filters');
     this.widget.toolbar = true;
     this.widget.viewSize = this.getViewSize(); // viewSize - value in % to place filtes (can be 33, 50, 100)
-
   }
 
   requestData() {
@@ -54,6 +52,9 @@ export class EmptyWidgetComponent extends BaseWidget implements OnInit {
   setFiltersToDefaults() {
     for (let i = 0; i < this.model.filters.length; i++) {
       const flt = this.fs.getFilter(i);
+      if (!flt) {
+        continue;
+      }
       flt.isInterval = false;
       flt.isExclude = flt.defaultExclude;
       flt.fromIdx = -1;

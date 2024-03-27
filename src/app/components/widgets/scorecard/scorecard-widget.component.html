@@ -1,31 +1,31 @@
 <table>
   <thead>
-    <tr>
-      <!-- Header cells -->
-      @for (p of props; track p) {
-        <td [class.plotbox-cell]="p.display === 'plotBox'">
-          @switch (p.display) {
-            <!-- Plot box -->
-            @case ('plotBox') {
-              <div class="axis">
-                <div class="label">{{p.rangeLower || '0'}}</div>
-                <span></span>
-                <span></span>
-                <span></span>
-                <span></span>
-                <div class="label">{{p.rangeUpper || '0'}}</div>
-              </div>
-            }
-            <!-- Simple text -->
-            @default {
-              <div [class.align-left]="p.display === 'label'">
-                {{p.label}}
-              </div>
-            }
+  <tr>
+    <!-- Header cells -->
+    @for (p of props; track p) {
+      <td [class.plotbox-cell]="p.display === 'plotBox'">
+        @switch (p.display) {
+          <!-- Plot box -->
+          @case ('plotBox') {
+            <div class="axis">
+              <div class="label">{{ p.rangeLower || '0' }}</div>
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+              <div class="label">{{ p.rangeUpper || '0' }}</div>
+            </div>
           }
-        </td>
-      }
-    </tr>
+          <!-- Simple text -->
+          @default {
+            <div [class.align-left]="p.display === 'label'">
+              {{ p.label }}
+            </div>
+          }
+        }
+      </td>
+    }
+  </tr>
   </thead>
   <tbody>
     @for (r of rows; track r; let ridx = $index) {
@@ -37,7 +37,7 @@
             [style.width.%]="p.display === 'plotBox' ? 100 / props.length * 2 : null"
             [class.align-left]="p.display === 'label'"
             [class.align-center]="p.display === 'itemNo'"
-            >
+          >
             @switch (p.display) {
               @case ('trendLine') {
                 <div>
@@ -46,7 +46,7 @@
               }
               @case ('plotBox') {
                 <div class="box" [style.background-color]="color"
-                  [style.width.%]="data[ridx][pidx]">
+                     [style.width.%]="data[ridx][pidx]">
                   @if (targets[ridx][pidx]) {
                     <span class="target" [style.left.%]="targets[ridx][pidx]"></span>
                   }
@@ -54,7 +54,7 @@
               }
               @default {
                 <div>
-                  {{data[ridx]? data[ridx][pidx] : ''}}
+                  {{ data[ridx] ? data[ridx][pidx] : '' }}
                 </div>
               }
             }
@@ -66,7 +66,7 @@
       <tr class="footer">
         @for (v of footerValues; track v) {
           <td>
-            {{v}}
+            {{ v }}
           </td>
         }
       </tr>

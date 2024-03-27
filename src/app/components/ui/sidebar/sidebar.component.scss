@@ -1,15 +1,16 @@
 @import "variables";
-:host {
-    display: block;
-    height: 100%;
-    width: var(--sidebar-width);
-    max-width: var(--sidebar-width);
-    background-color: var(--cl-sidebar-bg);
-    color: var(--cl-sidebar-txt);
-    flex: 0 0 var(--sidebar-width);
-    border-right: 1px solid var(--cl-sidebar-border);
-    z-index: 3;
 
-    position: relative;
-    overflow: hidden;
+:host {
+  display: block;
+  height: 100%;
+  width: var(--sidebar-width);
+  max-width: var(--sidebar-width);
+  background-color: var(--cl-sidebar-bg);
+  color: var(--cl-sidebar-txt);
+  flex: 0 0 var(--sidebar-width);
+  border-right: 1px solid var(--cl-sidebar-border);
+  z-index: 3;
+
+  position: relative;
+  overflow: hidden;
 }

@@ -1,4 +1,4 @@
-import {ComponentRef, EventEmitter, Injectable} from '@angular/core';
+import {EventEmitter, Injectable} from '@angular/core';
 import {BehaviorSubject} from 'rxjs';
 
 // Sidebar toggle information
@@ -19,7 +19,7 @@ export interface ISidebarInfo {
 })
 export class SidebarService {
   // Toggle sidebar, set "component" to class to create dynamic component. Set null to hide sidebar
-  sidebarToggle = new BehaviorSubject<ISidebarInfo|undefined>(undefined);
+  sidebarToggle = new BehaviorSubject<ISidebarInfo | undefined>(undefined);
   // Triggers before sidebar animation starts
   onAnimStart = new EventEmitter();
   // Triggers after sidebar animation ends

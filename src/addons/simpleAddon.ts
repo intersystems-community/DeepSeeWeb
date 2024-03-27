@@ -31,53 +31,12 @@ import {IAddonInfo} from "../app/services/dsw.types";
 })
 export class SimpleAddon extends BaseWidget implements OnInit, AfterViewInit {
     static AddonInfo: IAddonInfo = {
-        // Version of addon system, should be specified manually as number, not reference
-        // version always should be equal to BaseWidget.CURRENT_ADDON_VERSION
-        // used to compare unsupported addons when breaking changes are made into BaseWidget
-        // Note: do not use reference to BaseWidget.CURRENT_ADDON_VERSIO here!
-        // specify number MANUALLY
-        version: 1,
         // Widget type
         // 'custom' for all non-standard widgets
         // 'chart' for highcharts widget
         type: 'custom'
     };
-    @ViewChild('canvas', {static: false}) canvas: ElementRef;
-
-    /**
-     * You can use following services from base class
-     *   el: ElementRef;
-     *   us: UtilService;
-     *   vs: VariablesService;
-     *   ss: StorageService;
-     *   ds: DataService;
-     *   fs: FilterService;
-     *   wts: WidgetTypeService;
-     *   dbs: DashboardService;
-     *   cfr: ComponentFactoryResolver;
-     *   ns: NamespaceService;
-     *   route: ActivatedRoute;
-     *   i18n: I18nService;
-     *   bs: BroadcastService;
-     *   san: DomSanitizer;
-     *   sbs: SidebarService;
-     *   cd: ChangeDetectorRef;
-     *   zone: NgZone;
-     *
-     *   example:
-     *   {
-     *       const filters = this.fs.getWidgetFilters('Windget 1');
-     *   }
-     */
-
-    /**
-     * Constructor of addon class
-     * Always stay UNCHANGED, do not modify
-     * initialize your addon inside ngOnInit method
-     */
-    constructor(@Inject(Injector) protected inj: Injector) {
-        super(inj);
-    }
+    @ViewChild('canvas') canvas?: ElementRef;
 
     /**
      * Initialization
@@ -100,8 +59,11 @@ export class SimpleAddon extends BaseWidget implements OnInit, AfterViewInit {
      * Draw on canvas
      */
     drawOnCanvas() {
-        const canvas = this.canvas.nativeElement as HTMLCanvasElement;
-        const ctx = canvas.getContext('2d');
+        const canvas = this.canvas?.nativeElement as HTMLCanvasElement;
+        const ctx = canvas?.getContext('2d');
+        if (!ctx) {
+          return;
+        }
         const x = canvas.width / 2;
         const y = canvas.height / 2;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -156,7 +118,10 @@ export class SimpleAddon extends BaseWidget implements OnInit, AfterViewInit {
         super.onResize();
 
         // Adjust canvas size to new widget size
-        const canvas = this.canvas.nativeElement;
+        const canvas = this.canvas?.nativeElement;
+        if (!canvas) {
+          return;
+        }
         canvas.width = canvas.offsetWidth;
         canvas.height = canvas.offsetHeight;
 

@@ -1,11 +1,12 @@
 <div>
-  <button class="btn square btn-side-menu" [class.active]="!!(ss.sidebarToggle | async)?.component" (click)="toggleMenu()">
+  <button class="btn square btn-side-menu" [class.active]="!!(ss.sidebarToggle | async)?.component"
+          (click)="toggleMenu()">
     <img src="assets/img/icons/menu.svg">
   </button>
   <h2 class="breadcrumbs">
     <!--        <a routerLink="/" class="path">DeepSeeWeb</a>-->
     @if (!isSearch) {
-      <div class="only-sm">{{title}}</div>
+      <div class="only-sm">{{ title }}</div>
     }
     <div [class.no-opacity]="isSearch" class="items">
       @for (p of path$ | async; track p; let idx = $index) {
@@ -15,8 +16,8 @@
           [title]="p.title"
           [class.show-only-last]="isSearch"
           (click)="hideMoreDropdown($event, p.isMoreButton)"
-          >
-          {{p.title}}
+        >
+          {{ p.title }}
           @if (p.isMoreButton) {
             <span class="btn-more" [class.pressed]="isMorePressed" (click)="isMorePressed = !isMorePressed">
               ...
@@ -25,7 +26,7 @@
           @if (p.isMoreButton && isMorePressed) {
             <div class="dropdown-more">
               @for (l of p.moreList; track l) {
-                <a [routerLink]="l.url" class="path" [title]="l.title">{{l.title}}</a>
+                <a [routerLink]="l.url" class="path" [title]="l.title">{{ l.title }}</a>
               }
             </div>
           }
@@ -36,14 +37,16 @@
 
   <!-- Goto DSZ -->
   @if (!isSearch) {
-    <button class="btn btn-icon square s60 btn-goto only-desktop" (click)="gotoZenDeepSee()" [title]="'gotoDeepSee' | i18n">
+    <button class="btn btn-icon square s60 btn-goto only-desktop" (click)="gotoZenDeepSee()"
+            [title]="'gotoDeepSee' | i18n">
       <img class="flip" src="assets/img/icons/icon-navigate.svg">
     </button>
   }
 
   <!-- Share dashboard -->
   @if (!isSearch) {
-    <div class="btn btn-icon square s60 only-desktop btn-share" (mouseover)="showShareDashboard()" [title]="'shareDashboard' | i18n">
+    <div class="btn btn-icon square s60 only-desktop btn-share" (mouseover)="showShareDashboard()"
+         [title]="'shareDashboard' | i18n">
       <img src="assets/img/icons/icon-share.svg">
       <dsw-share-dashboard [shareUrl]="shareUrl" [isSmall]="true"></dsw-share-dashboard>
     </div>
@@ -71,17 +74,17 @@
     <input #inp [formControl]="searchField" type="search" placeholder="Search" (blur)="isSearchActive = false" (keydown.enter)="isSearchActive = false">
   </div>
 </span>-->
-<dsw-search-input #inpSearch [hidden]="!isSearch" (search)="onSearch($event)"></dsw-search-input>
+  <dsw-search-input #inpSearch [hidden]="!isSearch" (search)="onSearch($event)"></dsw-search-input>
 
-<!-- Language selector -->
-<select #lang class="lang-selector only-desktop" [(ngModel)]="selectedLanguage" (change)="selectLanguage(lang.value)">
-  @for (l of languages; track l) {
-    <option [value]="l">{{l}}</option>
-  }
-</select>
-<!-- Logout -->
-<button class="btn btn-icon only-desktop" (click)="logout()" [title]="'signout' | i18n">
-  <img src="assets/img/icons/icon-logout.svg">
-  {{'signout' | i18n}}
-</button>
+  <!-- Language selector -->
+  <select #lang class="lang-selector only-desktop" [(ngModel)]="selectedLanguage" (change)="selectLanguage(lang.value)">
+    @for (l of languages; track l) {
+      <option [value]="l">{{ l }}</option>
+    }
+  </select>
+  <!-- Logout -->
+  <button class="btn btn-icon only-desktop" (click)="logout()" [title]="'signout' | i18n">
+    <img src="assets/img/icons/icon-logout.svg">
+    {{ 'signout' | i18n }}
+  </button>
 </div>

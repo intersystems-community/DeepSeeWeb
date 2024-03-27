@@ -1,17 +1,28 @@
 {
-    "compilerOptions": {
-        "esModuleInterop": true,
-        "experimentalDecorators": true,
-        "target": "ES2015",
-        "moduleResolution": "Node",
-        "module": "CommonJS",
-        "resolveJsonModule": true,
-        "outDir": "../../dist-addons/",
-        "types": [],
-        "lib": [
-            "es2019",
-            "es2018",
-            "dom"
-        ]
-    }
+  "compilerOptions": {
+    "forceConsistentCasingInFileNames": false,
+    "strict": false,
+    "noImplicitOverride": false,
+    "noImplicitAny": false,
+    "noPropertyAccessFromIndexSignature": false,
+    "noImplicitReturns": false,
+    "noFallthroughCasesInSwitch": false,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "sourceMap": false,
+    "declaration": false,
+    "experimentalDecorators": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "importHelpers": true,
+    "target": "ES2022",
+    "module": "CommonJS",
+    "useDefineForClassFields": false,
+    "lib": [
+      "ES2022",
+      "dom"
+    ],
+    "outDir": "../../dist-addons/",
+    "types": []
+  }
 }

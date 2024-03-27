@@ -3,45 +3,45 @@ import {BehaviorSubject} from 'rxjs';
 
 
 @Injectable({
-    providedIn: 'root'
+  providedIn: 'root'
 })
 export class HeaderService {
-    visible$ = new BehaviorSubject(false);
-    onSearch = new BehaviorSubject<string>('');
-    onSearchReset = new EventEmitter();
-    shareDashboardEmitter = new EventEmitter();
-    gotoZenDeepSeeEmitter = new EventEmitter();
-    mobileFilterToggle = new EventEmitter<boolean>();
-    mobileFilterDialogToggle = new EventEmitter();
+  visible$ = new BehaviorSubject(false);
+  onSearch = new BehaviorSubject<string>('');
+  onSearchReset = new EventEmitter();
+  shareDashboardEmitter = new EventEmitter();
+  gotoZenDeepSeeEmitter = new EventEmitter();
+  mobileFilterToggle = new EventEmitter<boolean>();
+  mobileFilterDialogToggle = new EventEmitter();
 
-    // onSetTitle = new BehaviorSubject<string>('');
+  // onSetTitle = new BehaviorSubject<string>('');
 
-    constructor() {
+  constructor() {
 
-    }
+  }
 
-    resetSearch() {
-        this.onSearchReset.emit();
-    }
+  resetSearch() {
+    this.onSearchReset.emit();
+  }
 
-    shareDashboard() {
-        this.shareDashboardEmitter.emit();
-    }
+  shareDashboard() {
+    this.shareDashboardEmitter.emit();
+  }
 
-    gotoZenDeepSee() {
-        this.gotoZenDeepSeeEmitter.emit();
-    }
+  gotoZenDeepSee() {
+    this.gotoZenDeepSeeEmitter.emit();
+  }
 
-    showMobileFilterButton() {
-        this.mobileFilterToggle.emit(true);
-    }
+  showMobileFilterButton() {
+    this.mobileFilterToggle.emit(true);
+  }
 
-    hideMobileFilterButton() {
-        this.mobileFilterToggle.emit(false);
-    }
+  hideMobileFilterButton() {
+    this.mobileFilterToggle.emit(false);
+  }
 
-    toggleMobileFilterDialog() {
-        this.mobileFilterDialogToggle.emit();
-    }
+  toggleMobileFilterDialog() {
+    this.mobileFilterDialogToggle.emit();
+  }
 
 }

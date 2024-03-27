@@ -1,17 +1,20 @@
 <!-- Cancel button -->
 <button (click)="onCloseClick()" [title]="'cancel' | i18n">
   <!--   <img class="ico" src="assets/img/icons/icon-close.svg">-->
-  {{isBack ? 'Back' : 'Close'}}
+  {{ isBack ? 'Back' : 'Close' }}
 </button>
 <!-- Header text -->
 <label>
-  <div><ng-content></ng-content></div>
+  <div>
+    <ng-content></ng-content>
+  </div>
   @if ((isWidgetEditorWarning && isWidgetEditorWarningVisible)) {
     <div class="unsaved">You have unsaved changes</div>
   }
 </label>
 <!-- Apply button -->
-<button (click)="apply.emit()" [title]="'save' | i18n" [class.warning]="(isWidgetEditorWarning && isWidgetEditorWarningVisible)">
+<button (click)="apply.emit()" [title]="'save' | i18n"
+        [class.warning]="(isWidgetEditorWarning && isWidgetEditorWarningVisible)">
   <img src="assets/img/icons/icon-check.svg">
   <!--<img class="ico img-accept" src="assets/img/icons/check.svg">-->
   Save

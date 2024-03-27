@@ -3,8 +3,9 @@
 ![Test UI](https://github.com/intersystems-community/DeepSeeWeb/actions/workflows/test-ui.yml/badge.svg)
 [![Gitter](https://img.shields.io/badge/chat-on%20telegram-blue.svg)](https://t.me/joinchat/FoZ4M0xJSMDPlCQBLPRosw)
 
-Renderer for DeepSee Dashboards in Browser with MDX2JSON as a Serverside and JS web-client.<br>
-Developed using Angular11 and Highcharts.<br><br>
+DeepSeeWeb is an Angular UI layer for IRIS BI (DeepSee) dashboards
+
+# Whats new in 4.0
 
 # Whats new in 3.0
 This is newly rewritten DeepSeeWeb with TypeScript & Angular 10!

@@ -17,7 +17,7 @@ import {
 import {fromEvent} from 'rxjs/internal/observable/fromEvent';
 import {debounceTime} from 'rxjs/internal/operators/debounceTime';
 import {Subscription} from 'rxjs/internal/Subscription';
-import { RouterLink } from '@angular/router';
+import {RouterLink} from '@angular/router';
 
 
 const BTN_MORE_WIDTH = 37;
@@ -29,12 +29,12 @@ export class DSWTab {
 }
 
 @Component({
-    selector: 'dsw-tabs',
-    templateUrl: './tabs.component.html',
-    styleUrls: ['./tabs.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: true,
-    imports: [RouterLink]
+  selector: 'dsw-tabs',
+  templateUrl: './tabs.component.html',
+  styleUrls: ['./tabs.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  imports: [RouterLink]
 })
 export class TabsComponent implements AfterViewInit, OnDestroy, OnChanges {
   @ViewChildren('elements') elements!: QueryList<ElementRef>;
@@ -53,27 +53,27 @@ export class TabsComponent implements AfterViewInit, OnDestroy, OnChanges {
               private cd: ChangeDetectorRef,
               private zone: NgZone
   ) {
-      this.zone.runOutsideAngular(() => {
-        this.subClick = fromEvent(window, 'click')
-          .subscribe(e => {
-            let p = e.target as HTMLElement;
-            while (p) {
-              if (p.classList.contains('btn-more')) {
-                return;
-              }
-              if (!p.parentElement) {
-                  break;
-              }
-              p = p.parentElement;
+    this.zone.runOutsideAngular(() => {
+      this.subClick = fromEvent(window, 'click')
+        .subscribe(e => {
+          let p = e.target as HTMLElement;
+          while (p) {
+            if (p.classList.contains('btn-more')) {
+              return;
             }
-            this.isOpened = false;
-          });
-        this.subResize = fromEvent(window, 'resize')
-          .pipe(debounceTime(50))
-          .subscribe((event) => {
-            this.recalcTabsVisibility(true);
-          });
-      });
+            if (!p.parentElement) {
+              break;
+            }
+            p = p.parentElement;
+          }
+          this.isOpened = false;
+        });
+      this.subResize = fromEvent(window, 'resize')
+        .pipe(debounceTime(50))
+        .subscribe((event) => {
+          this.recalcTabsVisibility(true);
+        });
+    });
   }
 
   get hiddenTabs() {

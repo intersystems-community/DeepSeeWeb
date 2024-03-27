@@ -1,11 +1,11 @@
-@for (item of model.textData; track item; let idx = $index) {
+@for (item of textData; track item; let idx = $index) {
   <div class='item2' (click)="onClick(item)" [class.clickable]="canDrillthrough">
     <svg #images class='text-widget'>
-      <text [style.fill]='item.valueColor'>{{item.value}}
-        <tspan style='font-size: 4px;fill:red'>{{item.deltaNeg}}</tspan>
-        <tspan style='font-size: 4px;fill:green'>{{item.delta}}</tspan>
+      <text [style.fill]='item.valueColor'>{{ item.value }}
+        <tspan style='font-size: 4px;fill:red'>{{ item.deltaNeg }}</tspan>
+        <tspan style='font-size: 4px;fill:green'>{{ item.delta }}</tspan>
       </text>
     </svg>
-    <label>{{item.label}}</label>
+    <label>{{ item.label }}</label>
   </div>
 }

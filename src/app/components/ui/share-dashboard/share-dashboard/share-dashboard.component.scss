@@ -1,61 +1,61 @@
 @import "variables";
 
 :host {
-    z-index: 4;
-    text-align: left;
-    padding: 20px;
-    // background: red;
-    // background: red;
+  z-index: 4;
+  text-align: left;
+  padding: 20px;
+  // background: red;
+  // background: red;
 }
 
 div {
-    background: #FFFFFF;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-    border-radius: 10px;
-    padding: 20px;
+  background: #FFFFFF;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  padding: 20px;
 }
 
 p {
-    font-family: $font;
-    font-weight: 500;
-    font-size: 14px;
-    line-height: 16px;
-    color: var(--cl-header-txt);
-    margin-top: 0;
-    margin-bottom: 20px;
+  font-family: $font;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 16px;
+  color: var(--cl-header-txt);
+  margin-top: 0;
+  margin-bottom: 20px;
 }
 
 input, textarea {
-    margin-bottom: 10px;
-    min-width: 200px;
-    color: var(--cl-header-txt);
-    font-size: 12px;
-    line-height: 14px;
+  margin-bottom: 10px;
+  min-width: 200px;
+  color: var(--cl-header-txt);
+  font-size: 12px;
+  line-height: 14px;
 }
 
 textarea {
-    min-height: 120px;
+  min-height: 120px;
 
-    &.small {
-        min-height: 80px;
-    }
+  &.small {
+    min-height: 80px;
+  }
 }
 
 button {
-    width: 100%;
+  width: 100%;
 }
 
 input {
-    min-width: 16px;
-    width: 16px;
-    display: inline-block;
-    margin: 0;
-    margin-right: 4px;
-    vertical-align: bottom
+  min-width: 16px;
+  width: 16px;
+  display: inline-block;
+  margin: 0;
+  margin-right: 4px;
+  vertical-align: bottom
 }
 
 label {
-    display: block;
-    margin-bottom: 10px;
-    font-weight: normal;
+  display: block;
+  margin-bottom: 10px;
+  font-weight: normal;
 }

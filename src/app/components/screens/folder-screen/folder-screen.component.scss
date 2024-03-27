@@ -1,139 +1,140 @@
 @import "variables";
-@import "breakpoints";;
+@import "breakpoints";
+
+;
 
 :host {
-    display: block;
-    width: 100%;
-    height: 100%;
+  display: block;
+  width: 100%;
+  height: 100%;
 
-    //@media (min-width: #{$max-width}) {
-        //padding-left: calc((1vw - #{$max-width}) / 2);
-        //padding-right: calc((1vw - #{$max-width}) / 2);
-        // max-width: $max-width;
-        //margin: 0 auto;
-    //}
+  //@media (min-width: #{$max-width}) {
+  //padding-left: calc((1vw - #{$max-width}) / 2);
+  //padding-right: calc((1vw - #{$max-width}) / 2);
+  // max-width: $max-width;
+  //margin: 0 auto;
+  //}
 }
 
 gridster {
-    background: var(--cl-bg);
-   /* height:  initial;
-    overflow: initial !important;
-    overflow-x: initial !important;
-    overflow-y: initial !important;*/
-    overflow-y: overlay !important;
+  background: var(--cl-bg);
+  /* height:  initial;
+   overflow: initial !important;
+   overflow-x: initial !important;
+   overflow-y: initial !important;*/
+  overflow-y: overlay !important;
 }
 
 .tile {
-    border-radius: var(--tile-border-radius);
-    border: var(--tile-border);
-    cursor: pointer;
-    overflow: hidden;
-    user-select: none;
-    -webkit-user-select: none;
-    background-size: cover;
-    background: transparent no-repeat 50% 50%;
-    padding: 20px;
+  border-radius: var(--tile-border-radius);
+  // border: var(--tile-border);
+  cursor: pointer;
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+  background-size: cover;
+  background: transparent no-repeat 50% 50%;
+  padding: 20px;
 
-    border: 1px solid #EBEBEA;
-    border-radius: 10px;
+  // border: 1px solid #EBEBEA;
+  //border-radius: 4px;
+  // outline: 2px solid var(--cl-accent);
+  //outline-width: 0;
+  //transition: box-shadow 0.2s linear;
+  //transition-property: box-shadow, width, height, transform !important;
 
-    // Hover state
-    &:hover {
-        //transform: translate(0px, -2px) scale(2) !important;
-       /* box-shadow:
-            0 1px 1px hsl(0deg 0% 0% / 0.075),
-            0 2px 2px hsl(0deg 0% 0% / 0.075),
-            0 4px 4px hsl(0deg 0% 0% / 0.075),
-            0 8px 8px hsl(0deg 0% 0% / 0.075),
-            0 16px 16px hsl(0deg 0% 0% / 0.075);*/
+  // Hover state
+  &:hover {
+    //transform: translate(0px, -2px) scale(2) !important;
+    /* box-shadow:
+         0 1px 1px hsl(0deg 0% 0% / 0.075),
+         0 2px 2px hsl(0deg 0% 0% / 0.075),
+         0 4px 4px hsl(0deg 0% 0% / 0.075),
+         0 8px 8px hsl(0deg 0% 0% / 0.075),
+         0 16px 16px hsl(0deg 0% 0% / 0.075);*/
+    //outline-width: 2px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    //box-shadow:  0px 0px 0px 2px var(--cl-accent);
+  }
 
-        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-    }
+  // Editing state
+  &.editing {
+    opacity: 0.5;
+  }
 
-    // Editing state
-    &.editing {
-        opacity: 0.5;
-    }
+  // Selected state
+  &.selected {
+    opacity: 1;
+    border: 2px solid var(--cl-accent);
+  }
 
-    // Selected state
-    &.selected {
-        opacity: 1;
-        border: 2px solid var(--cl-accent);
-    }
-    @include sm {
-        border: none;
-        border-bottom: var(--tile-border);
-        display: flex !important;
-        justify-content: flex-start;
-        align-items: center;
-    }
+  @include sm {
+    border: none;
+    border-bottom: var(--tile-border);
+    display: flex !important;
+    justify-content: flex-start;
+    align-items: center;
+  }
 }
 
 .tile label {
-    font-family: $font;
-    font-style: normal;
-    outline-color: #1c5ec7;
-    position: absolute;
-    left: 20px;
-    right: 20px;
-    bottom: 20px;
-    top: auto;
-    text-align: left;
+  font-family: $font;
+  font-style: normal;
+  outline-color: #1c5ec7;
+  position: absolute;
+  left: 20px;
+  right: 20px;
+  bottom: 20px;
+  top: auto;
+  text-align: left;
 
-    font-weight: 500;
+  font-weight: normal;
+  font-size: 14px;
+  line-height: 16px;
+  color: var(--cl-header-txt);
+
+  max-height: 2.3em;
+  overflow: hidden;
+  display: inline-block;
+
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+
+
+  @include sm {
+    position: static;
     font-size: 14px;
-    line-height: 16px;
-    color: var(--cl-header-txt);
-
-    max-height: 2.3em;
-    overflow: hidden;
-    display: inline-block;
-
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-
-
-    @include sm {
-        position: static;
-        font-size: 14px;
-    }
+  }
 }
 
 .tile-icon {
-    height: 100%;
-    width: 100%;
-    overflow: hidden;
 
-    @include sm {
-        width: $mobile-folder-height;
-        height: $mobile-folder-height;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-    }
+  @include sm {
+  }
 }
 
 .tile-icon svg {
-    font-family: FontAwesome;
-    height: 50%;
-    width: 50%;
-    margin-top: 10%;
-    margin-left: 25%;
-    margin-right: 25%;
+  font-family: FontAwesome;
+  height: 50%;
+  width: 50%;
+  margin-top: 10%;
+  margin-left: 25%;
+  margin-right: 25%;
 
-    @include sm {
-        height: 80%;
-        width: 80%;
-        margin: 0;
-    }
+  @include sm {
+    height: 80%;
+    width: 80%;
+    margin: 0;
+  }
 }
 
 dsw-widget {
-    pointer-events: none;
-    &.transparent {
-        background-color: transparent;
-    }
+  pointer-events: none;
+
+  &.transparent {
+    background-color: transparent;
+  }
 }
 

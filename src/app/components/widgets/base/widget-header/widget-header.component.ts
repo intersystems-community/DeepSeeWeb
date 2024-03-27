@@ -4,9 +4,11 @@ import {
   Component,
   EventEmitter,
   Input,
+  OnChanges,
   OnDestroy,
   OnInit,
-  Output
+  Output,
+  SimpleChanges
 } from '@angular/core';
 import {StorageService} from '../../../../services/storage.service';
 import {UtilService} from '../../../../services/util.service';
@@ -14,14 +16,13 @@ import {ActivatedRoute} from '@angular/router';
 import {IButtonToggle, WidgetService} from '../../../../services/widget.service';
 import {NamespaceService} from '../../../../services/namespace.service';
 import {dsw} from '../../../../../environments/dsw';
-import {IWidgetType} from '../../../../services/widget-type.service';
 import {HeaderService} from '../../../../services/header.service';
 import {FilterService} from "../../../../services/filter.service";
 import {Subscription} from "rxjs";
 import {EditorService} from "../../../../services/editor.service";
 import {I18nPipe} from '../../../../services/i18n.service';
 import {TooltipDirective} from '../../../../directives/tooltip.directive';
-import {IWidgetDesc} from "../../../../services/dsw.types";
+import {DSW_EMPTY_PORTLET, IWidgetDesc, IWidgetType} from "../../../../services/dsw.types";
 
 
 @Component({
@@ -32,13 +33,14 @@ import {IWidgetDesc} from "../../../../services/dsw.types";
   imports: [TooltipDirective, I18nPipe],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class WidgetHeaderComponent implements OnInit, OnDestroy {
+export class WidgetHeaderComponent implements OnInit, OnChanges, OnDestroy {
   @Input() typeDesc?: IWidgetType;
+  @Input() widget!: IWidgetDesc;
   @Output() onButtonClick = new EventEmitter<IButtonToggle>();
   @Output() onBack = new EventEmitter();
   @Output() onResetClickFilter = new EventEmitter();
 
-  widget!: IWidgetDesc;
+
   hasFilters = false;
   filtersTooltip = '';
   noDrag = false;
@@ -75,24 +77,6 @@ export class WidgetHeaderComponent implements OnInit, OnDestroy {
     const active = this.fs.getWidgetFilters(this.widget?.name).filter(f => f.value !== '' || f.isInterval);
     this.hasFilters = !!active.length;
     this.filtersTooltip = active.map(f => f.label + ': <span style="opacity: 0.7">' + f.valueDisplay + '</span>').join('\n');
-  }
-
-  /**
-   * Loads default buttons state. Called after dynamic widget component created
-   */
-  loadButtons() {
-    this.widgetsSettings = this.ss.getWidgetsSettings(this.widget.dashboard) || {};
-    this.loadToolbarButton(this.widgetsSettings, 'isLegend');
-    this.loadToolbarButton(this.widgetsSettings, 'isTop');
-    this.loadToolbarButton(this.widgetsSettings, 'showZero');
-    this.loadToolbarButton(this.widgetsSettings, 'showValues');
-
-    const btns = this.typeDesc?.headerButtons;
-    if (btns) {
-      for (let i = 0; i < btns.length; i++) {
-        this.loadToolbarButton(this.widgetsSettings, btns[i].id, btns[i].defValue);
-      }
-    }
   }
 
   /**
@@ -158,11 +142,17 @@ export class WidgetHeaderComponent implements OnInit, OnDestroy {
       return false;
     }
     const t = this.widget.type;
-    return t === dsw.const.emptyWidgetClass || t === 'horizontalControls' || t === 'verticalControls';
+    return t === DSW_EMPTY_PORTLET || t === 'horizontalControls' || t === 'verticalControls';
   }
 
   closeMobileFilter() {
     this.hs.toggleMobileFilterDialog();
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes.widget?.currentValue && changes.widget.currentValue !== changes.widget.previousValue) {
+      this.loadButtons();
+    }
   }
 
   ngOnDestroy() {
@@ -178,5 +168,23 @@ export class WidgetHeaderComponent implements OnInit, OnDestroy {
 
   deleteWidgetClick() {
     this.eds.deleteWidget(this.widget);
+  }
+
+  /**
+   * Loads default buttons state. Called after dynamic widget component created
+   */
+  private loadButtons() {
+    this.widgetsSettings = this.ss.getWidgetsSettings(this.widget.dashboard) || {};
+    this.loadToolbarButton(this.widgetsSettings, 'isLegend');
+    this.loadToolbarButton(this.widgetsSettings, 'isTop');
+    this.loadToolbarButton(this.widgetsSettings, 'showZero');
+    this.loadToolbarButton(this.widgetsSettings, 'showValues');
+
+    const btns = this.typeDesc?.headerButtons;
+    if (btns) {
+      for (let i = 0; i < btns.length; i++) {
+        this.loadToolbarButton(this.widgetsSettings, btns[i].id, btns[i].defValue);
+      }
+    }
   }
 }

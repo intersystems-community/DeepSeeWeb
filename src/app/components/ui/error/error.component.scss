@@ -1,31 +1,31 @@
 @import "variables";
 
 :host {
-    font-family: $font;
-    cursor: pointer;
-    position: absolute;
-    padding: 4px 10px;
-    height: 32px;
-    color: white;
-    background-color: red;
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    border-radius: 4px;
-    right: 10px;
-    white-space: nowrap;
-    max-width: 50%;
-    transition: bottom 0.1s linear;
-    z-index: 100;
-    // Flex fix to show ellipsis on text
-    & > span {
-        min-width: 0;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
+  font-family: $font;
+  cursor: pointer;
+  position: absolute;
+  padding: 4px 10px;
+  height: 32px;
+  color: white;
+  background-color: red;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  border-radius: 4px;
+  right: 10px;
+  white-space: nowrap;
+  max-width: 50%;
+  transition: bottom 0.1s linear;
+  z-index: 100;
+  // Flex fix to show ellipsis on text
+  & > span {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 
-    &.left {
-        right: auto;
-        left: 10px;
-    }
+  &.left {
+    right: auto;
+    left: 10px;
+  }
 }

@@ -17,7 +17,10 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist",
+            "outputPath": {
+              "base": "dist",
+              "browser": ""
+            },
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": [
@@ -26,8 +29,8 @@
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": [
-              "src/favicon.ico",
               "src/assets",
+              "src/favicon.ico",
               "src/config.json",
               "src/changelog.md",
               "src/manifest.webmanifest",
@@ -37,6 +40,9 @@
                 "output": "addons"
               }
             ],
+            "externalDependencies": [
+              "./assets/*"
+            ],
             "stylePreprocessorOptions": {
               "includePaths": [
                 "src/scss"
@@ -45,7 +51,7 @@
             "styles": [
               "src/scss/lightPivotTable.min.css",
               "node_modules/font-awesome/css/font-awesome.css",
-              "src/scss/styles.scss",
+              "src/scss/app.scss",
               {
                 "input": "src/scss/themes/contrast.scss",
                 "bundleName": "contrast",
@@ -53,7 +59,6 @@
               }
             ],
             "scripts": [
-              "node_modules/systemjs/dist/system.min.js",
               "src/app/lib/lightPivotTable.js"
             ]
           },
@@ -70,13 +75,16 @@
                   "maximumWarning": "2kb",
                   "maximumError": "10kb"
                 }
-              ],
+               ],
+              "sourceMap": false,
               "outputHashing": "all"
             },
             "development": {
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true,
+              "clearScreen": true,
+              "verbose": true,
               "outputHashing": "all"
             }
           },
@@ -111,12 +119,28 @@
             "inlineStyleLanguage": "scss",
             "assets": [
               "src/favicon.ico",
-              "src/assets"
+              "src/config.json",
+              "src/changelog.md",
+              "src/manifest.webmanifest",
+              {
+                "glob": "*",
+                "input": "dist-addons/src/addons",
+                "output": "addons"
+              }
             ],
             "styles": [
-              "src/styles.scss"
+              "src/scss/lightPivotTable.min.css",
+              "node_modules/font-awesome/css/font-awesome.css",
+              "src/scss/app.scss",
+              {
+                "input": "src/scss/themes/contrast.scss",
+                "bundleName": "contrast",
+                "inject": false
+              }
             ],
-            "scripts": []
+            "scripts": [
+              "src/app/lib/lightPivotTable.js"
+            ]
           }
         }
       }

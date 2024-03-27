@@ -1,7 +1,8 @@
 @for (d of data; track d) {
   <div class="card">
-    <img [src]="'assets/img/smiley/' + (d.state === 1 ? 'smile-yellow.svg' : (d.state === 0 ? 'smile-red.svg' : 'smile-green.svg'))">
-    <label>{{d.caption}}</label>
+    <img
+      [src]="'assets/img/smiley/' + (d.state === 1 ? 'smile-yellow.svg' : (d.state === 0 ? 'smile-red.svg' : 'smile-green.svg'))">
+    <label>{{ d.caption }}</label>
   </div>
 }
 

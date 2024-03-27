@@ -4,7 +4,7 @@
     [currentTab]="currentTab"
     [useQuery]="false"
     (currentTabChange)="requestData($event)"
-    >
+  >
   </dsw-tabs>
 </section>
 
@@ -14,7 +14,7 @@
       @if (d.children?.length) {
         <img src="assets/img/widget-icons/folder-1.svg">
       }
-      {{d.name}}
+      {{ d.name }}
     </div>
   }
 </ng-template>

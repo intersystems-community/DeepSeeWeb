@@ -1,6 +1,7 @@
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   ElementRef,
   HostBinding,
@@ -22,7 +23,7 @@ import {UtilService} from "../../../services/util.service";
 import {I18nPipe} from '../../../services/i18n.service';
 import {AutoFocusDirective} from '../../../directives/auto-focus.directive';
 import {FormsModule} from '@angular/forms';
-import {IWidgetDesc} from "../../../services/dsw.types";
+import {IRelatedFiltersRequestData, IWidgetDesc} from "../../../services/dsw.types";
 import {ModalComponent} from "../modal/modal.component";
 
 interface IFilterModel {
@@ -71,10 +72,12 @@ export class FilterPopupComponent implements OnInit, AfterViewInit {
               private fs: FilterService,
               private es: ErrorService,
               private us: UtilService,
+              private cdr: ChangeDetectorRef,
               @Inject(LOCALE_ID) private locale: string) {
     this.datePipe = new DatePipe(locale);
     const settings = this.ss.getAppSettings();
     this.isRelatedFilters = settings.isRelatedFilters === undefined ? true : settings.isRelatedFilters;
+    // this.isRelatedFilters = !!settings.isRelatedFilters;
   }
 
   @HostBinding('class.date-filter')
@@ -150,21 +153,22 @@ export class FilterPopupComponent implements OnInit, AfterViewInit {
     const related = [];
     const filters = this.fs.items;
     // Get active filters
-    let activeFilters = filters.filter(f => !f.isInterval && ((f.targetProperty !== this.model.filter?.targetProperty) && f.value !== ''));
+    const activeFilters = filters.filter(f => !f.isInterval && ((f.targetProperty !== this.model.filter?.targetProperty) && f.value !== ''));
+    const res: IRelatedFiltersRequestData[] = [];
     // Reformat to DSZ filters
     activeFilters.forEach(f => {
-      f.Value = f.value;
+      let value = f.value.toString();
       if (f.isExclude) {
-        f.Value = f.Value.split('|').map(v => v += '.%NOT').join('|');
+        value = value.split('|').map(v => v += '.%NOT').join('|');
       }
       if (f.isInterval) {
-        f.Value = f.Value.replace('|', ':');
+        value = value.replace('|', ':');
       }
-      if (f.value.indexOf('|') !== -1) {
-        f.Value = '{' + f.Value.replace(/\|/g, ',') + '}';
+      if (f.value.toString().indexOf('|') !== -1) {
+        value = '{' + value.replace(/\|/g, ',') + '}';
       }
+      res.push({Filter: f.targetProperty, Value: value});
     });
-    activeFilters = activeFilters.map(f => ({Filter: f.targetProperty, Value: f.Value}));
 
     const isValuesExists = !!filters.find(f => f.targetProperty === this.model?.filter?.targetProperty)?.values?.filter(v => !v._saved)?.length;
     if (!isValuesExists) {
@@ -173,11 +177,15 @@ export class FilterPopupComponent implements OnInit, AfterViewInit {
 
     this.model.isLoading = true;
     this.ds
-      .searchFilters('', ds, activeFilters, [this.model.filter?.targetProperty])
+      .searchFilters('', ds, res, [this.model.filter?.targetProperty])
       .catch(e => this.onError(e, e.status))
       .then(data => {
         this.onFilterValuesReceived(data);
         this.onSearch('');
+      })
+      .finally(() => {
+        this.model.isLoading = false;
+        this.cdr.detectChanges();
       });
   }
 

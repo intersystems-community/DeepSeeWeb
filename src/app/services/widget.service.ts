@@ -3,22 +3,22 @@ import {EventEmitter, Injectable} from '@angular/core';
 import {IWidgetDesc} from "./dsw.types";
 
 export interface IButtonToggle {
-    widget: IWidgetDesc;
-    name: string;
-    state: boolean;
+  widget: IWidgetDesc;
+  name: string;
+  state: boolean;
 }
 
 @Injectable({
-    providedIn: 'root'
+  providedIn: 'root'
 })
 export class WidgetService {
 
-    onToggleHeaderButton = new EventEmitter<IButtonToggle>();
+  onToggleHeaderButton = new EventEmitter<IButtonToggle>();
 
-    constructor() {
-    }
+  constructor() {
+  }
 
-    toggleButton(btn: IButtonToggle) {
-        this.onToggleHeaderButton.emit(btn);
-    }
+  toggleButton(btn: IButtonToggle) {
+    this.onToggleHeaderButton.emit(btn);
+  }
 }
