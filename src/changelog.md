@@ -10,6 +10,8 @@
   * updated HighCharts to 11.4, now it have new look
 * rewritten charts data parser to support crossjoins/hierarchical data on all axis
 * fixed issue with a thousand separator and float numbers when there is no format specified
+* fixed issue with combo chart when only one series type specified
+* fixed issue when user tries to show legend for widget with one series(legend for widget with one series always hidden, check #346). now if user enable legend it always visible even if there is only one series
 * changed method of widget type change. now complex charts can be viewed as another complex chart, eg. "stacked chart" > "multiple pie charts"
 * fixed styles for error message
 * added new color picker

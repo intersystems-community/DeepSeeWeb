@@ -339,9 +339,7 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
     this.hideLoading();
     // Clean up previous data and store visibility state
     this.seriesVisibility = this.chart?.series?.map(s => s.visible) ?? [];
-    while ((this.chart?.series?.length ?? 0) > 0) {
-      this.chart?.series[0].remove();
-    }
+    this.clearSeries();
 
     // Store current widget data
     this.widgetData = JSON.parse(JSON.stringify(result));
@@ -408,7 +406,9 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
     }
 
     // Don't show legend for 1 series (#346)
-    if ((this.chart?.series?.length ?? 0) < 2) {
+    if (((this.chart?.series?.length ?? 0) < 2) && (!this.hasOption('isLegend'))) {
+      this.widget.isLegend = false;
+      this.parent?.header?.cd?.detectChanges();
       this.chart?.legend.update({
         enabled: false
       });
@@ -492,7 +492,7 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
 
     // Check series type from widget
     if (this.widget?.seriesTypes) {
-      const st = this.widget?.seriesTypes[index];
+      const st = this.widget?.seriesTypes[index] || 'bar';
       if (st) {
         data.type = st;
       }

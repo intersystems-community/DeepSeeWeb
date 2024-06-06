@@ -9,7 +9,7 @@
     "ua": "ng serve --proxy-config=proxy.conf.ua.js --port 4007",
     "got": "ng serve --proxy-config=proxy.conf.got.js --port 4007",
     "local": "ng serve --proxy-config=proxy.conf.local.js --port 4007",
-    "samples": "ng serve --proxy-config=proxy.conf.samples.js --port 4007",
+    "samples": "ng serve --proxy-config=proxy.conf.samples-bi.js --port 4007",
     "semen": "ng serve --proxy-config=proxy.conf.semen.js --port 4007",
     "community": "ng serve --proxy-config=proxy.conf.community.js --port 4007",
     "analytics": "ng serve --proxy-config=proxy.conf.analytics.js --port 4007",
