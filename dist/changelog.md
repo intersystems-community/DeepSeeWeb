@@ -1,3 +1,6 @@
+#### 3.2.25
+* fixed issue with slow data refresh on chart widgets
+
 #### 3.2.24
 * MDX with cross joins now correctly displayed in line/area/bar/column charts (#417)
 
