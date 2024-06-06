@@ -343,9 +343,7 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
         this.hideLoading();
         // Clean up previous data and store visibility state
         this.seriesVisibility = this.chart?.series?.map(s => s.visible);
-        while (this.chart?.series?.length > 0) {
-            this.chart.series[0].remove();
-        }
+        this.clearSeries();
 
         // Store current widget data
         this.widgetData = JSON.parse(JSON.stringify(result));
