@@ -1,3 +1,6 @@
+#### 3.2.26
+* fixed default filter value with "Not" issue 
+
 #### 3.2.25
 * fixed issue with slow data refresh on chart widgets
 
