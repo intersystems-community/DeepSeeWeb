@@ -52,6 +52,9 @@ export class FilterService {
                 flt.values = [];
             }
 
+            // Check for exclude filter
+            this.checkForExclude(flt);
+
             // Check for multiple filter in value
             if (flt.value && flt.value?.toString().charAt(0) === '{') {
                 flt.value = flt.value.toString().slice(1, -1);
@@ -456,10 +459,10 @@ export class FilterService {
                 flt.values[i].default = true;
                 flt.defaultExclude = isExclude;
                 flt.isExclude = isExclude;
-                names.push(flt.values[i].name);
+                names.push(flt.values[i].name.toString());
             }
         }
-        return names.join(',');
+        return (flt.isExclude ? 'Not ' : '') + names.join(',');
     }
 
     /**
@@ -722,5 +725,21 @@ export class FilterService {
     private findDateText(flt) {
         const value = flt.value || '';
         return value.toString().split('|').map(v => v.replace('&[', '').replace(']', '')).join(':');
+    }
+
+    private checkForExclude(flt) {
+        flt.isExclude = (flt.value ?? '').toString().toLowerCase().startsWith('%not');
+        if (!flt.isExclude) {
+            return;
+        }
+        const path = flt.value.split(' ')[1];
+        if (!path) {
+            return;
+        }
+        const value = flt.values?.find(v => v.path === path);
+        if (!value) {
+            return;
+        }
+        flt.value = value.path + '.%NOT';
     }
 }
