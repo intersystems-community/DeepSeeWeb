@@ -1,12 +1,7 @@
 "use strict";
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.HeatmapChartComponent = void 0;
+const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const base_chart_class_1 = require("../app/components/widgets/charts/base-chart.class");
 /**
@@ -242,6 +237,10 @@ let HeatmapChartComponent = class HeatmapChartComponent extends base_chart_class
         super(...arguments);
         this.stops = [];
     }
+    static { this.AddonInfo = {
+        type: 'chart',
+        chart: 'heatmap'
+    }; }
     ngOnInit() {
         super.ngOnInit();
         this.widget.isBtnValues = true;
@@ -397,14 +396,10 @@ let HeatmapChartComponent = class HeatmapChartComponent extends base_chart_class
         return { value: d };
     }
 };
-HeatmapChartComponent.AddonInfo = {
-    type: 'chart',
-    chart: 'heatmap'
-};
-HeatmapChartComponent = __decorate([
+exports.HeatmapChartComponent = HeatmapChartComponent;
+exports.HeatmapChartComponent = HeatmapChartComponent = tslib_1.__decorate([
     (0, core_1.Component)({
         selector: 'dsw-heatmap-chart',
         template: ''
     })
 ], HeatmapChartComponent);
-exports.HeatmapChartComponent = HeatmapChartComponent;
