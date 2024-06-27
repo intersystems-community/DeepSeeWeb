@@ -1,4 +1,4 @@
-#### 4.0.0
+#### 4.0.0 beta
 * migrated to Angular 17: 
   * rewritten application to use lazy loading, as a result "main.js" size reduced from **3Mb** to **500Kb**
   * all javascript modules in dist package now take up 3Mb, instead of 5Mb(previous version)

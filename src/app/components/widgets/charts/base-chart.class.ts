@@ -1197,7 +1197,7 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
           colors: this.tc?.hcColors
         },
         treemap: {
-          borderColor: this.tc?.hcBorderColor,
+          // borderColor: this.tc?.hcBorderColor,
           colors: this.tc?.hcColors
         },
         series: {
