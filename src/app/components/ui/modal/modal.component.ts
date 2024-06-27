@@ -1,183 +1,220 @@
 import {
-    Component,
-    ComponentFactoryResolver,
-    ComponentRef, ElementRef, EventEmitter,
-    HostBinding,
-    HostListener,
-    Input, OnDestroy,
-    OnInit, Renderer2,
-    ViewChild,
-    ViewContainerRef
+  AfterViewInit,
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  EventEmitter,
+  HostBinding,
+  HostListener,
+  Input,
+  OnChanges,
+  OnDestroy,
+  OnInit,
+  Renderer2,
+  SimpleChanges,
+  ViewChild
 } from '@angular/core';
 import {IModal, IModalButton, ModalService} from '../../../services/modal.service';
-import {Subscription} from "rxjs";
+import {Subscription} from 'rxjs';
+import {FormsModule} from '@angular/forms';
+import {SearchInputComponent} from '../search/search-input/search-input.component';
+import {NgComponentOutlet} from '@angular/common';
 
 @Component({
-    selector: 'dsw-modal',
-    templateUrl: './modal.component.html',
-    styleUrls: ['./modal.component.scss']
+  selector: 'dsw-modal',
+  templateUrl: './modal.component.html',
+  styleUrls: ['./modal.component.scss'],
+  standalone: true,
+  imports: [SearchInputComponent, FormsModule, NgComponentOutlet]
 })
-export class ModalComponent implements OnInit, OnDestroy {
-    @ViewChild('dynamicComponent', {read: ViewContainerRef, static: true})
-    dynComponent: ViewContainerRef;
+export class ModalComponent implements OnInit, OnDestroy, OnChanges, AfterViewInit {
+  @ViewChild(NgComponentOutlet, {read: ElementRef}) dynCompEl?: ElementRef;
+  @ViewChild(NgComponentOutlet) ngComponentOutlet?: NgComponentOutlet;
+  @Input() data!: IModal;
+  search = new EventEmitter<string>();
+  isInitialized = false;
+  private subscriptions: Subscription[] = [];
 
-    @Input() data: IModal;
+  constructor(private ms: ModalService,
+              private cd: ChangeDetectorRef,
+              private el: ElementRef,
+              private r2: Renderer2) {
+  }
 
-    compRef: ComponentRef<any>;
-    component: any;
-    search = new EventEmitter<string>();
-    private subscriptions: Subscription[] = [];
+  @HostBinding('class.no-backdrop') get noBackdrop(): boolean {
+    return !!this.data.hideBackdrop;
+  }
 
-    @HostBinding('class.no-backdrop') get noBackdrop(): boolean {
-        return this.data.hideBackdrop;
+  ngOnInit() {
+    this.data.inputs._modal = this;
+    this.isInitialized = true;
+  }
+
+  ngAfterViewInit() {
+    this.initDynamicComponent();
+    this.updateHostStyles();
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(s => s.unsubscribe());
+  }
+
+  getPath(e: MouseEvent): HTMLElement[] {
+    const path: any[] = [];
+    let currentElem = e.target;
+    while (currentElem) {
+      path.push(currentElem);
+      currentElem = (currentElem as HTMLElement).parentElement;
     }
-
-    constructor(private ms: ModalService,
-                private el: ElementRef,
-                private r2: Renderer2,
-                private cfr: ComponentFactoryResolver) {
+    if (path.indexOf(window) === -1 && path.indexOf(document) === -1) {
+      path.push(document);
     }
-
-    ngOnInit() {
-        if (this.data.component) {
-            const factory = this.cfr.resolveComponentFactory(this.data.component);
-            this.compRef = this.dynComponent.createComponent(factory);
-            this.component = this.compRef.instance;
-            this.component.$modal = this;
-            this.r2.setAttribute(this.compRef.location.nativeElement, 'dynamic-component', '');
-            const styles = this.data.componentStyles;
-            if (styles) {
-                for (let key in styles) {
-                    this.r2.setStyle(this.compRef.location.nativeElement, key, styles[key]);
-                }
-            }
-
-            if (this.data.onComponentInit) {
-                this.data.onComponentInit(this.component);
-            }
-
-            this.subscribeForOutputs();
-        }
+    if (path.indexOf(window) === -1) {
+      path.push(window);
     }
+    return path;
 
-    ngOnDestroy(){
-        this.subscriptions.forEach(s => s.unsubscribe());
-        if (this.compRef) {
-            this.compRef.destroy();
-        }
+  }
+
+  @HostListener('mousedown', ['$event'])
+  onClick(e: MouseEvent) {
+    if (!this.data.closeByBackdropClick) {
+      return;
     }
-
-    getPath(e: MouseEvent): HTMLElement[] {
-        const path = [];
-        let currentElem = e.target;
-        while (currentElem) {
-            path.push(currentElem);
-            currentElem = (currentElem as HTMLElement).parentElement;
-        }
-        if (path.indexOf(window) === -1 && path.indexOf(document) === -1)
-            path.push(document);
-        if (path.indexOf(window) === -1)
-            path.push(window);
-        return path;
-
+    const clickedOnComponent = this.getPath(e).some(e => !!e.classList?.contains('modal'));
+    if (!clickedOnComponent) {
+      this.close();
+      e.preventDefault();
     }
+  }
 
-    @HostListener('mousedown', ['$event'])
-    onClick(e: MouseEvent) {
-        if (!this.data.closeByBackdropClick) { return; }
-        const clickedOnComponent = this.getPath(e).some(e => e.attributes && e.attributes['dynamic-component']);
-        if (!clickedOnComponent) {
-            this.close();
-            e.preventDefault();
-        }
+
+  @HostListener('document:keydown', ['$event'])
+  onGlobalKeyPressed(e: KeyboardEvent) {
+    // Use hotkeys only for topmost modal
+    if (!this.isTopmost()) {
+      return;
     }
-
-
-    @HostListener('document:keydown', ['$event'])
-    onGlobalKeyPressed(e: KeyboardEvent) {
-        // Use hotkeys only for topmost modal
-        if (!this.isTopmost()) {
-            return;
-        }
-        switch (e.code.toLowerCase()) {
-            case 'enter': case 'numpadenter':
-                this.processEnterKey();
-                break;
-            case 'escape':
-                this.processEscapeKey();
-                break;
-        }
+    switch (e.code.toLowerCase()) {
+      case 'enter':
+      case 'numpadenter':
+        this.processEnterKey();
+        break;
+      case 'escape':
+        this.processEscapeKey();
+        break;
     }
+  }
 
-    /**
-     * Closes modal
-     */
-    close() {
-        this.ms.close(this.data);
-    }
+  /**
+   * Closes modal
+   */
+  close() {
+    this.ms.close(this.data);
+  }
 
-    /**
-     * On modal button click
-     */
-    onButtonClick(btn: IModalButton) {
-        if (btn.click) {
-            btn.click(this, this.data, btn);
-        }
-        if (btn.autoClose) {
-            this.close();
-        }
+  /**
+   * On modal button click
+   */
+  onButtonClick(btn: IModalButton) {
+    if (btn.click) {
+      btn.click(this, this.data, btn);
     }
+    if (btn.autoClose) {
+      this.close();
+    }
+  }
 
-    /**
-     * Processing pressing of enter key
-     */
-    private processEnterKey() {
-        if (!this.data.buttons?.length) {
-            return;
-        }
-        const btn = this.data.buttons.find(b => b.default);
-        if (!btn) {
-            return;
-        }
-        if (btn.click) {
-            btn.click(this, this.data, btn);
-        }
-        if (btn.autoClose) {
-            this.close();
-        }
-    }
+  onSearch(term: string) {
+    this.search.emit(term);
+  }
 
-    private processEscapeKey() {
-        if (this.data.closeByEsc) {
-            this.close();
-        }
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['data']?.currentValue && changes['data'].currentValue !== changes['data'].previousValue) {
+      this.cd.detectChanges();
     }
+  }
 
-    /**
-     * Checks if modal is topmost
-     */
-    private isTopmost(): boolean {
-        const modals = this.ms.modals.getValue();
-        return modals[modals.length - 1] === this.data;
+  /**
+   * Processing pressing of enter key
+   */
+  private processEnterKey() {
+    if (!this.data.buttons?.length) {
+      return;
     }
+    const btn = this.data.buttons.find(b => b.default);
+    if (!btn) {
+      return;
+    }
+    if (btn.click) {
+      btn.click(this, this.data, btn);
+    }
+    if (btn.autoClose) {
+      this.close();
+    }
+  }
 
-    private subscribeForOutputs() {
-        if (!this.data.outputs) {
-            return;
-        }
-        for (const o in this.data.outputs) {
-            const e: EventEmitter<any> = this.component[o];
-            if (!e) {
-                return;
-            }
-            if (!(e instanceof EventEmitter)) {
-                return;
-            }
-            this.subscriptions.push(e.subscribe((...args) => this.data.outputs[o](...args)));
-        }
+  private processEscapeKey() {
+    if (this.data.closeByEsc) {
+      this.close();
     }
+  }
 
-    onSearch(term: string) {
-        this.search.emit(term);
+  /**
+   * Checks if modal is topmost
+   */
+  private isTopmost(): boolean {
+    const modals = this.ms.modals.getValue();
+    return modals[modals.length - 1] === this.data;
+  }
+
+  private subscribeForOutputs(comp: any) {
+    if (!this.data.outputs) {
+      return;
     }
+    for (const o in this.data.outputs) {
+      const e: EventEmitter<any> = comp[o];
+      if (!e) {
+        return;
+      }
+      if (!(e instanceof EventEmitter)) {
+        return;
+      }
+      this.subscriptions.push(e.subscribe((...args) => this.data.outputs?.[o](...args)));
+    }
+  }
+
+  private updateHostStyles() {
+    const styles = this.data.componentStyles;
+    let el = this.dynCompEl?.nativeElement;
+    if (!el) {
+      return;
+    }
+    if (el.nodeName === '#comment') {
+      el = el.previousElementSibling;
+    }
+    if (styles) {
+      for (const key in styles) {
+        this.r2.setStyle(el, key, styles[key]);
+      }
+    }
+  }
+
+  private initDynamicComponent() {
+    let comp: any;
+    // TODO: Workaround to access component instance from template outlet,
+    // may be changed in future versions on Angular
+    // @ts-ignore
+    if (this.ngComponentOutlet?._componentRef?.instance) {
+      // @ts-ignore
+      comp = this.ngComponentOutlet._componentRef.instance;
+    }
+    if (!comp) {
+      return;
+    }
+    if (this.data.onComponentInit) {
+      this.data.onComponentInit(comp);
+    }
+    this.subscribeForOutputs(comp);
+  }
 }

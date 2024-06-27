@@ -1,176 +1,149 @@
 {
-    "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
-    "version": 1,
-    "newProjectRoot": "projects",
-    "projects": {
-        "DeepSeeWeb": {
-            "projectType": "application",
-            "schematics": {
-                "@schematics/angular:component": {
-                    "style": "scss"
-                }
-            },
-            "root": "",
-            "sourceRoot": "src",
-            "prefix": "dsw",
-            "architect": {
-                "build": {
-                    "builder": "@angular-devkit/build-angular:browser",
-                    "options": {
-                        "outputPath": "dist",
-                        "index": "src/index.html",
-                        "main": "src/main.ts",
-                        "polyfills": "src/polyfills.ts",
-                        "tsConfig": "tsconfig.app.json",
-                        "aot": true,
-                        "assets": [
-                            "src/favicon.ico",
-                            "src/assets",
-                            "src/config.json",
-                            "src/changelog.md",
-                            "src/manifest.webmanifest",
-                            {
-                                "glob": "*",
-                                "input": "dist-addons/src/addons",
-                                "output": "addons"
-                            }
-                        ],
-                        "styles": [
-                            "src/scss/lightPivotTable.min.css",
-                            "node_modules/font-awesome/css/font-awesome.css",
-                            "src/scss/styles.scss",
-                            {
-                                "input": "src/scss/themes/contrast.scss",
-                                "bundleName": "contrast",
-                                "inject": false
-                            }
-                        ],
-                        "scripts": [
-                            "node_modules/systemjs/dist/system.min.js",
-                            "src/app/lib/lightPivotTable.js"
-                        ]
-                    },
-                    "configurations": {
-                        "development": {
-                            "optimization": false,
-                            "outputHashing": "none",
-                            "sourceMap": true,
-                            "namedChunks": true,
-                            "extractLicenses": false,
-                            "vendorChunk": false,
-                            "buildOptimizer": false,
-                            "budgets": [
-                                {
-                                    "type": "initial",
-                                    "maximumWarning": "3mb",
-                                    "maximumError": "5mb"
-                                },
-                                {
-                                    "type": "anyComponentStyle",
-                                    "maximumWarning": "6kb",
-                                    "maximumError": "10kb"
-                                }
-                            ],
-                            "serviceWorker": false,
-                            "ngswConfigPath": "ngsw-config.json"
-                        },
-                        "production": {
-                            "fileReplacements": [
-                                {
-                                    "replace": "src/environments/environment.ts",
-                                    "with": "src/environments/environment.prod.ts"
-                                }
-                            ],
-                            "optimization": true,
-                            "outputHashing": "all",
-                            "sourceMap": false,
-                            "namedChunks": false,
-                            "extractLicenses": true,
-                            "vendorChunk": false,
-                            "buildOptimizer": false,
-                            "budgets": [
-                                {
-                                    "type": "initial",
-                                    "maximumWarning": "2mb",
-                                    "maximumError": "5mb"
-                                },
-                                {
-                                    "type": "anyComponentStyle",
-                                    "maximumWarning": "6kb",
-                                    "maximumError": "10kb"
-                                }
-                            ],
-                            "serviceWorker": true,
-                            "ngswConfigPath": "ngsw-config.json"
-                        }
-                    }
-                },
-                "serve": {
-                    "defaultConfiguration": "development",
-                    "builder": "@angular-devkit/build-angular:dev-server",
-                    "options": {
-                        "browserTarget": "DeepSeeWeb:build"
-                    },
-                    "configurations": {
-                        "production": {
-                            "browserTarget": "DeepSeeWeb:build:production"
-                        },
-                        "development": {
-                            "browserTarget": "DeepSeeWeb:build:development"
-                        }
-                    }
-                },
-                "extract-i18n": {
-                    "builder": "@angular-devkit/build-angular:extract-i18n",
-                    "options": {
-                        "browserTarget": "DeepSeeWeb:build"
-                    }
-                },
-                "test": {
-                    "builder": "@angular-devkit/build-angular:karma",
-                    "options": {
-                        "main": "src/test.ts",
-                        "polyfills": "src/polyfills.ts",
-                        "tsConfig": "tsconfig.spec.json",
-                        "karmaConfig": "karma.conf.js",
-                        "assets": [
-                            "src/favicon.ico",
-                            "src/assets",
-                            "src/manifest.webmanifest"
-                        ],
-                        "styles": [
-                            "src/scss/styles.scss"
-                        ],
-                        "scripts": []
-                    }
-                },
-                "lint": {
-                    "builder": "@angular-devkit/build-angular:tslint",
-                    "options": {
-                        "tsConfig": [
-                            "tsconfig.app.json",
-                            "tsconfig.spec.json",
-                            "e2e/tsconfig.json"
-                        ],
-                        "exclude": [
-                            "**/node_modules/**"
-                        ]
-                    }
-                },
-                "e2e": {
-                    "builder": "@angular-devkit/build-angular:protractor",
-                    "options": {
-                        "protractorConfig": "e2e/protractor.conf.js",
-                        "devServerTarget": "DeepSeeWeb:serve"
-                    },
-                    "configurations": {
-                        "production": {
-                            "devServerTarget": "DeepSeeWeb:serve:production"
-                        }
-                    }
-                }
-            }
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "newProjectRoot": "projects",
+  "projects": {
+    "dsw": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
         }
-    },
-    "defaultProject": "DeepSeeWeb"
+      },
+      "root": "",
+      "sourceRoot": "src",
+      "prefix": "dsw",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:application",
+          "options": {
+            "outputPath": {
+              "base": "dist",
+              "browser": ""
+            },
+            "index": "src/index.html",
+            "browser": "src/main.ts",
+            "polyfills": [
+              "zone.js"
+            ],
+            "tsConfig": "tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              "src/assets",
+              "src/favicon.ico",
+              "src/config.json",
+              "src/changelog.md",
+              "src/manifest.webmanifest",
+              {
+                "glob": "*",
+                "input": "dist-addons/src/addons",
+                "output": "addons"
+              }
+            ],
+            "externalDependencies": [
+              "./assets/*"
+            ],
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "src/scss"
+              ]
+            },
+            "styles": [
+              "src/scss/lightPivotTable.min.css",
+              "node_modules/font-awesome/css/font-awesome.css",
+              "src/scss/app.scss",
+              {
+                "input": "src/scss/themes/contrast.scss",
+                "bundleName": "contrast",
+                "inject": false
+              }
+            ],
+            "scripts": [
+              "src/app/lib/lightPivotTable.js"
+            ]
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "4mb",
+                  "maximumError": "5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "2kb",
+                  "maximumError": "10kb"
+                }
+               ],
+              "sourceMap": false,
+              "outputHashing": "all"
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "clearScreen": true,
+              "verbose": true,
+              "outputHashing": "all"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "configurations": {
+            "production": {
+              "buildTarget": "dsw:build:production"
+            },
+            "development": {
+              "buildTarget": "dsw:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "buildTarget": "dsw:build"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "polyfills": [
+              "zone.js",
+              "zone.js/testing"
+            ],
+            "tsConfig": "tsconfig.spec.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              "src/favicon.ico",
+              "src/config.json",
+              "src/changelog.md",
+              "src/manifest.webmanifest",
+              {
+                "glob": "*",
+                "input": "dist-addons/src/addons",
+                "output": "addons"
+              }
+            ],
+            "styles": [
+              "src/scss/lightPivotTable.min.css",
+              "node_modules/font-awesome/css/font-awesome.css",
+              "src/scss/app.scss",
+              {
+                "input": "src/scss/themes/contrast.scss",
+                "bundleName": "contrast",
+                "inject": false
+              }
+            ],
+            "scripts": [
+              "src/app/lib/lightPivotTable.js"
+            ]
+          }
+        }
+      }
+    }
+  }
 }

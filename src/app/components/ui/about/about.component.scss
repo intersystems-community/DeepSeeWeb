@@ -1,13 +1,19 @@
-@import "src/scss/variables";
+@import "variables";
 
 :host {
-    font-family: $font;
-    max-width: 50vw;
+  font-family: $font;
+  max-width: 50vw;
 
-    & h2 {
-        font-size: 18px;
-        margin-bottom: 20px;
-        font-weight: normal;
-    }
+  & h2 {
+    font-size: 18px;
+    margin-bottom: 20px;
+    font-weight: normal;
+  }
 }
 
+
+a {
+  color: var(--cl-accent);
+  text-decoration: none;
+  cursor: pointer;
+}

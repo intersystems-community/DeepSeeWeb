@@ -1,0 +1,25 @@
+$size: 32px;
+
+:host {
+  display: block;
+  width: 100%;
+  height: $size;
+  cursor: pointer;
+  border: 1px solid rgb(210, 210,210);
+}
+
+chrome-picker {
+  position: fixed;
+  transform: translateY($size);
+  cursor: default;
+  z-index: 2;
+}
+
+.btn-primary {
+  width: 100%;
+  border-radius: 0;
+}
+
+.top {
+  transform: translateY(-100%);
+}

@@ -2,46 +2,46 @@
 @import "breakpoints";
 
 .no-anim {
-    -webkit-transition: none !important;
-    transition: none !important;
+  -webkit-transition: none !important;
+  transition: none !important;
 }
 
 //// Gridster without animation
-//gridster.no-anim .gridster-column,
-//gridster.no-anim .gridster-row,
-//gridster.no-anim gridster-item,
-//gridster.no-anim gridster-item.gridster-item-resizing,
-//gridster.no-anim gridster-item.gridster-item-moving {
-//    transition: unset !important;
-//}
+gridster.no-anim-g .gridster-column,
+gridster.no-anim-g .gridster-row,
+gridster.no-anim-g gridster-item,
+gridster.no-anim-g gridster-item.gridster-item-resizing,
+gridster.no-anim-g gridster-item.gridster-item-moving {
+  transition: unset !important;
+}
 
 gridster-item {
-    transition-property: width, height, transform !important;
+  transition-property: width, height, transform !important;
 }
 
 // Gridster resize handler
 gridster-item:hover .gridster-item-resizable-handler.handle-se {
-    border-color: transparent transparent var(--cl-accent) !important;
-    z-index: 10;
+  border-color: transparent transparent var(--cl-accent) !important;
+  z-index: 10;
 }
 
 // Needed to make greater than  LPT zindex, so user can resize widget
 .gridster-item:hover .gridster-item-resizable-handler.handle-se {
-    z-index: 1000;
+  z-index: 1000;
 }
 
 // Mobile item height
 .gridster.mobile gridster-item {
-    @include sm {
-        height: $mobile-folder-height !important; // Because gridster uses inline styles
-        margin-bottom: 0 !important;
-    }
+  @include sm {
+    height: $mobile-folder-height !important; // Because gridster uses inline styles
+    margin-bottom: 0 !important;
+  }
 }
 
 // Remove padding for mobile
 .gridster.mobile {
-    @include sm {
-        padding: 0 !important;
-    }
+  @include sm {
+    padding: 0 !important;
+  }
 }
 

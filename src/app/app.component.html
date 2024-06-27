@@ -1,16 +1,23 @@
-<dsw-header *ngIf="hs.visible$ | async"></dsw-header>
+@if (hs.visible$ | async) {
+  <dsw-header></dsw-header>
+}
 <div class="content">
-    <dsw-sidebar #sidebar (@toggle.done)="onAnimDone()" (@toggle.start)="onAnimStart()" [@toggle] *ngIf="isSidebar"></dsw-sidebar>
-    <router-outlet></router-outlet>
+  @if (isSidebar) {
+    <dsw-sidebar #sidebar (@toggle.done)="onAnimDone()" (@toggle.start)="onAnimStart()" [@toggle]></dsw-sidebar>
+  }
+  <router-outlet></router-outlet>
 </div>
 
 <!-- Modals -->
-<dsw-modal *ngFor="let modal of ms.modals | async" [data]="modal" [ngClass]="modal.class" ></dsw-modal>
+@for (modal of ms.modals | async; track modal) {
+  <dsw-modal [data]="modal" [ngClass]="modal.class"></dsw-modal>
+}
 
 <!-- Error list -->
-<dsw-error
-    *ngFor="let err of es.errors$ | async; let idx = index; trackBy:trackError"
+@for (err of es.errors$ | async; track trackError(idx, err); let idx = $index) {
+  <dsw-error
     [@toggleError]="!err.isLeft"
     [@toggleErrorLeft]="err.isLeft"
     [error]="err">
-</dsw-error>
+  </dsw-error>
+}

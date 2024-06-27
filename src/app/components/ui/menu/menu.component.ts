@@ -5,96 +5,93 @@ import {HeaderService} from '../../../services/header.service';
 import {ActivatedRoute, NavigationEnd, Router} from '@angular/router';
 import {Subscription} from 'rxjs';
 import {SidebarService} from '../../../services/sidebar.service';
-import {NamespaceSelectorComponent} from '../namespace-selector/namespace-selector.component';
-import {LanguageSelectorComponent} from '../language-selector/language-selector.component';
 import {ModalService} from '../../../services/modal.service';
-import {AboutComponent} from '../about/about.component';
-import {AppSettingsComponent} from '../app-settings/app-settings.component';
 import {DataService} from '../../../services/data.service';
-import {MenuSettingsComponent} from './menu-settings/menu-settings.component';
-import {CURRENT_NAMESPACE} from '../../../services/namespace.service';
-import {TextAreaComponent} from '../text-area/text-area.component';
+import {I18nPipe} from '../../../services/i18n.service';
+
 
 @Component({
-    selector: 'dsw-menu',
-    templateUrl: './menu.component.html',
-    styleUrls: ['./menu.component.scss']
-    //changeDetection: ChangeDetectionStrategy.OnPush
+  selector: 'dsw-menu',
+  templateUrl: './menu.component.html',
+  styleUrls: ['./menu.component.scss'],
+  //changeDetection: ChangeDetectionStrategy.OnPush
+  standalone: true,
+  imports: [I18nPipe]
 })
 export class MenuComponent implements OnInit, OnDestroy {
 
-    public isHome = false;
-    readonly version = dsw.const.ver;
-    private subOnRouteChange: Subscription;
+  public isHome = false;
+  readonly version = dsw.const.ver;
+  private subOnRouteChange?: Subscription;
 
-    constructor(private router: Router,
-                private route: ActivatedRoute,
-                private ds: DataService,
-                private ms: MenuService,
-                private modal: ModalService,
-                private sbs: SidebarService,
-                private hs: HeaderService) {
+  constructor(private router: Router,
+              private route: ActivatedRoute,
+              private ds: DataService,
+              private ms: MenuService,
+              private modal: ModalService,
+              private sbs: SidebarService,
+              private hs: HeaderService) {
+    this.checkHome();
+  }
+
+
+  ngOnInit(): void {
+    this.subOnRouteChange = this.router.events.subscribe((val) => {
+      if (val instanceof NavigationEnd) {
         this.checkHome();
-    }
+      }
+    });
+  }
 
+  ngOnDestroy() {
+    this.subOnRouteChange?.unsubscribe();
+  }
 
-    ngOnInit(): void {
-        this.subOnRouteChange = this.router.events.subscribe((val) => {
-            if (val instanceof NavigationEnd) {
-                this.checkHome();
-            }
-        });
-    }
+  checkHome() {
+    const segments = this.router.url.split('/');
+    this.isHome = !segments[segments.length - 1]?.endsWith('.dashboard');
+  }
 
-    ngOnDestroy() {
-        this.subOnRouteChange.unsubscribe();
-    }
+  editDashboard() {
+    this.hs.resetSearch();
+    this.ms.onEditDashboard.emit(true);
+  }
 
-    checkHome() {
-        const segments = this.router.url.split('/');
-        this.isHome = !segments[segments.length - 1]?.endsWith('.dashboard');
-    }
+  logout() {
+    void this.ds.signOut();
+  }
 
-    editDashboard() {
-        this.hs.resetSearch();
-        this.ms.onEditDashboard.emit(true);
-    }
+  showNamespaceSelector() {
+    this.sbs.showComponent({
+      component: import('./../../ui/namespace-selector/namespace-selector.component')
+    });
+  }
 
-    logout() {
-        void this.ds.signOut();
-    }
+  showLanguageSelector() {
+    this.sbs.showComponent({
+      component: import('./../../ui/language-selector/language-selector.component')
+    });
+  }
 
-    showNamespaceSelector() {
-        this.sbs.showComponent({
-            component: NamespaceSelectorComponent
-        });
-    }
+  showAboutDialog() {
+    this.modal.show({
+      title: 'DeepSeeWeb v.' + this.version,
+      component: import('./../../ui/about/about.component'),
+      closeByEsc: true,
+      closeByBackdropClick: true
+    });
+    this.sbs.hide();
+  }
 
-    showLanguageSelector() {
-        this.sbs.showComponent({
-            component: LanguageSelectorComponent
-        });
-    }
+  showSettingsMenu() {
+    this.sbs.showComponent({component: import('./../../ui/menu/menu-settings/menu-settings.component')});
+  }
 
-    showAboutDialog() {
-        this.modal.show({
-            title: 'DeepSeeWeb v.' + this.version,
-            component: AboutComponent,
-            closeByEsc: true,
-            closeByBackdropClick: true
-        });
-        this.sbs.showComponent(null);
-    }
+  shareDashboard() {
+    this.hs.shareDashboard();
+  }
 
-    showSettingsMenu() {
-        this.sbs.showComponent({component: MenuSettingsComponent});
-    }
-
-    shareDashboard() {
-        this.hs.shareDashboard();
-    }
-
-    gotoZenDeepSee() {
-        this.hs.gotoZenDeepSee();
-    }
+  gotoZenDeepSee() {
+    this.hs.gotoZenDeepSee();
+  }
 }

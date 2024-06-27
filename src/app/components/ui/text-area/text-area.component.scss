@@ -1,10 +1,10 @@
-@import "/src/scss/breakpoints";
+@import "breakpoints";
 
 textarea {
-    min-width: 500px;
-    min-height: 150px;
+  min-width: 500px;
+  min-height: 150px;
 
-    @include sm {
-        min-width: auto;
-    }
+  @include sm {
+    min-width: auto;
+  }
 }

@@ -1,6 +1,8 @@
 <ul>
-    <li *ngFor="let lang of languages" (click)="selectLanguage(lang)">
-        <img [src]="isSelected(lang) ? 'assets/img/icons/check-black-18dp.svg' : ''">
-        {{i18n.getLanguageName(lang)}}
+  @for (lang of languages; track lang) {
+    <li (click)="selectLanguage(lang)">
+      <img [src]="isSelected(lang) ? 'assets/img/icons/check-black-18dp.svg' : ''">
+      {{ i18n.getLanguageName(lang) }}
     </li>
+  }
 </ul>

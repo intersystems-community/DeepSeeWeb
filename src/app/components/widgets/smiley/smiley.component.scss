@@ -1,50 +1,51 @@
-@import "src/scss/variables";
+@import "variables";
 
 :host {
-    // display: flex;
-    display: grid;
-    width: 100%;
-    height: 100%;
-    font-family: $font;
-    -webkit-user-select: initial;
-    user-select: initial;
-    align-items: center;
-    justify-content: center;
+  // display: flex;
+  display: grid;
+  width: 100%;
+  height: 100%;
+  font-family: $font;
+  -webkit-user-select: initial;
+  user-select: initial;
+  align-items: center;
+  justify-content: center;
 }
 
 img {
-    width: 100%;
+  width: 100%;
 
-    max-height: calc(100% - 24px);
-    max-width: 100%;
+  max-height: calc(100% - 24px);
+  max-width: 100%;
   /*  width: 100%;
     height: 100%;*/
 }
 
 .card {
-    width: 100%;
+  width: 100%;
+  height: 100%;
+  flex: 1 1 100%;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  & > div {
     height: 100%;
-    flex: 1 1 100%;
-    min-width: 0;
-    min-height: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    & > div {
-        height: 100%;
-    }
+  }
 }
 
 label {
-    width: 100%;
-    font-family: $font;
-    color: gray;
-    font-size: 14px;
-    text-align: center;
-    height: 24px;
-    max-height: 24px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+  width: 100%;
+  font-family: $font;
+  color: gray;
+  font-size: 14px;
+  text-align: center;
+  height: 24px;
+  max-height: 24px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

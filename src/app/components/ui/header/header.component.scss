@@ -1,211 +1,217 @@
-@import "src/scss/variables";
-@import "src/scss/breakpoints";
+@import "variables";
+@import "breakpoints";
 
 :host {
+  display: flex;
+  flex: 0 0 var(--header-height);
+  justify-content: space-between;
+  background-color: var(--cl-header-bg);
+  height: var(--header-height);
+  width: 100%;
+  border-bottom: 1px solid var(--cl-header-border);
+
+  & > div {
     display: flex;
-    flex: 0 0 var(--header-height);
-    justify-content: space-between;
-    background-color: var(--cl-header-bg);
-    height: var(--header-height);
+    align-items: center;
+  }
+
+  & > div:first-child {
+    flex-shrink: 1;
+    min-width: 0;
     width: 100%;
-    border-bottom: 1px solid var(--cl-header-border);
 
-    & > div {
-        display: flex;
-        align-items: center;
+    @include sm {
+      width: 100%
     }
-
-    & > div:first-child {
-        flex-shrink: 1;
-        min-width: 0;
-        width: 100%;
-
-        @include sm {
-            width: 100%
-        }
-    }
+  }
 }
 
 .btn-side-menu {
-    flex-shrink: 0;
+  flex-shrink: 0;
 }
 
 .breadcrumbs {
-    white-space: nowrap;
-    flex-shrink: 1;
-    min-width: 0;
-    max-width: 60%;
-    overflow: visible;
+  white-space: nowrap;
+  flex-shrink: 1;
+  min-width: 0;
+  max-width: 60%;
+  overflow: visible;
 
-    & > .items {
-        display: flex;
-        max-height: 17px;
+  & > .items {
+    display: flex;
+    max-height: 17px;
 
-        & > a {
-            position: relative;
-        }
+    & > a {
+      position: relative;
     }
-    @include sm {
-        max-width: 100%;
-        width: 100%;
-        & > div {
-            width: calc(100% - 6px);
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
+  }
 
-        & > div:last-child {
-            opacity: 0.6;
-        }
-
-        & > div > .path.show-only-last {
-            display: none;
-        }
-
-        & > div > .path.show-only-last:last-child {
-            opacity: 1;
-            display: block;
-            font-size: 18px;
-        }
-
+  @include sm {
+    max-width: 100%;
+    width: 100%;
+    & > div {
+      width: calc(100% - 6px);
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
+
+    & > div:last-child {
+      opacity: 0.6;
+    }
+
+    & > div > .path.show-only-last {
+      display: none;
+    }
+
+    & > div > .path.show-only-last:last-child {
+      opacity: 1;
+      display: block;
+      font-size: 18px;
+    }
+
+  }
 }
 
 label {
-    font-family: $font;
-    color: var(--cl-header-txt);
-    opacity: 0.7;
-    flex: 0 0 auto;
-    margin-left: 10px;
-    margin-right: 10px;
+  font-family: $font;
+  color: var(--cl-header-txt);
+  opacity: 0.7;
+  flex: 0 0 auto;
+  margin-left: 10px;
+  margin-right: 10px;
 
-    & > i {
-        margin-right: 4px;
-    }
+  & > i {
+    margin-right: 4px;
+  }
 }
 
 h2 {
-    font-family: $font;
-    color: var(--cl-header-txt);
-    font-size: 18px;
-    margin-left: 16px;
-    user-select: none;
+  font-family: $font;
+  color: var(--cl-header-txt);
+  font-size: 18px;
+  margin-left: 16px;
+  user-select: none;
 
-    @include sm {
-        margin-left: 8px;
-    }
-    //& > span:first-child {
-    //    margin-right: 20px;
-    //}
+  @include sm {
+    margin-left: 8px;
+  }
+  //& > span:first-child {
+  //    margin-right: 20px;
+  //}
 }
 
 // Header button
 .btn {
-    position: relative;
-    height: 100%;
-    border: none;
-    background-color: transparent;
-    outline: none;
-    box-shadow: none;
-    transition: background-color $animSpeed linear;
-    color: var(--cl-header-ico);
+  position: relative;
+  height: 100%;
+  border: none;
+  background-color: transparent;
+  outline: none;
+  box-shadow: none;
+  transition: background-color $animSpeed linear;
+  color: var(--cl-header-ico);
+  padding-left: 8px;
+  padding-right: 8px;
+
+  // Font awesome icon
+  & > i {
+    font-size: 24px;
+  }
+
+  & > img {
+    margin-right: 8px;
+  }
+
+  // Square buttons
+  &.square {
     padding-left: 8px;
     padding-right: 8px;
+    width: var(--header-height);
 
-    // Font awesome icon
-    & > i {
-        font-size: 24px;
+    // 60% size
+    &.s60 {
+      height: 26px;
+      // height: calc(var(--header-height) * 0.6);
+      width: calc(var(--header-height) * 0.4);
     }
 
     & > img {
-        margin-right: 8px;
+      margin-right: 0;
     }
+  }
 
-    // Square buttons
-    &.square {
-        padding-left: 8px;
-        padding-right: 8px;
-        width: var(--header-height);
+  // Pressed state
+  &.active {
+    // background-color: var(--cl-header-btn-active);
+    background-color: var(--cl-sidebar-bg);
+    // border-bottom: 1px solid var(--cl-header-btn-active);
+    // border-right: 1px solid var(--cl-header-border);
 
-        // 60% size
-        &.s60 {
-            height: 26px;
-            // height: calc(var(--header-height) * 0.6);
-            width: calc(var(--header-height) * 0.4);
-        }
+    // Remove bottom line
+    height: calc(100% + 1px);
+  }
 
-        & > img {
-            margin-right: 0;
-        }
-    }
-
-    // Pressed state
-    &.active {
-        // background-color: var(--cl-header-btn-active);
-        background-color: var(--cl-sidebar-bg);
-        // border-bottom: 1px solid var(--cl-header-btn-active);
-        // border-right: 1px solid var(--cl-header-border);
-
-        // Remove bottom line
-        height: calc(100% + 1px);
-    }
-
-    // Hover state
-    &:hover {
-        background-color: var(--cl-hover);
-    }
+  // Hover state
+  &:hover {
+    background-color: var(--cl-hover);
+  }
 }
 
 .path {
-    cursor: pointer;
-    outline: none;
-    text-decoration: none;
-    font-weight: bold;
-    font-size: 14px;
-    color: #1C1D20;
-    font-family: $font;
-    &:hover {
-        text-decoration: underline;
-    }
-    &:not(:last-child) {
-        color: var(--cl-header-txt);
+  cursor: pointer;
+  outline: none;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 14px;
+  color: #1C1D20;
+  font-family: $font;
 
-        @include sm {
-            opacity: 1;
-        }
-    }
-    &:last-child {
-        cursor: default;
-        pointer-events: none;
-        text-overflow: ellipsis;
-        overflow: hidden;
-    }
-    &:not(:last-child):after {
-        content: "/";
-        font-family: $font;
-        opacity: 0.7;
-        display: inline-block;
-        margin-left: 8px;
-        margin-right: 8px;
+  &:hover {
+    text-decoration: underline;
+  }
 
-        @include sm {
-            margin-left: 4px;
-            margin-right: 4px;
-        }
-    }
+  &:not(:last-child) {
+    color: var(--cl-header-txt);
 
     @include sm {
-        font-size: 13px;
+      opacity: 1;
     }
+  }
+
+  &:last-child {
+    cursor: default;
+    pointer-events: none;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+
+  &:not(:last-child):after {
+    content: "/";
+    font-family: $font;
+    opacity: 0.7;
+    display: inline-block;
+    margin-left: 8px;
+    margin-right: 8px;
+
+    @include sm {
+      margin-left: 4px;
+      margin-right: 4px;
+    }
+  }
+
+  @include sm {
+    font-size: 13px;
+  }
 }
 
 .btn-goto {
-    margin-left: 8px;
+  margin-left: 8px;
 }
 
 .search-block {
-    padding-right: 20px;
+  padding-right: 20px;
 }
+
 /*
 
 .btn-search {
@@ -245,116 +251,121 @@ h2 {
 
 
 .no-opacity {
-    @include sm{
-        opacity: 1 !important;
-    };
+  @include sm {
+    opacity: 1 !important;
+  }
+;
 }
 
 
 .btn-mobile-filter {
-    // width: var(--header-height);
-    // height: ver(--header-height);
+  // width: var(--header-height);
+  // height: ver(--header-height);
 
-    flex-shrink: 0;
-    height: 100%;
-    min-width: var(--header-height);
+  flex-shrink: 0;
+  height: 100%;
+  min-width: var(--header-height);
 
-    & > img {
-        height: calc(var(--header-height) * 0.5);
-        opacity: 0.6;
-    }
+  & > img {
+    height: calc(var(--header-height) * 0.5);
+    opacity: 0.6;
+  }
 }
 
 .lang-selector {
+  border: none;
+  width: 50px;
+  padding: 0;
+  margin-right: 10px;
+
+  &:focus, &:active {
+    outline: none;
     border: none;
-    width: 50px;
-    padding: 0;
-    margin-right: 10px;
-    &:focus, &:active {
-        outline: none;
-        border: none;
-    }
+  }
 }
 
 .btn-more {
-    width: 20px;
-    height: 20px;
-    display: inline-flex;
-    justify-content: center;
-    border-radius: 2px;
+  width: 20px;
+  height: 20px;
+  display: inline-flex;
+  justify-content: center;
+  border-radius: 2px;
 
-    &.pressed {
-        background: var(--cl-hover);
-    }
+  &.pressed {
+    background: var(--cl-hover);
+  }
 
-    &:after {
-        display: none;
-    }
+  &:after {
+    display: none;
+  }
 }
 
 .dropdown-more {
-    position: absolute;
-    left: -10px;
-    top: 30px;
-    padding: 20px;
-    background-color: var(--cl-header-bg);
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    border-radius: 5px;
-    z-index: 4;
-    & > a {
-        display: block;
-        &:not(:last-child) {
-            margin-bottom: 10px;
-        }
+  position: absolute;
+  left: -10px;
+  top: 30px;
+  padding: 20px;
+  background-color: var(--cl-header-bg);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-radius: 5px;
+  z-index: 4;
 
-        &:last-child {
-            cursor: pointer;
-            color: var(--cl-header-txt);
-            pointer-events: auto;
-        }
+  & > a {
+    display: block;
 
-        &:after {
-            display: none;
-        }
+    &:not(:last-child) {
+      margin-bottom: 10px;
     }
+
+    &:last-child {
+      cursor: pointer;
+      color: var(--cl-header-txt);
+      pointer-events: auto;
+    }
+
+    &:after {
+      display: none;
+    }
+  }
 }
 
 .btn-share {
-    & > dsw-share-dashboard {
-        display: none;
-    }
+  & > dsw-share-dashboard {
+    display: none;
+  }
 
-    &:hover, &:active {
-        transform: none;
-        & > dsw-share-dashboard {
-            display: block;
-        }
+  &:hover, &:active {
+    transform: none;
+
+    & > dsw-share-dashboard {
+      display: block;
     }
+  }
 }
 
 dsw-share-dashboard {
-    position: absolute;
-    top: 17px;
-    left: -20px;
+  position: absolute;
+  top: 17px;
+  left: -20px;
 }
 
 .icon-plus {
-    font-weight: 600;
-    font-family: serif;
-    font-size: 23px;
+  font-weight: 600;
+  font-family: serif;
+  font-size: 23px;
 }
 
 dsw-search-input {
-    width: min(15vw, 300px);
-    margin-right: 20px;
+  width: min(15vw, 300px);
+  margin-right: 20px;
 
-    @include sm {
-        transition: width 0.2s linear;
-        width: 0;
-        overflow: hidden;
+  @include sm {
+    transition: width 0.2s linear;
+    width: 0;
+    overflow: hidden;
 
-        &.active {
-            width: 120px;
-        }
+    &.active {
+      width: 120px;
     }
+  }
 }

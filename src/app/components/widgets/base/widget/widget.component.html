@@ -1,31 +1,38 @@
 <!-- Widget header -->
 <dsw-widget-header
-    #header
-    [typeDesc]="typeDesc"
-    [hidden]="widget?.tile || !isHeader"
-    (onButtonClick)="onHeaderButton($event)"
-    (onBack)="onHeaderButtonBack()"
-    (onResetClickFilter)="onResetClickFilter()"
+  #header
+  [typeDesc]="widgetType"
+  [widget]="widget"
+  [hidden]="widget.tile || !isHeader"
+  (onButtonClick)="onHeaderButton($event)"
+  (onBack)="onHeaderButtonBack()"
+  (onResetClickFilter)="onResetClickFilter()"
 ></dsw-widget-header>
 
 <!-- Filters -->
 <dsw-widget-filter
-    #filters
-    [hidden]="widget?.tile || !isHeader"
-    [widget]="widget"
-    [filters]="model.filters"
-    (onVariable)="onFilterVariable($event)"
-    (onDataSource)="onFilterDatasource($event)"
-    (onAction)="onFilterAction($event)"
+  #filters
+  [hidden]="widget.tile || !isHeader"
+  [widget]="widget"
+  [filters]="model.filters"
+  (onVariable)="onFilterVariable($event)"
+  (onDataSource)="onFilterDatasource($event)"
+  (onAction)="onFilterAction($event)"
 ></dsw-widget-filter>
 
-<!-- Create dynamic widget component after this container -->
-<ng-template #container></ng-template>
+<!-- Dynamic widget component -->
+@if (widgetType && widgetType.class) {
+  <ng-container *ngComponentOutlet="widgetType.class; inputs: widgetInputs"></ng-container>
+}
 
 <!-- Error message -->
-<div class="error" *ngIf="model.error">{{model.error}}</div>
+@if (model.error) {
+  <div class="error">{{ model.error }}</div>
+}
 
 <!-- Loading spinner -->
-<div class="spinner" [hidden]="model.error || !component?.isSpinner">
-    <img src="assets/img/spinner.svg">
-</div>
+@if (component?.isSpinner && !model.error) {
+  <div class="spinner" @fade-in-out>
+    <img ngSrc="assets/img/spinner.svg" height="100" width="100" priority>
+  </div>
+}

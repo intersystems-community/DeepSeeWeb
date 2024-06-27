@@ -1,8 +1,9 @@
 import {AfterViewInit, Component, OnInit} from '@angular/core';
-import {BaseWidget, IAddonInfo} from '../app/components/widgets/base-widget.class';
+import {BaseWidget} from '../app/components/widgets/base-widget.class';
 import {IButtonToggle} from '../app/services/widget.service';
 import {BaseChartClass} from '../app/components/widgets/charts/base-chart.class';
 import {PlotHeatmapDataLabelsOptions, XAxisOptions, YAxisOptions} from 'highcharts';
+import {IAddonInfo} from "../app/services/dsw.types";
 
 /**
  * Example Data property

@@ -1,3 +1,24 @@
+#### 4.0.0 beta
+* migrated to Angular 17:
+    * rewritten application to use lazy loading, as a result "main.js" size reduced from **3Mb** to **500Kb**
+    * all javascript modules in dist package now take up 3Mb, instead of 5Mb(previous version)
+    * templates now uses new control flow
+    * removed deprecated ComponentFactoryResolver, now dynamic component created using NgComponentOutlet
+    * added many interfaces and types to make type checks and reduce runtime errors
+    * updated addon systems to work with new Angular
+    * rewritten a lot of code
+    * updated HighCharts to 11.4, now it have new look
+* rewritten charts data parser to support crossjoins/hierarchical data on all axis
+* fixed issue with a thousand separator and float numbers when there is no format specified
+* fixed issue with combo chart when only one series type specified
+* fixed issue when user tries to show legend for widget with one series(legend for widget with one series always hidden, check #346). now if user enable legend it always visible even if there is only one series
+* changed method of widget type change. now complex charts can be viewed as another complex chart, eg. "stacked chart" > "multiple pie charts"
+* fixed styles for error message
+* added new color picker
+* fixed issue with dashboard folder item text color change
+* fixed issue with changing color of pie/treemap/timechart series, also fixed issues with changing color on legend items
+* changed application font to "Oxygen"
+
 #### 3.2.26
 * fixed default filter value with "Not" issue 
 

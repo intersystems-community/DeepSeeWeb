@@ -1,10 +1,14 @@
 <!-- Widgets grid for desktop -->
-<gridster [options]="tilesOptions" #gridster *ngIf="!isMobile">
+@if (!isMobile) {
+  <gridster
+    #gridster
+    [options]="tilesOptions"
+  >
     <!-- Grid item -->
-    <gridster-item
+    @for (item of list; track trackByName(idx, item); let idx = $index) {
+      <gridster-item
         #list
         class="tile"
-        *ngFor="let item of list; let idx = index; trackBy: trackByName"
         [id]="item === editedWidget ? 'edited-widget' : undefined"
         [class.editing]="item === editedWidget"
         [class.no-anim]="isLoading || editedWidget"
@@ -12,75 +16,108 @@
         [item]="item"
         (transitionend)="onWidgetSizeChanged(item, $event)"
         (contextmenu)="showContextMenu(item, $event)"
-    >
+      >
         <dsw-widget #widgets [widget]="item"></dsw-widget>
-    </gridster-item>
-</gridster>
+      </gridster-item>
+    }
+  </gridster>
+}
 
 <!-- Widgets list for mobile -->
-<div class='mobile-widgets' *ngIf="isMobile" [style.transform]="'translateX(calc(100vw * ' +- page + '))'">
-    <div class="tile" *ngFor="let item of list; let idx = index">
+@if (isMobile) {
+  <div class='mobile-widgets' [style.transform]="'translateX(calc(100vw * ' +- page + '))'">
+    @for (item of list; track item; let idx = $index) {
+      <div class="tile">
         <dsw-widget #widgets [widget]="item"></dsw-widget>
-    </div>
-
-    <div class="tile mobile-filter" *ngIf="isMobileFilterVisible" [style.transform]="'translateX(calc(-100vw * ' +- page + '))'">
-        <dsw-widget [widget]="mobileFilter"></dsw-widget>
-    </div>
-</div>
+      </div>
+    }
+    @if (isMobileFilterVisible) {
+      <div class="tile mobile-filter" [style.transform]="'translateX(calc(-100vw * ' +- page + '))'">
+        <dsw-widget [widget]="mobileFilter!"></dsw-widget>
+      </div>
+    }
+  </div>
+}
 
 <!-- Mobile pages -->
 <div class="pager" [hidden]="isMobileFilterVisible || us.isEmbedded()">
-    <div>
-        <span *ngFor="let w of dbs.getWidgets(); let idx = index" [class.active]="idx === page"></span>
-    </div>
+  <div>
+    @for (w of dbs.getWidgets(); track w; let idx = $index) {
+      <span [class.active]="idx === page"></span>
+    }
+  </div>
 </div>
 
-<div class="dsw-spinner" *ngIf="isLoading">
+@if (isLoading) {
+  <div class="dsw-spinner">
     <img src="assets/img/spinner.svg">
-</div>
+  </div>
+}
 
 
 <!-- Context menu -->
 <div #ctxMenu class="ctx-menu" style="visibility:hidden">
-    <div *ngIf="contexMenuData?.canDrill" (click)="ctxDrill()">Drilldown</div>
-    <div *ngIf="contexMenuData?.canDrillthrough" (click)="ctxDrillthrough()">Drillthrough</div>
+  @if (contextMenuData?.canDrill) {
+    <div (click)="ctxDrill()">Drilldown</div>
+  }
+  @if (contextMenuData?.canDrillthrough) {
+    <div (click)="ctxDrillthrough()">Drillthrough</div>
+  }
 
-    <div (click)="refreshItem()">{{'refresh' | i18n}}</div>
-    <div (click)="printItem()" *ngIf="ctxItem?.isChart">{{'print' | i18n}}</div>
-    <div (click)="shareItem()">{{'share' | i18n}}</div>
-    <div (click)="copyMDX()">{{'copyMDX' | i18n}}</div>
-    <div *ngIf="ctxItem?.kpitype" (click)="gotoKPIPage(ctxItem)">{{'showKPI' | i18n}}</div>
-    <div *ngIf="ctxItem?.dataSource" (click)="gotoAnalyzer(ctxItem)">{{'openAnalyzer' | i18n}}</div>
-    <div class="divider"></div>
+  <div (click)="refreshItem()">{{ 'refresh' | i18n }}</div>
+  @if (ctxItem?.isChart) {
+    <div (click)="printItem()">{{ 'print' | i18n }}</div>
+  }
+  <div (click)="shareItem()">{{ 'share' | i18n }}</div>
+  <div (click)="copyMDX()">{{ 'copyMDX' | i18n }}</div>
+  @if (ctxItem?.kpitype) {
+    <div (click)="gotoKPIPage(ctxItem)">{{ 'showKPI' | i18n }}</div>
+  }
+  @if (ctxItem?.dataSource) {
+    <div (click)="gotoAnalyzer(ctxItem)">{{ 'openAnalyzer' | i18n }}</div>
+  }
+  <div class="divider"></div>
 
-    <!-- Export -->
-    <div class="ctx-sub" (mouseover)="showSubmenu(sub1, $event)">
-        Export
-        <div class="ctx-menu" #sub1>
-            <div *ngIf="ctxItem?.isChart" (click)="exportWidget('svg')">{{'svgImage' | i18n}}</div>
-            <div *ngIf="ctxItem?.isChart" (click)="exportWidget('png')">{{'pngImage' | i18n}}</div>
-            <div *ngIf="ctxItem?.isChart" (click)="exportWidget('jpg')">{{'jpgImage' | i18n}}</div>
-            <div *ngIf="ctxItem?.isChart" (click)="exportWidget('pdf')">{{'pdfDoc' | i18n}}</div>
-            <div (click)="exportWidget('xls')">{{'xlsDoc' | i18n}}</div>
-            <div (click)="exportWidget('csv')">{{'csvDoc' | i18n}}</div>
-        </div>
+  <!-- Export -->
+  <div class="ctx-sub" (mouseover)="showSubmenu(sub1, $event)">
+    Export
+    <div class="ctx-menu" #sub1>
+      @if (ctxItem?.isChart) {
+        <div (click)="exportWidget('svg')">{{ 'svgImage' | i18n }}</div>
+      }
+      @if (ctxItem?.isChart) {
+        <div (click)="exportWidget('png')">{{ 'pngImage' | i18n }}</div>
+      }
+      @if (ctxItem?.isChart) {
+        <div (click)="exportWidget('jpg')">{{ 'jpgImage' | i18n }}</div>
+      }
+      @if (ctxItem?.isChart) {
+        <div (click)="exportWidget('pdf')">{{ 'pdfDoc' | i18n }}</div>
+      }
+      <div (click)="exportWidget('xls')">{{ 'xlsDoc' | i18n }}</div>
+      <div (click)="exportWidget('csv')">{{ 'csvDoc' | i18n }}</div>
     </div>
+  </div>
 
-    <!-- View as -->
-    <div class="ctx-sub" *ngIf="ctxItem?.isChart" (mouseover)="showSubmenu(sub2, $event)">
-        {{'viewAs' | i18n}}
-        <div class="ctx-menu" #sub2>
-            <div (click)="setType('area')">Area chart</div>
-            <div (click)="setType('bar')">Bar chart</div>
-            <div (click)="setType('barchartstacked')">Stacked bar chart</div>
-            <div (click)="setType('column')">Column chart</div>
-            <div (click)="setType('columnchartstacked')">Stacked column chart</div>
-            <div (click)="setType('line')">Line chart</div>
-            <div (click)="setType('pie')">Pie chart</div>
-        </div>
+  <!-- View as -->
+  @if (ctxItem?.isChart) {
+    <div class="ctx-sub" (mouseover)="showSubmenu(sub2, $event)">
+      {{ 'viewAs' | i18n }}
+      <div class="ctx-menu" #sub2>
+        <div (click)="setType('areaChart')">Area chart</div>
+        <div (click)="setType('barChart')">Bar chart</div>
+        <div (click)="setType('barChartStacked')">Stacked bar chart</div>
+        <div (click)="setType('columnChart')">Column chart</div>
+        <div (click)="setType('columnChartStacked')">Stacked column chart</div>
+        <div (click)="setType('lineChart')">Line chart</div>
+        <div (click)="setType('pieChart')">Pie chart</div>
+      </div>
     </div>
+  }
 
-    <div *ngIf="ctxItem" (click)="ctxEdit()">Edit widget</div>
+  @if (ctxItem && canEdit) {
+    <div (click)="ctxEdit()">Edit widget</div>
+  }
 </div>
 
 <!-- TODO: implement mobile -->

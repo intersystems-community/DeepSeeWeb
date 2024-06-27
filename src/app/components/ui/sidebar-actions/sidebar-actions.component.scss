@@ -1,84 +1,87 @@
-@import "src/scss/variables";
+@import "variables";
 
 :host {
-    position: relative;
-    white-space: nowrap;
-    height: var(--header-height);
+  position: relative;
+  white-space: nowrap;
+  height: var(--header-height);
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--cl-header-border);
+  margin-bottom: 6px;
+  margin-left: 20px;
+
+  // Buttons
+  & button {
+    padding: 0;
+    cursor: pointer;
+    font-family: $font;
+    display: block;
+    text-align: left;
+    //width: var(--header-height);
+    //height: var(--header-height);
+    font-size: 14px;
+    background-color: transparent;
+    border: none;
+    outline: none;
+    flex-shrink: 0;
+    flex-grow: 0;
+    color: var(--cl-accent);
+    min-width: 50px;
+    transition: background-color $animSpeed linear;
+
+    &:hover {
+      background-color: var(--cl-header-btn-hover);
+    }
+
+    &:last-child {
+      text-align: right;
+    }
+
+    & > img {
+      display: none;
+      vertical-align: middle;
+      transform: translateY(-1px);
+      margin-right: 4px;
+      width: 14px;
+    }
+
+    &.warning {
+      //font-weight: bold;
+      /*  &:after {
+            color: red;
+            content: "*";
+        }*/
+      & > img {
+        //display: inline-block;
+      }
+    }
+  }
+
+  // Main text
+  & > label {
     display: flex;
-    justify-content: space-between;
-    border-bottom: 1px solid var(--cl-header-border);
-    margin-bottom: 6px;
-    margin-left: 20px;
+    align-items: center;
+    justify-content: center;
 
-    // Buttons
-    & button {
-        padding: 0;
-        cursor: pointer;
-        font-family: $font;
-        display: block;
-        text-align: left;
-        //width: var(--header-height);
-        //height: var(--header-height);
-        font-size: 14px;
-        background-color: transparent;
-        border: none;
-        outline: none;
-        flex-shrink: 0;
-        flex-grow: 0;
-        color: var(--cl-accent);
-        min-width: 50px;
-        transition: background-color $animSpeed linear;
-        &:hover {
-            background-color: var(--cl-header-btn-hover);
-        }
-        &:last-child {
-            text-align: right;
-        }
-
-        & > img {
-            display: none;
-            vertical-align: middle;
-            transform: translateY(-1px);
-            margin-right: 4px;
-            width: 14px;
-        }
-
-        &.warning {
-            //font-weight: bold;
-          /*  &:after {
-                color: red;
-                content: "*";
-            }*/
-            & > img {
-                //display: inline-block;
-            }
-        }
-    }
-    // Main text
-    & > label {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-
-        font-family: $font;
-        color: black;
-        font-size: 16px;
-    }
+    font-family: $font;
+    color: black;
+    font-size: 16px;
+  }
 }
 
 // Accept button image
 .img-accept {
-    max-width: 60%;
-    max-height: 60%;
+  max-width: 60%;
+  max-height: 60%;
 }
 
 .unsaved {
-    position: absolute;
-    left: 0;
-    right: 0;
-    text-align: center;
-    bottom: 0;
-    font-family: $font;
-    font-size: 12px;
-    color: #f70000;
+  position: absolute;
+  left: 0;
+  right: 0;
+  text-align: center;
+  bottom: 0;
+  font-family: $font;
+  font-size: 12px;
+  color: #f70000;
 }

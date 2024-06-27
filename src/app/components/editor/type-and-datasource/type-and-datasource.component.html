@@ -1,49 +1,47 @@
 <dsw-sidebar-actions
-    isWidgetEditorWarning="true"
-    [isBack]="true"
-    (apply)="onSave()"
+  [isWidgetEditorWarning]="true"
+  [isBack]="true"
+  (apply)="onSave()"
 >
-    Type & Datasource
+  Type & Datasource
 </dsw-sidebar-actions>
 
-<div class="container" *ngIf="model">
+@if (model) {
+  <div class="container">
     <label>Widget type</label>
     <ng-select
-        class="dsw"
-        [(ngModel)]="type"
-        [items]="widgetTypes"
-        bindLabel="label"
-        [clearable]="false"
-        [closeOnSelect]="true"
-        (change)="onTypeChange()"
+      class="dsw"
+      [(ngModel)]="type"
+      [items]="widgetTypes"
+      bindLabel="label"
+      [clearable]="false"
+      [closeOnSelect]="true"
+      (change)="onTypeChange()"
     ></ng-select>
-
-
     <!-- Data source -->
     <label>Data source</label>
     <dsw-input
-        [required]="invalid.includes('datasource')"
-        [(ngModel)]="model.dataSource"
-        chooseButton="true"
-        (keydown.enter)="onDatasourceChanged()"
-        (choose)="onSelectDataSource()"
+      [required]="invalid.includes('datasource')"
+      [(ngModel)]="model.dataSource"
+      [chooseButton]="true"
+      (keydown.enter)="onDatasourceChanged()"
+      (choose)="onSelectDataSource()"
     ></dsw-input>
-
     <!-- Reference to -->
     <label>Reference to</label>
     <ng-select
-        class="dsw"
-        [items]="widgetList"
-        [(ngModel)]="model.dataLink"
-        bindLabel="label"
-        bindValue="name"
-        [clearable]="false"
-        [closeOnSelect]="true"
-        (change)="onLinkChange()"
+      class="dsw"
+      [items]="widgetList"
+      [(ngModel)]="model.dataLink"
+      bindLabel="label"
+      bindValue="name"
+      [clearable]="false"
+      [closeOnSelect]="true"
+      (change)="onLinkChange()"
     >
     </ng-select>
-
     <!-- Target details -->
-   <!-- <label>Target details</label>
+    <!-- <label>Target details</label>
     <input class="select">-->
-</div>
+  </div>
+}

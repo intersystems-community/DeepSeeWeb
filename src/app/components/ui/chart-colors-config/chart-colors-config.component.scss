@@ -1,0 +1,26 @@
+
+.color-small {
+  display: inline-block;
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  flex-shrink: 0;
+}
+
+.series-colors {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+label + .color-small {
+  margin-left: 0;
+}
+
+.color {
+  display: inline-flex;
+}
+
+.divider {
+  margin-bottom: 10px;
+}

@@ -1,53 +1,54 @@
-@import "src/scss/variables";
+@import "variables";
+
 $border-radius: 4px;
 
 :host {
-    position: relative;
-    display: block;
+  position: relative;
+  display: block;
 
-    &.choose > input {
-       // padding-right: calc(10px + var(--cl-input-height));
-        width: calc(100% - var(--cl-input-height));
-        border-radius: $border-radius 0 0 $border-radius;
-    }
+  &.choose > input {
+    // padding-right: calc(10px + var(--cl-input-height));
+    width: calc(100% - var(--cl-input-height));
+    border-radius: $border-radius 0 0 $border-radius;
+  }
 
-    &.invalid {
-        & input {
-            border-color: red;
-        }
+  &.invalid {
+    & input {
+      border-color: red;
     }
+  }
 }
 
 input {
-    font-family: $font;
-    font-size: 13px;
-    border-radius: $border-radius;
-    height: var(--cl-input-height);
-    text-overflow: ellipsis;
+  font-family: $font;
+  font-size: 13px;
+  border-radius: $border-radius;
+  height: var(--cl-input-height);
+  text-overflow: ellipsis;
 }
 
 button {
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: var(--cl-input-height);
-    height: var(--cl-input-height);
-    padding: 0;
-    border: 1px solid var(--cl-input-border);
-    border-left: none;
-    background-color: var(--cl-input-bg);
-    cursor: pointer;
-    font-family: $font;
-    color: var(--cl-input-text);
-    font-size: 16px;
-    border-radius: 0 $border-radius $border-radius 0;
-    transition: background-color 0.2s linear;
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: var(--cl-input-height);
+  height: var(--cl-input-height);
+  padding: 0;
+  border: 1px solid var(--cl-input-border);
+  border-left: none;
+  background-color: var(--cl-input-bg);
+  cursor: pointer;
+  font-family: $font;
+  color: var(--cl-input-text);
+  font-size: 16px;
+  border-radius: 0 $border-radius $border-radius 0;
+  transition: background-color 0.2s linear;
 
-    &:hover {
-        background-color: var(--cl-hover);
-    }
+  &:hover {
+    background-color: var(--cl-hover);
+  }
 
-    &:active {
-        transform: translateY(1px);
-    }
+  &:active {
+    transform: translateY(1px);
+  }
 }

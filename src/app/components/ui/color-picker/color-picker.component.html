@@ -1,0 +1,11 @@
+@if (isVisible) {
+  <chrome-picker
+    [class.top]="isTop"
+    [control]="colorControl"
+    (colorChange)="onColorChanged()"
+  >
+    @if (!isImmediate) {
+      <button type="button" class="btn btn-primary" (click)="applyClick($event)">Apply</button>
+    }
+  </chrome-picker>
+}

@@ -1,162 +1,166 @@
-@import "/src/scss/variables";
+@import "variables";
+
+;
 
 :host {
-    overflow-y: auto;
+  overflow-y: auto;
 }
 
 table {
-    border-collapse: separate;
-    border-spacing: 0;
-    width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
 
-    & > tbody > tr {
-        color: #686868;
+  & > tbody > tr {
+    color: #686868;
+  }
+
+  & > thead {
+    position: relative;
+    z-index: 2;
+  }
+
+  & > thead > tr > td {
+    white-space: pre;
+    text-align: right;
+
+    /* // Number
+     &:nth-child(1) {
+         text-align: center;
+     }
+
+     // Title
+     &:nth-child(2) {
+         text-align: left;
+     }*/
+
+
+    position: sticky;
+    top: 0;
+    // background-color: var(--cl-widget-bg);
+    padding: 0 10px;
+    height: 40px;
+    background-color: var(--cl-widget-filter-bg);
+    border-bottom: 1px solid var(--cl-header-border);
+
+    &.align-left {
+      text-align: left;
     }
 
-    & > thead {
-        position: relative;
-        z-index: 2;
+    &.align-center {
+      text-align: center;
+    }
+  }
+
+  & > tbody > tr > td {
+    padding: 6px 10px;
+    text-align: right;
+
+    /*// Number
+    &:nth-child(1) {
+        text-align: center;
     }
 
-    & > thead > tr > td {
-        white-space: pre;
-        text-align: right;
-
-       /* // Number
-        &:nth-child(1) {
-            text-align: center;
-        }
-
-        // Title
-        &:nth-child(2) {
-            text-align: left;
-        }*/
-
-
-        position: sticky;
-        top: 0;
-        // background-color: var(--cl-widget-bg);
-        padding: 0 10px;
-        height: 40px;
-        background-color: var(--cl-widget-filter-bg);
-        border-bottom: 1px solid var(--cl-header-border);
-
-        &.align-left {
-            text-align: left;
-        }
-
-        &.align-center {
-            text-align: center;
-        }
+    // Title
+    &:nth-child(2) {
+        text-align: left;
     }
-
-    & > tbody > tr > td {
-        padding: 6px 10px;
-        text-align: right;
-
-        /*// Number
-        &:nth-child(1) {
-            text-align: center;
-        }
-
-        // Title
-        &:nth-child(2) {
-            text-align: left;
-        }
 */
-        &.align-left {
-            text-align: left;
-        }
-
-        &.align-center {
-            text-align: center;
-        }
-
-        & img {
-            width: 100%;
-            height: 30px;
-        }
+    &.align-left {
+      text-align: left;
     }
 
-    & > tbody > tr:nth-child(2n) {
-        background-color: rgba(0, 0, 0, 0.01);
+    &.align-center {
+      text-align: center;
     }
+
+    & img {
+      width: 100%;
+      height: 30px;
+    }
+  }
+
+  & > tbody > tr:nth-child(2n) {
+    background-color: rgba(0, 0, 0, 0.01);
+  }
 
 
 }
 
 .box {
-    height: 18px;
-    flex-shrink: 0;
-    flex-grow: 0;
-    position: relative;
+  height: 18px;
+  flex-shrink: 0;
+  flex-grow: 0;
+  position: relative;
 }
 
 
 .boxes-container {
-    display: flex;
-    // flex-direction: row-reverse;
-    // justify-content: flex-end;
+  display: flex;
+  // flex-direction: row-reverse;
+  // justify-content: flex-end;
 
-    & > div:first-child {
-        width: 40px;
-        flex-shrink: 0;
-        flex-grow: 0;
-        margin-right: 10px;
-    }
+  & > div:first-child {
+    width: 40px;
+    flex-shrink: 0;
+    flex-grow: 0;
+    margin-right: 10px;
+  }
 }
 
 .axis {
-    display: flex;
-    justify-content: space-between;
-    font-size: 10px;
-    border-bottom: 1px solid gray;
-    height: 6px;
-    //border-right: 1px solid gray;
-    border-left: 1px solid gray;
-    margin-top: 28px;
-    position: relative;
-    & > .label {
-        position: absolute;
-        text-align: center;
-        top: -14px;
-        &:first-child {
-            left: 0;
-            transform: translateX(-50%);
-        }
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  border-bottom: 1px solid gray;
+  height: 6px;
+  //border-right: 1px solid gray;
+  border-left: 1px solid gray;
+  margin-top: 28px;
+  position: relative;
 
-        &:last-child {
-            right: 0;
-            transform: translateX(50%);
-        }
+  & > .label {
+    position: absolute;
+    text-align: center;
+    top: -14px;
+
+    &:first-child {
+      left: 0;
+      transform: translateX(-50%);
     }
 
-    & > span {
-        width: 100%;
-        border-right: 1px solid gray;
+    &:last-child {
+      right: 0;
+      transform: translateX(50%);
     }
+  }
+
+  & > span {
+    width: 100%;
+    border-right: 1px solid gray;
+  }
 }
 
 .footer {
-    & > td {
-        color: var(--cl-txt);
-        background-color: var(--cl-widget-filter-bg);
-        border-top: 1px solid var(--cl-header-border);
-        position: sticky;
-        bottom: 0;
-    }
+  & > td {
+    color: var(--cl-txt);
+    background-color: var(--cl-widget-filter-bg);
+    border-top: 1px solid var(--cl-header-border);
+    position: sticky;
+    bottom: 0;
+  }
 }
 
 .target {
-    display: inline-block;
-    width: 2px;
-    transform: translateX(-1);
-    background-color: #1C1D20;
-    height: calc(100% + 4px);
-    position: absolute;
-    top: -2px;
+  display: inline-block;
+  width: 2px;
+  transform: translateX(-1);
+  background-color: #1C1D20;
+  height: calc(100% + 4px);
+  position: absolute;
+  top: -2px;
 }
 
 .plotbox-cell {
-    z-index: 1;
+  z-index: 1;
 }

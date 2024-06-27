@@ -1,8 +1,9 @@
-<img src="assets/img/icons/icon-search.svg">
+<img ngSrc="assets/img/icons/icon-search.svg" height="12" width="12" priority>
 <input
-    #inp
-    type="search"
-    placeholder="Search"
-    [(ngModel)]="value"
-    (ngModelChange)="onModelChange($event)"
+  #inp
+  type="text"
+  placeholder="Search"
+  (keydown.enter)="inp.blur()"
+  [(ngModel)]="value"
+  (ngModelChange)="onModelChange($event)"
 >

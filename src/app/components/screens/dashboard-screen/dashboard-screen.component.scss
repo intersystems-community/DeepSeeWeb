@@ -1,15 +1,15 @@
-@import "src/scss/variables";
-@import "src/scss/breakpoints";
+@import "variables";
+@import "breakpoints";
 
 :host {
-    display: block;
-    width: 100%;
-    height: 100%;
-    padding-bottom: 20px;
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding-bottom: 20px;
 }
 
 gridster {
-    background: var(--cl-bg);
+  background: var(--cl-bg);
 }
 
 /*gridster.mobile {
@@ -20,226 +20,227 @@ gridster {
 }*/
 
 .mobile-widgets {
-    display: flex;
-    width: fit-content;
-    transition: transform 0.2s linear;
-    white-space: nowrap;
-    height: 100%;
+  display: flex;
+  width: fit-content;
+  transition: transform 0.2s linear;
+  white-space: nowrap;
+  height: 100%;
 }
 
 .tile {
-    // Future performance increase
-    content-visibility: auto;
-    // content-visibility: size, layout, style, paint;
-    overflow: visible;
-    // Only one way to override gridster inline style (
-    display: flex !important;
-    flex-direction: column;
-    position: absolute;
-    border-radius: var(--tile-border-radius);
-    border: 1px solid var(--cl-header-border);
-    // overflow: hidden;
-    user-select: none;
-    -webkit-user-select: none;
+  // Future performance increase
+  content-visibility: auto;
+  // content-visibility: size, layout, style, paint;
+  overflow: visible;
+  // Only one way to override gridster inline style (
+  display: flex !important;
+  flex-direction: column;
+  position: absolute;
+  border-radius: var(--tile-border-radius);
+  border: 1px solid var(--cl-header-border);
+  // overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
 
-    // Fullscreen mode
-    &.expanded {
-        /*position: fixed;
-        z-index: 2 !important;
-        left: 0 !important;
-        top: var(--header-height) !important;
-        right: 0 !important;
-        bottom: 0 !important;
-        width: auto !important;
-        height: auto !important;
-        transform: none !important;
-        transition: none !important;
-        margin: 0 !important;*/
-        position: fixed;
-        z-index: 3 !important;
-        left: 15px !important;
-        top: calc(var(--header-height) + 15px) !important;
-        right: 15px !important;
-        bottom: 15px !important;
-        width: auto !important;
-        height: auto !important;
-        transform: none !important;
-        transition: none !important;
-        margin: 0 !important;
-        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-        border: 1px solid darkgray;
+  // Fullscreen mode
+  &.expanded {
+    /*position: fixed;
+    z-index: 2 !important;
+    left: 0 !important;
+    top: var(--header-height) !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: auto !important;
+    height: auto !important;
+    transform: none !important;
+    transition: none !important;
+    margin: 0 !important;*/
+    position: fixed;
+    z-index: 3 !important;
+    left: 15px !important;
+    top: calc(var(--header-height) + 15px) !important;
+    right: 15px !important;
+    bottom: 15px !important;
+    width: auto !important;
+    height: auto !important;
+    transform: none !important;
+    transition: none !important;
+    margin: 0 !important;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    border: 1px solid darkgray;
 
-        /*& .drag-handle {
-            cursor: default;
+    /*& .drag-handle {
+        cursor: default;
 
-            // pointer-events: ;
-        }*/
+        // pointer-events: ;
+    }*/
 
-        &::ng-deep .gridster-item-resizable-handler.handle-se {
-            display: none !important;
-            pointer-events: none !important;
-        }
+    &::ng-deep .gridster-item-resizable-handler.handle-se {
+      display: none !important;
+      pointer-events: none !important;
     }
+  }
 
-    @include sm {
-        position: static;
-        margin-bottom: 0 !important;
-        width: 100vw;
-        //height: calc(100% - 1px) !important;
-        // height: calc(100% - var(--header-height)) !important;
-        // min-width: 10vw;
-        //height: calc(var(--vh, 1vh) * 100 - var(--header-height)) !important;
-        // height: calc(var(--vh, 1vh) * 100 - var(--header-height)) !important;
-        display: inline-flex !important;
-        // transform: none !important;
-        border: none;
-    }
+  @include sm {
+    position: static;
+    margin-bottom: 0 !important;
+    width: 100vw;
+    //height: calc(100% - 1px) !important;
+    // height: calc(100% - var(--header-height)) !important;
+    // min-width: 10vw;
+    //height: calc(var(--vh, 1vh) * 100 - var(--header-height)) !important;
+    // height: calc(var(--vh, 1vh) * 100 - var(--header-height)) !important;
+    display: inline-flex !important;
+    // transform: none !important;
+    border: none;
+  }
 }
 
 // Context menu
 .ctx-menu {
-    font-family: $font;
-    position: absolute;
-    top: 0;
-    left: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    border: 1px solid var(--cl-header-border);
-    border-radius: 4px;
-    z-index: 4;
-    background-color: white;
-    white-space: nowrap;
-    // box-shadow: 1px 1px 3px #0000000a;
-    box-shadow: 0 0 5px 0px #0000001f;
-    min-width: 140px;
-    // Menu item
-    & > div {
-        width: 100%;
-        padding: 10px 20px;
-        cursor: pointer;
-        user-select: none;
-        &:hover {
-            background-color: rgba(0,0,0,0.05);
-        }
-    }
+  font-family: $font;
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  border: 1px solid var(--cl-header-border);
+  border-radius: 4px;
+  z-index: 4;
+  background-color: white;
+  white-space: nowrap;
+  // box-shadow: 1px 1px 3px #0000000a;
+  box-shadow: 0 0 5px 0px #0000001f;
+  min-width: 140px;
+  // Menu item
+  & > div {
+    width: 100%;
+    padding: 10px 20px;
+    cursor: pointer;
+    user-select: none;
 
-    // Items divider
-    & .divider {
-        height: 0;
-        margin: 0;
-        padding: 0;
-        border-bottom:1px solid var(--cl-header-border);
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.05);
     }
+  }
+
+  // Items divider
+  & .divider {
+    height: 0;
+    margin: 0;
+    padding: 0;
+    border-bottom: 1px solid var(--cl-header-border);
+  }
 }
 
 // Context sub menu
 .ctx-sub {
-    position: relative;
-    // Open sign
-    &:after {
-        content: "";
-        background-image: url(^assets/img/icons/next.svg);
-        position: absolute;
-        right: 6px;
-        display: block;
-        z-index: 1;
-        top: 14px;
-        width: 12px;
-        height: 12px;
-        opacity: 0.4;
-        transform: scaleX(0.6);
-    }
+  position: relative;
+  // Open sign
+  &:after {
+    content: "";
+    background-image: url('./assets/img/icons/next.svg');
+    position: absolute;
+    right: 6px;
+    display: block;
+    z-index: 1;
+    top: 14px;
+    width: 12px;
+    height: 12px;
+    opacity: 0.4;
+    transform: scaleX(0.6);
+  }
 
-    // Sub menu
-    & > div {
-        display: none;
-        position: absolute;
-        left: calc(100% + 1px);
-        top: 0;
-    }
+  // Sub menu
+  & > div {
+    display: none;
+    position: absolute;
+    left: calc(100% + 1px);
+    top: 0;
+  }
 
-    // Show submenu on hover
-    &:hover > div {
-        display: block;
-    }
+  // Show submenu on hover
+  &:hover > div {
+    display: block;
+  }
 }
 
 .pager {
-    display: none;
-    position: absolute;
-    left: 0;
-    width: 100vw;
-    bottom: calc(var(--header-height) - 10px);
-    z-index: 1;
-    align-items: center;
+  display: none;
+  position: absolute;
+  left: 0;
+  width: 100vw;
+  bottom: calc(var(--header-height) - 10px);
+  z-index: 1;
+  align-items: center;
+  justify-content: center;
+
+  & > div {
+    display: flex;
     justify-content: center;
+    align-items: center;
+    padding: 2px;
+    background-color: var(--cl-widget-bg);
+    border-radius: 20px;
+    border: 1px solid var(--cl-header-border);
+    height: 20px;
+  }
 
-    & > div {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        padding: 2px;
-        background-color: var(--cl-widget-bg);
-        border-radius: 20px;
-        border: 1px solid var(--cl-header-border);
-        height: 20px;
-    }
-
-    & > div > span {
-        width: 9px;
-        height: 9px;
-        border-radius: 20px;
-        background-color: var(--cl-header-bg);
-        border: 1px solid var(--cl-header-border);
-        margin-left: 4px;
-        margin-right: 4px;
-        /*transition-property: width, height;
-        transition-duration: 0.2s;
-        transition-timing-function: linear;
+  & > div > span {
+    width: 9px;
+    height: 9px;
+    border-radius: 20px;
+    background-color: var(--cl-header-bg);
+    border: 1px solid var(--cl-header-border);
+    margin-left: 4px;
+    margin-right: 4px;
+    /*transition-property: width, height;
+    transition-duration: 0.2s;
+    transition-timing-function: linear;
 */
-        &.active {
-            width: 14px;
-            height: 14px;
-            position: relative;
-           /* &:after {
-                position: absolute;
-                content: " ";
-                display: block;
-                width: 7px;
-                height: 7px;
-                border-radius: 20px;
-                left: 3px;
-                top: 3px;
-                background-color: var(--cl-header-txt);
-            }*/
-            // background-color: var(--cl-header-bg);
-        }
+    &.active {
+      width: 14px;
+      height: 14px;
+      position: relative;
+      /* &:after {
+           position: absolute;
+           content: " ";
+           display: block;
+           width: 7px;
+           height: 7px;
+           border-radius: 20px;
+           left: 3px;
+           top: 3px;
+           background-color: var(--cl-header-txt);
+       }*/
+      // background-color: var(--cl-header-bg);
     }
+  }
 
-    @include sm {
-        display: flex;
-    }
+  @include sm {
+    display: flex;
+  }
 }
 
 .mobile-filter {
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    z-index: 10;
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 10;
 }
 
 .editing {
-    border: 2px solid var(--cl-accent);
-    // z-index: 0 !important;
+  border: 2px solid var(--cl-accent);
+  // z-index: 0 !important;
 }
 
 gridster-item:not([style]) {
-    display: none;
+  display: none;
 }
 
 .dsw-spinner {
-    top: var(--header-height);
+  top: var(--header-height);
 }

@@ -17,56 +17,63 @@ import {
 import {fromEvent} from 'rxjs/internal/observable/fromEvent';
 import {debounceTime} from 'rxjs/internal/operators/debounceTime';
 import {Subscription} from 'rxjs/internal/Subscription';
+import {RouterLink} from '@angular/router';
+
 
 const BTN_MORE_WIDTH = 37;
 
 export class DSWTab {
-  id: string;
-  text: string;
-  hidden?: boolean;
+  id = '';
+  text = '';
+  hidden? = false;
 }
 
 @Component({
   selector: 'dsw-tabs',
   templateUrl: './tabs.component.html',
   styleUrls: ['./tabs.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  imports: [RouterLink]
 })
 export class TabsComponent implements AfterViewInit, OnDestroy, OnChanges {
-  @ViewChildren('elements') elements: QueryList<ElementRef>;
+  @ViewChildren('elements') elements!: QueryList<ElementRef>;
   @Input() tabs: DSWTab[] = [];
-  @Input() currentTab: DSWTab;
+  @Input() currentTab?: DSWTab;
   @Input() useQuery = false;
   @Output() currentTabChange = new EventEmitter<DSWTab>();
 
   isMoreButtonVisible = false;
   isOpened = false;
 
-  private subResize: Subscription;
-  private subClick: Subscription;
+  private subResize?: Subscription;
+  private subClick?: Subscription;
 
   constructor(private el: ElementRef,
               private cd: ChangeDetectorRef,
               private zone: NgZone
   ) {
-      this.zone.runOutsideAngular(() => {
-        this.subClick = fromEvent(window, 'click')
-          .subscribe((e: MouseEvent) => {
-            let p = e.target as HTMLElement;
-            while (p) {
-              if (p.classList.contains('btn-more')) {
-                return;
-              }
-              p = p.parentElement;
+    this.zone.runOutsideAngular(() => {
+      this.subClick = fromEvent(window, 'click')
+        .subscribe(e => {
+          let p = e.target as HTMLElement;
+          while (p) {
+            if (p.classList.contains('btn-more')) {
+              return;
             }
-            this.isOpened = false;
-          });
-        this.subResize = fromEvent(window, 'resize')
-          .pipe(debounceTime(50))
-          .subscribe((event) => {
-            this.recalcTabsVisibility(true);
-          });
-      });
+            if (!p.parentElement) {
+              break;
+            }
+            p = p.parentElement;
+          }
+          this.isOpened = false;
+        });
+      this.subResize = fromEvent(window, 'resize')
+        .pipe(debounceTime(50))
+        .subscribe((event) => {
+          this.recalcTabsVisibility(true);
+        });
+    });
   }
 
   get hiddenTabs() {
@@ -95,7 +102,7 @@ export class TabsComponent implements AfterViewInit, OnDestroy, OnChanges {
     const t = changes['tabs'];
     if (t.previousValue !== t.currentValue || t.previousValue?.length !== t.currentValue?.length) {
       if (this.isArraysEqual(t.previousValue, t.currentValue)) {
-        return false;
+        return;
       }
       setTimeout(() => {
         this.recalcTabsVisibility();

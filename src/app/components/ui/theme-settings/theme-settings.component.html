@@ -1,41 +1,44 @@
 <dsw-sidebar-actions (cancel)="onCancel()" (apply)="onApply()">Theme settings</dsw-sidebar-actions>
 <div class="container">
-    <label>Current theme</label>
-    <ng-select
-        class="dsw"
-        [(ngModel)]="model.theme"
-        bindValue="file"
-        bindLabel="text"
-        [clearable]="false"
-        [items]="model.themes">
-    </ng-select>
+  <label>Current theme</label>
+  <ng-select
+    class="dsw"
+    [(ngModel)]="model.theme"
+    bindValue="file"
+    bindLabel="text"
+    [clearable]="false"
+    [items]="model.themes">
+  </ng-select>
 
-    <label>Theme variables</label>
-    <div class="variables-container">
-        <table>
-            <thead>
-            <tr>
-                <td>Name</td>
-                <td>Value</td>
-            </tr>
-            </thead>
-            <tbody>
-            <tr *ngFor="let v of variables; trackBy:trackVariable">
-                <td>{{v.name}}</td>
-                <td>
-                    <input
-                        *ngIf="v.isColor"
-                        class="color"
-                        [(colorPicker)]="v.value" [style.background]="v.value"
-                        cpPosition="bottom"
-                        (colorPickerChange)="updateVariable(v)"
-                        readonly
-                    />
-                    <input class="input" *ngIf="!v.isColor" [(ngModel)]="v.value" (change)="updateVariable(v)">
-                </td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
-    <button class="btn btn-success" (click)="exportTheme()">Download theme</button>
+  <label>Theme variables</label>
+  <div class="variables-container">
+    <table>
+      <thead>
+      <tr>
+        <td>Name</td>
+        <td>Value</td>
+      </tr>
+      </thead>
+      <tbody>
+        @for (v of variables; track trackVariable($index, v)) {
+          <tr>
+            <td>{{ v.name }}</td>
+            <td>
+              @if (v.isColor) {
+                <dsw-color-picker
+                  [(color)]="v.value"
+                  [isImmediate]="true"
+                  (colorChange)="updateVariable(v)"
+                ></dsw-color-picker>
+              }
+              @if (!v.isColor) {
+                <input class="input" [(ngModel)]="v.value" (change)="updateVariable(v)">
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+  <button class="btn btn-success" (click)="exportTheme()">Download theme</button>
 </div>

@@ -1,38 +1,38 @@
-@import "src/scss/variables";
-@import "src/scss/breakpoints";
+@import "variables";
+@import "breakpoints";
 
 :host {
-    position: relative;
-    display: block;
+  position: relative;
+  display: block;
 
-    & > input {
-        @include reset-input-styles;
-    }
+  & > input {
+    @include reset-input-styles;
+  }
 }
 
 // Search input
-input[type=search] {
+input {
+  border: none;
+  color: #606367;
+  height: 24px;
+  border-bottom: 1px solid #EBEBEA;
+  padding-left: 16px;
+  border-radius: 0;
+
+  &:focus, &:active {
     border: none;
-    color: #606367;
-    height: 24px;
-    border-bottom: 1px solid #EBEBEA;
-    padding-left: 16px;
-    border-radius: 0;
+    border-bottom: 1px solid var(--cl-accent);
+    outline: none;
+  }
 
-    &:focus, &:active {
-        border:none;
-        border-bottom: 1px solid var(--cl-accent);
-        outline: none;
-    }
-
-    &::placeholder {
-        color: var(--cl-header-txt);
-        opacity: 0.5;
-    }
+  &::placeholder {
+    color: var(--cl-header-txt);
+    opacity: 0.5;
+  }
 }
 
 img {
-    position: absolute;
-    pointer-events: none;
-    top: 5px;
+  position: absolute;
+  pointer-events: none;
+  top: 5px;
 }

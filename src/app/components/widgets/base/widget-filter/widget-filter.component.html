@@ -1,25 +1,41 @@
 <!-- Pivot variables -->
-<span *ngFor="let v of widget?.pvItems" class="flt-holder">
-    <label>{{v.label}}</label>
+@for (v of widget.pvItems; track v) {
+  <span class="flt-holder">
+    <label>{{ v.label }}</label>
     <input [(ngModel)]="v.value" (keydown.enter)="emitVarChange(v)">
-</span>
+  </span>
+}
 
 <!-- Choosers -->
-<span *ngFor="let chooser of widget?.dsItems" class="flt-holder">
-    <label>{{chooser.label}}</label>
-    <select *ngIf="chooser.field === 'select'" [(ngModel)]="chooser.dsSelected" (change)="onDataSourceChangeHandler(chooser)">
-        <option *ngFor="let c of chooser.labels" [ngValue]="c">{{c}}</option>
-    </select>
-    <input #inp *ngIf="chooser.field === 'input'" [type]="chooser.type" (keydown.enter)="inp.blur()" [value]="chooser._value" (change)="setControlValue(chooser, inp.value, inp)">
-</span>
+@for (chooser of widget.dsItems; track chooser) {
+  <span class="flt-holder">
+    <label>{{ chooser.label }}</label>
+    @if (chooser.field === 'select') {
+      <select [(ngModel)]="chooser.dsSelected" (change)="onDataSourceChangeHandler(chooser)">
+        @for (c of chooser.labels; track c) {
+          <option [ngValue]="c">{{ c }}</option>
+        }
+      </select>
+    }
+    @if (chooser.field === 'input') {
+      <input #inp [type]="chooser.type" (keydown.enter)="inp.blur()" [value]="chooser._value"
+             (change)="setControlValue(chooser, inp.value, inp)">
+    }
+  </span>
+}
 
 <!-- Actions -->
-<span *ngFor="let action of widget?.acItems" class="flt-holder">
-    <button class="btn-round" (click)="performAction(action)">{{action.label || action.action}}</button>
-</span>
+@for (action of widget.acItems; track action) {
+  <span class="flt-holder">
+    <button class="btn-round" (click)="performAction(action)">{{ action.label || action.action }}</button>
+  </span>
+}
 
 <!-- Filters -->
-<span *ngFor="let flt of filters" class="flt-holder" [class.active]="openedFilter === flt.idx">
-    <label>{{flt.label}}</label>
-    <input readonly type="text" value="{{flt.text}}" title="{{flt.text}}" (click)="flt.isOpen = true; toggleFilter(flt.idx, $event)">
-</span>
+@for (flt of filters; track flt) {
+  <span class="flt-holder" [class.active]="openedFilter === flt.idx">
+    <label>{{ flt.label }}</label>
+    <input readonly type="text" value="{{flt.text}}" title="{{flt.text}}"
+           (click)="flt.isOpen = true; toggleFilter(flt.idx, $event)">
+  </span>
+}

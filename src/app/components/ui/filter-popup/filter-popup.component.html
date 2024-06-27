@@ -1,96 +1,108 @@
 <!-- Header line -->
-<ng-container *ngIf="!model?.filter?.isDate">
-    <div class="header">
-        <img src="assets/img/icons/icon-search.svg">
-        <input #sr type="search" placeholder="{{'search' | i18n}}" [(ngModel)]="model.search"
-               (search)="onSearch(sr.value)" (keyup)="onSearch(sr.value)" (keydown.enter)="searchFilters()"
-               dswAutoFocus="desktop">
-    </div>
-
-    <!-- All/Exclude/Inteval checkboxes -->
-    <div class="checks-container" *ngIf="!isRadio">
-        <!-- All check -->
-        <span [hidden]="model.isInterval">
-            <input id="all" type="checkbox" [(ngModel)]="model.isAll" (click)="setAll($event)">
-            <label for="all">{{'all' | i18n}}</label>
+@if (!model.filter?.isDate) {
+  <div class="header">
+    <img src="assets/img/icons/icon-search.svg">
+    <input #sr type="search" placeholder="{{'search' | i18n}}" [(ngModel)]="model.search"
+           (search)="onSearch(sr.value)" (keyup)="onSearch(sr.value)" (keydown.enter)="searchFilters()"
+           dswAutoFocus="desktop">
+  </div>
+  <!-- All/Exclude/Inteval checkboxes -->
+  @if (!isRadio) {
+    <div class="checks-container">
+      <!-- All check -->
+      <span [hidden]="model.isInterval">
+          <input id="all" type="checkbox" [(ngModel)]="model.isAll" (click)="setAll($event)">
+          <label for="all">{{ 'all' | i18n }}</label>
         </span>
-
-        <!-- Exclude check -->
-        <span [hidden]="model.isInterval">
-            <input id="exclude" type="checkbox" [(ngModel)]="model.isExclude">
-            <label for="exclude">{{'exclude' | i18n}}</label>
+      <!-- Exclude check -->
+      <span [hidden]="model.isInterval">
+          <input id="exclude" type="checkbox" [(ngModel)]="model.isExclude">
+          <label for="exclude">{{ 'exclude' | i18n }}</label>
         </span>
-
-        <!-- Interval check -->
-        <span>
-            <input id="interval" type="checkbox" [(ngModel)]="model.isInterval">
-            <label for="interval">{{'interval' | i18n}}</label>
+      <!-- Interval check -->
+      <span>
+          <input id="interval" type="checkbox" [(ngModel)]="model.isInterval">
+          <label for="interval">{{ 'interval' | i18n }}</label>
         </span>
     </div>
-
-    <!-- Interval controls -->
-    <div *ngIf="model.isInterval" class="interval-container">
-        <div>
-            <label>{{'from' | i18n}}</label>
-            <select [(ngModel)]="model.from" [ngModelOptions]="">
-                <option *ngFor="let v of model.values" [ngValue]="v.path">{{v.name}}</option>
-            </select>
-        </div>
-        <div>
-            <label>{{'to' | i18n}}</label>
-            <select [(ngModel)]="model.to">
-                <option *ngFor="let v of model.values" [ngValue]="v.path">{{v.name}}</option>
-            </select>
-        </div>
+  }
+  <!-- Interval controls -->
+  @if (model.isInterval) {
+    <div class="interval-container">
+      <div>
+        <label>{{ 'from' | i18n }}</label>
+        <select [(ngModel)]="model.from">
+          @for (v of model.values; track v) {
+            <option [ngValue]="v.path">{{ v.name }}</option>
+          }
+        </select>
+      </div>
+      <div>
+        <label>{{ 'to' | i18n }}</label>
+        <select [(ngModel)]="model.to">
+          @for (v of model.values; track v) {
+            <option [ngValue]="v.path">{{ v.name }}</option>
+          }
+        </select>
+      </div>
     </div>
-
-    <!-- Filter values -->
-    <div [hidden]="model.isInterval" class="values-list">
-        <!-- Default(All) value for radio buttons -->
-        <div class="value-row" *ngIf="hasDefault" (click)="setAll($event)">
-            <input type="radio" [checked]="this.model.isAll" name="filter-item">
-            <div>Default</div>
+  }
+  <!-- Filter values -->
+  <div [hidden]="model.isInterval" class="values-list">
+    <!-- Default(All) value for radio buttons -->
+    @if (hasDefault) {
+      <div class="value-row" (click)="setAll($event)">
+        <input type="radio" [checked]="this.model.isAll" name="filter-item">
+        <div>Default</div>
+      </div>
+    }
+    <!-- Filter items -->
+    @for (v of model.values; track trackByIndex($index, v)) {
+      <div class="value-row" (click)="toggleRow(v, $event)">
+        <input
+          #inp
+          [type]="isRadio ? 'radio' : 'checkbox'"
+          [checked]="v.checked"
+          (click)="v.checked = inp.checked; onItemSelect($event)"
+          [class.readonly]="isRadio"
+          name="filter-item"
+        >
+        <div [class]="v.default ? 'bold' : ''" [class.selected]="v.checked">{{ v.name }}
+          @if (v.info) {
+            <div>{{ v.info }}</div>
+          }
         </div>
-        <!-- Filter items -->
-        <div class="value-row" *ngFor="let v of model.values; trackBy: trackByIndex" (click)="toggleRow(v, $event)">
-            <input
-                #inp
-                [type]="isRadio ? 'radio' : 'checkbox'"
-                [checked]="v.checked"
-                (click)="v.checked = inp.checked; onItemSelect($event)"
-                [class.readonly]="isRadio"
-                name="filter-item"
-            >
-            <div [class]="v.default ? 'bold' : ''" [class.selected]="v.checked">{{v.name}}
-                <div *ngIf="v.info">{{v.info}}</div>
-            </div>
-        </div>
-
-        <!-- Loading spinner -->
-        <div *ngIf="model.isLoading" class="spinner">
-            <img src="assets/img/spinner.svg">
-        </div>
-    </div>
-</ng-container>
+      </div>
+    }
+    <!-- Loading spinner -->
+    @if (model.isLoading) {
+      <div class="spinner">
+        <img src="assets/img/spinner.svg">
+      </div>
+    }
+  </div>
+}
 
 <!-- Date picker -->
-<dsw-date-filter #dateFilter *ngIf="model?.filter?.isDate"></dsw-date-filter>
+@if (model.filter?.isDate) {
+  <dsw-date-filter #dateFilter></dsw-date-filter>
+}
 
 <div class="footer">
-    <!-- Apply button -->
-    <button class="btn default" (click)="acceptFilter()">
-        <img class="ico ico-accept" src="assets/img/icons/icon-check.svg">
-        {{'accept' | i18n}}
-    </button>
-    <button class="btn" (click)="removeFilter()">
-        <img class="ico ico-accept" src="assets/img/icons/icon-reload.svg">
-        {{'dismiss' | i18n}}
-    </button>
-    <!--        <button class="btn" (click)="removeFilter()"><i class="fa fa-eraser"></i>&nbsp;{{'dismiss' | i18n}}</button>-->
-    <!-- Close button -->
-    <button class="btn" (click)="close()">
-        <img class="ico ico-close" src="assets/img/icons/icon-close.svg">
-        {{'close' | i18n}}
-    </button>
+  <!-- Apply button -->
+  <button class="btn default" (click)="acceptFilter()">
+    <img class="ico ico-accept" src="assets/img/icons/icon-check.svg">
+    {{ 'accept' | i18n }}
+  </button>
+  <button class="btn" (click)="removeFilter()">
+    <img class="ico ico-accept" src="assets/img/icons/icon-reload.svg">
+    {{ 'dismiss' | i18n }}
+  </button>
+  <!--        <button class="btn" (click)="removeFilter()"><i class="fa fa-eraser"></i>&nbsp;{{'dismiss' | i18n}}</button>-->
+  <!-- Close button -->
+  <button class="btn" (click)="close()">
+    <img class="ico ico-close" src="assets/img/icons/icon-close.svg">
+    {{ 'close' | i18n }}
+  </button>
 
 </div>

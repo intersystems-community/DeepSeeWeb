@@ -1,0 +1,58 @@
+<dsw-sidebar-actions (cancel)="onCancel()" (apply)="onApply()">Chart colors</dsw-sidebar-actions>
+<div class="container">
+  <label>{{ 'seriesColor' | i18n }}</label>
+  <div class="series-colors">
+    @for (c of model.themeColors.hcColors; track idx; let idx = $index) {
+      @if (appearance?.showSeries?.[idx] !== false) {
+        <span class="color-small">
+        <dsw-color-picker
+          [isImmediate]="true"
+          [(color)]="model.themeColors.hcColors[idx]"
+          (colorChange)="update()"
+        ></dsw-color-picker>
+        </span>
+      }
+    }
+  </div>
+
+  @if (appearance?.showBackground !== false) {
+    <label>Chart background</label>
+    <dsw-color-picker
+      [isImmediate]="true"
+      [(color)]="model.themeColors.hcBackground"
+      (colorChange)="update()"
+    ></dsw-color-picker>
+  }
+
+  @if (appearance?.showLines !== false) {
+    <label>Lines color</label>
+    <dsw-color-picker
+      [isImmediate]="true"
+      [(color)]="model.themeColors.hcLineColor"
+      (colorChange)="update()"
+    ></dsw-color-picker>
+  }
+
+  @if (appearance?.showText !== false) {
+    <label>Text color</label>
+    <dsw-color-picker
+      [isImmediate]="true"
+      [(color)]="model.themeColors.hcTextColor"
+      (colorChange)="update()"
+    ></dsw-color-picker>
+  }
+
+  @if (appearance?.showBorder !== false) {
+    <label>Series border color</label>
+    <dsw-color-picker
+      [isImmediate]="true"
+      [(color)]="model.themeColors.hcBorderColor"
+      (colorChange)="update()"
+    ></dsw-color-picker>
+  }
+
+  <div class="divider"></div>
+
+  <button class="btn btn-success" (click)="resetToDefault()">Reset to default</button>
+</div>
+

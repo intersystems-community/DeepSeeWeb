@@ -1,8 +1,10 @@
 <input
-    #inp
-    [(ngModel)]="model"
-    [type]="type"
-    (ngModelChange)="onModelChange($event)"
-    (keydown.enter)="inp.blur()"
->
-<button *ngIf="chooseButton" (click)="onSelectButtonClick()">...</button>
+  #inp
+  [(ngModel)]="model"
+  [type]="type"
+  (ngModelChange)="onModelChange($event)"
+  (keydown.enter)="inp.blur()"
+  >
+@if (chooseButton) {
+  <button (click)="onSelectButtonClick()">...</button>
+}

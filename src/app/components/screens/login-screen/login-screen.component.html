@@ -1,37 +1,40 @@
-<span class="ver">{{model.ver}}</span>
+<span class="ver">{{ model.ver }}</span>
 <span class="qr-scanner-btn" desktop-hidden (click)="scanSettings()"><i class="fa fa-camera"></i></span>
 
 <div class="login-form">
-    <!-- Logo -->
-    <div class="logo">
-        IRIS Analytics
-<!--        <img src="assets/img/DeepSee.svg" height="100px" alt="logo" class="deepsee-logo" mobile-hidden>-->
-<!--        <img src="assets/img/eye.svg" height="100px" alt="logo" class="deepsee-logo" desktop-hidden>-->
-    </div>
+  <!-- Logo -->
+  <div class="logo">
+    IRIS Analytics
+    <!--        <img src="assets/img/DeepSee.svg" height="100px" alt="logo" class="deepsee-logo" mobile-hidden>-->
+    <!--        <img src="assets/img/eye.svg" height="100px" alt="logo" class="deepsee-logo" desktop-hidden>-->
+  </div>
 
-    <!-- Server -->
-    <input type="text" name="server" [hidden]="model.isDesktop" [(ngModel)]="model.server"
-           placeholder="{{'server' | i18n}}" focus-next="dswLogin">
-    <!-- Login -->
-    <input id="dswLogin" type="text" name="dswLogin" [(ngModel)]="model.login" placeholder="{{'login' | i18n}}"
-           dswAutoFocus dswFocusNext="dswPasword">
-    <!-- Password -->
-    <input id="dswPasword" name="dswPasword" type="password" [(ngModel)]="model.password"
-           placeholder="{{'password' | i18n}}" dswFocusNext="ns">
-    <!-- Namespace -->
-    <input id="ns" type="text" class="form-control" [(ngModel)]="model.namespace" placeholder="{{'namespace' | i18n}}"
-           dswFocusNext="login" required>
+  <!-- Server -->
+  <input type="text" name="server" [hidden]="model.isDesktop" [(ngModel)]="model.server"
+         placeholder="{{'server' | i18n}}" focus-next="dswLogin">
+  <!-- Login -->
+  <input id="dswLogin" type="text" name="dswLogin" [(ngModel)]="model.login" placeholder="{{'login' | i18n}}"
+         dswAutoFocus dswFocusNext="dswPasword">
+  <!-- Password -->
+  <input id="dswPasword" name="dswPasword" type="password" [(ngModel)]="model.password"
+         placeholder="{{'password' | i18n}}" dswFocusNext="ns">
+  <!-- Namespace -->
+  <input id="ns" type="text" class="form-control" [(ngModel)]="model.namespace" placeholder="{{'namespace' | i18n}}"
+         dswFocusNext="login" required>
 
-    <div class="button-row">
-        <button [hidden]="model.isDesktop" class="btn btn-success" (click)="showServers()"
-                desktop-hidden></button>
-        <button [hidden]="model.isDesktop" class="btn btn-success" (click)="saveServer()"
-                desktop-hidden></button>
-        <button id="login" class="btn" (click)="onLoginClick()">{{'signin' | i18n}}</button>
-        <button *ngIf="model.oAuthUrl" id="btnLoginOAuth" class="btn btn-link"
-                (click)="onLoginOAuthClick()">{{'signinOAuth' | i18n}}</button>
-    </div>
-    <div class="msg-error" [hidden]="!model.error">
-        {{model.error}}
-    </div>
+  <div class="button-row">
+    <button [hidden]="model.isDesktop" class="btn btn-success" (click)="showServers()"
+            desktop-hidden></button>
+    <button [hidden]="model.isDesktop" class="btn btn-success" (click)="saveServer()"
+            desktop-hidden></button>
+    <button id="login" class="btn" (click)="onLoginClick()">{{ 'signin' | i18n }}</button>
+    @if (model.oAuthUrl) {
+      <button id="btnLoginOAuth" class="btn btn-link"
+              (click)="onLoginOAuthClick()">{{ 'signinOAuth' | i18n }}
+      </button>
+    }
+  </div>
+  <div class="msg-error" [hidden]="!model.error">
+    {{ model.error }}
+  </div>
 </div>

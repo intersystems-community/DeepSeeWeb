@@ -1,6 +1,13 @@
-import pkg from '../../package.json';
+import pkg from './../../package.json';
 
-export const dsw = {
+interface IDSWConfig {
+  addons: string[];
+  mobile: boolean;
+  desktop: boolean;
+  const: any;
+}
+
+export const dsw: IDSWConfig = {
     // TODO: add type for addons
     addons: [],
     mobile: false, // TODO: add to init = screen.availWidth <= 600;
@@ -13,9 +20,8 @@ export const dsw = {
             // {text: 'Black', file: 'themes/black.css'}
         ],
         bgColorClasses: ['', 'cl1', 'cl2', 'cl3', 'cl4', 'cl5', 'cl6', 'cl7', 'cl8', 'cl9'],
-        fontColors: ['fc1', 'fc2', 'fc3', 'fc4', 'fc5'],
-        icons: ['', 'back-1.svg', 'folder-1.svg', 'widget-1.svg', 'dashboard-1.svg', 'widget-2.svg', 'widget-3.svg', 'widget-4.svg'],
-
+        fontColors: ['fc0', 'fc1', 'fc2', 'fc3', 'fc4', 'fc5'],
+        icons: ['', 'ico-widget-back', 'ico-widget-folder', 'ico-widget-1', 'ico-widget-dashboard', 'ico-widget-2', 'ico-widget-3', 'ico-widget-4'],
         timeout: 60000,
         ver: pkg.version,
         emptyWidgetClass: 'MDX2JSON.EmptyPortlet'.toLowerCase()
