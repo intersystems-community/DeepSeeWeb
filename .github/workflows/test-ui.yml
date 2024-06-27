@@ -10,7 +10,7 @@ jobs:
         runs-on: ubuntu-latest
         strategy:
             matrix:
-                node-version: [15.x]
+                node-version: [20.14.0]
         steps:
           - uses: actions/checkout@v1
           - name: Build the docker
