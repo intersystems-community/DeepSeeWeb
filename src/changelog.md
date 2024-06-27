@@ -1,11 +1,12 @@
 #### 4.0.0 beta
-* migrated to Angular 17:
+* migrated to Angular 18:
     * rewritten application to use lazy loading, as a result "main.js" size reduced from **3Mb** to **500Kb**
     * all javascript modules in dist package now take up 3Mb, instead of 5Mb(previous version)
     * templates now uses new control flow
     * removed deprecated ComponentFactoryResolver, now dynamic component created using NgComponentOutlet
     * added many interfaces and types to make type checks and reduce runtime errors
     * updated addon systems to work with new Angular
+    * new builder is used
     * rewritten a lot of code
     * updated HighCharts to 11.4, now it have new look
 * rewritten charts data parser to support crossjoins/hierarchical data on all axis

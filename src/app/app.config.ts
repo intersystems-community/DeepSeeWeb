@@ -1,7 +1,7 @@
 import {APP_INITIALIZER, ApplicationConfig, importProvidersFrom} from '@angular/core';
 import {PreloadAllModules, provideRouter, withHashLocation, withPreloading} from '@angular/router';
 import {routes} from './app.routes';
-import {provideHttpClient, withFetch} from "@angular/common/http";
+import { provideHttpClient, withFetch } from "@angular/common/http";
 import {BrowserModule} from "@angular/platform-browser";
 import {provideAnimations} from "@angular/platform-browser/animations";
 import {StartupService} from "./services/startup.service";
