@@ -46,3 +46,4 @@ jobs:
           git add ./module.xml
           git commit -am "Automated commit of dist"
           git push
+        ignore_errors: yes
