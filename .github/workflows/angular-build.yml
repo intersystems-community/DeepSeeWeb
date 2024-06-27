@@ -39,6 +39,7 @@ jobs:
           npm run build
 
       - name: Deploying dist to master
+        continue-on-error: true
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
@@ -46,4 +47,4 @@ jobs:
           git add ./module.xml
           git commit -am "Automated commit of dist"
           git push
-        continue-on-error: yes
+
