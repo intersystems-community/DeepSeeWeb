@@ -340,16 +340,6 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
     // Clean up previous data and store visibility state
     this.seriesVisibility = this.chart?.series?.map(s => s.visible) ?? [];
     this.clearSeries();
-    /**
-     * Callback for chart data request
-     * @param {object} result chart data
-     */
-    retrieveData(result) {
-        let i;
-        this.hideLoading();
-        // Clean up previous data and store visibility state
-        this.seriesVisibility = this.chart?.series?.map(s => s.visible);
-        this.clearSeries();
 
     // Store current widget data
     this.widgetData = JSON.parse(JSON.stringify(result));
