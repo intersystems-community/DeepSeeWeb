@@ -1,3 +1,6 @@
+#### 4.0.2 beta
+* fixed issue with treemap
+
 #### 4.0.1 beta
 * migrated to Angular 18:
     * rewritten application to use lazy loading, as a result "main.js" size reduced from **3Mb** to **500Kb**

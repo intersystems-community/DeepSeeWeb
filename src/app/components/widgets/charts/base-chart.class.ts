@@ -6,7 +6,7 @@ import {IButtonToggle} from '../../../services/widget.service';
 import {IChartConfigAppearance} from '../../ui/chart-colors-config/chart-colors-config.component';
 import {Subscription} from 'rxjs';
 // Highcharts
-import Highcharts from 'highcharts/highstock';
+import Highcharts from 'highcharts';
 import HighMaps from 'highcharts/modules/map';
 import More from 'highcharts/highcharts-more';
 import Tree from 'highcharts/modules/treemap';
@@ -65,6 +65,7 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
   chartConfig!: Highcharts.Options;
   protected _selectedPoint: any;
   protected firstRun = true;
+  protected baseSeriesType = 'bar';
 
   // Services
   private sbs = inject(SidebarService);
@@ -492,7 +493,7 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
 
     // Check series type from widget
     if (this.widget?.seriesTypes) {
-      const st = this.widget?.seriesTypes[index] || 'bar';
+      const st = this.widget?.seriesTypes[index] || this.baseSeriesType;
       if (st) {
         data.type = st;
       }

@@ -238,7 +238,6 @@ export class PieChartComponent extends BaseChartClass implements OnInit {
       }
       // data.size = (100 / count * 0.8).toString() + '%';
     }
-
     super.addSeries(data, chart, conf, redraw);
     if (this.chart && this.chart.series.length > 1) {
       this.chart.series[this.chart.series.length - 1].options.showInLegend = false;
