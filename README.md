@@ -27,7 +27,7 @@ DeepSeeWeb is an Angular UI layer for IRIS BI (DeepSee) dashboards
 * fixed issue with changing color of pie/treemap/timechart series, also fixed issues with changing color on legend items
 * changed application font to "Oxygen"
 
-Note, that new charts looks a bit different, also new font helps with readability. You can compare UI of DSW 3.x vs DSW 4.x:
+Note, that new charts looks a bit different, also new font helps with readability. Compare UI of DSW 3.x vs DSW 4.x:
 
 DSW 3.x
 ![DSW3](https://raw.githubusercontent.com/gnibeda/gnibeda.github.io/master/images/dsw-3.png)
