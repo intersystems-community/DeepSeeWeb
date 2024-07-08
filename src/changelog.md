@@ -1,3 +1,9 @@
+#### 4.0.3 beta
+* fixed issue with missing back button after drilldown in pivot table
+* fixed issue with back button after back from drillthrough
+* fixed issue with missing gauges charts
+* fixed issue with switch data source control and first element in list
+
 #### 4.0.2 beta
 * fixed issue with treemap
 

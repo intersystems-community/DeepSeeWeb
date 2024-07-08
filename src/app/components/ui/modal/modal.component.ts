@@ -30,6 +30,7 @@ import {NgComponentOutlet} from '@angular/common';
 export class ModalComponent implements OnInit, OnDestroy, OnChanges, AfterViewInit {
   @ViewChild(NgComponentOutlet, {read: ElementRef}) dynCompEl?: ElementRef;
   @ViewChild(NgComponentOutlet) ngComponentOutlet?: NgComponentOutlet;
+
   @Input() data!: IModal;
   search = new EventEmitter<string>();
   isInitialized = false;
@@ -209,6 +210,9 @@ export class ModalComponent implements OnInit, OnDestroy, OnChanges, AfterViewIn
       // @ts-ignore
       comp = this.ngComponentOutlet._componentRef.instance;
     }
+    /*  if (this.viewContRef?.get(0)?.context) {
+      comp = this.viewContRef.get(0).context;
+     } */
     if (!comp) {
       return;
     }

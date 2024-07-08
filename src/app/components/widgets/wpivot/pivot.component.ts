@@ -97,6 +97,7 @@ export class WPivotComponent extends BaseWidget {
 
     this.widget.backButton = this.lpt?.DRILL_LEVEL !== 0;
     this.parent.cd.detectChanges();
+    this.parent.header?.cd.detectChanges();
   }
 
   onDrillThrough(...args) {
@@ -124,12 +125,14 @@ export class WPivotComponent extends BaseWidget {
         this.widget.isDrillthrough = true;
         this.widget.backButton = true;
         this.parent.cd.detectChanges();
+        this.parent.header?.cd.detectChanges();
       });
       return false;
     }
     this._oldMdx = this.lpt?.getActualMDX() || '';
     this.widget.backButton = true;
     this.parent.cd.detectChanges();
+    this.parent.header?.cd.detectChanges();
     return true;
   }
 
@@ -147,6 +150,7 @@ export class WPivotComponent extends BaseWidget {
       this.doDrillFilter(p.path, this.drills);
     }
     this.parent.cd.detectChanges();
+    this.parent.header?.cd.detectChanges();
     this.broadcastDependents(p.mdx);
   }
 

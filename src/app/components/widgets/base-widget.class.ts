@@ -545,6 +545,8 @@ export class BaseWidget implements OnInit, OnDestroy {
     if (this.widget.isDrillthrough) {
       this.restoreWidgetType();
       this.widget.isDrillthrough = false;
+      this.widget.backButton = !!this.drills?.length;
+      this.parent.header?.cd.detectChanges();
     } else {
       void this.doDrillOnly();
     }
@@ -1028,7 +1030,7 @@ export class BaseWidget implements OnInit, OnDestroy {
     let val = '';
     const sel = item.dsSelected;
     if (sel) {
-      const idx = item.labels?.indexOf(sel.toString()) || -1;
+      const idx = item.labels?.indexOf(sel.toString()) ?? -1;
       if (idx !== -1) {
         val = item?.values?.[idx] || '';
       }

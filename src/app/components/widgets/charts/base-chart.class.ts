@@ -6,7 +6,7 @@ import {IButtonToggle} from '../../../services/widget.service';
 import {IChartConfigAppearance} from '../../ui/chart-colors-config/chart-colors-config.component';
 import {Subscription} from 'rxjs';
 // Highcharts
-import Highcharts from 'highcharts';
+import Highcharts from 'highcharts/highstock';
 import HighMaps from 'highcharts/modules/map';
 import More from 'highcharts/highcharts-more';
 import Tree from 'highcharts/modules/treemap';
@@ -26,14 +26,14 @@ import {
   IMDXTuple
 } from '../../../services/dsw.types';
 
-HighMaps(Highcharts);
 More(Highcharts);
+SolidGauge(Highcharts);
+HighMaps(Highcharts);
 Tree(Highcharts);
 Heatmap(Highcharts);
 ThreeD(Highcharts);
 Exporting(Highcharts);
 HC_stock(Highcharts);
-SolidGauge(Highcharts);
 
 export const DEF_ROW_COUNT = 20;
 const DEF_COL_COUNT = 20;
