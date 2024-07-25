@@ -1,8 +1,10 @@
-#### 4.0.3 beta
+#### 4.0.3
 * fixed issue with missing back button after drilldown in pivot table
 * fixed issue with back button after back from drillthrough
 * fixed issue with missing gauges charts
 * fixed issue with switch data source control and first element in list
+* fixed issue with treemap labels (#436)
+* added notes about data format for map addon widget 
 
 #### 4.0.2 beta
 * fixed issue with treemap
