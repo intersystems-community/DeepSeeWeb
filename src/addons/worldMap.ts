@@ -1,3 +1,10 @@
+/***
+ * Highcharts map widget
+ * MDX should return data in format:
+ * ['Iceland', 1000, 'Madagascar', 2000, 'Venezuela': 500]
+ * Names should be equal to GeoJSON `name` field
+ */
+
 import {Component, Inject, Injector, OnInit} from '@angular/core';
 import Highcharts from 'highcharts/highstock';
 /*import More from 'highcharts/highcharts-more';
@@ -98,6 +105,10 @@ export class WorldMap extends BaseChartClass implements OnInit {
         // TODO: solve kpi fired twice
         this.hideLoading();
         const d = [];
+        if (typeof data.Data[0] !== 'string' || isNaN(parseFloat(data.Data[1]))) {
+          console.error('Input data for map in wrong format. Make sure that MDX returns data in supported format, eg. [\'Iceland\', 1000, \'Madagascar\', 2000, \'Venezuela\': 500]');
+          console.error('Current format is: [', data.Data[0], ',', data.Data[1], ']');
+        }
         for (let i = 0; i < data.Data.length; i += 2) {
             d.push({key: data.Data[i], value: data.Data[i + 1]});
         }

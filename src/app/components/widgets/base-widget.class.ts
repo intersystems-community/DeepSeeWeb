@@ -152,7 +152,7 @@ export class BaseWidget implements OnInit, OnDestroy {
   }
 
   getDataPropByDataValue(dataValue: string) {
-    if (!this.widget.dataProperties) {
+    if (!this.widget.dataProperties || !dataValue) {
       return;
     }
     const dv = dataValue.split('/');
