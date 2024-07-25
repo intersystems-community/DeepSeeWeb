@@ -101,37 +101,11 @@ This features will be implemented soon and are to be included in RC
 * Fuel gauge
 
 # Installation
-1. First be sure, that you have [MDX2JSON](https://github.com/intersystems-ru/Cache-MDX2JSON) installed. To test it open URL `<server:port>/MDX2JSON/Test`
-You should see something like this:
-`
-{
-	"DefaultApp":"\/mdx2json",
-	"Mappings": {
-		"Mapped":["MDX2JSON","SAMPLES"
-		],
-		"Unmapped":["%SYS","DOCBOOK","USER"
-		]
-	},
-	"Status":"OK",
-	"User":"UnknownUser",
-	"Version":2.2
-}
-`
-
-2. Download the latest release xml file: https://github.com/intersystems-ru/DeepSeeWeb/releases
-3. Import it to any Caché namespace, f.e. to USER.
-4. Run in terminal:
+1. Install IPM
+2. Use IPM to install DSW, run in Iris session terminal:
 ```
-USER> d ##class(DSW.Installer).setup()
+zpm "install dsw"
 ```
-It will:
-* create /dsw web app, 
-* create ...csp/dsw folder 
-* put all the necessary DeepSee Web files into .../csp/dsw folder.
-
-To use DSW Open `server:port/dsw/index.html`
-
-Demo: https://www.youtube.com/watch?v=-HplM12eNik
 
 # Configuring endpoints 
 You can set your endpoint and namespace in an appropriate file config.json located in the root directory
