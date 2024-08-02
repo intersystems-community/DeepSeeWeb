@@ -414,6 +414,7 @@ export interface IFilterValue {
   name?: string;
   value?: string | number;
   default?: boolean;
+  exclude?: boolean;
 
   // For UI
   checked?: boolean;

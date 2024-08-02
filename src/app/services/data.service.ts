@@ -15,6 +15,7 @@ export let NAMESPACE = 'MDX2JSON';
 export interface IKPIFilter {
   name: string; // targetProperty
   value: string;
+  exclude?: boolean;
 }
 
 // Tile info object

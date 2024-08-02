@@ -1634,7 +1634,8 @@ export class BaseWidget implements OnInit, OnDestroy {
       return values.map(v => {
         return {
           name: f.targetProperty,
-          value: v
+          value: v,
+          exclude: !!f.isExclude
         } as IFilterValue;
       });
     }).flat();
