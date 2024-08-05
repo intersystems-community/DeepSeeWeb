@@ -31,6 +31,7 @@ export class AppSettingsComponent implements OnInit {
     this.model = {
       isSaveFilters: this.settings.isSaveFilters === undefined ? true : this.settings.isSaveFilters,
       isRelatedFilters: this.settings.isRelatedFilters === undefined ? true : this.settings.isRelatedFilters,
+      isTilePushDisabled: !!this.settings.isTilePushDisabled,
       colCount: this.settings.colCount || DEFAULT_COL_COUNT
     };
   }
@@ -43,7 +44,7 @@ export class AppSettingsComponent implements OnInit {
   }
 
   onApply() {
-    this.applySettrings();
+    this.applySettings();
     this.sbs.hide();
   }
 
@@ -107,9 +108,10 @@ export class AppSettingsComponent implements OnInit {
     //  reloadPage();
   }
 
-  private applySettrings() {
+  private applySettings() {
     this.settings.isSaveFilters = !!this.model.isSaveFilters;
     this.settings.isRelatedFilters = !!this.model.isRelatedFilters;
+    this.settings.isTilePushDisabled = !!this.model.isTilePushDisabled;
     this.settings.colCount = this.model.colCount;
 
     this.ss.onSettingsChanged.emit(this.settings);

@@ -11,6 +11,9 @@
     <input type="checkbox" [(ngModel)]="model.isRelatedFilters">
   </label>
 
+  <label>{{ 'disableTilePush' | i18n }}
+    <input type="checkbox" [(ngModel)]="model.isTilePushDisabled">
+  </label>
 
   <label>{{ 'importSettings' | i18n }}</label>
   <input type="file" enctype="multipart/form-data" (change)="readSettings($event)"/>

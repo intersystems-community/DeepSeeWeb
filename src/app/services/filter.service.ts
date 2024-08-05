@@ -208,12 +208,9 @@ export class FilterService {
     });
 
     try {
-      if (this.isBase64(decodeURIComponent(param))) {
-        param = decodeURIComponent(param);
-        if (param.charAt(param.length - 1) === '=') {
-          param = param.slice(0, -1);
-        }
-        param = atob(param);
+      const p = decodeURIComponent(param);
+      if (this.isBase64(p)) {
+        param = atob(p);
       }
     } catch (e) {
     }

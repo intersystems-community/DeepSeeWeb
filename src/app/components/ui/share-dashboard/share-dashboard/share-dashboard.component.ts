@@ -86,7 +86,7 @@ export class ShareDashboardComponent implements OnInit, OnChanges, OnDestroy {
       const pa = p.split('=');
       if (pa[0] === 'FILTERS') {
         if (this.asBase64) {
-          pa[1] = btoa(pa[1]);
+          pa[1] = encodeURIComponent(btoa(pa[1]));
         }
         if (this.preventFilters) {
           return '';

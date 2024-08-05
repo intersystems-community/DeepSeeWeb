@@ -742,8 +742,14 @@ export class BaseWidget implements OnInit, OnDestroy {
         res();
         return;
       }
-
       this.clearError();
+
+      // Check for KPI drillthrough
+      if (this.widget.kpitype && name) {
+        this.doKPIDrillthrough(name);
+        return;
+      }
+
       const old = this.drills.slice();
       if (path) {
         if (Array.isArray(path)) {
@@ -756,6 +762,7 @@ export class BaseWidget implements OnInit, OnDestroy {
       } else {
         this.drills.pop();
       }
+
       const mdx = this.getMDX();
       this.drills = old;
 
@@ -1624,7 +1631,7 @@ export class BaseWidget implements OnInit, OnDestroy {
     return v;
   }
 
-  protected _requestKPIData(drillthroughFilter?: IFilterValue[]) {
+  protected _requestKPIData(drillthroughFilter?: IFilterValue[], isDrillthrough = false) {
     const ds = this.customDataSource || this.widget.dataSource;
     if (!ds) {
       return;
@@ -1642,8 +1649,9 @@ export class BaseWidget implements OnInit, OnDestroy {
     if (drillthroughFilter) {
       filters.push(...drillthroughFilter);
     }
+    const drillthrough = !!drillthroughFilter || isDrillthrough;
     this.showLoading();
-    return this.ds.getKPIData(ds, filters, !!drillthroughFilter).then(data => this._retriveKPI(data, !!drillthroughFilter))
+    return this.ds.getKPIData(ds, filters, drillthrough).then(data => this._retriveKPI(data, drillthrough))
       .finally(() => {
         this.hideLoading();
       });
@@ -1994,6 +2002,9 @@ export class BaseWidget implements OnInit, OnDestroy {
   }
 
   private initializeDataRequest() {
+    if (this.widget.initialData) {
+      return;
+    }
     if (this.widget?.properties?.chartToggle === 'table' && this.widget.type !== 'pivot' && !this.widget.oldType) {
       this.requestData();
     } else {
@@ -2001,5 +2012,47 @@ export class BaseWidget implements OnInit, OnDestroy {
         this.requestData();
       }
     }
+  }
+
+  private doKPIDrillthrough(name: string) {
+    if (!this._kpiData) {
+      return;
+    }
+    const series = this._kpiData.Result.Series.find(s => s.seriesName === name);
+    if (!series) {
+      return;
+    }
+    const filters = this._kpiData.Result.Properties.map(p => {
+      return { name: p.name, value: series[p.name], path: '' };
+    });
+    const fltSeries = this._kpiData.Result.Properties.map(p => {
+      return { name: p.name, value: series.seriesName, path: '' };
+    });
+    const promise = this._requestKPIData([...filters, ...fltSeries]);
+    if (!promise) {
+      return;
+    }
+
+
+    promise.then(d => {
+      if (!this._kpiData) {
+        return;
+      }
+      this.widget.isDrillthrough = true;
+      this.widget.backButton = true;
+      this.widget.initialData = this.convertKPIToMDXData(this._kpiData, true);
+      this.changeWidgetType('pivot');
+      setTimeout(() => {
+        delete this.widget.initialData;
+      });
+/*
+      this.hideLoading();
+      this.cd.detectChanges();
+
+        // this.displayAsPivot();
+        //this.widget.pivotData = this._currentData;
+        //this.cd.detectChanges()
+*/
+      });
   }
 }

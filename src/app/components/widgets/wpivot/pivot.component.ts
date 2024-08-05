@@ -82,6 +82,15 @@ export class WPivotComponent extends BaseWidget {
     if (this.widget.edKey) {
       this.lpt?.pivotView.displayMessage('');
     }
+
+    // Load initial data
+    if (this.lpt && this.widget.initialData) {
+      const data = this.widget.initialData;
+      setTimeout(() => {
+        this.lpt?.dataController.setData(this.lpt.dataSource._convert(data));
+      })
+
+    }
   }
 
   doDrillUp() {

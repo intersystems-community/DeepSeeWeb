@@ -978,6 +978,8 @@ export class DashboardScreenComponent extends DashboardEditingClass implements O
 
   private loadSettings() {
     this.settings = this.ss.getAppSettings();
+    this.tilesOptions.pushItems = !this.settings.isTilePushDisabled;
+    this.tilesOptions.disablePushOnResize = !!this.settings.isTilePushDisabled;
     this.tilesOptions.maxCols = parseInt(this.settings.colCount, 10) || DEFAULT_COL_COUNT;
     this.tilesOptions.minCols = this.tilesOptions.maxCols;
     this.tilesOptions.fixedRowHeight = parseInt(this.settings.widgetHeight, 10) || (Math.floor((window.innerHeight - 158) / 10)) - 1;

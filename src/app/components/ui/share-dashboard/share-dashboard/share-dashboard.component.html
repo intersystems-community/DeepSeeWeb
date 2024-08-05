@@ -1,8 +1,8 @@
 <div>
   <p>{{ title }}</p>
   <textarea type="text" [value]="url" [class.small]="isSmall"></textarea>
+  <label><input type="checkbox" [(ngModel)]="asBase64" (change)="onFormatChange()">Filters as Base64</label>
   @if (!hideOptions) {
-    <label><input type="checkbox" [(ngModel)]="asBase64" (change)="onFormatChange()">Filters as Base64</label>
     <label><input type="checkbox" [(ngModel)]="denyResize" (change)="onFormatChange()">Deny widget resizing</label>
     <label><input type="checkbox" [(ngModel)]="denyMove" (change)="onFormatChange()">Deny widget moving</label>
     <label><input type="checkbox" [(ngModel)]="preventFilters" (change)="onFormatChange()">Ignore filters</label>

@@ -196,6 +196,9 @@ export interface IWidgetDesc {
   displayInfo?: IWidgetDisplayInfo;
   isExpanded: boolean;
 
+  // Data for initialization without request
+  initialData?: IMDXData;
+
   // Drill
   drills: IDrill[];
   isDrillthrough: boolean;
@@ -272,7 +275,7 @@ export interface IKPIDataProperty {
 }
 
 export interface IKPIDataSeries {
-  [key: string]: number;
+  [key: string]: number|string;
 }
 
 export interface IKPIDataResult {
