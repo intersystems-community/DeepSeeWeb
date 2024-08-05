@@ -1,3 +1,8 @@
+#### 4.0.5
+* added KPI drillthrough support for charts (analytics/#421)  
+* fixed issue with sharing dashboard/widgets using base64 (analytics/#270)
+* added option to disable tile pushing (analytics/#310)
+
 #### 4.0.4
 * added support for exclude filters in KPI widgets (#303)
 
