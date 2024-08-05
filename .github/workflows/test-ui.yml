@@ -1,38 +1,38 @@
 # on: push
 on:
-    workflow_run:
-        workflows: ["Build Angular"]
-        types:
-            - completed
+  workflow_run:
+    workflows: ["Build Angular"]
+    types:
+      - completed
 name: Test UI
 jobs:
-    build:
-        runs-on: ubuntu-latest
-        strategy:
-            matrix:
-                node-version: [20.14.0]
-        steps:
-          - uses: actions/checkout@v1
-          - name: Build the docker
-            run: |
-              docker-compose build
-              docker-compose up -d
+  build:
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        node-version: [20.14.0]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build the docker
+        run: |
+          docker-compose build
+          docker-compose up -d
 
-          - name: Check running containers
-            run: docker ps -a
+      - name: Check running containers
+        run: docker ps -a
 
-          - name: Create directory for artifacts
-            run: mkdir -p ./e2e/screenshots
+      - name: Create directory for artifacts
+        run: mkdir -p ./e2e/screenshots
 
-          - name: Install node modules
-            run: npm i
+      - name: Install node modules
+        run: npm i
 
-          - name: Running test
-            run: npm test
+      - name: Running test
+        run: npm test
 
-          - name: Archive artifacts
-            if: always()
-            uses: actions/upload-artifact@v2
-            with:
-              name: screenshots
-              path: ./e2e/screenshots
+      - name: Archive artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshots
+          path: ./e2e/screenshots
