@@ -1,3 +1,6 @@
+#### 4.0.4
+* added support for exclude filters in KPI widgets (#303)
+
 #### 4.0.3
 * fixed issue with missing back button after drilldown in pivot table
 * fixed issue with back button after back from drillthrough
