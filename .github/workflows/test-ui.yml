@@ -7,7 +7,7 @@ on:
 name: Test UI
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         node-version: [20.14.0]
@@ -22,8 +22,8 @@ jobs:
 
       - name: Build the docker
         run: |
-          docker-compose build
-          docker-compose up -d
+          docker compose build
+          docker compose up -d
 
       - name: Check running containers
         run: docker ps -a
