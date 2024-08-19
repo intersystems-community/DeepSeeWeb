@@ -941,6 +941,8 @@ export class DashboardScreenComponent extends DashboardEditingClass implements O
     this.subSettingsChanged = this.ss.onSettingsChanged.subscribe(settings => {
       this.tilesOptions.maxCols = settings.colCount || DEFAULT_COL_COUNT;
       this.tilesOptions.minCols = this.tilesOptions.maxCols;
+      this.tilesOptions.pushItems = !settings.isTilePushDisabled;
+      this.tilesOptions.disablePushOnResize = !!settings.isTilePushDisabled;
       if (this.gridster) {
         this.gridster.optionsChanged();
         setTimeout(() => {
