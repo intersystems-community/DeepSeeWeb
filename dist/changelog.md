@@ -1,3 +1,6 @@
+#### 4.0.7
+* fixed issue with colors on map widget
+
 #### 4.0.6
 * changing `tile push` option now applied immediately without page refresh (#310)
 
