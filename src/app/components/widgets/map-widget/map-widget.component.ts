@@ -241,7 +241,7 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
     //     }
     // }
     /// url = 'uspolygons.js';
-    //this.ds.getFile('/assets/UAMap.geojson')
+    //this.ds.getFile('/assets/uaeMap.geojson')
     this.ds.getFile(url)
       .then(data => this.onPolyFileLoaded(data))
       .finally(() => this.hideLoading());
@@ -363,14 +363,13 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
       f = f.substring(fidx + 1, f.length - 1);
       parts = f.split(',');
       const x = value || 0;
-      var tmp;
       for (let i = 0; i < parts.length; i++) {
         if (parts[i].indexOf('x') === -1) {
           continue;
         }
         parts[i] = parts[i].replace(/x/g, x.toString());
         const ev = 'eval';
-        window[ev]('tmp = ' + parts[i] + ';');
+        let tmp = window[ev](parts[i]);
         if (tmp > 255) {
           tmp = 255;
         }
