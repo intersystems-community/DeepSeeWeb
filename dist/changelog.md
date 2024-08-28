@@ -1,3 +1,6 @@
+#### 4.0.6
+* changing `tile push` option now applied immediately without page refresh (#310)
+
 #### 4.0.5
 * added KPI drillthrough support for charts (analytics/#421)  
 * fixed issue with sharing dashboard/widgets using base64 (analytics/#270)
