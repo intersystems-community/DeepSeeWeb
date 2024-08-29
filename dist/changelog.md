@@ -1,3 +1,6 @@
+#### 4.0.8
+* fixed issue with empty map for non-geojson maps
+
 #### 4.0.7
 * fixed issue with colors on map widget
 
