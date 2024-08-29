@@ -241,7 +241,7 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
     //     }
     // }
     /// url = 'uspolygons.js';
-    //this.ds.getFile('/assets/uaeMap.geojson')
+    //this.ds.getFile('/assets/finpolygons.js')
     this.ds.getFile(url)
       .then(data => this.onPolyFileLoaded(data))
       .finally(() => this.hideLoading());
@@ -273,8 +273,7 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
     result = '(' + result + ')(polys)';
     // TODO: make safe eval
     // tslint:disable-next-line:no-eval
-    const ev = 'eval';
-    window[ev](result);
+    eval(result);
     this.polyData = polys;
     this.buildPolygons();
   }
