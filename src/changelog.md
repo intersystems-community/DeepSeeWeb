@@ -1,3 +1,6 @@
+#### 4.0.9
+* internal build with dev feature for oAuth
+
 #### 4.0.8
 * fixed issue with empty map for non-geojson maps
 
