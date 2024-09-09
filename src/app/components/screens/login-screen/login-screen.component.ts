@@ -11,6 +11,7 @@ import {StorageService} from "../../../services/storage.service";
 import {FocusNextDirective} from '../../../directives/focus-next.directive';
 import {AutoFocusDirective} from '../../../directives/auto-focus.directive';
 import {FormsModule} from '@angular/forms';
+import {StartupService} from '../../../services/startup.service';
 
 declare var cordova: any;
 
@@ -29,6 +30,7 @@ export class LoginScreenComponent implements OnInit {
               private i18n: I18nService,
               private hs: HeaderService,
               private ss: SidebarService,
+              private start: StartupService,
               private ns: NamespaceService,
               private st: StorageService,
               private route: ActivatedRoute,
@@ -224,7 +226,7 @@ export class LoginScreenComponent implements OnInit {
   /**
    * Callback for success login
    */
-  onSuccess(res, namespace: string) {
+  async onSuccess(res, namespace: string) {
     if (!res) {
       return;
     }
@@ -236,6 +238,12 @@ export class LoginScreenComponent implements OnInit {
     // TODO: load settings here
     // Storage.loadServerSettings(res);
     localStorage.userName = this.ds.username;
+
+    try {
+      await this.start.initialize();
+    } catch (e) {
+      console.error(e);
+    }
 
     // Set namespaces
     this.ns.setNamespaces(res.Mappings.Mapped);

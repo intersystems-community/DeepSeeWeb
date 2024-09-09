@@ -1,7 +1,7 @@
 /***
  * Highcharts map widget
  * MDX should return data in format:
- * ['Iceland', 1000, 'Madagascar', 2000, 'Venezuela': 500]
+ * ['Iceland', 1000, 'Madagascar', 2000, 'Venezuela', 500]
  * Names should be equal to GeoJSON `name` field
  */
 
