@@ -382,7 +382,8 @@ export class DataService {
    * Load OAuth config file oauth.json
    */
   loadOAuthConfig() {
-    return this.http.get('dswoauth/check' + location.search, this.withoutCredentialsHeaders).toPromise();
+    const query = location.hash.replace('#/', '').split('?')[1];
+    return this.http.get('dswoauth/check' + query ? `?${query}` : '', this.withoutCredentialsHeaders).toPromise();
   }
 
   /**
