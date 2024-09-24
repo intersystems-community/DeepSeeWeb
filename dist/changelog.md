@@ -1,3 +1,6 @@
+#### 4.0.10
+* fixed issue with addons loading when DSW uses authentication (#331)
+
 #### 4.0.9
 * internal build with dev feature for oAuth
 
