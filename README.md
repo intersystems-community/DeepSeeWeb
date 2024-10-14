@@ -312,6 +312,7 @@ Example 2:
 | Id 1   | 10      | Iceland    | 12      | test1   |
 | Id 2   | 20      | Madagascar | 15      | test2   |
 | Id 3   | 30      | Venezuela  | 10      | test3   |
+
 Data property `key` = "Field33", data property `value` = "Field44"
 
 ### Markers data
