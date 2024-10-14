@@ -9,40 +9,15 @@
   margin-top: 24px;
   z-index: 1000;
   position: absolute;
-  /*border: solid 1px #000000;*/
-  color: #929292;
-  background-color: white;
+  border: solid 1px #000000;
+  color: #000000;
+  background-color: #ffffe1;
   white-space: nowrap;
   font-family: $font;
-  font-size: 12px;
-  box-shadow: 1px 1px 4px #7f7f7f;
-  padding: 4px 10px;
-  border-radius: 4px;
-  transform: translateX(-50%);
-  visibility: hidden;
-}
-
-.ol-tooltip-top {
-  transform: translateX(-50%) translateY(calc(-100% - 8px));
-  margin-top: 0;
-}
-
-.ol-tooltip-left {
-  transform: translateX(-100%);
-}
-
-.ol-tooltip-right {
-  transform: translateX(0);
-}
-
-.ol-tooltip-top.ol-tooltip-left {
-  transform: translateX(-100%) translateY(calc(-100% - 8px));
-  margin-top: 0;
-}
-
-.ol-tooltip-top.ol-tooltip-right {
-  transform: translateX(0) translateY(calc(-100% - 8px));
-  margin-top: 0;
+  font-size: 13px;
+  -moz-box-shadow: 2px 2px 4px #7f7f7f;
+  box-shadow: 2px 2px 4px #7f7f7f;
+  padding: 2px 3px;
 }
 
 .map-popup {

@@ -5,7 +5,24 @@
 
 DeepSeeWeb is an Angular UI layer for IRIS BI (DeepSee) dashboards
 
-# Whats new in 4.0
+# Map widget changes in 4.0.13
+Detailed information about map usage can be found here: [Map widget](#map-widget)
+
+To use **old map widget (will be removed in future versions)** add `oldmap=1` to query parameters.
+
+In DSW version 4.0.13 map widget has been changed:
+* widget was rewritten to use GeoJSON as base format
+* widget was simplified, for easy usage without need of complex configuration
+* by default widget uses world GeoJSON, if no custom GeoJSON provided
+* added auto-detection of markers mode, map can switch modes(polygons/markers) based on data provided
+* popup was replaced with tooltip and tooltip now always visible during hovering
+* tooltip now display all data for marker/polygon, no need to set up custom tooltip field(custom tooltip still supported)
+* fixed issue when tooltip can be rendered offscreen, now tooltip always shown in bounds of widget frame
+* improved performance
+* added new design for tooltip
+* some data properties no longer supported
+
+# What's new in 4.0
 * migrated to Angular 18:
   * rewritten application to use lazy loading, as a result "main.js" size reduced from **3Mb** to **500Kb**
   * all javascript modules in dist package now take up 3Mb, instead of 5Mb(previous version)
@@ -214,29 +231,143 @@ window.addEventListener('message', e => {
 Use `disableContextMenu=1` data property to disable DSW context menu on any widget. Also, context menu can be disabled on shared widget by passing url parameter `disableContextMenu=1` 
 
 # Map widget
+Map can show polygons or markers depending on data source.
+If data contains latitude/longitude fields map will display markers, otherwise polygons are shown.
 
+Without setting GeoJSON file, will use bundled `/assets/countries.json` file with world countries.
+![Map with polygons](https://github.com/gnibeda/gnibeda.github.io/blob/master/images/map-with-polygons.png?raw=true)
+
+## How to create map widget
 To create a map widget you'll need:
-
-1. Get a polygon file. [GeoJSON](https://en.wikipedia.org/wiki/GeoJSON) is supported, and there's also support for a [legacy js format](https://github.com/intersystems-community/dsw-map/tree/master/src/js).
+1. Get a polygon file. [GeoJSON](https://en.wikipedia.org/wiki/GeoJSON) is supported, and there's also support for a [legacy js format](https://github.com/intersystems-community/dsw-map/tree/master/src/js). Widget can use bundled `/assets/countries.json` file by default if no custom file exists on server. For default mode ignore step 2.
 2. Save a polygon file into a root directory of a default web application of your namespace.
-3. Create a widget with type: `map` and name equal to the polygons file.
-4. Your GeoJSON contains an array of polygons, with some property being a unique identifier for a polygon. Create a `coordsProperty` dataproperty with the value being the name of this property in your widget.
-5. In the widget data source, you must create a column with the same name as `coordsProperty` value, with the values being unique polygon identifiers.
-6. Add other properties/data properties as needed.
+3. Create a widget with type: `map` and name equal to the GeoJSON file. For default mode name doesn't matter.
+4. If you want to use specific name of widget but still able to load polygon file, use `polygonFile` data property with value equal to file name of polygons file.
+5. Prepare data source for map. Data source formats described here: [map data source](#map-data-source).
+6. Setup [data properties](#map-data-properties) if needed.
 
-| Data Property              | Type         | Description                                                                                                | Value                  | Default                                                |
-| -------------------------- | ------------ | ---------------------------------------------------------------------------------------------------------- | ---------------------- | ------------------------------------------------------ |
-| tooltipProperty            | dataproperty | Define custom tooltip. Tooltip appears when user's cursor hovers over a polygon.                           | Datasource column name | Row name                                               |
-| popupProperty              | dataproperty | Define custom popup. Tooltip appears when user's cursor presses LMB on a polygon and there's no DRILLDOWN. | Datasource column name | Row name                                               |
-| coordsProperty             | dataproperty | Property present in both the datasource AND geojson containing polygon id for a tile                       | Datasource column name |
-| colorProperty              | dataproperty | Name of a numeric property, defining polygon color.                                                        | Datasource column name |
-| tileUrl                    | dataproperty | Tile server URL                                                                                            |                        | https://tile-c.openstreetmap.fr/hot/{z}/{x}/{y}.png |
-| coordsJsFile               | property     | File with a JS or GeoJSON polygons. Requested from the root of a default web app for a namespace           | js or geojson path     | Widget name                                            |
-| colorFormula               | property     | Formula used to calculate polygon color.                                                                   |                        | hsl((255-x)/255 \* 120, 100%, 50%)<br>rgb(x, 255-x, 0) |
-| polygonTitleProperty       | property     | Define custom polygon title                                                                                | Datasource column name |
-| colorProperty              | property     | Deprecated by a dataproperty with a same name                                                              |                        |                                                        |
-| markerPopupContentProperty | property     | Deprecated by a popupProperty dataproperty                                                                 |                        |                                                        |
-| colorClientProperty        | property     | Deprecated by a colorProperty dataproperty                                                                 |                        |                                                        |
+## Map data source
+Map widget can work with following data sources:
+1. Simple data variant 1.
+
+   Keys(name of a country) defined as Axis 2, Axis 1 contain numeric value 
+2. Simple data variant 2. 
+
+   Axis 1 contains pairs `[country-name, value]`, Axis 2 can hold anything
+3. Complex data
+4. Markers data. Data with latitude/longitude fields
+
+### Simple data variant 1
+In this mode map will display simple data.
+
+Axis 2 must contains countries names and Axis 1 contains numeric values:
+
+Example:
+
+Axis 1: "Count"
+
+Axis 2: "Iceland", "Madagascar", "Venezuela"
+
+|            |      |
+|------------|------|
+| Iceland    | 12   |
+| Madagascar | 15   |
+| Venezuela  | 10   |
+### Simple data variant 2
+Axis 1 contains pairs `[country-name, value]`, Axis 2 can hold anything.
+
+Example:
+
+Axis 1: "Name", "Count"
+
+Axis 2: "Id 1", "Id 2", "Id 3"
+
+|        |            |     |
+|--------|------------|-----|
+| Id 1   | Iceland    | 12  |
+| Id 2   | Madagascar | 15  |
+| Id 3   | Venezuela  | 10  |
+
+### Complex data
+In this mode map can use any data source to display polygons. But some fields must exists in data source to be able to link data with polygons and display colors.
+
+Required fields: 
+1. "Key" - field used to link data record with GeoJSON polygon `name` property.
+2. "Value" - field contains numeric value used to color polygon. Color of polygon is a gradient from green(minimum value) to red(maximum value).
+
+You can use field with different names as well. In this case use `key`/`value` data properties and define field names as values of these properties respectively. 
+
+Example 1:
+
+|        | Custom1 | Key        | Value | Custom2 |
+|--------|---------|------------|-------|---------|
+| Id 1   | 10      | Iceland    | 12    | test1   |
+| Id 2   | 20      | Madagascar | 15    | test2   |
+| Id 3   | 30      | Venezuela  | 10    | test3   |
+
+Example 2:
+
+|        | Custom1 | Field33    | Field44 | Custom2 |
+|--------|---------|------------|---------|---------|
+| Id 1   | 10      | Iceland    | 12      | test1   |
+| Id 2   | 20      | Madagascar | 15      | test2   |
+| Id 3   | 30      | Venezuela  | 10      | test3   |
+Data property `key` = "Field33", data property `value` = "Field44"
+
+### Markers data
+Map can display markers(pins) on coordinates specified in data.
+![Map with markers](https://github.com/gnibeda/gnibeda.github.io/blob/master/images/map-with-markers.png?raw=true)
+Widget data source, must contain fields `Latitude`/`Longitude` in EPSG:4326 projection.
+You can use field with different names as well. In this case use `latitude`/`longitude` data properties and define field names as values of these properties respectively.
+
+Other fields can hold any data. This data will be displayed in a marker tooltip:
+
+![Map tooltip](https://github.com/gnibeda/gnibeda.github.io/blob/master/images/map-tooltip.png?raw=true)
+
+Example 1:
+
+|        | Revenue | Latitude | Units Sold | Longitude |
+|--------|---------|----------|------------|-----------|
+| Id 1   | 1032.32 | 51.53    | 12         | 4.86      |
+| Id 2   | 2045.46 | 52.35    | 15         | -122.09   |
+| Id 3   | 5630.12 | 47.67    | 10         | -76.59    |
+
+Example 2:
+
+|        | Revenue | Lat   | Units Sold | Lon       |
+|--------|---------|-------|------------|-----------|
+| Id 1   | 1032.32 | 51.53 | 12         | 4.86      |
+| Id 2   | 2045.46 | 52.35 | 15         | -122.09   |
+| Id 3   | 5630.12 | 47.67 | 10         | -76.59    |
+
+Data property `latitude` = "Lat", data property `longitude` = "Lon"
+  
+## Map data properties
+Map supports following data properties, that can be used for customization:
+
+| Data Property              | Type         | Description                                                                                                        | Value                   | Default                                                |
+|----------------------------|--------------|--------------------------------------------------------------------------------------------------------------------|-------------------------|--------------------------------------------------------|
+| key                        | dataproperty | Define custom name of key field. Value from this field used to link data to GeoJSON polygon `name` property        | Datasource column name  | "Key"                                                  |
+| value                      | dataproperty | Define custom name of value field. Value from this field used to calculate color of polygon                        | Datasource column name  | "Value"                                                |
+| tileUrl                    | dataproperty | Tile server URL                                                                                                    |                         | https://tile-c.openstreetmap.fr/hot/{z}/{x}/{y}.png    |
+| polygonFile                | dataproperty | File name with a JS or GeoJSON polygons. Requested from the root of a default web app for a namespace              | Path with filename      | Widget name                                            |
+| latitude                   | dataproperty | Define custom name of latitude field. Used for marker mode                                                         | Datasource column name  | "Latitude"                                             |
+| longitude                  | dataproperty | Define custom name of longitude field. Used for marker mode                                                        | Datasource column name  | "Longitude"                                            |
+| tooltip                    | dataproperty | Define name of field with custom tooltip text. Tooltip appears when user's cursor hovers over a polygon or marker. | Datasource column name  | "TooltipValue"                                         |
+| coordsJsFile               | deprecated   | Use `polygonFile` instead                                                                                          |                         |                                                        |
+| tooltipProperty            | deprecated   | Use `tooltip` instead                                                                                              | Datasource column name  | Row name                                               |
+| coordsProperty             | deprecated   | Use `key` instead                                                                                                  | Datasource column name  |                                                        |
+| colorProperty              | deprecated   | Use `value` instead                                                                                                |                         |                                                        |
+
+No longer supported:
+
+| Data Property              | Type         | Description                                                                                                        | Value                   | Default                                                |
+|----------------------------|--------------|--------------------------------------------------------------------------------------------------------------------|-------------------------|--------------------------------------------------------|
+| popupProperty              | deprecated   | Define custom popup. Tooltip appears when user's cursor presses LMB on a polygon and there's no DRILLDOWN.         | Datasource column name  | Row name                                               |
+| colorFormula               | deprecated   | Formula used to calculate polygon color.                                                                           |                         | hsl((255-x)/255 \* 120, 100%, 50%)<br>rgb(x, 255-x, 0) |
+| polygonTitleProperty       | deprecated   | Define custom polygon title                                                                                        | Datasource column name  |                                                        |
+| markerPopupContentProperty | deprecated   | Deprecated by a popupProperty dataproperty                                                                         |                         |                                                        |
+| colorClientProperty        | deprecated   | Deprecated by a colorProperty dataproperty                                                                         |                         |                                                        |
 
 
 # Creating custom widgets

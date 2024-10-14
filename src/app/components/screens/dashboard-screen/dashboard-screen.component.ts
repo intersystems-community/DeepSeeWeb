@@ -259,6 +259,10 @@ export class DashboardScreenComponent extends DashboardEditingClass implements O
    */
   prepareData(result) {
     let i;
+/*    // TODO: remove this ************
+    const m = structuredClone(result.widgets[0]);
+    m.type = 'map';
+    result.widgets.push(m);*/
 
     this.itemsInitialized = 0;
     if (!result) {

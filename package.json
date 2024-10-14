@@ -1,11 +1,12 @@
 {
   "name": "deep-see-web",
-  "version": "4.0.12",
+  "version": "4.0.13",
   "scripts": {
     "ng": "ng",
     "start": "ng serve --proxy-config=proxy.conf.samples-bi.js",
     "covid": "ng serve --proxy-config=proxy.conf.covid.js",
     "temp": "ng serve --proxy-config=proxy.conf.temp.js",
+    "maps": "ng serve --proxy-config=proxy.conf.maps.js",
     "ua": "ng serve --proxy-config=proxy.conf.ua.js",
     "got": "ng serve --proxy-config=proxy.conf.got.js",
     "local": "ng serve --proxy-config=proxy.conf.local.js",

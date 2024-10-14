@@ -483,8 +483,23 @@ dsw-modal.modal-no-border {
   z-index: 2;
 }
 
+.tooltip {
+  color: #aaaaaa;
+}
 
+.tooltip > b {
+  font-weight: 400;
+  color: black;
+}
 
+.tooltip > hr {
+  border: none;
+  border-bottom: 1px solid #dfdfdf;
+  margin: 0;
+  padding: 0;
+  margin-top: 2px;
+  margin-bottom: 2px;
+}
 
 /*
 .highcharts-root * {

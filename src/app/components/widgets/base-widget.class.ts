@@ -34,6 +34,7 @@ import {
   IWidgetSettings
 } from '../../services/dsw.types';
 import {ILightPivotTable} from '../../services/lpt.types';
+import {MapWidgetComponent} from './map-widget/map-widget.component';
 
 @Component({
   standalone: true,
@@ -344,7 +345,11 @@ export class BaseWidget implements OnInit, OnDestroy {
     this.requestData();
   }
 
-  getDataByColumnName(data: IMDXData, columnName: string, dataIndex: number, fmt = '') {
+  getColumnIndexByName(data: IMDXData, columnName: string) {
+    return data.Cols[0].tuples.findIndex(c=> c.caption.toLowerCase() === columnName.toLowerCase());
+  }
+
+  getDataByColumnName(data: IMDXData|undefined, columnName: string, dataIndex: number, fmt = '') {
     if (!data || !data.Data || !data.Cols || !data.Cols[0] || !data.Cols[0].tuples) {
       return;
     }
@@ -1658,6 +1663,10 @@ export class BaseWidget implements OnInit, OnDestroy {
   }
 
   protected removeColsThatNotExistInDataProperties(data: IMDXData) {
+    if (this.widget.type === 'map') {
+      // Don't remove from map, because there are many custom data for tooltips, colors, etc.
+      return;
+    }
     if (this.preventColFilteringBasedOnDataProperties) {
       return;
     }
@@ -1673,6 +1682,12 @@ export class BaseWidget implements OnInit, OnDestroy {
       return;
     }
     data.Cols[0].tuples = data?.Cols[0]?.tuples.filter((t, idx) => {
+     /* if (this.widget.type === 'map') {
+        const cap = t.caption?.toLowerCase();
+        if ((this as any).lonLatNames.includes(cap)) {
+          return true;
+        }
+      }*/
       const dim = t.dimension.toString().split('/');
       const exists = this.widget.dataProperties.some(p => {
         //p.dataValue === t.dimension

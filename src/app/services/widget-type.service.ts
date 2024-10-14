@@ -21,6 +21,7 @@ import {WSmileyComponent} from '../components/widgets/smiley/smiley.component';
 import {WLightBarComponent} from '../components/widgets/light-bar/light-bar.component';
 import {WTrafficLightComponent} from '../components/widgets/traffic-light/traffic-light.component';
 import {ADDON_PREFIX, IHeaderButton, IWidgetType} from './dsw.types';
+import {MapWidgetOldComponent} from '../components/widgets/map-widget-old/map-widget.component';
 
 // TODO: add translation
 const btnPieChart: IHeaderButton[] = [
@@ -223,7 +224,7 @@ export const WIDGET_TYPES: { [key: string]: IWidgetType } = {
   },
   map: {
     label: 'World map',
-    class: MapWidgetComponent,
+    class: location.hash.indexOf('oldmap=1') !== -1 ? MapWidgetOldComponent : MapWidgetComponent,
     type: 'map',
     allowShowAsPivot: true
   },

@@ -294,6 +294,14 @@ export class DataService {
     return this.http.get(url, {responseType: 'text'}).toPromise();
   }
 
+  /**
+   * Loads file
+   * @returns {object} $http promise
+   */
+  getJSONFile(url: string) {
+    return this.http.get(url, {responseType: 'json'}).toPromise();
+  }
+
   // /**
   //  * Requests favorites
   //  * @returns {object} $http promise
