@@ -1,3 +1,6 @@
+#### 4.0.12
+* internal build with dev feature for oAuth
+
 #### 4.0.11
 * internal build with dev feature for oAuth
 
