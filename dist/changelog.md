@@ -1,3 +1,17 @@
+#### 4.0.13
+* map widget was rewritten: 
+  * widget was rewritten to use GeoJSON as base format
+  * widget was simplified, for easy usage without need of complex configuration
+  * by default widget uses world GeoJSON, if no custom GeoJSON provided
+  * added auto-detection of markers mode, map can switch modes(polygons/markers) based on data provided
+  * popup was replaced with tooltip and tooltip now always visible during hovering
+  * tooltip now display all data for marker/polygon, no need to set up custom tooltip field(custom tooltip still supported)
+  * fixed issue when tooltip can be rendered offscreen, now tooltip always shown in bounds of widget frame
+  * improved performance
+  * added new design for tooltip
+  * some data properties no longer supported
+* to use **old map widget (will be removed in future versions)** add `oldmap=1` to query parameters
+
 #### 4.0.12
 * internal build with dev feature for oAuth
 
