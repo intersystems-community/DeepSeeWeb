@@ -8,7 +8,7 @@ import {
   Inject,
   Input,
   LOCALE_ID,
-  OnInit,
+  OnInit, Pipe, PipeTransform,
   ViewChild
 } from '@angular/core';
 import {StorageService} from '../../../services/storage.service';
@@ -38,12 +38,29 @@ interface IFilterModel {
   to: string;
 }
 
+@Pipe({
+  name: 'selectedFirst',
+  pure: true,
+  standalone: true
+})
+export class SelectedFirstPipe implements PipeTransform {
+
+  transform(value: any[]): any[] {
+    if (!Array.isArray(value)) {
+      return value; // Return the value unchanged if it's not an array
+    }
+
+    // Sort by `checked` field: `true` comes first, `false` later
+    return value.sort((a, b) => (a.checked === b.checked) ? 0 : (a.checked ? -1 : 1));
+  }
+}
+
 @Component({
   selector: 'dsw-filter-popup',
   templateUrl: './filter-popup.component.html',
   styleUrls: ['./filter-popup.component.scss'],
   standalone: true,
-  imports: [FormsModule, AutoFocusDirective, DateFilterComponent, I18nPipe],
+  imports: [FormsModule, AutoFocusDirective, DateFilterComponent, I18nPipe, SelectedFirstPipe],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FilterPopupComponent implements OnInit, AfterViewInit {
@@ -93,9 +110,12 @@ export class FilterPopupComponent implements OnInit, AfterViewInit {
     return (this.model?.filter?.type === 'radioSet' && this.model?.filter?.action !== 'applyVariable');
   }
 
-  trackByIndex = (index: number, r: any) => index;
-
   ngAfterViewInit() {
+    this.fitFiltersIntoScreen();
+    this.initializeDateFilter();
+  }
+
+  private fitFiltersIntoScreen() {
     const el = this.el?.nativeElement;
     if (!el) {
       return;
@@ -118,10 +138,7 @@ export class FilterPopupComponent implements OnInit, AfterViewInit {
         el.style.maxHeight = (rect.height - delta - 20) + 'px';
       }
     }
-
-    this.initializeDateFilter();
   }
-
 
   initialize(widget: IWidgetDesc, filter: any, dataSource: string) {
     this.widget = widget;
@@ -230,6 +247,10 @@ export class FilterPopupComponent implements OnInit, AfterViewInit {
         this.model.to = this.model.values[0].path;
       }
     }
+
+    setTimeout(() => {
+      this.fitFiltersIntoScreen();
+    });
   }
 
   /**

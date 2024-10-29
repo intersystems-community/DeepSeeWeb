@@ -57,7 +57,7 @@
       </div>
     }
     <!-- Filter items -->
-    @for (v of model.values; track trackByIndex($index, v)) {
+    @for (v of model.values | selectedFirst; track $index) {
       <div class="value-row" (click)="toggleRow(v, $event)">
         <input
           #inp
