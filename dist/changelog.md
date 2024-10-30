@@ -1,3 +1,7 @@
+#### 4.0.14
+* fixed issue with filter popup goes offscreen (#342)
+* selected filter values now shown on top of the values list (#345)
+
 #### 4.0.13
 * map widget was rewritten: 
   * widget was rewritten to use GeoJSON as base format
