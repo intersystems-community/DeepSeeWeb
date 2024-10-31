@@ -1,3 +1,6 @@
+#### 4.0.15
+* changed MDX generation for filters (#341)
+
 #### 4.0.14
 * fixed issue with filter popup goes offscreen (#342)
 * selected filter values now shown on top of the values list (#345)

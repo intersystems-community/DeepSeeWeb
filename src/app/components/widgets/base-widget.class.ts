@@ -1468,9 +1468,10 @@ export class BaseWidget implements OnInit, OnDestroy {
       return this.applyDrill(mdx);
     }
 
+    mdx += this.applyFilters(filters);
     // Find all interval filters
     const where = '';
-    for (let i = 0; i < filters.length; i++) {
+    /*for (let i = 0; i < filters.length; i++) {
       const flt = filters[i];
       if (!flt.isInterval) {
         continue;
@@ -1527,7 +1528,7 @@ export class BaseWidget implements OnInit, OnDestroy {
           mdx += ')';
         }
       }
-    }
+    }*/
 
     // Inserting "where" condition in appropriate part of mdx request
     if (where) {
@@ -2069,5 +2070,68 @@ export class BaseWidget implements OnInit, OnDestroy {
         //this.cd.detectChanges()
 */
       });
+  }
+
+
+  private getFilterString(flt: IFilter) {
+    //let bracket = flt.isExclude ? '(' : '{';
+    //let res = bracket;
+    let res: string[] = [];
+    const fltValues = flt.value.toString().split('|');
+    const path = flt.targetProperty;
+    if (flt.isInterval) {
+      // Interval filter
+      let v1 = flt.values[flt.fromIdx].path;
+      let v2 = flt.values[flt.toIdx].path;
+      if (flt.isDate) {
+        v1 = this.dateToHorolog(v1.replace('&[', '').replace(']', ''));
+        v2 = this.dateToHorolog(v2.replace('&[', '').replace(']', ''));
+        v1 = `&[${v1}]`;
+        v2 = `&[${v2}]`;
+      }
+      res.push('%OR(' + path + '.' + v1 + ':' + v2 + ')');
+    } else {
+      // Non interval filter
+      for (let j = 0; j < fltValues.length; j++) {
+        let v = fltValues[j];
+
+        if (flt.isDate) {
+          v = this.dateToHorolog(v.replace('&[', '').replace(']', ''));
+          v = `&[${v}]`;
+        }
+        if (flt.isExclude) {
+          res.push(path + '.' + v + '.%NOT');
+        } else {
+          res.push(path + '.' + v);
+        }
+      }
+    }
+    let bracket = flt.isExclude ? '(' : '%OR({';
+    let closeBracket = flt.isExclude ? ')' : '})';
+
+    if (fltValues.length > 1) {
+      return bracket + res.join(',') + closeBracket;
+    } else {
+      return res;
+    }
+
+  }
+
+  private applyFilters(filters: IFilter[]) {
+    const active = filters.filter(flt => {
+      // Skip all apply variable filters
+      if (flt.action === 'applyVariable') {
+        return false;
+      }
+      return flt.value !== '';// && !flt.isInterval
+    });
+
+    if (active.length === 1) {
+      // One dimension
+      return ' %FILTER ' + this.getFilterString(active[0])
+    } else {
+      const strings = active.map(flt => this.getFilterString(flt));
+      return ' %FILTER NONEMPTYCROSSJOIN(' + strings.join(',') + ')';
+    }
   }
 }
