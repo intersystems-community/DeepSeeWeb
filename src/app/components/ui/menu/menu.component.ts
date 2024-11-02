@@ -73,10 +73,15 @@ export class MenuComponent implements OnInit, OnDestroy {
     });
   }
 
-  showAboutDialog() {
-    this.modal.show({
+  protected async showAboutDialog() {
+    const html = await this.ds.getFile('changelog.md');
+
+    void this.modal.show({
       title: 'DeepSeeWeb v.' + this.version,
       component: import('./../../ui/about/about.component'),
+      inputs: {
+        html
+      },
       closeByEsc: true,
       closeByBackdropClick: true
     });

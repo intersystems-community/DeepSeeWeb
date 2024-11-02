@@ -1,5 +1,4 @@
-import {Injectable} from '@angular/core';
-import {BehaviorSubject} from 'rxjs';
+import {Injectable, signal} from '@angular/core';
 import {ModalComponent} from '../components/ui/modal/modal.component';
 
 const DEFAULT_BUTTONS = [{label: 'OK', default: true, autoClose: true}];
@@ -36,8 +35,8 @@ export interface IModal {
   providedIn: 'root'
 })
 export class ModalService {
-
-  modals = new BehaviorSubject<IModal[]>([]);
+  #modals = signal<IModal[]>([]);
+  modals = this.#modals.asReadonly();
 
   constructor() {
   }
@@ -70,23 +69,24 @@ export class ModalService {
       modal.component = module[Object.keys(module)[0]];
     }
 
-    const cur = this.modals.getValue();
-    cur.push(modal);
-    this.modals.next(cur);
+    this.#modals.update(m => [...m, modal]);
   }
 
   /**
    * Closes modal
    */
   close(modal: IModal) {
-    const cur = this.modals.getValue();
+    const cur = this.#modals();
     const idx = cur.indexOf(modal);
     if (idx === -1) {
       return;
     }
 
-    cur.splice(idx, 1);
-    this.modals.next(cur);
+    this.#modals.update(m => {
+      m.splice(idx, 1);
+      return [...m];
+    });
+
     if (modal.onClose) {
       modal.onClose();
     }

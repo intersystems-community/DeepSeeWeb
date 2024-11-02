@@ -1,5 +1,8 @@
 #### 4.0.15
 * changed MDX generation for filters (#341)
+* improved filter popup opening time by moving date picker code to deferred loading, only if filter is date(previously loaded always)
+* fixed jumping about modal issue
+* updated to Angular 18.2.10
 
 #### 4.0.14
 * fixed issue with filter popup goes offscreen (#342)

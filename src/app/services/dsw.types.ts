@@ -489,3 +489,15 @@ export interface IChartSeriesValue {
   cube?: string;
   title?: string;
 }
+
+export interface IFilterModel {
+  search: string;
+  isLoading: boolean;
+  filter?: any;
+  values: any[];
+  isAll: boolean;
+  isExclude: boolean;
+  isInterval: boolean;
+  from: string;
+  to: string;
+}

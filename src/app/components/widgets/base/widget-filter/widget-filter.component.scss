@@ -5,14 +5,11 @@
   position: relative;
   display: flex;
   flex-shrink: 0;
-  // padding: 2px 4px;
   background: var(--cl-widget-filter-bg);
   height: auto;
-  //border-bottom: 1px solid var(--cl-header-border);
   flex-wrap: wrap;
   margin-bottom: 5px;
-
-
+  
   &.col-1, &.col-2, &.col-3, &.col-4, &.col-5, &.col-6 {
     display: grid;
     gap: 10px;
@@ -79,7 +76,7 @@
     box-shadow: none;
 
     &:focus {
-      outline: none; // 1px solid var(--cl-accent);
+      outline: none;
       outline-offset: -1px;
     }
 
@@ -89,26 +86,13 @@
   }
 
   &.active {
-    //background-color: #EFF1F2;
-    //box-shadow: 0px 0px 4px 0 #00000036;
-    //background-color: #d7edf8;
-    //background-color: #E5F3F8;
-    // background-color: var(--cl-header-bg);
     background-color: var(--cl-widget-filter-bg);
-    /* box-shadow: 0 0 4px 0 #00000070;
-     padding-left: 4px;*/
-
     & > input, & > select {
       border-color: var(--cl-accent);
     }
 
     @include sm {
-      /*box-shadow: 0 0 20px 2000px var(--cl-widget-filter-bg);
-      z-index: 1;*/
 
-      /* left: 0;
-       position: absolute;
-       right: 0;*/
     }
   }
 
@@ -122,15 +106,3 @@
   display: flex;
   flex-direction: row;
 }
-
-/*.btn {
-    // border: 1px solid #cccccc;
-    box-shadow: none;
-    background-color: var(--cl-hover);
-    color: var(--cl-accent);
-    border-radius: 18px;
-    transition: 0.2s linear filter;
-    &:hover {
-        filter: contrast(0.9);
-    }
-}*/

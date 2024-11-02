@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, input, OnInit} from '@angular/core';
 import {DataService} from '../../../services/data.service';
 import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
 import markdownit from 'markdown-it';
@@ -9,14 +9,15 @@ import markdownit from 'markdown-it';
   styleUrls: ['./about.component.scss'],
   standalone: true
 })
-export class AboutComponent {
-  changelog?: SafeHtml;
+export class AboutComponent implements OnInit {
+  html = input.required<string>();
+  protected changelog?: SafeHtml;
 
   constructor(private ds: DataService,
               private san: DomSanitizer) {
-    this.ds.getFile('changelog.md')
-      .then(html => {
-        this.changelog = markdownit({html: true}).render(html);
-      });
+  }
+
+  ngOnInit() {
+    this.changelog = markdownit({html: true}).render(this.html());
   }
 }

@@ -165,7 +165,7 @@ export class ModalComponent implements OnInit, OnDestroy, OnChanges, AfterViewIn
    * Checks if modal is topmost
    */
   private isTopmost(): boolean {
-    const modals = this.ms.modals.getValue();
+    const modals = this.ms.modals();
     return modals[modals.length - 1] === this.data;
   }
 

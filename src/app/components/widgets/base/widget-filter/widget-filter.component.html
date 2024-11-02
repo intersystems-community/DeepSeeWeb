@@ -1,5 +1,5 @@
 <!-- Pivot variables -->
-@for (v of widget.pvItems; track v) {
+@for (v of widget().pvItems; track v) {
   <span class="flt-holder">
     <label>{{ v.label }}</label>
     <input [(ngModel)]="v.value" (keydown.enter)="emitVarChange(v)">
@@ -7,7 +7,7 @@
 }
 
 <!-- Choosers -->
-@for (chooser of widget.dsItems; track chooser) {
+@for (chooser of widget().dsItems; track chooser) {
   <span class="flt-holder">
     <label>{{ chooser.label }}</label>
     @if (chooser.field === 'select') {
@@ -25,15 +25,15 @@
 }
 
 <!-- Actions -->
-@for (action of widget.acItems; track action) {
+@for (action of widget().acItems; track action) {
   <span class="flt-holder">
     <button class="btn-round" (click)="performAction(action)">{{ action.label || action.action }}</button>
   </span>
 }
 
 <!-- Filters -->
-@for (flt of filters; track flt) {
-  <span class="flt-holder" [class.active]="openedFilter === flt.idx">
+@for (flt of filters(); track flt) {
+  <span class="flt-holder" [class.active]="openedFilter() === flt.idx">
     <label>{{ flt.label }}</label>
     <input readonly type="text" value="{{flt.text}}" title="{{flt.text}}"
            (click)="flt.isOpen = true; toggleFilter(flt.idx, $event)">

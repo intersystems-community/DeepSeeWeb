@@ -1,5 +1,7 @@
 <gridster #gridster [options]="tilesOptions" class="gridster" [class.no-anim]="isResizing">
   @for (tile of data$ | async; track tile) {
+    @let desc = itemDesc[tile.idx];
+
     <gridster-item
       [class.selected]="model.edItem == tile"
       [class.editing]="model.edItem "
@@ -9,11 +11,11 @@
       (click)="onItemClicked(tile)"
       >
       <!-- Inline widget -->
-      @if (itemDesc[tile.idx]) {
-        <dsw-widget #widgets [widget]="itemDesc[tile.idx]" [class.transparent]="itemDesc[tile.idx].inline"></dsw-widget>
+      @if (desc) {
+        <dsw-widget #widgets [widget]="desc" [class.transparent]="desc.inline"></dsw-widget>
       }
       <!-- Icon -->
-      @if (!itemDesc[tile.idx] && model.icons[tile.icon]; as icon) {
+      @if (!desc && model.icons[tile.icon]; as icon) {
         <div class="tile-icon" [ngClass]="icon"></div>
       }
       <!-- Title -->

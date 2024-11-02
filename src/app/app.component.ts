@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit, ViewChild} from '@angular/core';
 import {SIDEBAR_TOGGLE_ANIMATION, SidebarComponent} from './components/ui/sidebar/sidebar.component';
 import {SidebarService} from './services/sidebar.service';
 import {ErrorService, IError} from './services/error.service';
@@ -20,6 +20,7 @@ import {AsyncPipe, NgClass} from '@angular/common';
   styleUrls: ['./app.component.scss'],
   animations: [SIDEBAR_TOGGLE_ANIMATION, ERROR_TOGGLE_ANIMATION, ERROR_TOGGLE_LEFT_ANIMATION],
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     HeaderComponent,
     SidebarComponent,

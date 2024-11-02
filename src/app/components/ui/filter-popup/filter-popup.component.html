@@ -1,12 +1,20 @@
-<!-- Header line -->
-@if (!model.filter?.isDate) {
+@if (model.filter?.isDate) {
+  <!-- Date picker -->
+  @defer (on immediate; prefetch on idle) {
+    <dsw-date-filter #dateFilter></dsw-date-filter>
+  } @placeholder {
+    <div class="datepicker-placeholder"></div>
+  }
+} @else {
+  <!-- Regular filter -->
+  <!-- Header line -->
   <div class="header">
     <img src="assets/img/icons/icon-search.svg">
     <input #sr type="search" placeholder="{{'search' | i18n}}" [(ngModel)]="model.search"
            (search)="onSearch(sr.value)" (keyup)="onSearch(sr.value)" (keydown.enter)="searchFilters()"
            dswAutoFocus="desktop">
   </div>
-  <!-- All/Exclude/Inteval checkboxes -->
+  <!-- All/Exclude/Interval checkboxes -->
   @if (!isRadio) {
     <div class="checks-container">
       <!-- All check -->
@@ -83,26 +91,22 @@
   </div>
 }
 
-<!-- Date picker -->
-@if (model.filter?.isDate) {
-  <dsw-date-filter #dateFilter></dsw-date-filter>
-}
-
 <div class="footer">
   <!-- Apply button -->
   <button class="btn default" (click)="acceptFilter()">
     <img class="ico ico-accept" src="assets/img/icons/icon-check.svg">
     {{ 'accept' | i18n }}
   </button>
+
+  <!-- Dismiss button -->
   <button class="btn" (click)="removeFilter()">
     <img class="ico ico-accept" src="assets/img/icons/icon-reload.svg">
     {{ 'dismiss' | i18n }}
   </button>
-  <!--        <button class="btn" (click)="removeFilter()"><i class="fa fa-eraser"></i>&nbsp;{{'dismiss' | i18n}}</button>-->
+
   <!-- Close button -->
   <button class="btn" (click)="close()">
     <img class="ico ico-close" src="assets/img/icons/icon-close.svg">
     {{ 'close' | i18n }}
   </button>
-
 </div>

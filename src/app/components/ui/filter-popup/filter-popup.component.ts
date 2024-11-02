@@ -8,7 +8,9 @@ import {
   Inject,
   Input,
   LOCALE_ID,
-  OnInit, Pipe, PipeTransform,
+  OnInit,
+  Pipe,
+  PipeTransform,
   ViewChild
 } from '@angular/core';
 import {StorageService} from '../../../services/storage.service';
@@ -23,20 +25,8 @@ import {UtilService} from "../../../services/util.service";
 import {I18nPipe} from '../../../services/i18n.service';
 import {AutoFocusDirective} from '../../../directives/auto-focus.directive';
 import {FormsModule} from '@angular/forms';
-import {IRelatedFiltersRequestData, IWidgetDesc} from "../../../services/dsw.types";
+import {IFilterModel, IRelatedFiltersRequestData, IWidgetDesc} from "../../../services/dsw.types";
 import {ModalComponent} from "../modal/modal.component";
-
-interface IFilterModel {
-  search: string;
-  isLoading: boolean;
-  filter?: any;
-  values: any[];
-  isAll: boolean;
-  isExclude: boolean;
-  isInterval: boolean;
-  from: string;
-  to: string;
-}
 
 @Pipe({
   name: 'selectedFirst',
@@ -44,7 +34,6 @@ interface IFilterModel {
   standalone: true
 })
 export class SelectedFirstPipe implements PipeTransform {
-
   transform(value: any[]): any[] {
     if (!Array.isArray(value)) {
       return value; // Return the value unchanged if it's not an array

@@ -9,7 +9,7 @@
 </div>
 
 <!-- Modals -->
-@for (modal of ms.modals | async; track modal) {
+@for (modal of ms.modals(); track $index) {
   <dsw-modal [data]="modal" [ngClass]="modal.class"></dsw-modal>
 }
 

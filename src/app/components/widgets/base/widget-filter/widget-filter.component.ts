@@ -1,13 +1,11 @@
 import {
+  ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   ElementRef,
-  EventEmitter,
-  HostBinding,
-  Input,
-  OnInit,
-  Output,
-  ViewChild,
+  input,
+  output, signal,
+  viewChild,
   ViewContainerRef
 } from '@angular/core';
 import {FilterPopupComponent} from '../../../ui/filter-popup/filter-popup.component';
@@ -24,20 +22,28 @@ import {IWidgetControl, IWidgetDesc} from "../../../../services/dsw.types";
   templateUrl: './widget-filter.component.html',
   styleUrls: ['./widget-filter.component.scss'],
   standalone: true,
-  imports: [FormsModule]
+  imports: [FormsModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    '[class.horizontal]': `widget().type === 'horizontalControls'`,
+    //'[class]': `'col-' + (widget().viewSize + 1)`,
+    '[class.col-1]': 'widget().viewSize === 0',
+    '[class.col-2]': 'widget().viewSize === 1',
+    '[class.col-3]': 'widget().viewSize === 2',
+    '[class.col-4]': 'widget().viewSize === 3',
+    '[class.col-5]': 'widget().viewSize === 4',
+    '[class.col-6]': 'widget().viewSize === 5'
+  }
 })
-export class WidgetFilterComponent implements OnInit {
-  @ViewChild('filterPopup', {read: ViewContainerRef, static: true})
-  filterPopup!: ViewContainerRef;
-
-  @Input() widget!: IWidgetDesc;
-  @Input() filters: any[] = [];
-
-  @Output() onVariable = new EventEmitter<any>();
-  @Output() onDataSource = new EventEmitter<any>();
-  @Output() onAction = new EventEmitter<IWidgetControl>();
-  @Output() onFilter = new EventEmitter<number>();
-  openedFilter = -1;
+export class WidgetFilterComponent {
+  widget = input.required<IWidgetDesc>();
+  filters = input<any[]>([]);
+  onVariable = output<any>();
+  onDataSource = output<any>();
+  onAction = output<IWidgetControl>();
+  onFilter = output<number>();
+  protected openedFilter = signal(-1);
+  private filterPopup = viewChild<ViewContainerRef>('filterPopup');
 
   constructor(private fs: FilterService,
               private ms: ModalService,
@@ -46,38 +52,6 @@ export class WidgetFilterComponent implements OnInit {
               private bs: BroadcastService,
               private cd: ChangeDetectorRef
   ) {
-  }
-
-  @HostBinding('class.horizontal')
-  get isHorizontal() {
-    return this.widget.type === 'horizontalControls';
-  }
-
-  @HostBinding('class.col-2') get colCount2() {
-    return this.widget?.viewSize === 1;
-  }
-
-  @HostBinding('class.col-3') get colCount3() {
-    return this.widget?.viewSize === 2;
-  }
-
-  @HostBinding('class.col-4') get colCount4() {
-    return this.widget?.viewSize === 3;
-  }
-
-  @HostBinding('class.col-5') get colCount5() {
-    return this.widget?.viewSize === 4;
-  }
-
-  @HostBinding('class.col-6') get colCount6() {
-    return this.widget?.viewSize === 5;
-  }
-
-  @HostBinding('class.col-1') get colCount1(): boolean {
-    return this.widget?.viewSize === 0;
-  }
-
-  ngOnInit(): void {
   }
 
   emitVarChange(v: any) {
@@ -92,11 +66,8 @@ export class WidgetFilterComponent implements OnInit {
     this.onAction.emit(action);
   }
 
-
   /**
    * Shows filter window on widget, when user pressed filter button or filter input
-   * @param {number} idx Filter index
-   * @param {object} e Event
    */
   toggleFilter(idx: number, e: MouseEvent) {
     const flt = this.fs.getFilter(idx);
@@ -104,7 +75,7 @@ export class WidgetFilterComponent implements OnInit {
       return;
     }
 
-    this.openedFilter = idx;
+    this.openedFilter.set(idx);
     const target = e.target as HTMLElement;
     const b = target.getBoundingClientRect();
     let x = b.x - 4; // 4 is padding
@@ -114,12 +85,12 @@ export class WidgetFilterComponent implements OnInit {
       x = b.x + b.width - width;
     }
     const isMobile = this.us.isMobile();
-    let height;
+    let height = 0;
     if (isMobile) {
       const headerHeight = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--header-height'), 10);
       height = window.document.body.offsetHeight - headerHeight - this.el.nativeElement.offsetHeight;
     }
-    this.ms.show({
+    void this.ms.show({
       component: import('./../../../ui/filter-popup/filter-popup.component'),
       hideBackdrop: true,
       closeByEsc: true,
@@ -133,10 +104,10 @@ export class WidgetFilterComponent implements OnInit {
         height: isMobile ? `${height}px` : 'auto'
       },
       onComponentInit: (c: FilterPopupComponent) => {
-        c.initialize(this.widget, flt, this.widget.dataSource);
+        c.initialize(this.widget(), flt, this.widget().dataSource);
       },
       onClose: () => {
-        this.openedFilter = -1;
+        this.openedFilter.set(-1);
         this.cd.detectChanges();
       }
     });
@@ -150,7 +121,7 @@ export class WidgetFilterComponent implements OnInit {
     } else {
       ctrl._value = value;
     }
-    this.bs.broadcast('refresh:' + this.widget.name);
+    this.bs.broadcast('refresh:' + this.widget().name);
   }
 
   detectChanges() {
