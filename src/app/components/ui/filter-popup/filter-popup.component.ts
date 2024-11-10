@@ -7,7 +7,7 @@ import {
   HostBinding,
   Inject,
   Input,
-  LOCALE_ID,
+  LOCALE_ID, OnDestroy,
   OnInit,
   Pipe,
   PipeTransform,
@@ -52,7 +52,7 @@ export class SelectedFirstPipe implements PipeTransform {
   imports: [FormsModule, AutoFocusDirective, DateFilterComponent, I18nPipe, SelectedFirstPipe],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class FilterPopupComponent implements OnInit, AfterViewInit {
+export class FilterPopupComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('dateFilter') dateFilter!: DateFilterComponent;
   model: IFilterModel = {
     search: '',
@@ -70,6 +70,8 @@ export class FilterPopupComponent implements OnInit, AfterViewInit {
   isRelatedFilters = false;
   widget!: IWidgetDesc;
   private datePipe: DatePipe;
+  private restoreValuesOnClose = true;
+  private originalValues?: any[];
 
   constructor(private ss: StorageService,
               private el: ElementRef,
@@ -145,6 +147,9 @@ export class FilterPopupComponent implements OnInit, AfterViewInit {
     this.model.isAll = !this.isAnyChecked();
     this.model.isExclude = filter.isExclude;
     this.model.isInterval = filter.isInterval;
+    if (this.model.filter.values?.length) {
+      this.originalValues = this.model.filter.values;
+    }
   }
 
   ngOnInit() {
@@ -383,6 +388,7 @@ export class FilterPopupComponent implements OnInit, AfterViewInit {
     // Update model values
     if (newFilters.length && this.model.filter) {
       this.model.filter.values = [...newFilters];
+      this.originalValues = structuredClone(newFilters);
     }
     // this.model.filter.values.push(...toAdd); // filter.children;
 
@@ -412,11 +418,23 @@ export class FilterPopupComponent implements OnInit, AfterViewInit {
     }
     delete this.model.filter?.fromIdx;
     delete this.model.filter?.toIdx;
+    this.clearSelectedItems();
+    this.fs.applyFilter(this.model.filter);
+    this.restoreValuesOnClose = false;
+    this.close();
+  }
+
+  private clearSelectedItems() {
     for (let i = 0; i < this.model.filter?.values.length; i++) {
       this.model.filter.values[i].checked = false;
     }
-    this.fs.applyFilter(this.model.filter);
-    this.close();
+  }
+
+  private restoreSelectionState() {
+    if (!this.originalValues?.length) {
+      return;
+    }
+    this.model.filter.values = structuredClone(this.originalValues);
   }
 
   /**
@@ -458,6 +476,7 @@ export class FilterPopupComponent implements OnInit, AfterViewInit {
 
     this.fs.applyFilter(this.model.filter);
     this.fs.filtersChanged = true;
+    this.restoreValuesOnClose = false;
     this.close();
   }
 
@@ -482,5 +501,11 @@ export class FilterPopupComponent implements OnInit, AfterViewInit {
 
   private createDate(v: string) {
     return this.us.toDate(v.replace('&[', '').replace(']', ''));
+  }
+
+  ngOnDestroy() {
+    if (this.restoreValuesOnClose) {
+      this.restoreSelectionState();
+    }
   }
 }
