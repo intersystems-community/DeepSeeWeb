@@ -1,3 +1,6 @@
+#### 4.0.16
+* fixed issue with filter values selection if not applying filter (#345)
+
 #### 4.0.15
 * changed MDX generation for filters (#341)
 * improved filter popup opening time by moving date picker code to deferred loading, only if filter is date(previously loaded always)
