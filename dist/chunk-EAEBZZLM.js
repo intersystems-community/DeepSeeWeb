@@ -1,1 +1,0 @@
-import{Da as r,X as e}from"./chunk-ZKAUCJHV.js";var f=(()=>{let t=class t{constructor(){this.onEditDashboard=new r,this.onSetTitle=new r}};t.\u0275fac=function(i){return new(i||t)},t.\u0275prov=e({token:t,factory:t.\u0275fac,providedIn:"root"});let o=t;return o})();export{f as a};
