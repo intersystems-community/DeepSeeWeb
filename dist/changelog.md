@@ -1,3 +1,6 @@
+#### 4.0.17
+* added missing "Singapore" to default GeoJSON
+
 #### 4.0.16
 * fixed issue with filter values selection if not applying filter (#345)
 
