@@ -1,3 +1,6 @@
+#### 4.0.18
+* fixed infinite loading for mobile
+
 #### 4.0.17
 * added missing "Singapore" to default GeoJSON
 
