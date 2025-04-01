@@ -1,6 +1,6 @@
 {
   "name": "deep-see-web",
-  "version": "4.0.17",
+  "version": "4.0.18",
   "scripts": {
     "ng": "ng",
     "start": "ng serve --proxy-config=proxy.conf.samples-bi.js",
