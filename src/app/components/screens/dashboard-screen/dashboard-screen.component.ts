@@ -933,7 +933,7 @@ export class DashboardScreenComponent extends DashboardEditingClass implements O
 
   private onDataLoaded() {
     this.cd.detectChanges();
-    this.gridster.onResize();
+    this.gridster?.onResize();
     clearTimeout(this.onLoadingTimeout);
     this.onLoadingTimeout = setTimeout(() => {
       this.isLoading = false;
