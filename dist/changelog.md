@@ -1,3 +1,6 @@
+#### 4.0.19
+* added "defaultApp" custom field to config.json. This field can be used to specify custom path for defaultApp if mdx2json doesn't set up properly or different path needed
+
 #### 4.0.18
 * fixed infinite loading for mobile
 
