@@ -579,7 +579,8 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
 
     fileName = this.getDataPropValue('polygonFile') || this.getDataPropValue('coordsJsFile') || fileName;
     const folder = this.ss.serverSettings.DefaultApp || '/csp';
-    const url = folder + '/' + fileName;
+    const confPath = this.ds.configDefaultApp;
+    const url = (confPath || folder) + '/' + fileName;
     const isJSON = fileName.split('.').pop()?.toString() === 'json';
     const p = isJSON ? this.ds.getJSONFile(url) : this.ds.getFile(url);
 

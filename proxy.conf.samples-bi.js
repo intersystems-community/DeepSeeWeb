@@ -1,10 +1,4 @@
 module.exports = {
-  "/config.json": {
-    "target": "https://samples-bi-demo.demo.community.intersystems.com/dsw/",
-    "secure": false,
-    "logLevel": "debug",
-    "changeOrigin": true
-  },
   "/configs": {
     "target": "https://samples-bi-demo.demo.community.intersystems.com/dsw/",
     "secure": false,

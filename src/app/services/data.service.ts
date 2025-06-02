@@ -52,6 +52,7 @@ export interface ITileInfo {
   providedIn: 'root'
 })
 export class DataService {
+  private mainConfig: any;
   public firstRun = true;
   public dashboardList = new Map<string, string>();
   public username = '';
@@ -74,6 +75,10 @@ export class DataService {
               public router: Router,
               private http: HttpClient,
               private es: ErrorService) {
+  }
+
+  public get configDefaultApp() {
+    return this.mainConfig?.defaultApp || '';
   }
 
   public get url() {
@@ -350,6 +355,7 @@ export class DataService {
     return this.http.get('config.json', {headers: new HttpHeaders({withCredentials: 'false'})})
       .toPromise()
       .then((conf: any) => {
+        this.mainConfig = conf;
         try {
           if (conf && conf.endpoints && conf.endpoints.mdx2json) {
             MDX2JSON = conf.endpoints.mdx2json.replace(/\//ig, '').replace(/ /g, '');

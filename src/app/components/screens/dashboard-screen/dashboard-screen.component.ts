@@ -621,7 +621,8 @@ export class DashboardScreenComponent extends DashboardEditingClass implements O
           mdx = lpt._dataSourcesStack[lpt._dataSourcesStack.length - 1].BASIC_MDX + lpt.dataSource.FILTERS;
         }
         const folder = this.ss.serverSettings.DefaultApp || ('/csp/' + CURRENT_NAMESPACE);
-        const url = folder + '/_DeepSee.UI.MDXExcel.zen?MDX=' + encodeURIComponent(mdx || '');
+        const confPath = this.ds.configDefaultApp;
+        const url = (confPath || folder) + '/_DeepSee.UI.MDXExcel.zen?MDX=' + encodeURIComponent(mdx || '');
         window.open(url, '_blank');
         this.hideContextMenu();
         return;
@@ -772,7 +773,8 @@ export class DashboardScreenComponent extends DashboardEditingClass implements O
     }
     const folder = this.ss.serverSettings.DefaultApp || '/csp/' + CURRENT_NAMESPACE;
     const filters = this.fs.getFiltersUrlString(w.name, false, '\t', '\n');
-    let url = folder + '/_DeepSee.UI.Dialog.Analyzer.zen?&PIVOT=' + encodeURIComponent(w.dataSource);
+    const confPath = this.ds.configDefaultApp;
+    let url = (confPath || folder) + '/_DeepSee.UI.Dialog.Analyzer.zen?&PIVOT=' + encodeURIComponent(w.dataSource);
     if (filters) {
       url += '&FILTERSTATE=' + filters;
     }
