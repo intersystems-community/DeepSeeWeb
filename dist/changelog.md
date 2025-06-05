@@ -1,3 +1,7 @@
+#### 4.0.20
+* added data property `geojsonKeyField` for linking data with geojson polygon
+* fixed geojson loading with extension ".geojson" (#350)
+
 #### 4.0.19
 * added "defaultApp" custom field to config.json. This field can be used to specify custom path for defaultApp if mdx2json doesn't set up properly or different path needed
 
