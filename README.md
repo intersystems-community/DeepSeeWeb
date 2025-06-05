@@ -292,7 +292,7 @@ Axis 2: "Id 1", "Id 2", "Id 3"
 In this mode map can use any data source to display polygons. But some fields must exists in data source to be able to link data with polygons and display colors.
 
 Required fields: 
-1. "Key" - field used to link data record with GeoJSON polygon `name` property.
+1. "Key" - field used to link data record with GeoJSON polygon `name` property(if different property of GeoJSON is needed as key, it can be defined using `geojsonKeyField` data property).
 2. "Value" - field contains numeric value used to color polygon. Color of polygon is a gradient from green(minimum value) to red(maximum value).
 
 You can use field with different names as well. In this case use `key`/`value` data properties and define field names as values of these properties respectively. 
@@ -346,19 +346,20 @@ Data property `latitude` = "Lat", data property `longitude` = "Lon"
 ## Map data properties
 Map supports following data properties, that can be used for customization:
 
-| Data Property              | Type         | Description                                                                                                        | Value                   | Default                                                |
-|----------------------------|--------------|--------------------------------------------------------------------------------------------------------------------|-------------------------|--------------------------------------------------------|
-| key                        | dataproperty | Define custom name of key field. Value from this field used to link data to GeoJSON polygon `name` property        | Datasource column name  | "Key"                                                  |
-| value                      | dataproperty | Define custom name of value field. Value from this field used to calculate color of polygon                        | Datasource column name  | "Value"                                                |
-| tileUrl                    | dataproperty | Tile server URL                                                                                                    |                         | https://tile-c.openstreetmap.fr/hot/{z}/{x}/{y}.png    |
-| polygonFile                | dataproperty | File name with a JS or GeoJSON polygons. Requested from the root of a default web app for a namespace              | Path with filename      | Widget name                                            |
-| latitude                   | dataproperty | Define custom name of latitude field. Used for marker mode                                                         | Datasource column name  | "Latitude"                                             |
-| longitude                  | dataproperty | Define custom name of longitude field. Used for marker mode                                                        | Datasource column name  | "Longitude"                                            |
-| tooltip                    | dataproperty | Define name of field with custom tooltip text. Tooltip appears when user's cursor hovers over a polygon or marker. | Datasource column name  | "TooltipValue"                                         |
-| coordsJsFile               | deprecated   | Use `polygonFile` instead                                                                                          |                         |                                                        |
-| tooltipProperty            | deprecated   | Use `tooltip` instead                                                                                              | Datasource column name  | Row name                                               |
-| coordsProperty             | deprecated   | Use `key` instead                                                                                                  | Datasource column name  |                                                        |
-| colorProperty              | deprecated   | Use `value` instead                                                                                                |                         |                                                        |
+| Data Property              | Type         | Description                                                                                                                                          | Value                  | Default                                             |
+|----------------------------|--------------|------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------|-----------------------------------------------------|
+| key                        | dataproperty | Define custom name of key field. Value from this field used to link data to GeoJSON polygon `name`(can be override using `geojsonKeyField`) property | Datasource column name | "Key"                                               |
+| value                      | dataproperty | Define custom name of value field. Value from this field used to calculate color of polygon                                                          | Datasource column name | "Value"                                             |
+| geojsonKeyField            | dataproperty | Define custom name of GeoJSON key field that used to link data with MDX                                                                              | GeoJSON property name  | "name"                                              |
+| tileUrl                    | dataproperty | Tile server URL                                                                                                                                      |                        | https://tile-c.openstreetmap.fr/hot/{z}/{x}/{y}.png |
+| polygonFile                | dataproperty | File name with a JS or GeoJSON polygons. Requested from the root of a default web app for a namespace                                                | Path with filename     | Widget name                                         |
+| latitude                   | dataproperty | Define custom name of latitude field. Used for marker mode                                                                                           | Datasource column name | "Latitude"                                          |
+| longitude                  | dataproperty | Define custom name of longitude field. Used for marker mode                                                                                          | Datasource column name | "Longitude"                                         |
+| tooltip                    | dataproperty | Define name of field with custom tooltip text. Tooltip appears when user's cursor hovers over a polygon or marker.                                   | Datasource column name | "TooltipValue"                                      |
+| coordsJsFile               | deprecated   | Use `polygonFile` instead                                                                                                                            |                        |                                                     |
+| tooltipProperty            | deprecated   | Use `tooltip` instead                                                                                                                                | Datasource column name | Row name                                            |
+| coordsProperty             | deprecated   | Use `key` instead                                                                                                                                    | Datasource column name |                                                     |
+| colorProperty              | deprecated   | Use `value` instead                                                                                                                                  |                        |                                                     |
 
 No longer supported:
 
