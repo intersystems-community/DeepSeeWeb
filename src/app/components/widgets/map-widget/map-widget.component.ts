@@ -581,7 +581,8 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
     const folder = this.ss.serverSettings.DefaultApp || '/csp';
     const confPath = this.ds.configDefaultApp;
     const url = (confPath || folder) + '/' + fileName;
-    const isJSON = fileName.split('.').pop()?.toString() === 'json';
+    const ext = fileName.split('.').pop()?.toString();
+    const isJSON =  ext === 'json' || ext === 'geojson';
     const p = isJSON ? this.ds.getJSONFile(url) : this.ds.getFile(url);
 
     this.polygonsLoaded = new Promise(res => {
@@ -752,7 +753,8 @@ export class MapWidgetComponent extends BaseWidget implements OnInit, OnDestroy,
         continue;
       }
       //const fe = geoFeatures.find(f => f.properties.name === key);
-      const fe = this.worldMap?.getFeatures().find(f => f.get('name') === key.toString());
+      const geoField =  this.getDataPropValue('geojsonKeyField') || 'name';
+      const fe = this.worldMap?.getFeatures().find(f => f.get(geoField) === key.toString());
       if (!fe) {
         continue;
       }
