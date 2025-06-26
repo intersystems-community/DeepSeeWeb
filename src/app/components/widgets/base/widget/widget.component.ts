@@ -447,6 +447,10 @@ export class WidgetComponent implements OnInit, OnDestroy, AfterViewInit {
     if (t) {
       this.widget.isSupported = true;
       this.cd.detectChanges();
+      setTimeout(()=> {
+        // @ts-ignore
+        this.component = this.ngComponentOutlet?._componentRef?.instance;
+      });
     } else {
       this.widget.isSupported = false;
       this.showError(this.i18n.get('errWidgetNotSupported') + ': ' + this.widget.type);

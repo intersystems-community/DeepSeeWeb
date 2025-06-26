@@ -714,6 +714,9 @@ export class BaseWidget implements OnInit, OnDestroy {
             this.drills.pop();
           }
           this.widget.backButton = this.drills.length !== 0;
+          if (!this.widget.baseTitle) {
+            this.widget.baseTitle = this.widget.title || '';
+          }
           this.widget.title = this.getDrillTitle(this.drills[this.drills.length - 1]);
           // this.wid
           this.broadcastDependents(mdx);
@@ -846,6 +849,9 @@ export class BaseWidget implements OnInit, OnDestroy {
             this.drills.pop();
           }
           this.widget.backButton = this.drills.length !== 0;
+          if (!this.widget.baseTitle) {
+            this.widget.baseTitle = this.widget.title || '';
+          }
           this.widget.title = this.getDrillTitle(this.drills[this.drills.length - 1]);
           // this.wid
           this.broadcastDependents(mdx);

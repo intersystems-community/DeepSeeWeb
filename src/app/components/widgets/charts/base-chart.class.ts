@@ -1260,7 +1260,7 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
       yAxis: {
         events: {},
         title: {
-          text: ''
+          text: this.widget?.overrides?.[0]?.xAxis?.title || ''
         },
         labels: {
           style: {
@@ -1277,7 +1277,7 @@ export class BaseChartClass extends BaseWidget implements OnInit, AfterViewInit,
       xAxis: {
         events: {},
         title: {
-          text: ''
+          text: this.widget?.overrides?.[0]?.yAxisList?.[0]?.title || ''
         },
         labels: {
           // formatter: axisFormatter,
