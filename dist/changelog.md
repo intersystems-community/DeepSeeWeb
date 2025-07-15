@@ -1,3 +1,7 @@
+#### 4.0.21
+* fixed issue with missing widget title after drilldown and back button (#450)
+* fixed issue with missing chart titles (#455)
+
 #### 4.0.20
 * added data property `geojsonKeyField` for linking data with geojson polygon
 * fixed geojson loading with extension ".geojson" (#350)
