@@ -1,3 +1,6 @@
+#### 4.0.22
+* now tuples limited for only ones that defined in data properties even for drilldown (#458) 
+
 #### 4.0.21
 * fixed issue with missing widget title after drilldown and back button (#450)
 * fixed issue with missing chart titles (#455)
