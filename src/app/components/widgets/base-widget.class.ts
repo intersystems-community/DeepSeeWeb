@@ -839,6 +839,7 @@ export class BaseWidget implements OnInit, OnDestroy {
           if (this.isEmptyData(data)) {
             return;
           }
+          this.removeColsThatNotExistInDataProperties(data);
           this._currentData = data;
 
 
@@ -1695,11 +1696,22 @@ export class BaseWidget implements OnInit, OnDestroy {
           return true;
         }
       }*/
-      const dim = t.dimension.toString().split('/');
+      // Check full dimension path
+      /*const dim = t.dimension.toString();
+      let exists = this.widget.dataProperties.some(p => {
+        const dv = p.dataValue.toString();
+        return dv === dim;
+      });
+      if (exists) {
+        return true;
+      }*/
+
+      // Check partial dimension path
+      const dimArr = t.dimension.toString().split('/');
       const exists = this.widget.dataProperties.some(p => {
         //p.dataValue === t.dimension
         const dv = p.dataValue.toString().split('/');
-        return dv.some(v => dim.includes(v));
+        return dv.some(v => dimArr.includes(v));
       });
       if (!exists) {
         indices.push(idx);
