@@ -2126,18 +2126,25 @@ export class BaseWidget implements OnInit, OnDestroy {
   private applyFilters(filters: IFilter[]) {
     const active = filters.filter(flt => {
       // Skip all apply variable filters
-      if (flt.action === 'applyVariable') {
+     if (flt.action === 'applyVariable') {
         return false;
       }
       return flt.value !== '';// && !flt.isInterval
     });
 
-    if (active.length === 1) {
-      // One dimension
-      return ' %FILTER ' + this.getFilterString(active[0])
-    } else {
-      const strings = active.map(flt => this.getFilterString(flt));
-      return ' %FILTER NONEMPTYCROSSJOIN(' + strings.join(',') + ')';
+    if (active.length === 0) {
+      return '';
     }
+    if (active.length === 1) {
+      return ' %FILTER ' + this.getFilterString(active[0]);
+    }
+
+    // Nested NONEMPTYCROSSJOIN for any number of filters > 1
+    const strings = active.map(flt => this.getFilterString(flt));
+    let crossjoin = strings[0];
+    for (let i = 1; i < strings.length; i++) {
+      crossjoin = `NONEMPTYCROSSJOIN(${crossjoin},${strings[i]})`;
+    }
+    return ' %FILTER ' + crossjoin;
   }
 }
