@@ -1,3 +1,6 @@
+#### 4.0.23
+* support multiple filters on widgets (#461)
+
 #### 4.0.22
 * now tuples limited for only ones that defined in data properties even for drilldown (#458) 
 
