@@ -307,7 +307,7 @@ DataController.prototype.TOTAL_FUNCTIONS = {
         for (var i = iStart; i < iEnd; i++) {
             var r = typeof row === "undefined" ? i : row,
                 c = typeof column === "undefined" ? i : column;
-            if (this.isNumber(array[r][c]["value"])) {
+            if (array[r] && array[r][c] && this.isNumber(array[r][c]["value"])) {
                 sum += parseFloat(array[r][c]["value"]) || 0;
             }
         }
@@ -366,7 +366,7 @@ DataController.prototype.TOTAL_FUNCTIONS = {
 
     totalPERCENTAGE: function (array, iStart, iEnd, column, xStart, row) {
         var averages = [], x, summ;
-        for (x = xStart; x < typeof column === "undefined" ? array.length : array[0].length; x++) {
+        for (x = xStart; x < ((typeof column === "undefined") ? array.length : array[0].length); x++) {
             averages.push(this.totalSUM(array, iStart, iEnd,
                 typeof column === "undefined" ? column : x, xStart,
                 typeof row === "undefined" ? row : x));
@@ -636,7 +636,7 @@ DataController.prototype.resetRawData = function () {
             props = byColumns ? "rowProps" : "columnProps";
         if (!data[props][columnIndex] && !(byColumns ? pivotDefaultCol : pivotDefault))
             return _.TOTAL_FUNCTIONS.totalSUM;
-        switch ((data[props][columnIndex] || {}).summary || pivotDefault) {
+        switch ((data[props][columnIndex] || {}).summary || (byColumns ? pivotDefaultCol : pivotDefault)) {
             case "count": return _.TOTAL_FUNCTIONS.totalSUM; // _.TOTAL_FUNCTIONS.totalCOUNT; https://github.com/intersystems-ru/LightPivotTable/issues/4
             case "avg": return _.TOTAL_FUNCTIONS.totalAVG;
             case "min": return _.TOTAL_FUNCTIONS.totalMIN;
