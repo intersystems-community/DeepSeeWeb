@@ -1,3 +1,6 @@
+#### 4.0.24
+* fixed issue with total function and pivot (#459)
+
 #### 4.0.23
 * support multiple filters on widgets (#461)
 
