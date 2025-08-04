@@ -689,10 +689,13 @@ DataController.prototype.resetRawData = function () {
         var group = ++groupNum,
             row;
         for (row = 0; row < data.info.topHeaderRowsNumber; row++) {
+            var totalFunction = getTotalFunction(row, true);
+            var headerText = totalFunction === _.TOTAL_FUNCTIONS.totalPERCENTAGE ?
+                pivotLocale.get(5) : pivotLocale.get(0);
             rawData[row].push({
                 group: group,
                 isCaption: true,
-                value: pivotLocale.get(0)
+                value: headerText
             });
         }
         for (row = data.info.topHeaderRowsNumber; row < rawData.length; row++) {
@@ -2520,6 +2523,12 @@ PivotLocale.prototype.LOCALES = [
      "en": "No data to display.",
      "de": "Keine Daten zum anzeigen.",
      "cs": "Žádná data k zobrazení"
+ },
+ { // 5
+    "ru": "% от Всего",
+    "en": "% of Total",
+    "de": "% des Summe",
+    "cs": "% z Celkem"
  }
 ];
 
