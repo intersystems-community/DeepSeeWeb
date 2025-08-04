@@ -1,3 +1,6 @@
+#### 4.0.25
+* added "% of Total" header text support for pivot tables (#459)
+
 #### 4.0.24
 * fixed issue with total function and pivot (#459)
 
