@@ -208,12 +208,25 @@ export class ChartColorsConfigComponent implements OnInit, OnDestroy {
    */
   private getDefaultColors(): IChartColorsConfig {
     const opt = Highcharts.getOptions();
+    const baseColors = (opt.colors ?? []).filter((c): c is string => typeof c === 'string');
+    const generatedColors = this.generateHSLColors(10);
+    const hcColors = Array.from(new Set([...baseColors, ...generatedColors])).slice(0, 20);
+
     return {
-      hcColors: opt.colors?.slice() as any || '',
-      hcBackground: opt.chart?.backgroundColor as string || '',
-      hcTextColor: (opt as any).labels?.style?.color || '',
+      hcColors,
+      hcBackground: String(opt.chart?.backgroundColor ?? ''),
+      hcTextColor: String((opt as any).labels?.style?.color ?? ''),
       hcBorderColor: '', // opt.plotOptions.bar.borderColor as string,
       hcLineColor: '#e6e6e6' // ((this.chart as any).colorAxis as ColorAxisOptions).minorGridLineColor as string
     };
   }
+
+  private generateHSLColors(count: number): string[] {
+    return Array.from({ length: count }, (_, i) => {
+      const colorAngle = Math.round((270 / (count - 1)) * i); 
+      return `hsl(${colorAngle}, 100%, 50%)`;
+    });
+  }
 }
+
+
