@@ -1,3 +1,6 @@
+#### 4.0.26
+* fixed issue with percentage calculation when both(row and column) totals exists (#459)
+
 #### 4.0.25
 * added "% of Total" header text support for pivot tables (#459)
 
