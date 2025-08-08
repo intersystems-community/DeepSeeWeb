@@ -364,9 +364,13 @@ DataController.prototype.TOTAL_FUNCTIONS = {
         return max;
     },
 
-    totalPERCENTAGE: function (array, iStart, iEnd, column, xStart, row) {
+    totalPERCENTAGE: function (array, iStart, iEnd, column, xStart, row, bothTotals) {
+        if (bothTotals && row === array.length - 1) {
+          return '100%';
+        }
         var averages = [], x, summ;
-        for (x = xStart; x < ((typeof column === "undefined") ? array.length : array[0].length); x++) {
+        var offset = bothTotals ? 1 : 0; // if totals are shown, then offset by 1
+        for (x = xStart; x < ((typeof column === "undefined") ? (array.length - offset) : array[0].length); x++) {
             averages.push(this.totalSUM(array, iStart, iEnd,
                 typeof column === "undefined" ? column : x, xStart,
                 typeof row === "undefined" ? row : x));
@@ -699,12 +703,14 @@ DataController.prototype.resetRawData = function () {
             });
         }
         for (row = data.info.topHeaderRowsNumber; row < rawData.length; row++) {
+            var rowTotalsExist = this.controller.getPivotProperty(["rowTotals"]);
+            var columnTotalsExist = this.controller.getPivotProperty(["columnTotals"]);
             rawData[row].push({
                 isCaption: true,
                 value: getTotalFunction(row, true).call(
                     this.TOTAL_FUNCTIONS,
                     rawData, data.info.leftHeaderColumnsNumber, rawData[row].length, undefined,
-                    data.info.leftHeaderColumnsNumber, row
+                    data.info.leftHeaderColumnsNumber, row, rowTotalsExist && columnTotalsExist
                 ),
                 style: TOTALS_STYLE
             });
