@@ -131,14 +131,15 @@ export class FilterPopupComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  initialize(widget: IWidgetDesc, filter: any, dataSource: string) {
+ initialize(widget: IWidgetDesc, filter: any, dataSource: string) {
     this.widget = widget;
     // this.source = filter;
     // this.dataSource = dataSource;
     this.model.filter = filter;
 
-    // Check for related filters
-    if (!filter.isDate && this.isRelatedFilters/* && Filters.filtersChanged*/) {
+    const hasActive = this.fs.items.some(f => f.source === widget.name && (f.value || f.isInterval));
+   
+    if (!filter.isDate && this.isRelatedFilters && hasActive) {
       this.requestRelatedFilters(filter);
     } else {
       this.prepareFilters();
@@ -162,7 +163,7 @@ export class FilterPopupComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
     const related = [];
-    const filters = this.fs.items;
+    const filters = this.fs.items.filter(f => f.source === this.widget.name);
     // Get active filters
     const activeFilters = filters.filter(f => !f.isInterval && ((f.targetProperty !== this.model.filter?.targetProperty) && f.value !== ''));
     const res: IRelatedFiltersRequestData[] = [];
@@ -418,7 +419,7 @@ export class FilterPopupComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     delete this.model.filter?.fromIdx;
     delete this.model.filter?.toIdx;
-    this.clearSelectedItems();
+    this.clearSelectedItems();    
     this.fs.applyFilter(this.model.filter);
     this.restoreValuesOnClose = false;
     this.close();
@@ -472,7 +473,7 @@ export class FilterPopupComponent implements OnInit, AfterViewInit, OnDestroy {
         this.model.filter.fromIdx = 0;
         this.model.filter.toIdx = 1;
       }
-    }
+    }   
 
     this.fs.applyFilter(this.model.filter);
     this.fs.filtersChanged = true;
