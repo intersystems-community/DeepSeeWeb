@@ -42,8 +42,8 @@ export class FilterService {
     this.isFiltersOnToolbarExists = false;
     for (let i = 0; i < filterArray.length; i++) {
       this.items.push(filterArray[i]);
-      const flt = this.items[this.items.length - 1];
-
+      const flt = this.items[this.items.length - 1];   
+      
       // Check for date filters
       flt.isDate = flt.controlClass === DATE_PICKER_CLASS || flt.targetPropertyDataType === '%DeepSee.Time.DayMonthYear';
       if (flt.isDate) {
@@ -374,30 +374,31 @@ export class FilterService {
    * @returns {Array} Model filters
    */
   getWidgetModelFilters(widgetName) {
-    const res: any[] = [];
-    for (let i = 0; i < this.items.length; i++) {
-      if (this.items[i].type === 'hidden') {
+  const res: any[] = [];
+  for (let i = 0; i < this.items.length; i++) {
+    if (this.items[i].type === 'hidden') continue;
+    if (this.items[i].location === 'click') continue;
+    if (widgetName === 'emptyWidget') {
+      if (this.items[i].source === '' || this.items[i].location === 'dashboard') {
+        res.push({
+          ...this.items[i],
+          idx: i,
+          text: this.items[i].valueDisplay,
+        });
         continue;
-      }
-      if (this.items[i].location === 'click') {
-        continue;
-      }
-      if (widgetName === 'emptyWidget') {
-        if (this.items[i].source === '' || this.items[i].location === 'dashboard') {
-          res.push({idx: i, label: this.items[i].label, text: this.items[i].valueDisplay, info: this.items[i].info});
-          continue;
-        }
-      }
-      if (this.items[i].location === 'dashboard') {
-        continue;
-      }
-      if ((this.items[i].source === '*') || (this.items[i].sourceArray?.indexOf(widgetName) !== -1)) {
-        res.push({idx: i, label: this.items[i].label, text: this.items[i].valueDisplay, info: this.items[i].info});
-
       }
     }
-    return res;
+    if (this.items[i].location === 'dashboard') continue;
+    if ((this.items[i].source === '*') || (this.items[i].sourceArray?.indexOf(widgetName) !== -1)) {
+      res.push({
+        ...this.items[i],
+        idx: i,
+        text: this.items[i].valueDisplay,
+      });
+    }
   }
+  return res;
+}
 
   /**
    * Returns list of filters USED by widget (note: this filters can be displayed on another widgets, to get displayed filters use getWidgetModelFilters)
@@ -503,6 +504,7 @@ export class FilterService {
         isInterval: e.isInterval,
         fromIdx: e.fromIdx,
         toIdx: e.toIdx,
+        source: e.source,
         valueDisplay: e.valueDisplay
       } as unknown as IFilter;
     });
@@ -572,9 +574,14 @@ export class FilterService {
       for (let i = 0; i < widgets._filters.length; i++) {
         const flt = widgets._filters[i];
 
-        const exists = this.items.filter((el) => {
-          return el.targetProperty === flt.targetProperty;
-        })[0];
+        const exists = this.items.find((el) =>
+          el.targetProperty === flt.targetProperty &&
+          (
+            (el.source && flt.source && el.source === flt.source) ||
+            (el.sourceArray && flt.source && el.sourceArray.includes(flt.source)) ||
+            (el.target && flt.target && el.target === flt.target)
+          )
+        );
         if (exists) {
           // Check for single value
           exists.value = flt.value;
@@ -631,6 +638,12 @@ export class FilterService {
         }
       }
     }
+    
+    this.items.forEach(flt => {
+      if (flt.value || flt.isInterval) {
+        this.applyFilter(flt, true); 
+      }
+    });
   }
 
   private updateFiltersParameterInURL() {
