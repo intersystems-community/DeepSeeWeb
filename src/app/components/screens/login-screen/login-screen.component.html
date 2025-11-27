@@ -28,7 +28,7 @@
     <button [hidden]="model.isDesktop" class="btn btn-success" (click)="saveServer()"
             desktop-hidden></button>
     <button id="login" class="btn" (click)="onLoginClick()">{{ 'signin' | i18n }}</button>
-    @if (model.oAuthUrl) {
+    @if (oAuthUrl()) {
       <button id="btnLoginOAuth" class="btn btn-link"
               (click)="onLoginOAuthClick()">{{ 'signinOAuth' | i18n }}
       </button>

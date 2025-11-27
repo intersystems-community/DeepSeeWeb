@@ -1,3 +1,6 @@
+#### 4.0.27
+* fixed issue with OAuth "Sing in" button
+
 #### 4.0.26
 * fixed issue with percentage calculation when both(row and column) totals exists (#459)
 

@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, signal} from '@angular/core';
 import {DataService} from '../../../services/data.service';
 import {I18nPipe, I18nService} from '../../../services/i18n.service';
 import {dsw} from '../../../../environments/dsw';
@@ -25,6 +25,7 @@ declare var cordova: any;
 export class LoginScreenComponent implements OnInit {
   public model: any;
   private startTime = -1;
+  protected readonly oAuthUrl = signal('');
 
   constructor(private ds: DataService,
               private i18n: I18nService,
@@ -72,8 +73,7 @@ export class LoginScreenComponent implements OnInit {
       login: '',
       password: '',
       namespace: '', // localStorage.namespace || 'Samples',
-      error: '',
-      oAuthUrl: ''
+      error: ''
     };
   }
 
@@ -102,9 +102,9 @@ export class LoginScreenComponent implements OnInit {
       try {
         if (typeof d === 'string') {
           const o = JSON.parse(d);
-          this.model.oAuthUrl = o.url || '';
+          this.oAuthUrl.set(o.url || '');
         } else {
-          this.model.oAuthUrl = d.url || '';
+          this.oAuthUrl.set(d.url || '');
         }
       } catch (e) {
       }
@@ -192,7 +192,7 @@ export class LoginScreenComponent implements OnInit {
    * Login with intersystems oauth
    */
   onLoginOAuthClick() {
-    window.location.href = this.model.oAuthUrl;
+    window.location.href = this.oAuthUrl();
   }
 
   /**
