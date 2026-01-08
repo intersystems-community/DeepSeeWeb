@@ -4,7 +4,8 @@ const SUPPORTED = {
   en: 'English',
   de: 'German',
   cs: 'Czech',
-  ru: 'Russian'
+  ru: 'Russian',
+  pt: 'Portuguese'
 };
 
 // Pipe for translation
@@ -30,13 +31,16 @@ export class I18nService {
   constructor() {
     switch (window.navigator.language.toLowerCase()) {
       case 'en':
-        this.current = 'ru';
+        this.current = 'en';
         break;
       case 'ru':
         this.current = 'ru';
         break;
       case 'de':
         this.current = 'de';
+        break;
+      case 'pt':
+        this.current = 'pt';
         break;
       default:
         this.current = 'en';
@@ -495,5 +499,115 @@ const TRANSLATIONS = {
     fullscreen: 'На весь экран',
     showKPI: 'Показать KPI',
     openAnalyzer: 'Открыть analyzer'
+  },
+  pt: {
+    settingsImported: 'As configurações foram importadas com sucesso! A página será recarregada.',
+    settingsReset: 'As configurações foram redefinidas com sucesso! A página será recarregada.',
+    resetClickFilter: 'Redefinir filtro de clique',
+    copyMDX: 'Copiar MDX',
+    seriesColor: 'Cores das Séries',
+    copy: 'Copiar',
+    shareDashboard: 'Compartilhar Painel',
+    relatedFilters: 'Filtros relacionados',
+    disableTilePush: 'Desative o recurso de empurrar blocos ao mover/redimensionar.',
+    theme: 'Tema',
+    showLog: 'Mostrar log',
+    server: 'Servidor',
+    saveFilters: 'Gravar filtros',
+    exportSettings: 'Exportar configurações',
+    importSettings: 'Importar configurações',
+    export: 'Importar',
+    pngImage: 'Imagem (*.png)',
+    svgImage: 'Imagem (*.svg)',
+    jpgImage: 'Imagem (*.jpg)',
+    pdfDoc: 'Documento (*.pdf)',
+    xlsDoc: 'Documento (*.xls)',
+    csvDoc: 'Documento (*.csv)',
+    about: 'Sobre',
+    cancel: 'Cancelar',
+    save: 'Gravar',
+    load: 'Carregar',
+    share: 'Compartilhar',
+    title: 'Título',
+    // theme: "Theme",
+    // view: "View",
+    curSettings: 'Configurações atuais',
+    newView: 'Novo',
+    language: 'Idioma',
+    dashboard: 'Painel',
+    folder: 'Pasta',
+    signin: 'Entrar',
+    signout: 'Sair',
+    login: 'Autenticação',
+    signinOAuth: 'Entrar via OAuth',
+    password: 'Senha',
+    namespace: 'Namespace',
+    loading: 'Carregando...',
+    search: 'Procurar',
+    accept: 'Aplicar',
+    close: 'Fechar',
+    dismiss: 'Reiniciar',
+    home: 'Home',
+    zoom: 'Zoom',
+    resetSettings: 'Redefinir configurações',
+    addToFavorites: 'Adicionar aos favoritos',
+    removeFromFav: 'Remover dos favoritos',
+    refresh: 'Recarregar',
+    showFolders: 'Mostrar pastas',
+    showTop: 'Mostrar os registros Top',
+    viewAs: 'Ver como',
+    count: 'Contar',
+    filters: 'Filtros',
+    setDefault: 'Restaurar para as configurações padrão',
+    dashColumns: 'Contagem de colunas',
+    widgetHeight: 'Altura do widget (px)',
+    widgetHeightDyn: 'Padrão: ajustar à janela',
+    noData: 'Não há dados para exibir.',
+    byRows: 'Exibir por linhas',
+    by2columns: 'Exibir em duas colunas',
+    by3columns: 'Exibir em três colunas',
+    by4columns: 'Exibir em quatro colunas',
+    by5columns: 'Exibir em cinco colunas',
+    by6columns: 'Exibir em seis colunas',
+    print: 'Imprimir...',
+    fav: 'Favoritos',
+    options: 'COnfigurações',
+    gotoDeepSee: 'Iris BI',
+    showLegend: 'Alternar legenda',
+    showPivot: 'Mostrar como pivot table',
+    back: 'Voltar',
+    exclude: 'Excluir',
+    all: 'Todos',
+    interval: 'Intervalo',
+    not: 'Não',
+    from: 'De',
+    to: 'Para',
+    metroStyle: 'Metro UI',
+    bgColor: 'Cor de fundo',
+    fntColor: 'Cor da fonte',
+    icon: 'Ícone',
+    done: 'Feito',
+    widget: 'Widget',
+    showImages: 'Mostrar imagens',
+    dataSource: 'Fonte de Dados',
+    hideTitle: 'Ocultar título',
+    showZero: 'Defina o valor mínimo do eixo como zero.',
+    showValues: 'Mostrar valores',
+    err: 'Erro',
+    errWidgetRequest: 'Não foi possível carregar os dados do widget.',
+    errLoginRequired: 'Por favor, faça login.',
+    errPassRequired: 'Por favor, digite a senha.',
+    errUnauth: 'Nome de usuário e senha desconhecidos. Tente novamente.',
+    errNotFound: 'A URL solicitada não foi encontrada no servidor.',
+    errTimeout: 'Tempo limite da solicitação',
+    errWidgetNotSupported: 'O widget não é suportado.',
+    errNoWidgets: 'Nenhum widget recebido do servidor',
+    errNoDashboards: 'Não há painéis de controle neste espaço de nomes.',
+    shortMonths: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
+    changeColors: 'Alterar cores',
+    fullscreen: 'Alternar tela cheia',
+    showKPI: 'Mostrar KPI',
+    openAnalyzer: 'Abrir analisador',
+    addWidget: 'Adicionar widget'
   }
 };
