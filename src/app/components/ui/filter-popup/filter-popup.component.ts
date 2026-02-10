@@ -27,6 +27,8 @@ import {AutoFocusDirective} from '../../../directives/auto-focus.directive';
 import {FormsModule} from '@angular/forms';
 import {IFilterModel, IRelatedFiltersRequestData, IWidgetDesc} from "../../../services/dsw.types";
 import {ModalComponent} from "../modal/modal.component";
+import {Subject, Subscription} from 'rxjs';
+import {debounceTime, filter} from 'rxjs/operators';
 
 @Pipe({
   name: 'selectedFirst',
@@ -72,6 +74,11 @@ export class FilterPopupComponent implements OnInit, AfterViewInit, OnDestroy {
   private datePipe: DatePipe;
   private restoreValuesOnClose = true;
   private originalValues?: any[];
+  private readonly MIN_SEARCH_LENGTH = 3;
+  private readonly SEARCH_DEBOUNCE_MS = 700;
+  private searchInput$ = new Subject<string>();
+  private searchSubscription?: Subscription;
+  private searchRequestId = 0;
 
   constructor(private ss: StorageService,
               private el: ElementRef,
@@ -153,6 +160,17 @@ export class FilterPopupComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.searchSubscription = this.searchInput$.pipe(
+      debounceTime(this.SEARCH_DEBOUNCE_MS),
+      filter(s => (s || '').trim().length >= this.MIN_SEARCH_LENGTH)
+    ).subscribe(() => this.searchFilters());
+  }
+
+  /**
+   * Called from template on search input change; feeds debounced stream for auto-request to backend.
+   */
+  onSearchInputChange(value: string) {
+    this.searchInput$.next((value || '').trim());
   }
 
   requestRelatedFilters(initiator?: any) {
@@ -321,7 +339,7 @@ export class FilterPopupComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   /**
-   * Request filters from server by search string. (handles onEnter event on search input)
+   * Request filters from server by search string. (handles onEnter event on search input and debounced auto-request)
    */
   searchFilters() {
     let ds = this.getDataSource();
@@ -333,12 +351,17 @@ export class FilterPopupComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
     this.model.isLoading = true;
+    const requestId = ++this.searchRequestId;
     this.ds
       .searchFilters(searchStr, ds)
       .catch(e => this.onError(e, e.status))
       .then(data => {
-        this.onFilterValuesReceived(data);
-        this.onSearch(searchStr);
+        if (requestId === this.searchRequestId) {
+          this.onFilterValuesReceived(data);
+          this.onSearch(searchStr);
+        }
+        this.model.isLoading = false;
+        this.cdr.detectChanges();
       });
   }
 
@@ -504,6 +527,8 @@ export class FilterPopupComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.searchSubscription?.unsubscribe();
+    this.searchInput$.complete();
     if (this.restoreValuesOnClose) {
       this.restoreSelectionState();
     }
