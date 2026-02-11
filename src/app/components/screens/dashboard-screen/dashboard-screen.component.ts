@@ -42,6 +42,7 @@ export interface IContextMenuData {
   canDrillthrough: boolean;
   drillPath?: string;
   drillTitle?: string;
+  copyValue?: string;
 }
 
 interface ITouchInfo {
@@ -756,6 +757,29 @@ export class DashboardScreenComponent extends DashboardEditingClass implements O
       title: this.contextMenuData.drillTitle
     });
     this.hideContextMenu();
+  }
+
+  ctxCopyCell() {
+    const val = this.contextMenuData?.copyValue;
+    if (val === undefined) {
+      return;
+    }
+    const text = String(val ?? '');
+    if (navigator.clipboard?.writeText) {
+      navigator.clipboard.writeText(text).catch(() => this.copyToClipboardFallback(text));
+    } else {
+      this.copyToClipboardFallback(text);
+    }
+    this.hideContextMenu();
+  }
+
+  private copyToClipboardFallback(text: string) {
+    const input = document.createElement('input');
+    input.value = text;
+    document.body.appendChild(input);
+    input.select();
+    document.execCommand('copy');
+    document.body.removeChild(input);
   }
 
   gotoKPIPage(w?: IWidgetDesc) {

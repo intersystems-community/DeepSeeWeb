@@ -62,6 +62,19 @@ export class WPivotComponent extends BaseWidget {
         },
         back: (p) => this.onDrillDown(p),
         cellDrillThrough: (...args) => this.onDrillThrough(...args),
+        contextMenu: (ctxData: { canDrill?: boolean; canDrillthrough?: boolean; drillPath?: string; drillTitle?: string; copyValue?: string }, event: MouseEvent) => {
+          this.bs.broadcast('contextmenu', {
+            widget: this.widget,
+            event,
+            ctxData: {
+              canDrill: ctxData.canDrill,
+              canDrillthrough: ctxData.canDrillthrough,
+              drillPath: ctxData.drillPath,
+              drillTitle: ctxData.drillTitle,
+              copyValue: ctxData.copyValue
+            }
+          });
+        },
         responseHandler: (info) => {
           if (info.status !== 200) {
             this.showError(info.xhr.responseText);
@@ -73,7 +86,14 @@ export class WPivotComponent extends BaseWidget {
       locale: this.i18n.current,
       hideButtons: true,
       formatNumbers: '#,###.##',
-      controls: this.widget.controls
+      controls: this.widget.controls,
+      drillDownTooltip: !this.widget.kpitype && !this.drillFilterWidgets?.length
+        ? this.i18n.get('clickToDrillDown') : '',
+      drillThroughTooltip: this.canDoDrillthrough ? this.i18n.get('clickToDrillThrough') : '',
+      wrapCellContent: true,
+      drillThroughAvailable: this.canDoDrillthrough,
+      showContextMenuButton: true,
+      autoFitLeftHeader: true
     };
     delete this.widget.pivotMdx;
 

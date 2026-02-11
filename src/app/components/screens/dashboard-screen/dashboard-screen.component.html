@@ -63,6 +63,9 @@
   @if (contextMenuData?.canDrillthrough) {
     <div (click)="ctxDrillthrough()">Drillthrough</div>
   }
+  @if (contextMenuData?.copyValue !== undefined) {
+    <div (click)="ctxCopyCell()">{{ 'copy' | i18n }}</div>
+  }
 
   <div (click)="refreshItem()">{{ 'refresh' | i18n }}</div>
   @if (ctxItem?.isChart) {

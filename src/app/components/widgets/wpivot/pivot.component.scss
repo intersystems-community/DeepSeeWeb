@@ -1,3 +1,20 @@
 :host {
   height: 100%;
 }
+
+// Left header resize handle
+:host ::ng-deep .lpt-resizeHandle:hover {
+  background-color: rgba(0, 0, 0, 0.08);
+}
+
+// Wrap cell content - allow text to break into multiple lines
+:host ::ng-deep .tableContainer.lpt-cellWrap td,
+:host ::ng-deep .tableContainer.lpt-cellWrap th {
+  white-space: normal;
+  word-break: break-word;
+}
+
+:host ::ng-deep .tableContainer.lpt-cellWrap .lpt-tableBlock td > div {
+  text-overflow: clip;
+  overflow: visible;
+}
