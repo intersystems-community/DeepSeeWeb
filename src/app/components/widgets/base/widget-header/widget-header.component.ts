@@ -44,6 +44,11 @@ export class WidgetHeaderComponent implements OnInit, OnChanges, OnDestroy {
   hasFilters = false;
   filtersTooltip = '';
   noDrag = false;
+
+  get widgetTooltip(): string {
+    const t = this.widget?.properties?.tooltip;
+    return (typeof t === 'string' && t.trim() !== '') ? t.trim() : '';
+  }
   private widgetsSettings: any;
   private subFiltersChanged?: Subscription;
 

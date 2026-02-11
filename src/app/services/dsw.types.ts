@@ -132,6 +132,7 @@ export interface IWidgetProperties {
   latitude: string;
   format: string;
   chartToggle: string;
+  tooltip?: string;
 
   Data?: any;
 }
