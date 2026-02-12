@@ -4191,12 +4191,20 @@ PivotView.prototype.renderRawData = function (data) {
             }
         }
         var firstLeftTh = primaryLeftColumns[0];
+        var leftResizeHandleStyle = "position:absolute;right:0;top:0;bottom:0;width:8px;cursor:col-resize;z-index:10;pointer-events:auto;";
         var resizeHandle = document.createElement("div");
         resizeHandle.className = "lpt-resizeHandle lpt-resizableColumn";
-        resizeHandle.style.cssText = "position:absolute;right:0;top:0;bottom:0;width:6px;cursor:col-resize;z-index:1;";
+        resizeHandle.style.cssText = leftResizeHandleStyle;
         firstLeftTh.style.position = "relative";
         firstLeftTh.appendChild(resizeHandle);
         bindResizeLeftColumn(resizeHandle, firstLeftTh, lastColIdx, primaryLeftColumns);
+        // also add handle to top-left header so boundary is resizable from top row
+        pivotHeader.style.position = "relative";
+        var headerResizeHandle = document.createElement("div");
+        headerResizeHandle.className = "lpt-resizeHandle lpt-resizableColumn";
+        headerResizeHandle.style.cssText = leftResizeHandleStyle;
+        pivotHeader.appendChild(headerResizeHandle);
+        bindResizeLeftColumn(headerResizeHandle, firstLeftTh, lastColIdx, primaryLeftColumns);
     }
 
     // render table
