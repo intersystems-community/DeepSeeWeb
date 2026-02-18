@@ -1,10 +1,6 @@
 {
   "name": "deep-see-web",
-<<<<<<< autosearch
   "version": "4.0.29",
-=======
-  "version": "4.0.28",
->>>>>>> master
   "scripts": {
     "ng": "ng",
     "start": "ng serve --proxy-config=proxy.conf.samples-bi.js",
