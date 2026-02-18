@@ -1,6 +1,3 @@
-#### 4.0.29
-* added auto search request to populate filter values (#470)
-
 #### 4.0.28
 * added tooltip support for widget title (#474)
 
