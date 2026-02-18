@@ -3748,7 +3748,7 @@ PivotView.prototype.renderRawData = function (data) {
 
         CLICK_EVENT = this.controller.CONFIG["triggerEvent"] || "click",
         ATTACH_TOTALS = info.SUMMARY_SHOWN && this.controller.CONFIG["attachTotals"] ? 1 : 0,
-        COLUMN_RESIZE_ON = !!this.controller.CONFIG.columnResizing,
+        COLUMN_RESIZE_ON = !!this.controller.CONFIG["columnResizing"],
         LISTING = info.leftHeaderColumnsNumber === 0,
         SEARCH_ENABLED = LISTING && this.controller.CONFIG["enableSearch"],
         LISTING_SELECT_ENABLED = this.controller.CONFIG["enableListingSelect"],
@@ -3848,10 +3848,7 @@ PivotView.prototype.renderRawData = function (data) {
     };
 
     var bindResize = function (element, column) {
-
-        var baseWidth = 0,
-            baseX = 0;
-
+        var baseWidth = 0, baseX = 0;
         var moveListener = function (e) {
             e.cancelBubble = true;
             e.preventDefault();
@@ -3863,7 +3860,6 @@ PivotView.prototype.renderRawData = function (data) {
                 _.restoreScrollPosition();
             }
         };
-
         var upListener = function (e) {
             e.cancelBubble = true;
             e.preventDefault();
@@ -3875,7 +3871,6 @@ PivotView.prototype.renderRawData = function (data) {
             document.removeEventListener("mousemove", moveListener);
             document.removeEventListener("mouseup", upListener);
         };
-
         element.addEventListener("mousedown", function (e) {
             if ((e.target || e.srcElement) !== element) return;
             e.cancelBubble = true;
@@ -3885,7 +3880,41 @@ PivotView.prototype.renderRawData = function (data) {
             document.addEventListener("mousemove", moveListener);
             document.addEventListener("mouseup", upListener);
         });
+    };
 
+    // Resize via handle on RIGHT edge: dragging handle resizes the column to its left
+    var bindResizeWithHandle = function (handleElement, thElement, column) {
+        var baseWidth = 0, baseX = 0;
+        var moveListener = function (e) {
+            e.cancelBubble = true;
+            e.preventDefault();
+            thElement.style.width = thElement.style.minWidth =
+                baseWidth - baseX + e.pageX + "px";
+            if (RESIZE_ANIMATION) {
+                _.saveScrollPosition();
+                _.recalculateSizes(container);
+                _.restoreScrollPosition();
+            }
+        };
+        var upListener = function (e) {
+            e.cancelBubble = true;
+            e.preventDefault();
+            thElement.style.width = thElement.style.minWidth =
+                (_.FIXED_COLUMN_SIZES[column] = baseWidth - baseX + e.pageX) + "px";
+            _.saveScrollPosition();
+            _.recalculateSizes(container);
+            _.restoreScrollPosition();
+            document.removeEventListener("mousemove", moveListener);
+            document.removeEventListener("mouseup", upListener);
+        };
+        handleElement.addEventListener("mousedown", function (e) {
+            e.cancelBubble = true;
+            e.preventDefault();
+            baseWidth = thElement.offsetWidth;
+            baseX = e.pageX;
+            document.addEventListener("mousemove", moveListener);
+            document.addEventListener("mouseup", upListener);
+        });
     };
 
     var bindResizeLeftColumn = function (handleElement, thElement, columnIndex, allColumnThs) {
@@ -3901,11 +3930,9 @@ PivotView.prototype.renderRawData = function (data) {
             e.cancelBubble = true;
             e.preventDefault();
             setColumnWidth(baseWidth - baseX + e.pageX);
-            if (RESIZE_ANIMATION) {
-                _.saveScrollPosition();
-                _.recalculateSizes(container);
-                _.restoreScrollPosition();
-            }
+            _.saveScrollPosition();
+            _.recalculateSizes(container);
+            _.restoreScrollPosition();
         };
         var upListener = function (e) {
             e.cancelBubble = true;
@@ -4024,7 +4051,6 @@ PivotView.prototype.renderRawData = function (data) {
                         th.style.whiteSpace = "normal";
                         th.style.wordWrap = "normal";
                     }
-                    if (rawData[y][x].className) th.className = rawData[y][x].className;
                     if (rawData[y][x].group) renderedGroups[rawData[y][x].group] = {
                         x: x,
                         y: y,
@@ -4036,6 +4062,7 @@ PivotView.prototype.renderRawData = function (data) {
                         rowProps[y].format || columnProps[x].format
                     );
                 }
+                if (rawData[y][x].className) th.className = ((th.className || "").replace(/\blpt-sort(?:Asc|Desc)\b/g, "").trim() + " " + rawData[y][x].className).trim();
 
                 // add listeners
                 if (vertical && x === xTo - 1) {
@@ -4092,7 +4119,12 @@ PivotView.prototype.renderRawData = function (data) {
                     // Do not bind resize to the first data column (next to left header) —
                     // this boundary is resized only via the left header handle
                     if (COLUMN_RESIZE_ON && (info.leftHeaderColumnsNumber === 0 || x !== info.leftHeaderColumnsNumber)) {
-                        bindResize(th, x);
+                        th.style.position = "relative";
+                        var colResizeHandle = document.createElement("div");
+                        colResizeHandle.className = "lpt-resizeHandle lpt-resizableColumn";
+                        colResizeHandle.style.cssText = "position:absolute;right:0;top:0;bottom:0;width:6px;cursor:col-resize;z-index:1;";
+                        th.appendChild(colResizeHandle);
+                        bindResizeWithHandle(colResizeHandle, th, x);
                         th.className += " lpt-resizableColumn";
                     }
                     primaryColumns.push(th);
