@@ -1,6 +1,10 @@
 <!-- Title -->
 <span class="title-text">
-  {{ widget.title }}
+  @if (widgetTooltip) {
+    <span class="title-text-tooltip" [tooltip]="widgetTooltip">{{ widget.title }}</span>
+  } @else {
+    {{ widget.title }}
+  }
   @if (hasFilters) {
     <img
       class="btn-filters"

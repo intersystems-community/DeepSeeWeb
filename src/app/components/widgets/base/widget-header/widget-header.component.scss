@@ -170,6 +170,10 @@ button.btn-with-text {
   font-weight: bold;
   z-index: 2;
 
+  .title-text-tooltip {
+    pointer-events: auto;
+  }
+
   @include sm {
     display: none !important;
   }
