@@ -11,7 +11,7 @@
   <div class="header">
     <img src="assets/img/icons/icon-search.svg">
     <input #sr type="search" placeholder="{{'search' | i18n}}" [(ngModel)]="model.search"
-           (search)="onSearch(sr.value)" (keyup)="onSearch(sr.value)" (keydown.enter)="searchFilters()"
+           (search)="onSearch(sr.value)" (keyup)="onSearch(sr.value); onSearchInputChange(sr.value)" (keydown.enter)="searchFilters()"
            dswAutoFocus="desktop">
   </div>
   <!-- All/Exclude/Interval checkboxes -->
