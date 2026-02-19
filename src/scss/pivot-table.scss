@@ -181,6 +181,25 @@ $row-height: 22px;
   //overflow-x: hidden;
 }
 
+// Wrapped content mode for long headers and values
+.lpt .tableContainer.lpt-cellWrap {
+  .lpt-headerValue,
+  td,
+  th {
+    height: auto;
+    white-space: normal;
+  }
+
+  td > div,
+  th > div {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+    overflow-wrap: break-word;
+    word-break: normal;
+  }
+}
+
 // Footer
 .lpt .lpt-pageSwitcher {
   // height: $row-height;

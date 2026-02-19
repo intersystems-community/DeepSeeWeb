@@ -2635,6 +2635,7 @@ var PivotView = function (controller, container) {
      */
     this.FIXED_COLUMN_SIZES = [];
     this.FIXED_LEFT_HEADER_SIZES = {};
+    this.FIXED_LEFT_HEADER_WIDTH = undefined;
 
     this.PAGINATION_BLOCK_HEIGHT = 20;
     this.ANIMATION_TIMEOUT = 500;
@@ -2848,6 +2849,7 @@ PivotView.prototype.pushTable = function (opts) {
     if (this.tablesStack.length) {
         this.tablesStack[this.tablesStack.length - 1].FIXED_COLUMN_SIZES = this.FIXED_COLUMN_SIZES;
         this.tablesStack[this.tablesStack.length - 1].FIXED_LEFT_HEADER_SIZES = this.FIXED_LEFT_HEADER_SIZES;
+        this.tablesStack[this.tablesStack.length - 1].FIXED_LEFT_HEADER_WIDTH = this.FIXED_LEFT_HEADER_WIDTH;
         this.tablesStack[this.tablesStack.length - 1].savedSearch = this.savedSearch;
         this.tablesStack[this.tablesStack.length - 1].selectedRows = this.selectedRows;
         this.savedSearch = { restore: false, value: "", columnIndex: 0 };
@@ -2858,6 +2860,7 @@ PivotView.prototype.pushTable = function (opts) {
         element: tableElement,
         opts: opts || {},
         FIXED_LEFT_HEADER_SIZES: this.FIXED_LEFT_HEADER_SIZES || {},
+        FIXED_LEFT_HEADER_WIDTH: this.FIXED_LEFT_HEADER_WIDTH,
         pagination: pg = { // defaults copied to pushTable
             on: false,
             rows: Infinity, // rows by page including (headers + summary + rows from config)
@@ -2869,6 +2872,9 @@ PivotView.prototype.pushTable = function (opts) {
     this.FIXED_COLUMN_SIZES = [];
     var prevTable = this.tablesStack[this.tablesStack.length - 1];
     this.FIXED_LEFT_HEADER_SIZES = prevTable && prevTable.FIXED_LEFT_HEADER_SIZES ? prevTable.FIXED_LEFT_HEADER_SIZES : {};
+    this.FIXED_LEFT_HEADER_WIDTH = prevTable && prevTable.FIXED_LEFT_HEADER_WIDTH !== undefined
+        ? prevTable.FIXED_LEFT_HEADER_WIDTH
+        : undefined;
     this.selectedRows = {};
     this.elements.base.appendChild(tableElement);
     this.elements.tableContainer = tableElement;
@@ -2893,6 +2899,7 @@ PivotView.prototype.popTable = function () {
     this.pagination = (currentTable = this.tablesStack[this.tablesStack.length - 1]).pagination;
     if (currentTable.FIXED_COLUMN_SIZES) this.FIXED_COLUMN_SIZES = currentTable.FIXED_COLUMN_SIZES;
     if (currentTable.FIXED_LEFT_HEADER_SIZES) this.FIXED_LEFT_HEADER_SIZES = currentTable.FIXED_LEFT_HEADER_SIZES;
+    this.FIXED_LEFT_HEADER_WIDTH = currentTable.FIXED_LEFT_HEADER_WIDTH;
     if (currentTable.savedSearch) this.savedSearch = currentTable.savedSearch;
     if (currentTable.selectedRows) this.selectedRows = currentTable.selectedRows;
 
@@ -3452,6 +3459,7 @@ PivotView.prototype.recalculateSizes = function (container) {
             bodyHeight = containerHeight - headerH - pagedHeight,
             mainHeaderWidth = headerContainer.offsetWidth,
             layoutLeftWidth = Math.max(headerW, mainHeaderWidth),
+            fixedLeftWidth = _.FIXED_LEFT_HEADER_WIDTH,
             IS_LISTING = lTableHead.offsetHeight === 0,
             horizontalOverflowEpsilon = 2,
             hasVerticalScrollBar =
@@ -3462,6 +3470,10 @@ PivotView.prototype.recalculateSizes = function (container) {
             stableAvailableTopHeaderWidth = Math.max(0, Math.floor(availableTopHeaderWidth - 1)),
             hasHorizontalScrollBar =
                 tTableHead.scrollWidth > stableAvailableTopHeaderWidth + horizontalOverflowEpsilon;
+
+        if (fixedLeftWidth !== undefined && !isNaN(fixedLeftWidth)) {
+            layoutLeftWidth = Math.max(40, fixedLeftWidth);
+        }
 
         // horizontal scroll bar may change vertical scroll bar, so we need recalculate
         if (!hasVerticalScrollBar && hasHorizontalScrollBar) {
@@ -3554,7 +3566,7 @@ PivotView.prototype.recalculateSizes = function (container) {
         leftHeader.style.width = layoutLeftWidth + "px";
         tableBlock.style.height = containerHeight - headerH - pagedHeight - 1 + "px";
         headerContainer.style.height = headerH + "px";
-        headerContainer.style.width = headerW + "px";
+        headerContainer.style.width = layoutLeftWidth + "px";
         if (!this.controller.CONFIG.stretchColumns) {
             var syncedWidth = hasHorizontalScrollBar
                 ? Math.max(primaryContentWidth, stableAvailableTopHeaderWidth)
@@ -3932,13 +3944,15 @@ PivotView.prototype.renderRawData = function (data) {
     };
 
     var bindResizeLeftColumn = function (handleElement, thElement, columnIndex, allColumnThs) {
-        var baseWidth = 0, baseX = 0;
+        var baseWidth = 0, baseX = 0, baseLeftLayoutWidth = 0;
         var setColumnWidth = function (w) {
-            var px = Math.max(30, w) + "px";
+            var targetWidth = Math.max(30, w);
+            var px = targetWidth + "px";
             for (var i = 0; i < allColumnThs.length; i++) {
                 allColumnThs[i].style.width = allColumnThs[i].style.minWidth = px;
             }
-            _.FIXED_LEFT_HEADER_SIZES[columnIndex] = Math.max(30, w);
+            _.FIXED_LEFT_HEADER_SIZES[columnIndex] = targetWidth;
+            _.FIXED_LEFT_HEADER_WIDTH = Math.max(40, baseLeftLayoutWidth + (targetWidth - baseWidth));
         };
         var moveListener = function (e) {
             e.cancelBubble = true;
@@ -3963,6 +3977,8 @@ PivotView.prototype.renderRawData = function (data) {
             e.preventDefault();
             baseWidth = thElement.offsetWidth;
             baseX = e.pageX;
+            var lh = container.getElementsByClassName("lpt-leftHeader")[0];
+            baseLeftLayoutWidth = lh ? lh.offsetWidth : baseWidth;
             document.addEventListener("mousemove", moveListener);
             document.addEventListener("mouseup", upListener);
         });
