@@ -183,9 +183,7 @@ const TRANSLATIONS = {
     fullscreen: 'Toggle fullscreen',
     showKPI: 'Show KPI',
     openAnalyzer: 'Open analyzer',
-    addWidget: 'Add widget',
-    clickToDrillDown: 'Click to drill down',
-    clickToDrillThrough: 'Click for drill through'
+    addWidget: 'Add widget'
   },
   de: {
     settingsImported: 'Einstellungen wurden erfolgreich importiert!',
@@ -291,9 +289,7 @@ const TRANSLATIONS = {
     changeColors: 'Ändern Sie die Farben',
     fullscreen: 'Vollbild umschalten',
     showKPI: 'KPI anzeigen',
-    openAnalyzer: 'Analysator öffnen',
-    clickToDrillDown: 'Klicken für Drilldown',
-    clickToDrillThrough: 'Klicken für Drillthrough'
+    openAnalyzer: 'Analysator öffnen'
   },
   cs: {
     settingsImported: 'Nastavení bylo úspěšně importováno!',
@@ -396,9 +392,7 @@ const TRANSLATIONS = {
     changeColors: 'Změnit barvy',
     fullscreen: 'Přepnout na celou obrazovku',
     showKPI: 'Zobrazit KPI',
-    openAnalyzer: 'Otevřete analyzátor',
-    clickToDrillDown: 'Klikněte pro drill down',
-    clickToDrillThrough: 'Klikněte pro drill through'
+    openAnalyzer: 'Otevřete analyzátor'
   },
   ru: {
     settingsImported: 'Настройки были загружены успешно!',
@@ -504,9 +498,7 @@ const TRANSLATIONS = {
     changeColors: 'Изменить цвета',
     fullscreen: 'На весь экран',
     showKPI: 'Показать KPI',
-    openAnalyzer: 'Открыть analyzer',
-    clickToDrillDown: 'Нажмите для детализации',
-    clickToDrillThrough: 'Нажмите для просмотра деталей'
+    openAnalyzer: 'Открыть analyzer'
   },
   pt: {
     settingsImported: 'As configurações foram importadas com sucesso! A página será recarregada.',
@@ -616,8 +608,6 @@ const TRANSLATIONS = {
     fullscreen: 'Alternar tela cheia',
     showKPI: 'Mostrar KPI',
     openAnalyzer: 'Abrir analisador',
-    addWidget: 'Adicionar widget',
-    clickToDrillDown: 'Clique para detalhar',
-    clickToDrillThrough: 'Clique para drill through'
+    addWidget: 'Adicionar widget'
   }
 };

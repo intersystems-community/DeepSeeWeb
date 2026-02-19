@@ -41,6 +41,7 @@ export interface IContextMenuData {
   canDrill: boolean;
   canDrillthrough: boolean;
   drillPath?: string;
+  drillFilters?: string[];
   drillTitle?: string;
   copyValue?: string;
 }
@@ -752,8 +753,11 @@ export class DashboardScreenComponent extends DashboardEditingClass implements O
     if (!this.contextMenuData) {
       return;
     }
+    const path = this.contextMenuData.drillFilters?.length
+      ? this.contextMenuData.drillFilters
+      : this.contextMenuData.drillPath;
     this.bs.broadcast('drillthrough:' + (this.ctxItem?.name || ''), {
-      path: this.contextMenuData.drillPath,
+      path,
       title: this.contextMenuData.drillTitle
     });
     this.hideContextMenu();

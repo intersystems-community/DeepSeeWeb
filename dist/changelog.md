@@ -1,3 +1,9 @@
+#### 4.0.29
+* added autosearch after idle or input (#473)
+
+#### 4.0.28
+* added tooltip support for widget title (#474)
+
 #### 4.0.27
 * fixed issue with OAuth "Sing in" button
 

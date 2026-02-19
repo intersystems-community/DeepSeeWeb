@@ -3423,7 +3423,6 @@ PivotView.prototype.recalculateSizes = function (container) {
         var headerContainer = container.getElementsByClassName("lpt-header")[0],
             topHeader = container.getElementsByClassName("lpt-topHeader")[0],
             topHeaderTable = container.getElementsByTagName("table")[0],
-            topHeaderTableWidth = topHeaderTable.offsetWidth,
             tTableHead = topHeader.getElementsByTagName("thead")[0],
             leftHeader = container.getElementsByClassName("lpt-leftHeader")[0],
             lTableHead = leftHeader.getElementsByTagName("thead")[0],
@@ -3452,23 +3451,33 @@ PivotView.prototype.recalculateSizes = function (container) {
         var containerHeight = container.offsetHeight,
             bodyHeight = containerHeight - headerH - pagedHeight,
             mainHeaderWidth = headerContainer.offsetWidth,
+            layoutLeftWidth = Math.max(headerW, mainHeaderWidth),
             IS_LISTING = lTableHead.offsetHeight === 0,
+            horizontalOverflowEpsilon = 2,
             hasVerticalScrollBar =
                 Math.max(lTableHead.offsetHeight, pTableHead.offsetHeight) > bodyHeight
                 && this.SCROLLBAR_WIDTH > 0,
+            availableTopHeaderWidth =
+                container.clientWidth - layoutLeftWidth - (hasVerticalScrollBar ? this.SCROLLBAR_WIDTH : 0),
+            stableAvailableTopHeaderWidth = Math.max(0, Math.floor(availableTopHeaderWidth - 1)),
             hasHorizontalScrollBar =
-                tTableHead.offsetWidth >
-                    topHeader.offsetWidth - (hasVerticalScrollBar ? this.SCROLLBAR_WIDTH : 0);
+                tTableHead.scrollWidth > stableAvailableTopHeaderWidth + horizontalOverflowEpsilon;
 
         // horizontal scroll bar may change vertical scroll bar, so we need recalculate
         if (!hasVerticalScrollBar && hasHorizontalScrollBar) {
             hasVerticalScrollBar =
                 Math.max(lTableHead.offsetHeight, pTableHead.offsetHeight) > bodyHeight - this.SCROLLBAR_WIDTH
                 && this.SCROLLBAR_WIDTH > 0;
+            availableTopHeaderWidth =
+                container.clientWidth - layoutLeftWidth - (hasVerticalScrollBar ? this.SCROLLBAR_WIDTH : 0);
+            stableAvailableTopHeaderWidth = Math.max(0, Math.floor(availableTopHeaderWidth - 1));
+            hasHorizontalScrollBar =
+                tTableHead.scrollWidth > stableAvailableTopHeaderWidth + horizontalOverflowEpsilon;
         }
 
         var addEggs = hasVerticalScrollBar && !IS_LISTING,
             cell, tr, cellWidths = [], rowHeadersHeights = [], rowDataHeights = [], i,
+            primaryContentWidth = 0,
             headerCellApplied = false;
 
         var applyExtraTopHeadCell = function () {
@@ -3493,6 +3502,9 @@ PivotView.prototype.recalculateSizes = function (container) {
         if (container["_primaryColumns"]) {
             for (i in container["_primaryColumns"]) {
                 cellWidths.push(container["_primaryColumns"][i].offsetWidth);
+            }
+            for (i = 0; i < cellWidths.length; i++) {
+                primaryContentWidth += cellWidths[i] || 0;
             }
         } else {
             console.warn("No _primaryColumns property in container, cell sizes won't be fixed.");
@@ -3536,18 +3548,20 @@ PivotView.prototype.recalculateSizes = function (container) {
 
         container.parentNode.removeChild(container); // detach
 
-        topHeader.style.marginLeft = headerW + "px";
-        tableBlock.style.marginLeft = headerW + "px";
+        topHeader.style.marginLeft = layoutLeftWidth + "px";
+        tableBlock.style.marginLeft = layoutLeftWidth + "px";
         leftHeader.style.height = containerHeight - headerH - pagedHeight + "px";
-        leftHeader.style.width = headerW + "px";
-        if (mainHeaderWidth > headerW) leftHeader.style.width = mainHeaderWidth + "px";
+        leftHeader.style.width = layoutLeftWidth + "px";
         tableBlock.style.height = containerHeight - headerH - pagedHeight - 1 + "px";
         headerContainer.style.height = headerH + "px";
         headerContainer.style.width = headerW + "px";
         if (!this.controller.CONFIG.stretchColumns) {
-            topHeaderTable.style.width = "auto";
-            mainContentTable.style.width =
-                hasHorizontalScrollBar ? "100%" : topHeaderTableWidth + "px";
+            var syncedWidth = hasHorizontalScrollBar
+                ? Math.max(primaryContentWidth, stableAvailableTopHeaderWidth)
+                : Math.min(primaryContentWidth || stableAvailableTopHeaderWidth, stableAvailableTopHeaderWidth);
+            syncedWidth = Math.max(0, Math.floor(syncedWidth));
+            topHeaderTable.style.width = syncedWidth + "px";
+            mainContentTable.style.width = syncedWidth + "px";
         }
 
         // @TEST beta.13
@@ -4116,13 +4130,12 @@ PivotView.prototype.renderRawData = function (data) {
                     if (_.FIXED_COLUMN_SIZES[x]) {
                         th.style.minWidth = th.style.width = _.FIXED_COLUMN_SIZES[x] + "px";
                     }
-                    // Do not bind resize to the first data column (next to left header) —
-                    // this boundary is resized only via the left header handle
-                    if (COLUMN_RESIZE_ON && (info.leftHeaderColumnsNumber === 0 || x !== info.leftHeaderColumnsNumber)) {
+                    // Bind resize handle to every data column, including the first one next to left header.
+                    if (COLUMN_RESIZE_ON) {
                         th.style.position = "relative";
                         var colResizeHandle = document.createElement("div");
                         colResizeHandle.className = "lpt-resizeHandle lpt-resizableColumn";
-                        colResizeHandle.style.cssText = "position:absolute;right:0;top:0;bottom:0;width:6px;cursor:col-resize;z-index:1;";
+                        colResizeHandle.style.cssText = "position:absolute;right:0;top:0;bottom:0;width:10px;cursor:col-resize;z-index:1;";
                         th.appendChild(colResizeHandle);
                         bindResizeWithHandle(colResizeHandle, th, x);
                         th.className += " lpt-resizableColumn";
@@ -4223,7 +4236,8 @@ PivotView.prototype.renderRawData = function (data) {
             }
         }
         var firstLeftTh = primaryLeftColumns[0];
-        var leftResizeHandleStyle = "position:absolute;right:0;top:0;bottom:0;width:8px;cursor:col-resize;z-index:10;pointer-events:auto;";
+        // Keep left-header resize handle visually and behaviorally consistent with data-column handles.
+        var leftResizeHandleStyle = "position:absolute;right:0;top:0;bottom:0;width:10px;cursor:col-resize;z-index:1;pointer-events:auto;";
         var resizeHandle = document.createElement("div");
         resizeHandle.className = "lpt-resizeHandle lpt-resizableColumn";
         resizeHandle.style.cssText = leftResizeHandleStyle;
@@ -4304,7 +4318,9 @@ PivotView.prototype.renderRawData = function (data) {
                     try {
                         var f1 = data.rawData[y][info.leftHeaderColumnsNumber - 1].source.path;
                         var f2 = data.rawData[info.topHeaderRowsNumber - 1 - (info.SUMMARY_SHOWN && _.controller.CONFIG["attachTotals"] ? 1 : 0)][x].source.path;
-                        ctxData.drillPath = [f1, f2].filter(Boolean).join("~");
+                        var drillFilters = [f1, f2].filter(Boolean);
+                        ctxData.drillFilters = drillFilters;
+                        ctxData.drillPath = drillFilters.join("~");
                         ctxData.drillTitle = displayVal || "";
                     } catch (e) {}
                     if (typeof _.controller.CONFIG.triggers["contextMenu"] === "function") {

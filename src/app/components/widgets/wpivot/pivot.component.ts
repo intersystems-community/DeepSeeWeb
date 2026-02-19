@@ -62,14 +62,23 @@ export class WPivotComponent extends BaseWidget {
         },
         back: (p) => this.onDrillDown(p),
         cellDrillThrough: (...args) => this.onDrillThrough(...args),
-        contextMenu: (ctxData: { canDrill?: boolean; canDrillthrough?: boolean; drillPath?: string; drillTitle?: string; copyValue?: string }, event: MouseEvent) => {
+        contextMenu: (ctxData: {
+          canDrill?: boolean;
+          canDrillthrough?: boolean;
+          drillPath?: string;
+          drillFilters?: string[];
+          drillTitle?: string;
+          copyValue?: string
+        }, event: MouseEvent) => {
+          const canDrill = !this.widget.kpitype && !this.drillFilterWidgets?.length && !!ctxData.canDrill;
           this.bs.broadcast('contextmenu', {
             widget: this.widget,
             event,
             ctxData: {
-              canDrill: ctxData.canDrill,
+              canDrill,
               canDrillthrough: ctxData.canDrillthrough,
               drillPath: ctxData.drillPath,
+              drillFilters: ctxData.drillFilters,
               drillTitle: ctxData.drillTitle,
               copyValue: ctxData.copyValue
             }

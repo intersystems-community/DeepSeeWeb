@@ -1,12 +1,12 @@
 module.exports = {
   "/configs": {
-    "target": "http://localhost:52773/dsw/",
+    "target": "https://samples-bi-demo.demo.community.intersystems.com/dsw/",
     "secure": false,
     "logLevel": "debug",
     "changeOrigin": true
   },
   "/MDX2JSON": {
-    "target": "http://localhost:52773//",
+    "target": "https://samples-bi-demo.demo.community.intersystems.com/",
     "secure": false,
     "logLevel": "debug",
     "changeOrigin": true

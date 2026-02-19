@@ -1,3 +1,17 @@
+#### 4.0.30
+* context menu items to copy values in clipboard, drilldown and drillthrough
+* ability to copy text value from the table cell
+* added ability to resize left table header
+* text wrap functionality added
+* tooltip for table when drilldown is available
+* button to call context menu (left top corner)
+
+#### 4.0.29
+* added autosearch after idle or input (#473)
+
+#### 4.0.28
+* added tooltip support for widget title (#474)
+
 #### 4.0.27
 * fixed issue with OAuth "Sing in" button
 
