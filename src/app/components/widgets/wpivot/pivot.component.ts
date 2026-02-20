@@ -15,6 +15,37 @@ export class WPivotComponent extends BaseWidget {
   @Input() widget: IWidgetDesc = {} as IWidgetDesc;
   isSpinner = false;
   private _oldMdx = '';
+  private hoveredCellValue?: string;
+  private readonly onMouseOver = (event: Event) => {
+    const target = event.target as HTMLElement | null;
+    const cell = target?.closest('td,th') as HTMLElement | null;
+    if (!cell || !this.el.nativeElement.contains(cell)) {
+      this.hoveredCellValue = undefined;
+      return;
+    }
+    const text = (cell.textContent || '').trim();
+    this.hoveredCellValue = text;
+  };
+  private readonly onMouseLeave = () => {
+    this.hoveredCellValue = undefined;
+  };
+  private readonly onKeyDown = (event: KeyboardEvent) => {
+    if (!(event.ctrlKey || event.metaKey) || event.key.toLowerCase() !== 'c') {
+      return;
+    }
+    if (window.getSelection?.()?.toString()) {
+      return;
+    }
+    const active = document.activeElement as HTMLElement | null;
+    if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.isContentEditable)) {
+      return;
+    }
+    if (this.hoveredCellValue === undefined) {
+      return;
+    }
+    event.preventDefault();
+    this.copyText(this.hoveredCellValue);
+  };
 
   constructor() {
     super();
@@ -23,9 +54,15 @@ export class WPivotComponent extends BaseWidget {
 
   ngAfterViewInit() {
     this.createPivotTable();
+    this.el.nativeElement.addEventListener('mouseover', this.onMouseOver);
+    this.el.nativeElement.addEventListener('mouseleave', this.onMouseLeave);
+    document.addEventListener('keydown', this.onKeyDown);
   }
 
   ngOnDestroy() {
+    this.el.nativeElement.removeEventListener('mouseover', this.onMouseOver);
+    this.el.nativeElement.removeEventListener('mouseleave', this.onMouseLeave);
+    document.removeEventListener('keydown', this.onKeyDown);
     super.ngOnDestroy();
   }
 
@@ -271,5 +308,22 @@ export class WPivotComponent extends BaseWidget {
     // pdfMake.createPdf({
     //     content: ct
     // }).open();
+  }
+
+  private copyText(text: string) {
+    if (navigator.clipboard?.writeText) {
+      navigator.clipboard.writeText(text).catch(() => this.copyFallback(text));
+      return;
+    }
+    this.copyFallback(text);
+  }
+
+  private copyFallback(text: string) {
+    const input = document.createElement('input');
+    input.value = text;
+    document.body.appendChild(input);
+    input.select();
+    document.execCommand('copy');
+    document.body.removeChild(input);
   }
 }
