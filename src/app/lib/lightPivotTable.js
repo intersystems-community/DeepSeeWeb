@@ -581,7 +581,11 @@ DataController.prototype.resetRawData = function () {
     if (data.dimensions[1].length) {
         dim1raw(rd1, data.dimensions[1], undefined, undefined, 1, getMaxLevel(data.dimensions[1]));
     }
-    if (rd1[0]) dimCaption = (rd1[0][rd1[0].length - 1] || { source: {} }).source["dimension"];
+    if (rd1[0]) {
+        var lastCell = rd1[0][rd1[0].length - 1] || { source: {} };
+        var src = lastCell.source || {};
+        dimCaption = src["dimension"] || src["property"] || src["title"] || "";
+    }
 
     var xw = (rd0[0] || []).length,
         yh = rd1.length || data.info.rowCount || 0,
@@ -2535,6 +2539,18 @@ PivotLocale.prototype.LOCALES = [
     "en": "% of Total",
     "de": "% des Summe",
     "cs": "% z Celkem"
+ },
+ { // 6
+    "ru": "Копировать",
+    "en": "Copy",
+    "de": "Kopieren",
+    "cs": "Kopírovat"
+ },
+ { // 7
+    "ru": "Меню",
+    "en": "Menu",
+    "de": "Menü",
+    "cs": "Nabídka"
  }
 ];
 
@@ -2618,6 +2634,8 @@ var PivotView = function (controller, container) {
      * @type {number[]}
      */
     this.FIXED_COLUMN_SIZES = [];
+    this.FIXED_LEFT_HEADER_SIZES = {};
+    this.FIXED_LEFT_HEADER_WIDTH = undefined;
 
     this.PAGINATION_BLOCK_HEIGHT = 20;
     this.ANIMATION_TIMEOUT = 500;
@@ -2827,9 +2845,11 @@ PivotView.prototype.pushTable = function (opts) {
         pg,
         tableElement = document.createElement("div");
 
-    tableElement.className = "tableContainer";
+    tableElement.className = "tableContainer" + (this.controller.CONFIG["wrapCellContent"] ? " lpt-cellWrap" : "");
     if (this.tablesStack.length) {
         this.tablesStack[this.tablesStack.length - 1].FIXED_COLUMN_SIZES = this.FIXED_COLUMN_SIZES;
+        this.tablesStack[this.tablesStack.length - 1].FIXED_LEFT_HEADER_SIZES = this.FIXED_LEFT_HEADER_SIZES;
+        this.tablesStack[this.tablesStack.length - 1].FIXED_LEFT_HEADER_WIDTH = this.FIXED_LEFT_HEADER_WIDTH;
         this.tablesStack[this.tablesStack.length - 1].savedSearch = this.savedSearch;
         this.tablesStack[this.tablesStack.length - 1].selectedRows = this.selectedRows;
         this.savedSearch = { restore: false, value: "", columnIndex: 0 };
@@ -2839,6 +2859,8 @@ PivotView.prototype.pushTable = function (opts) {
     this.tablesStack.push({
         element: tableElement,
         opts: opts || {},
+        FIXED_LEFT_HEADER_SIZES: this.FIXED_LEFT_HEADER_SIZES || {},
+        FIXED_LEFT_HEADER_WIDTH: this.FIXED_LEFT_HEADER_WIDTH,
         pagination: pg = { // defaults copied to pushTable
             on: false,
             rows: Infinity, // rows by page including (headers + summary + rows from config)
@@ -2848,6 +2870,11 @@ PivotView.prototype.pushTable = function (opts) {
     });
 
     this.FIXED_COLUMN_SIZES = [];
+    var prevTable = this.tablesStack[this.tablesStack.length - 1];
+    this.FIXED_LEFT_HEADER_SIZES = prevTable && prevTable.FIXED_LEFT_HEADER_SIZES ? prevTable.FIXED_LEFT_HEADER_SIZES : {};
+    this.FIXED_LEFT_HEADER_WIDTH = prevTable && prevTable.FIXED_LEFT_HEADER_WIDTH !== undefined
+        ? prevTable.FIXED_LEFT_HEADER_WIDTH
+        : undefined;
     this.selectedRows = {};
     this.elements.base.appendChild(tableElement);
     this.elements.tableContainer = tableElement;
@@ -2871,6 +2898,8 @@ PivotView.prototype.popTable = function () {
 
     this.pagination = (currentTable = this.tablesStack[this.tablesStack.length - 1]).pagination;
     if (currentTable.FIXED_COLUMN_SIZES) this.FIXED_COLUMN_SIZES = currentTable.FIXED_COLUMN_SIZES;
+    if (currentTable.FIXED_LEFT_HEADER_SIZES) this.FIXED_LEFT_HEADER_SIZES = currentTable.FIXED_LEFT_HEADER_SIZES;
+    this.FIXED_LEFT_HEADER_WIDTH = currentTable.FIXED_LEFT_HEADER_WIDTH;
     if (currentTable.savedSearch) this.savedSearch = currentTable.savedSearch;
     if (currentTable.selectedRows) this.selectedRows = currentTable.selectedRows;
 
@@ -3095,6 +3124,65 @@ PivotView.prototype.copyToClipboard = function (text) {
     document.body.removeChild($temp);
     return result;
 
+};
+
+/**
+ * Show context menu for cell with Copy option.
+ * @param {*} value - Value to copy
+ * @param {Event} event - Context menu event
+ */
+PivotView.prototype._showCellContextMenu = function (value, event) {
+    var self = this,
+        menu = document.createElement("div"),
+        copyItem = document.createElement("div"),
+        mousedownHandler;
+
+    this._removeCellContextMenu();
+
+    menu.className = "lpt-cellContextMenu";
+    menu.style.position = "fixed";
+    menu.style.left = event.clientX + "px";
+    menu.style.top = event.clientY + "px";
+    menu.style.zIndex = "9999";
+    menu.style.background = "#fff";
+    menu.style.border = "1px solid #d0d0d0";
+    menu.style.borderRadius = "4px";
+    menu.style.boxShadow = "0 0 5px 0px rgba(0,0,0,0.12)";
+    menu.style.minWidth = "100px";
+
+    copyItem.textContent = pivotLocale.get(6);
+    copyItem.style.cursor = "pointer";
+    copyItem.style.padding = "10px 20px";
+    copyItem.style.width = "100%";
+    copyItem.style.boxSizing = "border-box";
+    copyItem.addEventListener("click", function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var text = value !== undefined && value !== null && value !== "" ? String(value) : "";
+        self.copyToClipboard(text);
+        self._removeCellContextMenu();
+        document.removeEventListener("mousedown", mousedownHandler);
+    });
+
+    menu.appendChild(copyItem);
+    document.body.appendChild(menu);
+
+    mousedownHandler = function (e) {
+        if (e.target && !menu.contains(e.target)) {
+            if (menu.parentNode) {
+                menu.parentNode.removeChild(menu);
+            }
+            document.removeEventListener("mousedown", mousedownHandler);
+        }
+    };
+    document.addEventListener("mousedown", mousedownHandler);
+};
+
+PivotView.prototype._removeCellContextMenu = function () {
+    var menus = document.getElementsByClassName("lpt-cellContextMenu");
+    while (menus.length) {
+        menus[0].parentNode.removeChild(menus[0]);
+    }
 };
 
 PivotView.prototype.listingClickHandler = function (params, data) {
@@ -3342,7 +3430,6 @@ PivotView.prototype.recalculateSizes = function (container) {
         var headerContainer = container.getElementsByClassName("lpt-header")[0],
             topHeader = container.getElementsByClassName("lpt-topHeader")[0],
             topHeaderTable = container.getElementsByTagName("table")[0],
-            topHeaderTableWidth = topHeaderTable.offsetWidth,
             tTableHead = topHeader.getElementsByTagName("thead")[0],
             leftHeader = container.getElementsByClassName("lpt-leftHeader")[0],
             lTableHead = leftHeader.getElementsByTagName("thead")[0],
@@ -3371,23 +3458,38 @@ PivotView.prototype.recalculateSizes = function (container) {
         var containerHeight = container.offsetHeight,
             bodyHeight = containerHeight - headerH - pagedHeight,
             mainHeaderWidth = headerContainer.offsetWidth,
+            layoutLeftWidth = Math.max(headerW, mainHeaderWidth),
+            fixedLeftWidth = _.FIXED_LEFT_HEADER_WIDTH,
             IS_LISTING = lTableHead.offsetHeight === 0,
+            horizontalOverflowEpsilon = 2,
             hasVerticalScrollBar =
                 Math.max(lTableHead.offsetHeight, pTableHead.offsetHeight) > bodyHeight
                 && this.SCROLLBAR_WIDTH > 0,
+            availableTopHeaderWidth =
+                container.clientWidth - layoutLeftWidth - (hasVerticalScrollBar ? this.SCROLLBAR_WIDTH : 0),
+            stableAvailableTopHeaderWidth = Math.max(0, Math.floor(availableTopHeaderWidth - 1)),
             hasHorizontalScrollBar =
-                tTableHead.offsetWidth >
-                    topHeader.offsetWidth - (hasVerticalScrollBar ? this.SCROLLBAR_WIDTH : 0);
+                tTableHead.scrollWidth > stableAvailableTopHeaderWidth + horizontalOverflowEpsilon;
+
+        if (fixedLeftWidth !== undefined && !isNaN(fixedLeftWidth)) {
+            layoutLeftWidth = Math.max(40, fixedLeftWidth);
+        }
 
         // horizontal scroll bar may change vertical scroll bar, so we need recalculate
         if (!hasVerticalScrollBar && hasHorizontalScrollBar) {
             hasVerticalScrollBar =
                 Math.max(lTableHead.offsetHeight, pTableHead.offsetHeight) > bodyHeight - this.SCROLLBAR_WIDTH
                 && this.SCROLLBAR_WIDTH > 0;
+            availableTopHeaderWidth =
+                container.clientWidth - layoutLeftWidth - (hasVerticalScrollBar ? this.SCROLLBAR_WIDTH : 0);
+            stableAvailableTopHeaderWidth = Math.max(0, Math.floor(availableTopHeaderWidth - 1));
+            hasHorizontalScrollBar =
+                tTableHead.scrollWidth > stableAvailableTopHeaderWidth + horizontalOverflowEpsilon;
         }
 
         var addEggs = hasVerticalScrollBar && !IS_LISTING,
             cell, tr, cellWidths = [], rowHeadersHeights = [], rowDataHeights = [], i,
+            primaryContentWidth = 0,
             headerCellApplied = false;
 
         var applyExtraTopHeadCell = function () {
@@ -3413,8 +3515,24 @@ PivotView.prototype.recalculateSizes = function (container) {
             for (i in container["_primaryColumns"]) {
                 cellWidths.push(container["_primaryColumns"][i].offsetWidth);
             }
+            for (i = 0; i < cellWidths.length; i++) {
+                primaryContentWidth += cellWidths[i] || 0;
+            }
         } else {
             console.warn("No _primaryColumns property in container, cell sizes won't be fixed.");
+        }
+        if (container["_primaryLeftColumns"] && container["_primaryLeftColumns"].length > 0
+            && _.controller.CONFIG["autoFitLeftHeader"]) {
+            var plCols = container["_primaryLeftColumns"];
+            var lhColIdx = plCols[0]._leftHeaderColIndex;
+            if (lhColIdx !== undefined && _.FIXED_LEFT_HEADER_SIZES[lhColIdx] === undefined) {
+                var maxW = 0;
+                for (var afi = 0; afi < plCols.length; afi++) {
+                    var cw = plCols[afi].scrollWidth || plCols[afi].offsetWidth;
+                    if (cw > maxW) maxW = cw;
+                }
+                _.FIXED_LEFT_HEADER_SIZES[lhColIdx] = Math.max(maxW + 12, 80);
+            }
         }
         if (container["_primaryRows"] && container["_primaryCells"]) {
             for (i in container["_primaryRows"]) {
@@ -3442,18 +3560,20 @@ PivotView.prototype.recalculateSizes = function (container) {
 
         container.parentNode.removeChild(container); // detach
 
-        topHeader.style.marginLeft = headerW + "px";
-        tableBlock.style.marginLeft = headerW + "px";
+        topHeader.style.marginLeft = layoutLeftWidth + "px";
+        tableBlock.style.marginLeft = layoutLeftWidth + "px";
         leftHeader.style.height = containerHeight - headerH - pagedHeight + "px";
-        leftHeader.style.width = headerW + "px";
-        if (mainHeaderWidth > headerW) leftHeader.style.width = mainHeaderWidth + "px";
+        leftHeader.style.width = layoutLeftWidth + "px";
         tableBlock.style.height = containerHeight - headerH - pagedHeight - 1 + "px";
         headerContainer.style.height = headerH + "px";
-        headerContainer.style.width = headerW + "px";
+        headerContainer.style.width = layoutLeftWidth + "px";
         if (!this.controller.CONFIG.stretchColumns) {
-            topHeaderTable.style.width = "auto";
-            mainContentTable.style.width =
-                hasHorizontalScrollBar ? "100%" : topHeaderTableWidth + "px";
+            var syncedWidth = hasHorizontalScrollBar
+                ? Math.max(primaryContentWidth, stableAvailableTopHeaderWidth)
+                : Math.min(primaryContentWidth || stableAvailableTopHeaderWidth, stableAvailableTopHeaderWidth);
+            syncedWidth = Math.max(0, Math.floor(syncedWidth));
+            topHeaderTable.style.width = syncedWidth + "px";
+            mainContentTable.style.width = syncedWidth + "px";
         }
 
         // @TEST beta.13
@@ -3518,6 +3638,32 @@ PivotView.prototype.recalculateSizes = function (container) {
         keepSizes.forEach(function (o) {
             o.el.style.height = parseInt(o.height) + "px";
         });
+
+        if (container["_primaryLeftColumns"] && container["_primaryLeftColumns"].length > 0) {
+            var plCols = container["_primaryLeftColumns"];
+            var lhColIdx = plCols[0]._leftHeaderColIndex;
+            if (lhColIdx !== undefined) {
+                var lhW = _.FIXED_LEFT_HEADER_SIZES[lhColIdx];
+                if (lhW !== undefined) {
+                    var lhPx = lhW + "px";
+                    for (var lhi = 0; lhi < plCols.length; lhi++) {
+                        plCols[lhi].style.width = plCols[lhi].style.minWidth = lhPx;
+                    }
+                } else if (_.controller.CONFIG["autoFitLeftHeader"]) {
+                    var maxW = 0;
+                    for (lhi = 0; lhi < plCols.length; lhi++) {
+                        var cw = plCols[lhi].scrollWidth || plCols[lhi].offsetWidth;
+                        if (cw > maxW) maxW = cw;
+                    }
+                    maxW = Math.max(maxW + 12, 80);
+                    _.FIXED_LEFT_HEADER_SIZES[lhColIdx] = maxW;
+                    lhPx = maxW + "px";
+                    for (lhi = 0; lhi < plCols.length; lhi++) {
+                        plCols[lhi].style.width = plCols[lhi].style.minWidth = lhPx;
+                    }
+                }
+            }
+        }
 
         containerParent.appendChild(container); // attach
 
@@ -3628,7 +3774,7 @@ PivotView.prototype.renderRawData = function (data) {
 
         CLICK_EVENT = this.controller.CONFIG["triggerEvent"] || "click",
         ATTACH_TOTALS = info.SUMMARY_SHOWN && this.controller.CONFIG["attachTotals"] ? 1 : 0,
-        COLUMN_RESIZE_ON = !!this.controller.CONFIG.columnResizing,
+        COLUMN_RESIZE_ON = !!this.controller.CONFIG["columnResizing"],
         LISTING = info.leftHeaderColumnsNumber === 0,
         SEARCH_ENABLED = LISTING && this.controller.CONFIG["enableSearch"],
         LISTING_SELECT_ENABLED = this.controller.CONFIG["enableListingSelect"],
@@ -3676,7 +3822,7 @@ PivotView.prototype.renderRawData = function (data) {
 
         renderedGroups = {}, // keys of rendered groups; key = group, value = { x, y, element }
         i, x, y, tr = null, th, td, primaryColumns = [], primaryRows = [], primaryCells = [],
-        ratio, cellStyle, tempI, tempJ, div;
+        primaryLeftColumns = [], ratio, cellStyle, tempI, tempJ, div;
 
     this.SEARCH_ENABLED = SEARCH_ENABLED;
 
@@ -3728,10 +3874,7 @@ PivotView.prototype.renderRawData = function (data) {
     };
 
     var bindResize = function (element, column) {
-
-        var baseWidth = 0,
-            baseX = 0;
-
+        var baseWidth = 0, baseX = 0;
         var moveListener = function (e) {
             e.cancelBubble = true;
             e.preventDefault();
@@ -3743,7 +3886,6 @@ PivotView.prototype.renderRawData = function (data) {
                 _.restoreScrollPosition();
             }
         };
-
         var upListener = function (e) {
             e.cancelBubble = true;
             e.preventDefault();
@@ -3755,7 +3897,6 @@ PivotView.prototype.renderRawData = function (data) {
             document.removeEventListener("mousemove", moveListener);
             document.removeEventListener("mouseup", upListener);
         };
-
         element.addEventListener("mousedown", function (e) {
             if ((e.target || e.srcElement) !== element) return;
             e.cancelBubble = true;
@@ -3765,7 +3906,82 @@ PivotView.prototype.renderRawData = function (data) {
             document.addEventListener("mousemove", moveListener);
             document.addEventListener("mouseup", upListener);
         });
+    };
 
+    // Resize via handle on RIGHT edge: dragging handle resizes the column to its left
+    var bindResizeWithHandle = function (handleElement, thElement, column) {
+        var baseWidth = 0, baseX = 0;
+        var moveListener = function (e) {
+            e.cancelBubble = true;
+            e.preventDefault();
+            thElement.style.width = thElement.style.minWidth =
+                baseWidth - baseX + e.pageX + "px";
+            if (RESIZE_ANIMATION) {
+                _.saveScrollPosition();
+                _.recalculateSizes(container);
+                _.restoreScrollPosition();
+            }
+        };
+        var upListener = function (e) {
+            e.cancelBubble = true;
+            e.preventDefault();
+            thElement.style.width = thElement.style.minWidth =
+                (_.FIXED_COLUMN_SIZES[column] = baseWidth - baseX + e.pageX) + "px";
+            _.saveScrollPosition();
+            _.recalculateSizes(container);
+            _.restoreScrollPosition();
+            document.removeEventListener("mousemove", moveListener);
+            document.removeEventListener("mouseup", upListener);
+        };
+        handleElement.addEventListener("mousedown", function (e) {
+            e.cancelBubble = true;
+            e.preventDefault();
+            baseWidth = thElement.offsetWidth;
+            baseX = e.pageX;
+            document.addEventListener("mousemove", moveListener);
+            document.addEventListener("mouseup", upListener);
+        });
+    };
+
+    var bindResizeLeftColumn = function (handleElement, thElement, columnIndex, allColumnThs) {
+        var baseWidth = 0, baseX = 0, baseLeftLayoutWidth = 0;
+        var setColumnWidth = function (w) {
+            var targetWidth = Math.max(30, w);
+            var px = targetWidth + "px";
+            for (var i = 0; i < allColumnThs.length; i++) {
+                allColumnThs[i].style.width = allColumnThs[i].style.minWidth = px;
+            }
+            _.FIXED_LEFT_HEADER_SIZES[columnIndex] = targetWidth;
+            _.FIXED_LEFT_HEADER_WIDTH = Math.max(40, baseLeftLayoutWidth + (targetWidth - baseWidth));
+        };
+        var moveListener = function (e) {
+            e.cancelBubble = true;
+            e.preventDefault();
+            setColumnWidth(baseWidth - baseX + e.pageX);
+            _.saveScrollPosition();
+            _.recalculateSizes(container);
+            _.restoreScrollPosition();
+        };
+        var upListener = function (e) {
+            e.cancelBubble = true;
+            e.preventDefault();
+            setColumnWidth(baseWidth - baseX + e.pageX);
+            _.saveScrollPosition();
+            _.recalculateSizes(container);
+            _.restoreScrollPosition();
+            document.removeEventListener("mousemove", moveListener);
+            document.removeEventListener("mouseup", upListener);
+        };
+        handleElement.addEventListener("mousedown", function (e) {
+            e.cancelBubble = true;
+            e.preventDefault();
+            baseWidth = thElement.offsetWidth;
+            baseX = e.pageX;
+            var lh = container.getElementsByClassName("lpt-leftHeader")[0];
+            baseLeftLayoutWidth = lh ? lh.offsetWidth : baseWidth;
+            document.addEventListener("mousemove", moveListener);
+            document.addEventListener("mouseup", upListener);
+        });
     };
 
     // clean previous content
@@ -3865,7 +4081,6 @@ PivotView.prototype.renderRawData = function (data) {
                         th.style.whiteSpace = "normal";
                         th.style.wordWrap = "normal";
                     }
-                    if (rawData[y][x].className) th.className = rawData[y][x].className;
                     if (rawData[y][x].group) renderedGroups[rawData[y][x].group] = {
                         x: x,
                         y: y,
@@ -3877,15 +4092,44 @@ PivotView.prototype.renderRawData = function (data) {
                         rowProps[y].format || columnProps[x].format
                     );
                 }
+                if (rawData[y][x].className) th.className = ((th.className || "").replace(/\blpt-sort(?:Asc|Desc)\b/g, "").trim() + " " + rawData[y][x].className).trim();
 
                 // add listeners
                 if (vertical && x === xTo - 1) {
                     primaryRows.push(th);
+                    th._leftHeaderColIndex = x;
+                    primaryLeftColumns.push(th);
                     th.addEventListener(CLICK_EVENT, (function (index, data) {
                         return function () {
                             _._rowClickHandler.call(_, index, data);
                         };
                     })(y, rawData[y][x]));
+                    if (_.controller.CONFIG["drillDownTooltip"]) {
+                        th.setAttribute("title", _.controller.CONFIG["drillDownTooltip"]);
+                    }
+                }
+                if (vertical) {
+                    th.addEventListener("contextmenu", (function (cellData, elem) {
+                        return function (event) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                            var displayVal = (elem && elem.textContent) ? elem.textContent.trim() : (cellData.value !== undefined && cellData.value !== null ? String(cellData.value) : "");
+                            var ctxData = {
+                                canDrill: !!(cellData.source && cellData.source.path),
+                                canDrillthrough: false,
+                                copyValue: displayVal
+                            };
+                            if (cellData.source && cellData.source.path) {
+                                ctxData.drillPath = cellData.source.path;
+                                ctxData.drillTitle = displayVal || "";
+                            }
+                            if (typeof _.controller.CONFIG.triggers["contextMenu"] === "function") {
+                                _.controller.CONFIG.triggers["contextMenu"](ctxData, event);
+                            } else {
+                                _._showCellContextMenu.call(_, displayVal, event);
+                            }
+                        };
+                    })(rawData[y][x], th));
                 }
                 if (!vertical && y === yTo - 1 - ATTACH_TOTALS && !th["_hasSortingListener"]) {
                     th["_hasSortingListener"] = false; // why false?
@@ -3902,11 +4146,32 @@ PivotView.prototype.renderRawData = function (data) {
                     if (_.FIXED_COLUMN_SIZES[x]) {
                         th.style.minWidth = th.style.width = _.FIXED_COLUMN_SIZES[x] + "px";
                     }
+                    // Bind resize handle to every data column, including the first one next to left header.
                     if (COLUMN_RESIZE_ON) {
-                        bindResize(th, x);
+                        th.style.position = "relative";
+                        var colResizeHandle = document.createElement("div");
+                        colResizeHandle.className = "lpt-resizeHandle lpt-resizableColumn";
+                        colResizeHandle.style.cssText = "position:absolute;right:0;top:0;bottom:0;width:10px;cursor:col-resize;z-index:1;";
+                        th.appendChild(colResizeHandle);
+                        bindResizeWithHandle(colResizeHandle, th, x);
                         th.className += " lpt-resizableColumn";
                     }
                     primaryColumns.push(th);
+                }
+                if (!vertical) {
+                    th.addEventListener("contextmenu", (function (cellData, elem) {
+                        return function (event) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                            var displayVal = (elem && elem.textContent) ? elem.textContent.trim() : (cellData.value !== undefined && cellData.value !== null ? String(cellData.value) : "");
+                            var ctxData = { canDrill: false, canDrillthrough: false, copyValue: displayVal };
+                            if (typeof _.controller.CONFIG.triggers["contextMenu"] === "function") {
+                                _.controller.CONFIG.triggers["contextMenu"](ctxData, event);
+                            } else {
+                                _._showCellContextMenu.call(_, displayVal, event);
+                            }
+                        };
+                    })(rawData[y][x], th));
                 }
 
             }
@@ -3924,6 +4189,25 @@ PivotView.prototype.renderRawData = function (data) {
         header.addEventListener(CLICK_EVENT, function (e) {
             _._backClickHandler.call(_, e);
         });
+    }
+    if (this.controller.CONFIG["showContextMenuButton"] && typeof this.controller.CONFIG.triggers["contextMenu"] === "function"
+        && !(info.leftHeaderColumnsNumber === 0 && (this.controller.CONFIG["hideButtons"] || this.tablesStack.length < 2))) {
+        var ctxBtn = document.createElement("span");
+        ctxBtn.className = "lpt-ctxMenuBtn";
+        ctxBtn.innerHTML = "&#8942;";
+        ctxBtn.title = pivotLocale.get(7);
+        ctxBtn.style.cssText = "cursor:pointer;margin-left:4px;opacity:0.6;font-size:14px;line-height:1;vertical-align:middle;";
+        ctxBtn.addEventListener(CLICK_EVENT, function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            var ctxData = {
+                canDrill: false,
+                canDrillthrough: false,
+                copyValue: undefined
+            };
+            _.controller.CONFIG.triggers["contextMenu"](ctxData, e);
+        });
+        header.appendChild(ctxBtn);
     }
     if (info.leftHeaderColumnsNumber > 0 && _.controller.CONFIG["maxHeaderWidth"]) {
         pivotHeader.style.maxWidth =
@@ -3957,6 +4241,33 @@ PivotView.prototype.renderRawData = function (data) {
             : rawData.length,
         LHTHead
     );
+
+    // left header column resize handle (auto-fit happens in recalculateSizes when DOM is ready)
+    if (COLUMN_RESIZE_ON && info.leftHeaderColumnsNumber > 0 && primaryLeftColumns.length > 0) {
+        var lastColIdx = info.leftHeaderColumnsNumber - 1;
+        if (_.FIXED_LEFT_HEADER_SIZES[lastColIdx] !== undefined) {
+            var pw = _.FIXED_LEFT_HEADER_SIZES[lastColIdx] + "px";
+            for (var qi = 0; qi < primaryLeftColumns.length; qi++) {
+                primaryLeftColumns[qi].style.minWidth = primaryLeftColumns[qi].style.width = pw;
+            }
+        }
+        var firstLeftTh = primaryLeftColumns[0];
+        // Keep left-header resize handle visually and behaviorally consistent with data-column handles.
+        var leftResizeHandleStyle = "position:absolute;right:0;top:0;bottom:0;width:10px;cursor:col-resize;z-index:1;pointer-events:auto;";
+        var resizeHandle = document.createElement("div");
+        resizeHandle.className = "lpt-resizeHandle lpt-resizableColumn";
+        resizeHandle.style.cssText = leftResizeHandleStyle;
+        firstLeftTh.style.position = "relative";
+        firstLeftTh.appendChild(resizeHandle);
+        bindResizeLeftColumn(resizeHandle, firstLeftTh, lastColIdx, primaryLeftColumns);
+        // also add handle to top-left header so boundary is resizable from top row
+        pivotHeader.style.position = "relative";
+        var headerResizeHandle = document.createElement("div");
+        headerResizeHandle.className = "lpt-resizeHandle lpt-resizableColumn";
+        headerResizeHandle.style.cssText = leftResizeHandleStyle;
+        pivotHeader.appendChild(headerResizeHandle);
+        bindResizeLeftColumn(headerResizeHandle, firstLeftTh, lastColIdx, primaryLeftColumns);
+    }
 
     // render table
     for (y = tempI; y < tempJ; y++) {
@@ -4005,12 +4316,36 @@ PivotView.prototype.renderRawData = function (data) {
 
             // apply style
             if (cellStyle) td.setAttribute("style", (td.getAttribute("style") || "") + cellStyle);
+            if (!LISTING && _.controller.CONFIG["drillThroughTooltip"]) {
+                td.setAttribute("title", _.controller.CONFIG["drillThroughTooltip"]);
+            }
             // add handlers
             td.addEventListener(CLICK_EVENT, (function (x, y, cell) {
                 return function (event) {
                     _._cellClickHandler.call(_, cell, x, y, event, info.drillThroughHandler);
                 };
             })(x, y, rawData[y][x]));
+            td.addEventListener("contextmenu", (function (x, y, cell, elem) {
+                return function (event) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    var displayVal = (elem && elem.textContent) ? elem.textContent.trim() : (cell.value !== undefined && cell.value !== null ? String(cell.value) : "");
+                    var ctxData = { canDrill: false, canDrillthrough: !!_.controller.CONFIG["drillThroughAvailable"], copyValue: displayVal };
+                    try {
+                        var f1 = data.rawData[y][info.leftHeaderColumnsNumber - 1].source.path;
+                        var f2 = data.rawData[info.topHeaderRowsNumber - 1 - (info.SUMMARY_SHOWN && _.controller.CONFIG["attachTotals"] ? 1 : 0)][x].source.path;
+                        var drillFilters = [f1, f2].filter(Boolean);
+                        ctxData.drillFilters = drillFilters;
+                        ctxData.drillPath = drillFilters.join("~");
+                        ctxData.drillTitle = displayVal || "";
+                    } catch (e) {}
+                    if (typeof _.controller.CONFIG.triggers["contextMenu"] === "function") {
+                        _.controller.CONFIG.triggers["contextMenu"](ctxData, event);
+                    } else {
+                        _._showCellContextMenu.call(_, displayVal, event);
+                    }
+                };
+            })(x, y, rawData[y][x], td));
 
         }
         mainTBody.appendChild(tr);
@@ -4158,6 +4493,7 @@ PivotView.prototype.renderRawData = function (data) {
     container["_primaryColumns"] = primaryColumns;
     container["_primaryRows"] = primaryRows;
     container["_primaryCells"] = primaryCells;
+    container["_primaryLeftColumns"] = primaryLeftColumns;
     container["_listing"] = LISTING;
 
     this.recalculateSizes(container);
