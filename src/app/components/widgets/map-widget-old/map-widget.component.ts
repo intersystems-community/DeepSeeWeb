@@ -278,10 +278,8 @@ export class MapWidgetOldComponent extends BaseWidget implements OnInit, OnDestr
     // This "var" is needed to exec polys js file and path this variable to context of this file
     // tslint:disable-next-line:no-var-keyword
     var polys = {};
-    result = '(' + result + ')(polys)';
-    // TODO: make safe eval
-    // tslint:disable-next-line:no-eval
-    eval(result);
+    const applyPolygons = new Function('polys', 'return (' + result + ')(polys);');
+    applyPolygons(polys);
     this.polyData = polys;
     this.buildPolygons();
   }
