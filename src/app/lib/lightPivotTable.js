@@ -2636,6 +2636,7 @@ var PivotView = function (controller, container) {
     this.FIXED_COLUMN_SIZES = [];
     this.FIXED_LEFT_HEADER_SIZES = {};
     this.FIXED_LEFT_HEADER_WIDTH = undefined;
+    this.FIXED_LEFT_HEADER_COLUMNS_COUNT = undefined;
 
     this.PAGINATION_BLOCK_HEIGHT = 20;
     this.ANIMATION_TIMEOUT = 500;
@@ -2850,6 +2851,7 @@ PivotView.prototype.pushTable = function (opts) {
         this.tablesStack[this.tablesStack.length - 1].FIXED_COLUMN_SIZES = this.FIXED_COLUMN_SIZES;
         this.tablesStack[this.tablesStack.length - 1].FIXED_LEFT_HEADER_SIZES = this.FIXED_LEFT_HEADER_SIZES;
         this.tablesStack[this.tablesStack.length - 1].FIXED_LEFT_HEADER_WIDTH = this.FIXED_LEFT_HEADER_WIDTH;
+        this.tablesStack[this.tablesStack.length - 1].FIXED_LEFT_HEADER_COLUMNS_COUNT = this.FIXED_LEFT_HEADER_COLUMNS_COUNT;
         this.tablesStack[this.tablesStack.length - 1].savedSearch = this.savedSearch;
         this.tablesStack[this.tablesStack.length - 1].selectedRows = this.selectedRows;
         this.savedSearch = { restore: false, value: "", columnIndex: 0 };
@@ -2861,6 +2863,7 @@ PivotView.prototype.pushTable = function (opts) {
         opts: opts || {},
         FIXED_LEFT_HEADER_SIZES: this.FIXED_LEFT_HEADER_SIZES || {},
         FIXED_LEFT_HEADER_WIDTH: this.FIXED_LEFT_HEADER_WIDTH,
+        FIXED_LEFT_HEADER_COLUMNS_COUNT: this.FIXED_LEFT_HEADER_COLUMNS_COUNT,
         pagination: pg = { // defaults copied to pushTable
             on: false,
             rows: Infinity, // rows by page including (headers + summary + rows from config)
@@ -2875,6 +2878,10 @@ PivotView.prototype.pushTable = function (opts) {
     this.FIXED_LEFT_HEADER_WIDTH = prevTable && prevTable.FIXED_LEFT_HEADER_WIDTH !== undefined
         ? prevTable.FIXED_LEFT_HEADER_WIDTH
         : undefined;
+    this.FIXED_LEFT_HEADER_COLUMNS_COUNT =
+        prevTable && prevTable.FIXED_LEFT_HEADER_COLUMNS_COUNT !== undefined
+            ? prevTable.FIXED_LEFT_HEADER_COLUMNS_COUNT
+            : undefined;
     this.selectedRows = {};
     this.elements.base.appendChild(tableElement);
     this.elements.tableContainer = tableElement;
@@ -2900,6 +2907,7 @@ PivotView.prototype.popTable = function () {
     if (currentTable.FIXED_COLUMN_SIZES) this.FIXED_COLUMN_SIZES = currentTable.FIXED_COLUMN_SIZES;
     if (currentTable.FIXED_LEFT_HEADER_SIZES) this.FIXED_LEFT_HEADER_SIZES = currentTable.FIXED_LEFT_HEADER_SIZES;
     this.FIXED_LEFT_HEADER_WIDTH = currentTable.FIXED_LEFT_HEADER_WIDTH;
+    this.FIXED_LEFT_HEADER_COLUMNS_COUNT = currentTable.FIXED_LEFT_HEADER_COLUMNS_COUNT;
     if (currentTable.savedSearch) this.savedSearch = currentTable.savedSearch;
     if (currentTable.selectedRows) this.selectedRows = currentTable.selectedRows;
 
@@ -2947,6 +2955,19 @@ PivotView.prototype.dataChanged = function (data) {
 
     var dataRows =
             data.rawData.length - data.info.topHeaderRowsNumber;// - (data.info.SUMMARY_SHOWN ? 1 : 0);
+    var leftHeaderColumnsNumber = (data.info || {}).leftHeaderColumnsNumber || 0;
+
+    if (!leftHeaderColumnsNumber) {
+        this.FIXED_LEFT_HEADER_WIDTH = undefined;
+        this.FIXED_LEFT_HEADER_COLUMNS_COUNT = undefined;
+        this.FIXED_LEFT_HEADER_SIZES = {};
+    } else if (
+        this.FIXED_LEFT_HEADER_COLUMNS_COUNT !== undefined
+        && this.FIXED_LEFT_HEADER_COLUMNS_COUNT !== leftHeaderColumnsNumber
+    ) {
+        this.FIXED_LEFT_HEADER_WIDTH = undefined;
+        this.FIXED_LEFT_HEADER_SIZES = {};
+    }
 
     if (this.controller.CONFIG.pagination) this.pagination.on = true;
     this.pagination.rows = this.controller.CONFIG.pagination || Infinity;
@@ -3460,6 +3481,7 @@ PivotView.prototype.recalculateSizes = function (container) {
             mainHeaderWidth = headerContainer.offsetWidth,
             layoutLeftWidth = Math.max(headerW, mainHeaderWidth),
             fixedLeftWidth = _.FIXED_LEFT_HEADER_WIDTH,
+            fixedLeftColumnsCount = _.FIXED_LEFT_HEADER_COLUMNS_COUNT,
             IS_LISTING = lTableHead.offsetHeight === 0,
             horizontalOverflowEpsilon = 2,
             hasVerticalScrollBar =
@@ -3471,7 +3493,14 @@ PivotView.prototype.recalculateSizes = function (container) {
             hasHorizontalScrollBar =
                 tTableHead.scrollWidth > stableAvailableTopHeaderWidth + horizontalOverflowEpsilon;
 
-        if (fixedLeftWidth !== undefined && !isNaN(fixedLeftWidth)) {
+        if (
+            fixedLeftWidth !== undefined
+            && !isNaN(fixedLeftWidth)
+            && !IS_LISTING
+            && container["_primaryLeftColumns"]
+            && container["_primaryLeftColumns"].length > 0
+            && fixedLeftColumnsCount === container["_primaryLeftColumns"].length
+        ) {
             layoutLeftWidth = Math.max(40, fixedLeftWidth);
         }
 
@@ -3953,6 +3982,7 @@ PivotView.prototype.renderRawData = function (data) {
             }
             _.FIXED_LEFT_HEADER_SIZES[columnIndex] = targetWidth;
             _.FIXED_LEFT_HEADER_WIDTH = Math.max(40, baseLeftLayoutWidth + (targetWidth - baseWidth));
+            _.FIXED_LEFT_HEADER_COLUMNS_COUNT = allColumnThs.length;
         };
         var moveListener = function (e) {
             e.cancelBubble = true;
@@ -4245,6 +4275,7 @@ PivotView.prototype.renderRawData = function (data) {
     // left header column resize handle (auto-fit happens in recalculateSizes when DOM is ready)
     if (COLUMN_RESIZE_ON && info.leftHeaderColumnsNumber > 0 && primaryLeftColumns.length > 0) {
         var lastColIdx = info.leftHeaderColumnsNumber - 1;
+        _.FIXED_LEFT_HEADER_COLUMNS_COUNT = primaryLeftColumns.length;
         if (_.FIXED_LEFT_HEADER_SIZES[lastColIdx] !== undefined) {
             var pw = _.FIXED_LEFT_HEADER_SIZES[lastColIdx] + "px";
             for (var qi = 0; qi < primaryLeftColumns.length; qi++) {

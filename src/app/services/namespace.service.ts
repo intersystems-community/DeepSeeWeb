@@ -48,7 +48,7 @@ export class NamespaceService {
   ): Observable<any> {
     return new Observable<any>(o => {
       const done = () => {
-        o.next();
+        o.next(undefined);
         o.complete();
       };
       if (CURRENT_NAMESPACE) {
