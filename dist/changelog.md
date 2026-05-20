@@ -1,3 +1,15 @@
+#### 4.0.32
+* filter text search now respects related filters (cross-filters)
+* preserve selected filter values between search requests in filter popup
+* added clear selection control to reset pinned filter values without applying
+* show hint of related filters affecting current filter value list
+* highlight related filters on dashboard toolbar while filter popup is open
+* fixed MDX2JSON API URL for local development with ng serve proxy
+
+#### 4.0.31
+* fixed left table header resize after drilldown and drillthrough (#477)
+* removed console warnings in map widget and namespace service
+
 #### 4.0.30
 * context menu items to copy values in clipboard, drilldown and drillthrough
 * ability to copy text value from the table cell

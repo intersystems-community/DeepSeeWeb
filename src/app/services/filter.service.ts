@@ -384,7 +384,13 @@ export class FilterService {
       }
       if (widgetName === 'emptyWidget') {
         if (this.items[i].source === '' || this.items[i].location === 'dashboard') {
-          res.push({idx: i, label: this.items[i].label, text: this.items[i].valueDisplay, info: this.items[i].info});
+          res.push({
+            idx: i,
+            label: this.items[i].label,
+            text: this.items[i].valueDisplay,
+            info: this.items[i].info,
+            targetProperty: this.items[i].targetProperty
+          });
           continue;
         }
       }
@@ -392,7 +398,13 @@ export class FilterService {
         continue;
       }
       if ((this.items[i].source === '*') || (this.items[i].sourceArray?.indexOf(widgetName) !== -1)) {
-        res.push({idx: i, label: this.items[i].label, text: this.items[i].valueDisplay, info: this.items[i].info});
+        res.push({
+          idx: i,
+          label: this.items[i].label,
+          text: this.items[i].valueDisplay,
+          info: this.items[i].info,
+          targetProperty: this.items[i].targetProperty
+        });
 
       }
     }

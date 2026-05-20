@@ -423,6 +423,7 @@ export interface IFilterValue {
   // For UI
   checked?: boolean;
   _saved?: boolean;
+  _pinned?: boolean;
 }
 
 export type ControlLocation = 'dashboard' | 'click';

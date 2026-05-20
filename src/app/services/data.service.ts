@@ -82,12 +82,15 @@ export class DataService {
   }
 
   public get url() {
-    let prefix = '';
     const redirect = localStorage.getItem('connectorRedirect');
     if (redirect) {
-      prefix = redirect;
+      return redirect + '../' + MDX2JSON + '/';
     }
-    return prefix + '../' + MDX2JSON + '/';
+    // Local dev: use root-relative path so ng serve proxy forwards to IRIS (localhost:52773)
+    if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+      return '/' + MDX2JSON + '/';
+    }
+    return '../' + MDX2JSON + '/';
   }
 
 

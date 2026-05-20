@@ -33,7 +33,9 @@
 
 <!-- Filters -->
 @for (flt of filters(); track flt) {
-  <span class="flt-holder" [class.active]="openedFilter() === flt.idx">
+  <span class="flt-holder"
+        [class.active]="openedFilter() === flt.idx"
+        [class.cross-filter-active]="relatedTargets().has(flt.targetProperty)">
     <label>{{ flt.label }}</label>
     <input readonly type="text" value="{{flt.text}}" title="{{flt.text}}"
            (click)="flt.isOpen = true; toggleFilter(flt.idx, $event)">

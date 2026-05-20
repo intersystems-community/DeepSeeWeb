@@ -25,10 +25,12 @@ import {UtilService} from "../../../services/util.service";
 import {I18nPipe} from '../../../services/i18n.service';
 import {AutoFocusDirective} from '../../../directives/auto-focus.directive';
 import {FormsModule} from '@angular/forms';
-import {IFilterModel, IRelatedFiltersRequestData, IWidgetDesc} from "../../../services/dsw.types";
+import {IFilter, IFilterModel, IFilterValue, IRelatedFiltersRequestData, IWidgetDesc} from "../../../services/dsw.types";
 import {ModalComponent} from "../modal/modal.component";
 import {Subject, Subscription} from 'rxjs';
 import {debounceTime, filter} from 'rxjs/operators';
+import {BroadcastService} from '../../../services/broadcast.service';
+import {I18nService} from '../../../services/i18n.service';
 
 @Pipe({
   name: 'selectedFirst',
@@ -70,10 +72,11 @@ export class FilterPopupComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input()
   _modal?: ModalComponent;
   isRelatedFilters = false;
+  relatedFiltersHint = '';
   widget!: IWidgetDesc;
   private datePipe: DatePipe;
   private restoreValuesOnClose = true;
-  private originalValues?: any[];
+  private originalValues?: IFilterValue[];
   private readonly MIN_SEARCH_LENGTH = 3;
   private readonly SEARCH_DEBOUNCE_MS = 700;
   private searchInput$ = new Subject<string>();
@@ -87,12 +90,18 @@ export class FilterPopupComponent implements OnInit, AfterViewInit, OnDestroy {
               private fs: FilterService,
               private es: ErrorService,
               private us: UtilService,
+              private bs: BroadcastService,
+              private i18n: I18nService,
               private cdr: ChangeDetectorRef,
               @Inject(LOCALE_ID) private locale: string) {
     this.datePipe = new DatePipe(locale);
     const settings = this.ss.getAppSettings();
     this.isRelatedFilters = settings.isRelatedFilters === undefined ? true : settings.isRelatedFilters;
     // this.isRelatedFilters = !!settings.isRelatedFilters;
+  }
+
+  get hasClearableSelection(): boolean {
+    return !!this.model.filter?.values?.some(v => v.checked || v._pinned);
   }
 
   @HostBinding('class.date-filter')
@@ -146,16 +155,18 @@ export class FilterPopupComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Check for related filters
     if (!filter.isDate && this.isRelatedFilters/* && Filters.filtersChanged*/) {
-      this.requestRelatedFilters(filter);
+      this.requestRelatedFilters();
     } else {
       this.prepareFilters();
+      this.updateRelatedFiltersHint();
+      this.broadcastRelatedFilters();
     }
 
     this.model.isAll = !this.isAnyChecked();
     this.model.isExclude = filter.isExclude;
     this.model.isInterval = filter.isInterval;
     if (this.model.filter.values?.length) {
-      this.originalValues = this.model.filter.values;
+      this.originalValues = structuredClone(this.model.filter.values);
     }
   }
 
@@ -173,19 +184,73 @@ export class FilterPopupComponent implements OnInit, AfterViewInit, OnDestroy {
     this.searchInput$.next((value || '').trim());
   }
 
-  requestRelatedFilters(initiator?: any) {
-    const ds = this.getDataSource();
-    this.prepareFilters();
-    if (!ds) {
+  requestRelatedFilters(force = false) {
+    this.fetchFilterValues('', force);
+  }
+
+  clearSelection() {
+    if (!this.model.filter?.values) {
       return;
     }
-    const related = [];
+    this.model.filter.values = this.model.filter.values
+      .filter(v => !v._pinned)
+      .map(v => ({...v, checked: false}));
+    this.model.search = '';
+    this.searchRequestId++;
+    this.model.isAll = true;
+    if (this.isRelatedFilters) {
+      this.fetchFilterValues('', true);
+    } else {
+      this.prepareFilters();
+    }
+    this.updateRelatedFiltersHint();
+    this.broadcastRelatedFilters();
+    this.cdr.detectChanges();
+  }
+
+  private fetchFilterValues(searchStr: string, force = false) {
+    const ds = this.getDataSource();
+    this.prepareFilters();
+    if (!ds || !this.model.filter) {
+      return;
+    }
+
     const filters = this.fs.items;
-    // Get active filters
-    const activeFilters = filters.filter(f => !f.isInterval && ((f.targetProperty !== this.model.filter?.targetProperty) && f.value !== ''));
+    const isValuesExists = !!filters
+      .find(f => f.targetProperty === this.model.filter?.targetProperty)
+      ?.values?.filter(v => !v._saved)?.length;
+    if (!force && !searchStr && !isValuesExists) {
+      this.updateRelatedFiltersHint();
+      this.broadcastRelatedFilters();
+      return;
+    }
+
+    const related = this.isRelatedFilters ? this.buildRelatedFiltersPayload() : undefined;
+    this.model.isLoading = true;
+    this.ds
+      .searchFilters(searchStr, ds, related, [this.model.filter.targetProperty])
+      .catch(e => this.onError(e, e.status))
+      .then(data => {
+        this.onFilterValuesReceived(data);
+        this.onSearch(searchStr);
+      })
+      .finally(() => {
+        this.model.isLoading = false;
+        this.cdr.detectChanges();
+      });
+  }
+
+  private getActiveRelatedFilters(): IFilter[] {
+    return this.fs.items.filter(f =>
+      !f.isInterval &&
+      f.targetProperty !== this.model.filter?.targetProperty &&
+      f.value !== ''
+    );
+  }
+
+  private buildRelatedFiltersPayload(): IRelatedFiltersRequestData[] {
     const res: IRelatedFiltersRequestData[] = [];
-    // Reformat to DSZ filters
-    activeFilters.forEach(f => {
+    this.getActiveRelatedFilters().forEach(f => {
       let value = f.value.toString();
       if (f.isExclude) {
         value = value.split('|').map(v => v += '.%NOT').join('|');
@@ -198,24 +263,41 @@ export class FilterPopupComponent implements OnInit, AfterViewInit, OnDestroy {
       }
       res.push({Filter: f.targetProperty, Value: value});
     });
+    return res;
+  }
 
-    const isValuesExists = !!filters.find(f => f.targetProperty === this.model?.filter?.targetProperty)?.values?.filter(v => !v._saved)?.length;
-    if (!isValuesExists) {
+  private pathsEqual(a: string | number | undefined, b: string | number | undefined): boolean {
+    if (a === b) {
+      return true;
+    }
+    if (a === undefined || b === undefined) {
+      return false;
+    }
+    const aNum = Number(a);
+    const bNum = Number(b);
+    return !isNaN(aNum) && !isNaN(bNum) && aNum === bNum;
+  }
+
+  private updateRelatedFiltersHint() {
+    if (!this.isRelatedFilters) {
+      this.relatedFiltersHint = '';
       return;
     }
+    const active = this.getActiveRelatedFilters();
+    if (!active.length) {
+      this.relatedFiltersHint = '';
+      return;
+    }
+    const parts = active.map(f => `${f.label} — ${f.valueDisplay || '…'}`);
+    this.relatedFiltersHint = this.i18n.get('filtersAffectingList') + ': ' + parts.join(', ');
+  }
 
-    this.model.isLoading = true;
-    this.ds
-      .searchFilters('', ds, res, [this.model.filter?.targetProperty])
-      .catch(e => this.onError(e, e.status))
-      .then(data => {
-        this.onFilterValuesReceived(data);
-        this.onSearch('');
-      })
-      .finally(() => {
-        this.model.isLoading = false;
-        this.cdr.detectChanges();
-      });
+  private broadcastRelatedFilters() {
+    if (!this.isRelatedFilters) {
+      this.bs.broadcast('filterPopupRelated', []);
+      return;
+    }
+    this.bs.broadcast('filterPopupRelated', this.getActiveRelatedFilters().map(f => f.targetProperty));
   }
 
   /**
@@ -269,16 +351,16 @@ export class FilterPopupComponent implements OnInit, AfterViewInit, OnDestroy {
    * Search input onChange callback. Searches filter values by input text
    */
   onSearch(search: string) {
+    const all = this.model.filter?.values || [];
+    const pinnedOrChecked = all.filter(v => v.checked || v._pinned);
+
     if (search === '') {
-      this.model.values = this.model.filter?.values;
+      this.model.values = all;
     } else {
       const s = search.toLowerCase();
-      this.model.values = [];
-      for (let i = 0; i < this.model.filter?.values.length; i++) {
-        if (this.model.filter?.values[i].name.toString().toLowerCase().indexOf(s) !== -1) {
-          this.model.values.push(this.model.filter?.values[i]);
-        }
-      }
+      const matched = all.filter(v => v.name?.toString().toLowerCase().indexOf(s) !== -1);
+      const extras = pinnedOrChecked.filter(v => !matched.some(m => this.pathsEqual(m.path, v.path)));
+      this.model.values = [...extras, ...matched];
     }
   }
 
@@ -308,7 +390,11 @@ export class FilterPopupComponent implements OnInit, AfterViewInit, OnDestroy {
   /**
    * Item select callback(checkbox onClick event handler)
    */
-  onItemSelect(e: MouseEvent) {
+  onItemSelect(e: MouseEvent, v?: IFilterValue) {
+    if (v && !v.checked && v._pinned && this.model.filter?.values) {
+      this.model.filter.values = this.model.filter.values.filter(item => !this.pathsEqual(item.path, v.path));
+      this.onSearch(this.model.search);
+    }
     this.model.isAll = !this.isAnyChecked();
   }
 
@@ -342,7 +428,7 @@ export class FilterPopupComponent implements OnInit, AfterViewInit, OnDestroy {
    * Request filters from server by search string. (handles onEnter event on search input and debounced auto-request)
    */
   searchFilters() {
-    let ds = this.getDataSource();
+    const ds = this.getDataSource();
     if (!ds) {
       return;
     }
@@ -352,8 +438,9 @@ export class FilterPopupComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     this.model.isLoading = true;
     const requestId = ++this.searchRequestId;
+    const related = this.isRelatedFilters ? this.buildRelatedFiltersPayload() : undefined;
     this.ds
-      .searchFilters(searchStr, ds)
+      .searchFilters(searchStr, ds, related, [this.model.filter?.targetProperty])
       .catch(e => this.onError(e, e.status))
       .then(data => {
         if (requestId === this.searchRequestId) {
@@ -369,57 +456,51 @@ export class FilterPopupComponent implements OnInit, AfterViewInit, OnDestroy {
    * Data retrieved callback for searchFilters() request
    * @param {object} result Filter data
    */
-  onFilterValuesReceived(result, doNotReplace = false) {
+  onFilterValuesReceived(result) {
     this.model.isLoading = false;
     if (!result) {
       return;
     }
 
-    // Find global filter to update its values
-    const filters = result.children.filter(el => {
-      return el.path === this.model.filter?.targetProperty;
-    });
+    const filters = result.children.filter(el => el.path === this.model.filter?.targetProperty);
     if (filters.length === 0) {
       return;
     }
     const filter = filters[0];
+    const previous = this.model.filter?.values?.slice() || [];
+    const checkedToPreserve = previous.filter(v => v.checked);
+
     if (!filter.children || filter.children.length === 0) {
+      if (checkedToPreserve.length && this.model.filter) {
+        this.model.filter.values = checkedToPreserve.map(v => ({...v, _pinned: true}));
+      }
+      this.updateRelatedFiltersHint();
+      this.broadcastRelatedFilters();
       return;
     }
 
-    // Path current filter modifications(selected state, etc.) to newly received values
-    const oldFilters = this.model.filter?.values.slice();
-    const newFilters: any[] = [];
+    const newFilters: IFilterValue[] = [];
+
     filter.children.forEach(f => {
-      let o = oldFilters.find(flt => {
-        if (flt?.path === f?.path) {
-          return true;
-        }
-        if (!isNaN(f?.path) && (parseInt(flt?.path, 10) === f?.path)) {
-          return true;
-        }
-        return false;
-      });
-      if (o) {
-        Object.assign(f, o);
-      }/* else {
-                toAdd.push(f);
-            }*/
+      const match = previous.find(flt => this.pathsEqual(flt.path, f.path));
+      if (match) {
+        Object.assign(f, {checked: match.checked, _saved: match._saved, _pinned: false});
+      }
       newFilters.push(f);
     });
 
-    // Update model values
+    checkedToPreserve.forEach(sel => {
+      if (!newFilters.some(f => this.pathsEqual(f.path, sel.path))) {
+        newFilters.unshift({...sel, _pinned: true});
+      }
+    });
+
     if (newFilters.length && this.model.filter) {
       this.model.filter.values = [...newFilters];
-      this.originalValues = structuredClone(newFilters);
     }
-    // this.model.filter.values.push(...toAdd); // filter.children;
 
-    // Prepare filter values
-    //this.prepareFilters();
-
-    // Recreate filters
-    //Filters.init(Filters.items.slice());
+    this.updateRelatedFiltersHint();
+    this.broadcastRelatedFilters();
   }
 
   /**
@@ -529,6 +610,7 @@ export class FilterPopupComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnDestroy() {
     this.searchSubscription?.unsubscribe();
     this.searchInput$.complete();
+    this.bs.broadcast('filterPopupRelated', []);
     if (this.restoreValuesOnClose) {
       this.restoreSelectionState();
     }
