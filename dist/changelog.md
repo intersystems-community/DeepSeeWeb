@@ -4,7 +4,6 @@
 * added clear selection control to reset pinned filter values without applying
 * show hint of related filters affecting current filter value list
 * highlight related filters on dashboard toolbar while filter popup is open
-* fixed MDX2JSON API URL for local development with ng serve proxy
 
 #### 4.0.31
 * fixed left table header resize after drilldown and drillthrough (#477)
