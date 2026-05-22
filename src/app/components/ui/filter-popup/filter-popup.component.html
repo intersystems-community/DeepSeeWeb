@@ -13,7 +13,16 @@
     <input #sr type="search" placeholder="{{'search' | i18n}}" [(ngModel)]="model.search"
            (search)="onSearch(sr.value)" (keyup)="onSearch(sr.value); onSearchInputChange(sr.value)" (keydown.enter)="searchFilters()"
            dswAutoFocus="desktop">
+    @if (hasClearableSelection) {
+      <button type="button" class="clear-selection" (click)="clearSelection()"
+              [title]="'clearFilterSelection' | i18n">
+        <img src="assets/img/icons/icon-reload.svg" alt="">
+      </button>
+    }
   </div>
+  @if (relatedFiltersHint) {
+    <div class="related-filters-hint">{{ relatedFiltersHint }}</div>
+  }
   <!-- All/Exclude/Interval checkboxes -->
   @if (!isRadio) {
     <div class="checks-container">
@@ -66,12 +75,12 @@
     }
     <!-- Filter items -->
     @for (v of model.values | selectedFirst; track $index) {
-      <div class="value-row" (click)="toggleRow(v, $event)">
+      <div class="value-row" [class.pinned]="v._pinned" (click)="toggleRow(v, $event)">
         <input
           #inp
           [type]="isRadio ? 'radio' : 'checkbox'"
           [checked]="v.checked"
-          (click)="v.checked = inp.checked; onItemSelect($event)"
+          (click)="v.checked = inp.checked; onItemSelect($event, v)"
           [class.readonly]="isRadio"
           name="filter-item"
         >

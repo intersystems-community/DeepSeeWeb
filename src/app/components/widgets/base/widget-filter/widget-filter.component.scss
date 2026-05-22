@@ -96,6 +96,12 @@
     }
   }
 
+  &.cross-filter-active > input,
+  &.cross-filter-active > select {
+    border-color: var(--cl-accent);
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--cl-accent) 30%, transparent);
+  }
+
   @include sm {
     width: auto !important;
     flex: 1 1 25% !important;

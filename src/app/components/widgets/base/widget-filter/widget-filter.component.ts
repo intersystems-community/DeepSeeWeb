@@ -4,6 +4,7 @@ import {
   Component,
   ElementRef,
   input,
+  OnDestroy,
   output, signal,
   viewChild,
   ViewContainerRef
@@ -15,6 +16,7 @@ import {UtilService} from '../../../../services/util.service';
 import {BroadcastService} from '../../../../services/broadcast.service';
 import {FormsModule} from '@angular/forms';
 import {IWidgetControl, IWidgetDesc} from "../../../../services/dsw.types";
+import {Subscription} from 'rxjs';
 
 
 @Component({
@@ -35,7 +37,7 @@ import {IWidgetControl, IWidgetDesc} from "../../../../services/dsw.types";
     '[class.col-6]': 'widget().viewSize === 5'
   }
 })
-export class WidgetFilterComponent {
+export class WidgetFilterComponent implements OnDestroy {
   widget = input.required<IWidgetDesc>();
   filters = input<any[]>([]);
   onVariable = output<any>();
@@ -43,7 +45,9 @@ export class WidgetFilterComponent {
   onAction = output<IWidgetControl>();
   onFilter = output<number>();
   protected openedFilter = signal(-1);
+  protected relatedTargets = signal<Set<string>>(new Set());
   private filterPopup = viewChild<ViewContainerRef>('filterPopup');
+  private subRelated?: Subscription;
 
   constructor(private fs: FilterService,
               private ms: ModalService,
@@ -52,6 +56,10 @@ export class WidgetFilterComponent {
               private bs: BroadcastService,
               private cd: ChangeDetectorRef
   ) {
+    this.subRelated = this.bs.subscribe('filterPopupRelated', (targets: string[]) => {
+      this.relatedTargets.set(new Set(targets || []));
+      this.cd.markForCheck();
+    });
   }
 
   emitVarChange(v: any) {
@@ -126,5 +134,9 @@ export class WidgetFilterComponent {
 
   detectChanges() {
     this.cd.detectChanges();
+  }
+
+  ngOnDestroy() {
+    this.subRelated?.unsubscribe();
   }
 }
