@@ -394,5 +394,3 @@ At least NodeJS v16.14.0 required to build application.
 
 # Article and discussion around DeepSee Web
 Here is the [article on InterSystems Developer Community](https://community.intersystems.com/post/deepsee-web-intersystems-analytics-visualization-angularjs-part-1) describing DSW features and capabilites.
-
-

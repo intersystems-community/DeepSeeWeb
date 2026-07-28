@@ -1,7 +1,7 @@
 import {Component, Input} from '@angular/core';
 import {BaseWidget} from '../base-widget.class';
 import {CURRENT_NAMESPACE} from '../../../services/namespace.service';
-import {IFilterValue, IWidgetDesc} from '../../../services/dsw.types';
+import {IFilterValue, IMDXData, IWidgetDesc} from '../../../services/dsw.types';
 
 declare const LightPivotTable: any;
 
@@ -144,6 +144,7 @@ export class WPivotComponent extends BaseWidget {
     delete this.widget.pivotMdx;
 
     this.lpt = new LightPivotTable(setup);
+    this.initializeLinkedDataBroadcast();
     // Remove spinner for editing widget because it created empty
     if (this.widget.edKey) {
       this.lpt?.pivotView.displayMessage('');
@@ -157,6 +158,44 @@ export class WPivotComponent extends BaseWidget {
       })
 
     }
+  }
+
+  private initializeLinkedDataBroadcast() {
+    if (!this.lpt) {
+      return;
+    }
+    const lpt = this.lpt as any;
+    const originalDataIsChanged = lpt.dataIsChanged?.bind(lpt);
+    lpt.dataIsChanged = () => {
+      originalDataIsChanged?.();
+      // Linked viewers subscribe to the source widget name, so rebroadcast the current pivot payload after each refresh/drill.
+      this.broadcastLinkedWidgetData();
+    };
+  }
+
+  private broadcastLinkedWidgetData() {
+    const data = this.getLinkedWidgetData();
+    if (!data) {
+      return;
+    }
+    this.bs.broadcast('setLinkedWidgetData:' + this.widget.name, data);
+  }
+
+  private getLinkedWidgetData(): IMDXData | null {
+    const currentData = this.lpt?.dataController?.getData?.() as any;
+    if (!currentData) {
+      return null;
+    }
+
+    return {
+      Cols: [
+        {tuples: Array.isArray(currentData.dimensions?.[0]) ? currentData.dimensions[0] : []},
+        {tuples: Array.isArray(currentData.dimensions?.[1]) ? currentData.dimensions[1] : []}
+      ],
+      Data: Array.isArray(currentData.dataArray) ? currentData.dataArray : [],
+      Error: '',
+      Info: currentData.info || {}
+    } as IMDXData;
   }
 
   doDrillUp() {

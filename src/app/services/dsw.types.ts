@@ -182,6 +182,7 @@ export interface IWidgetDesc {
   baseTitle: string;
   idx: number;
   type: string;
+  subtype: string;
   dashboard: string;
   dataSource: string;
   cube: string;

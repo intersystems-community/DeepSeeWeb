@@ -1,3 +1,9 @@
+#### 4.0.33
+* added linked `HTML web view` flow for payloads coming from pivot widgets
+* `HTML web view` now supports forced iframe payloads via `[url]...`, raw HTML payloads and direct `Data` overrides
+* fixed widget type editor so `HTML web view` can be selected and configured from the UI
+* added BI demo assets and deployment docs for the html viewer cube/pivot/dashboard flow
+
 #### 4.0.32
 * filter text search now respects related filters (cross-filters)
 * preserve selected filter values between search requests in filter popup

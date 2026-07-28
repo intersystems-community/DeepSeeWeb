@@ -49,3 +49,8 @@ Thumbs.db
 /dist/commonjs
 /dist-addons
 /e2e/screenshots
+
+# local BI/demo assets
+/.deps/
+/bi/IRISAPP/
+/scripts/

@@ -442,7 +442,8 @@ export class WidgetComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   updateComponent() {
-    this.widgetType = this.wts.getDesc(this.widget.type);
+    const widgetTypeName = this.wts.getWidgetTypeName(this.widget);
+    this.widgetType = this.wts.getWidgetDesc(this.widget);
     const t = this.widgetType?.class; // this.wts.getClass(type || this.widget.type);
     if (t) {
       this.widget.isSupported = true;
@@ -453,7 +454,7 @@ export class WidgetComponent implements OnInit, OnDestroy, AfterViewInit {
       });
     } else {
       this.widget.isSupported = false;
-      this.showError(this.i18n.get('errWidgetNotSupported') + ': ' + this.widget.type);
+      this.showError(this.i18n.get('errWidgetNotSupported') + ': ' + widgetTypeName);
       this.cd.detectChanges();
     }
   }
